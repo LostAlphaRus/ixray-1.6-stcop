@@ -363,12 +363,12 @@ LPCSTR CXml::ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val)
 	else
 	{
 /*
-		//обязательно делаем ref_str, а то 
-		//не сможем запомнить строку и return вернет левый указатель
+		//обѝзательно делаем ref_str, а то 
+		//не ѝможем запомнить ѝтроку и return вернет левый указатель
 		shared_str result_str;
 */
 		LPCSTR result_str = nullptr;
-		// Кастаем ниже по иерархии
+		// Каѝтаем ниже по иерархии
 
 		tinyxml2::XMLElement *el = node->ToElement(); 
 		
@@ -526,7 +526,7 @@ int CXml::GetNodesNum(XML_NODE* node, LPCSTR  tag_name)
 	return result;
 }
 
-//нахождение элемнета по его атрибуту
+//нахождение ѝлемнета по его атрибуту
 XML_NODE* CXml::SearchForAttribute(LPCSTR path, int index, LPCSTR tag_name, LPCSTR attrib, LPCSTR attrib_value_pattern)
 {
 	XML_NODE* start_node			= NavigateToNode(path, index);
