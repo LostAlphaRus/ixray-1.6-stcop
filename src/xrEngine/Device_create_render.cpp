@@ -169,14 +169,14 @@ bool CRenderDevice::InitRenderDeviceEditor()
 {
 	fill_vid_mode_list();
 
-	if (!CreateD3D9())
+	if (!CreateD3D11())
 	{
 		return false;
 	}
 
 	Device.TargetWidth = psCurrentVidMode[0];
 	Device.TargetHeight = psCurrentVidMode[1];
-	CurrentAPILevel = APILevel::DX9;
+	CurrentAPILevel = APILevel::DX11;
 
 	return true;
 }

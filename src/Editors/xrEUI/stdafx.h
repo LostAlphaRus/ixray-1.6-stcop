@@ -1,4 +1,7 @@
 #pragma once
+#include <d3d11.h>
+using ImTextureID = ID3D11Resource*;
+#define ImTextureID ImTextureID 
 
 #ifdef XREUI_EXPORTS
 #define XREUI_API __declspec(dllexport)

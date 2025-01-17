@@ -1,4 +1,4 @@
-project(xrECore)
+ project(xrECore)
 
 # Files import
 file(GLOB_RECURSE ECORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
@@ -38,94 +38,93 @@ file(GLOB_RECURSE ECORE_SOURCE_RES_FILES
 )
 
 file(GLOB_RECURSE ECORE_SOURCE_RENDER_FILES CONFIGURE_DEPENDS
-	"../../Layers/xrRenderDX9/dx9r_constants_cache.*"
-	"../../Layers/xrRender/Animation.*"
-	"../../Layers/xrRender/blenders/Blender.*"
-	"../../Layers/xrRender/blenders/Blender_Palette.*"
-	"../../Layers/xrRender/blenders/Blender_Recorder.*"
-	"../../Layers/xrRender/Blender_BmmD.*"
-	"../../Layers/xrRender/Blender_detail_still.*"
-	"../../Layers/xrRender/Blender_Editor_Selection.*"
-	"../../Layers/xrRender/Blender_Editor_Wire.*"
-	"../../Layers/xrRender/Blender_Lm(EbB).*"
-	"../../Layers/xrRender/Blender_Model_EbB.*"
-	"../../Layers/xrRender/Blender_Particle.*"
-	"../../Layers/xrRender/Blender_Recorder_R2.*"
-	"../../Layers/xrRender/Blender_Recorder_StandartBinding.*"
-	"../../Layers/xrRender/Blender_Screen_SET.*"
-	"../../Layers/xrRender/Blender_tree.*"
-	"../../Layers/xrRender/DetailModel.*"
-	"../../Layers/xrRender/dxApplicationRender.*"
-	"../../Layers/xrRender/dxConsoleRender.*"
-	"../../Layers/xrRender/dxDebugRender.*"
-	"../../Layers/xrRender/dxStatGraphRender.*"
-	"../../Layers/xrRender/dxEnvironmentRender.*"
-	"../../Layers/xrRender/dxFontRender.*"
-	"../../Layers/xrRender/dxLensFlareRender.*"
-	"../../Layers/xrRender/dxObjectSpaceRender.*"
-	"../../Layers/xrRender/dxParticleCustom.*"
-	"../../Layers/xrRender/dxRainRender.*"
-	"../../Layers/xrRender/dxRenderDeviceRender.*"
-	"../../Layers/xrRender/dxRenderFactory.*"
-	"../../Layers/xrRender/dxStatsRender.*"
-	"../../Layers/xrRender/dxThunderboltDescRender.*"
-	"../../Layers/xrRender/dxThunderboltRender.*"
-	"../../Layers/xrRender/dxUIRender.*"
-	"../../Layers/xrRender/dxUISequenceVideoItem.*"
-	"../../Layers/xrRender/dxUIShader.*"
-	"../../Layers/xrRender/dxWallMarkArray.*"
-	"../../Layers/xrRender/ETextureParams.*"
-	"../../Layers/xrRender/FBasicVisual.*"
-	"../../Layers/xrRender/FHierrarhyVisual.*"
-	"../../Layers/xrRender/FProgressive.*"
-	"../../Layers/xrRender/FSkinned.*"
-	"../../Layers/xrRender/FVisual.*"
-	"../../Layers/xrRenderDX9/dx9HW.*"
-	"../../Layers/xrRenderDX9/dx9HWCaps.*"
-	"../../Layers/xrRender/ModelPool.*"
-	"../../Layers/xrRender/ParticleEffect.*"
-	"../../Layers/xrRender/ParticleEffectDef.*"
-	"../../Layers/xrRender/ParticleGroup.*"
-	"../../Layers/xrRender/PSLibrary.*"
-	"../../Layers/xrRender/ResourceManager.*"
-	"../../Layers/xrRender/ResourceManager_Loader.*"
-	"../../Layers/xrRender/ResourceManager_Reset.*"
-	"../../Layers/xrRenderDX9/dx9ResourceManager_Resources.*"
-	"../../Layers/xrRenderDX9/dx9ResourceManager_Scripting.*"
-	"../../Layers/xrRender/R_Backend.*"
-	"../../Layers/xrRender/R_Backend_DBG.*"
-	"../../Layers/xrRender/R_Backend_hemi.*"
-	"../../Layers/xrRender/R_Backend_Runtime.*"
-	"../../Layers/xrRender/R_Backend_tree.*"
-	"../../Layers/xrRender/R_Backend_xform.*"
-	"../../Layers/xrRender/r_constants.*"
-	"../../Layers/xrRender/R_DStreams.*"
-	"../../Layers/xrRender/Shader.*"
-	"../../Layers/xrRender/SH_Atomic.*"
-	"../../Layers/xrRender/SH_Constant.*"
-	"../../Layers/xrRender/SH_Matrix.*"
-	"../../Layers/xrRenderDX9/dx9SH_RT.*"
-	"../../Layers/xrRenderDX9/dx9SH_Texture.*"
-	"../../Layers/xrRenderDX9/DDSTextureLoader9.*"
-	"../../Layers/xrRender/SkeletonAnimated.*"
-	"../../Layers/xrRender/SkeletonCustom.*"
-	"../../Layers/xrRender/SkeletonRigid.*"
-	"../../Layers/xrRender/SkeletonX.*"
-	"../../Layers/xrRender/stats_manager.*"
-	"../../Layers/xrRenderDX9/dx9Texture.*"
-	"../../Layers/xrRender/TextureDescrManager.*"
-	"../../Layers/xrRender/tga.*"
-	"../../Layers/xrRender/tss_def.*"
-	"../../Layers/xrRender/xrRender_console.*"
-	"../../Layers/xrRenderPC_R1/Blender_Blur.*"
-	"../../Layers/xrRenderPC_R1/BlenderDefault.*"
-	"../../Layers/xrRenderPC_R1/Blender_default_aref.*"
-	"../../Layers/xrRenderPC_R1/Blender_LaEmB.*"
-	"../../Layers/xrRenderPC_R1/Blender_Model.*"
-	"../../Layers/xrRenderPC_R1/Blender_Screen_GRAY.*"
-	"../../Layers/xrRenderPC_R1/Blender_Shadow_World.*"
-	"../../Layers/xrRenderPC_R1/Blender_Vertex_aref.*"
-	"../../Layers/xrRenderPC_R1/Blender_Vertex.*"
+    "../../Layers/xrRenderDX10/dx10r_constants_cache.*"
+    "../../Layers/xrRender/Animation.*"
+    "../../Layers/xrRender/blenders/Blender.*"
+    "../../Layers/xrRender/blenders/Blender_Palette.*"
+    "../../Layers/xrRender/blenders/Blender_Recorder.*"
+    "../../Layers/xrRender/Blender_BmmD.*"
+    "../../Layers/xrRender/Blender_detail_still.*"
+    "../../Layers/xrRender/Blender_Editor_Selection.*"
+    "../../Layers/xrRender/Blender_Editor_Wire.*"
+    "../../Layers/xrRender/Blender_Lm(EbB).*"
+    "../../Layers/xrRender/Blender_Model_EbB.*"
+    "../../Layers/xrRender/Blender_Particle.*"
+    "../../Layers/xrRender/Blender_Recorder_R2.*"
+    "../../Layers/xrRender/Blender_Recorder_StandartBinding.*"
+    "../../Layers/xrRender/Blender_Screen_SET.*"
+    "../../Layers/xrRender/Blender_tree.*"
+    "../../Layers/xrRender/DetailModel.*"
+    "../../Layers/xrRender/dxApplicationRender.*"
+    "../../Layers/xrRender/dxConsoleRender.*"
+    "../../Layers/xrRender/dxDebugRender.*"
+    "../../Layers/xrRender/dxStatGraphRender.*"
+    "../../Layers/xrRender/dxEnvironmentRender.*"
+    "../../Layers/xrRender/dxFontRender.*"
+    "../../Layers/xrRender/dxLensFlareRender.*"
+    "../../Layers/xrRender/dxObjectSpaceRender.*"
+    "../../Layers/xrRender/dxParticleCustom.*"
+    "../../Layers/xrRender/dxRainRender.*"
+    "../../Layers/xrRender/dxRenderDeviceRender.*"
+    "../../Layers/xrRender/dxRenderFactory.*"
+    "../../Layers/xrRender/dxStatsRender.*"
+    "../../Layers/xrRender/dxThunderboltDescRender.*"
+    "../../Layers/xrRender/dxThunderboltRender.*"
+    "../../Layers/xrRender/dxUIRender.*"
+    "../../Layers/xrRender/dxUISequenceVideoItem.*"
+    "../../Layers/xrRender/dxUIShader.*"
+    "../../Layers/xrRender/dxWallMarkArray.*"
+    "../../Layers/xrRender/ETextureParams.*"
+    "../../Layers/xrRender/FBasicVisual.*"
+    "../../Layers/xrRender/FHierrarhyVisual.*"
+    "../../Layers/xrRender/FProgressive.*"
+    "../../Layers/xrRender/FSkinned.*"
+    "../../Layers/xrRender/FVisual.*"
+    "../../Layers/xrRenderDX10/dx11HW.*"
+    "../../Layers/xrRenderDX10/dx11HWCaps.*"
+    "../../Layers/xrRender/ModelPool.*"
+    "../../Layers/xrRender/ParticleEffect.*"
+    "../../Layers/xrRender/ParticleEffectDef.*"
+    "../../Layers/xrRender/ParticleGroup.*"
+    "../../Layers/xrRender/PSLibrary.*"
+    "../../Layers/xrRender/ResourceManager.*"
+    "../../Layers/xrRender/ResourceManager_Loader.*"
+    "../../Layers/xrRender/ResourceManager_Reset.*"
+    "../../Layers/xrRenderDX10/dx10ResourceManager_Resources.*"
+    "../../Layers/xrRenderDX10/dx10ResourceManager_Scripting.*"
+    "../../Layers/xrRender/R_Backend.*"
+    "../../Layers/xrRender/R_Backend_DBG.*"
+    "../../Layers/xrRender/R_Backend_hemi.*"
+    "../../Layers/xrRender/R_Backend_Runtime.*"
+    "../../Layers/xrRender/R_Backend_tree.*"
+    "../../Layers/xrRender/R_Backend_xform.*"
+    "../../Layers/xrRender/r_constants.*"
+    "../../Layers/xrRender/R_DStreams.*"
+    "../../Layers/xrRender/Shader.*"
+    "../../Layers/xrRender/SH_Atomic.*"
+    "../../Layers/xrRender/SH_Constant.*"
+    "../../Layers/xrRender/SH_Matrix.*"
+    "../../Layers/xrRenderDX10/dx11SH_RT.*"
+    "../../Layers/xrRenderDX10/dx11SH_Texture.*"
+    "../../Layers/xrRender/SkeletonAnimated.*"
+    "../../Layers/xrRender/SkeletonCustom.*"
+    "../../Layers/xrRender/SkeletonRigid.*"
+    "../../Layers/xrRender/SkeletonX.*"
+    "../../Layers/xrRender/stats_manager.*"
+    "../../Layers/xrRenderDX10/dx11Texture.*"
+    "../../Layers/xrRender/TextureDescrManager.*"
+    "../../Layers/xrRender/tga.*"
+    "../../Layers/xrRender/tss_def.*"
+    "../../Layers/xrRender/xrRender_console.*"
+    "../../Layers/xrRenderPC_R1/Blender_Blur.*"
+    "../../Layers/xrRenderPC_R1/BlenderDefault.*"
+    "../../Layers/xrRenderPC_R1/Blender_default_aref.*"
+    "../../Layers/xrRenderPC_R1/Blender_LaEmB.*"
+    "../../Layers/xrRenderPC_R1/Blender_Model.*"
+    "../../Layers/xrRenderPC_R1/Blender_Screen_GRAY.*"
+    "../../Layers/xrRenderPC_R1/Blender_Shadow_World.*"
+    "../../Layers/xrRenderPC_R1/Blender_Vertex_aref.*"
+    "../../Layers/xrRenderPC_R1/Blender_Vertex.*"
 )
 
 file(GLOB_RECURSE ECORE_SOURCE_EXT_FILES CONFIGURE_DEPENDS
@@ -172,6 +171,7 @@ target_compile_definitions(xrECore PRIVATE _WINDOWS)
 target_compile_definitions(xrECore PRIVATE _USRDLL)
 target_compile_definitions(xrECore PUBLIC XR_EDITOR_NEW)
 target_compile_definitions(xrECore PUBLIC _EDITOR)
+target_compile_definitions(xrECore PUBLIC USE_DX11)
 
 target_compile_options(xrECore PRIVATE /W0)
 target_compile_definitions(xrECore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
@@ -188,20 +188,14 @@ target_link_libraries(xrECore PUBLIC xrPhysics)
 target_link_libraries(xrECore PUBLIC xrDXT)
 target_link_libraries(xrECore PUBLIC MagicFM)
 target_link_libraries(xrECore PUBLIC NvMender2003)
-target_link_libraries(xrECore PUBLIC "d3d9.lib")
+target_link_libraries(xrECore PUBLIC "d3d11.lib")
 target_link_libraries(xrECore PUBLIC "d3dcompiler.lib")
 
 target_validate_pch(xrECore ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 ## DirectX SDK
-if(NOT "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
-	target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x86/d3dx9.lib)
-else()
-	target_link_libraries(xrECore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/release/lib/x64/d3dx9.lib)
-endif()
-
-## DirectX SDK
+target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
 target_include_directories(xrECore PUBLIC "${CMAKE_BINARY_DIR}/packages/Microsoft.DXSDK.D3DX.9.29.952.8/build/native/include/")
