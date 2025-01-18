@@ -60,6 +60,14 @@ CRenderTarget::CRenderTarget() {
 		accum_spot_geom_create();
 		g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
 	}
+
+	CasterCallback = [](ID3D11Texture2D* Tex)
+	{
+		static CTexture CTex;
+		CTex.surface_set(Tex);
+
+		return CTex.get_SRView();
+	};
 };
 
 CRenderTarget::~CRenderTarget() {
@@ -755,6 +763,44 @@ static HRESULT create_shader(
 		else
 		{
 			Msg("! PS: %s", file_name);
+			Msg("! D3DReflectShader hr == 0x%08x", _result);
+		}
+	}
+	else if (pTarget[0] == 'v') {
+		SVS* svs_result = (SVS*)result;
+		_result = RDevice->CreateVertexShader(buffer, buffer_size, 0, &svs_result->vs);
+
+		if (!SUCCEEDED(_result)) {
+			Msg("! VS: %s", file_name);
+			Msg("! CreatePixelShader hr == 0x%08x", _result);
+			return		E_FAIL;
+		}
+
+		ID3DShaderReflection* pReflection = 0;
+		_result = D3DReflect(buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
+
+		//	Parse constant, texture, sampler binding
+		//	Store input signature blob
+		if (SUCCEEDED(_result) && pReflection) {
+			//	TODO: DX10: share the same input signatures
+
+			//	Store input signature (need only for VS)
+			//CHK_DX( D3DxxGetInputSignatureBlob(pShaderBuf->GetBufferPointer(), pShaderBuf->GetBufferSize(), &_vs->signature) );
+			ID3DBlob* pSignatureBlob;
+			CHK_DX(D3DGetInputSignatureBlob(buffer, buffer_size, &pSignatureBlob));
+			VERIFY(pSignatureBlob);
+
+			svs_result->signature = DEV->_CreateInputSignature(pSignatureBlob);
+
+			_RELEASE(pSignatureBlob);
+
+			//	Let constant table parse it's data
+			svs_result->constants.parse(pReflection, RC_dest_vertex);
+
+			_RELEASE(pReflection);
+		}
+		else {
+			Msg("! VS: %s", file_name);
 			Msg("! D3DXFindShaderComment hr == 0x%08x", _result);
 		}
 	}
@@ -889,6 +935,8 @@ HRESULT	CRender::shader_compile(
 		xr_strcat(file, sh_name);
 		FS.update_path(file_name, "$app_data_root$", file);
 	}
+	
+	Flags |= D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;
 
 	u32 const RealCodeCRC = crc32(pSrcData, SrcDataLen);
 	if (FS.exist(file_name) && ps_r__common_flags.test(RFLAG_USE_CACHE)) {

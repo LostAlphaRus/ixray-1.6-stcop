@@ -181,13 +181,19 @@ inline HRESULT DX11CreateTexture(UINT Width, UINT Height, UINT Levels, DWORD Usa
 	desc.Height = Height;
 	desc.MipLevels = Levels;
 	desc.Format = (DXGI_FORMAT)Format;
-	desc.Usage = (D3D11_USAGE)Usage;
-	desc.CPUAccessFlags = (Usage & D3D11_USAGE_DYNAMIC) ? D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ : 0;
+	//desc.Usage = (D3D11_USAGE)Usage;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.ArraySize = 1;
+	desc.Usage = D3D_USAGE_DYNAMIC;
+	desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = D3D_CPU_ACCESS_WRITE;
 	return RDevice->CreateTexture2D(&desc, NULL, ppTexture);
 }
 
+template<class T>
 inline HRESULT DX11LockRect(
-	ID3D11Texture2D*		pTexture,
+	T*		pTexture,
 	UINT					Level,
 	D3DLOCKED_RECT*			pLockedRect,
 	const RECT*				pRect,
@@ -195,7 +201,7 @@ inline HRESULT DX11LockRect(
 )
 {
 	D3D11_MAPPED_SUBRESOURCE sb;
-	HRESULT hr = RContext->Map(pTexture, Level, D3D11_MAP_READ_WRITE, 0, &sb);
+	HRESULT hr = RContext->Map(pTexture, Level, D3D11_MAP_WRITE_DISCARD, 0, &sb);
 
 	R_ASSERT(pLockedRect);
 	pLockedRect->pBits = sb.pData;
@@ -204,8 +210,9 @@ inline HRESULT DX11LockRect(
 	return hr;
 }
 
+template<class T>
 inline HRESULT DX11UnlockRect(
-	ID3D11Texture2D* pTexture,
+	T* pTexture,
 	UINT Level
 )
 {
@@ -222,7 +229,7 @@ inline HRESULT DX11Lock(
 )
 {
 	D3D11_MAPPED_SUBRESOURCE sb;
-	HRESULT hr = RContext->Map(pResource, 0, D3D11_MAP_READ_WRITE, 0, &sb);
+	HRESULT hr = RContext->Map(pResource, 0, D3D11_MAP_WRITE_DISCARD, 0, &sb);
 
 	R_ASSERT(ppbData);
 	*ppbData = sb.pData;
