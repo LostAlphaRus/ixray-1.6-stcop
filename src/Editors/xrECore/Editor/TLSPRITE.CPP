@@ -13,6 +13,8 @@ CTLSprite::CTLSprite	( )
 	mesh.setcolor	(0xFFFFFFFF);
 	mesh.setdepth	( );
 	mesh.settex		(0,0,1,1);
+
+	shader.create("sprite");
 }
 
 CTLSprite::~CTLSprite( )
@@ -21,22 +23,30 @@ CTLSprite::~CTLSprite( )
 
 void CTLSprite::Render(Fvector &pos, float radius, bool bFixedSize, u32 clr)
 {
-	FVF::TL			P;
-    float 			cx,cy,sz;
+	FVF::LIT pv[6];
+	const Fvector& T = EDevice->vCameraTop;
+	const Fvector& R = EDevice->vCameraRight;
 
-	P.transform		( pos, EDevice->mFullTransform );
-    cx				= EDevice->_x2real(P.p.x);
-    cy				= EDevice->_y2real(P.p.y);
-    if (bFixedSize) sz = EDevice->_x2real(radius)-EDevice->_x2real(0);
-    else			sz = UI->GetRenderWidth()*radius/P.p.w;
-    mesh.m[0].p.x = cx-sz;	mesh.m[0].p.y = cy+sz;
-    mesh.m[1].p.x = cx-sz;	mesh.m[1].p.y = cy-sz;
-    mesh.m[3].p.x = cx+sz;	mesh.m[3].p.y = cy-sz;
-    mesh.m[2].p.x = cx+sz;	mesh.m[2].p.y = cy+sz;
-    mesh.setdepth	( P.p.z, P.p.w );
-    mesh.setcolor	( clr );
+	Fvector Vr, Vt;
 
-    DU_impl.DrawPrimitiveTL(D3DPT_TRIANGLESTRIP,2,(FVF::TL*)&mesh,4,false,false);
+	Vr.mul(R, radius);
+	Vt.mul(T, radius);
+
+	Fvector a, b, c, d;
+	a.sub(Vt, Vr);
+	b.add(Vt, Vr);
+
+	c.invert(a);
+	d.invert(b);
+
+	pv[0].set(d.x + pos.x, d.y + pos.y, d.z + pos.z, clr, 0.f, 1.f);
+	pv[1].set(a.x + pos.x, a.y + pos.y, a.z + pos.z, clr, 0.f, 0.f);
+	pv[2].set(c.x + pos.x, c.y + pos.y, c.z + pos.z, clr, 1.f, 1.f);
+	pv[3].set(a.x + pos.x, a.y + pos.y, a.z + pos.z, clr, 0.f, 0.f);
+	pv[4].set(b.x + pos.x, b.y + pos.y, b.z + pos.z, clr, 1.f, 0.f);
+	pv[5].set(c.x + pos.x, c.y + pos.y, c.z + pos.z, clr, 1.f, 1.f);
+
+	DU_impl.DrawPrimitiveLIT(D3DPT_TRIANGLELIST, 2, pv, 6, false, false);
 }
 
 void CTLSprite::Render(Fvector &pos, u32 color, float radius, float angle)
@@ -63,6 +73,8 @@ void CTLSprite::Render(Fvector &pos, u32 color, float radius, float angle)
 
 	mesh.setdepth	(P.p.z, P.p.w);
 	mesh.setcolor	(color);
+
+	EDevice->SetShader(shader);
 
     DU_impl.DrawPrimitiveTL(D3DPT_TRIANGLESTRIP,2,(FVF::TL*)&mesh,4,false,false);
 }
@@ -92,6 +104,8 @@ void CTLSprite::Render( Fvector &pos, u32 color, float radius, const Fvector& D 
 	mesh.m[3].p.x 	= EDevice->_x2real(s2.p.x-l2*R.x);	mesh.m[3].p.y = EDevice->_y2real(s2.p.y-l2*R.y); mesh.m[3].p.z = s2.p.z; mesh.m[3].p.w = s2.p.w;
 
 	mesh.setcolor	(color);
+	
+	EDevice->SetShader(shader);
 
     DU_impl.DrawPrimitiveTL(D3DPT_TRIANGLESTRIP,2,(FVF::TL*)&mesh,4,false,false);
 /*

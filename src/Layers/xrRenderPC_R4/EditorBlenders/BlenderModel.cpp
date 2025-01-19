@@ -72,7 +72,16 @@ void CBlender_Model::Compile(CBlender_Compile& C)
 		RImplementation.addShaderOption("FORWARD_ONLY", "1");
 	}
 
-	uber_deffer(C, true, "deffer_model", "deffer_base", !is_blend && !!oBlend.value, 0, true);
+	shared_str vs_shader = "deffer_model";
+
+#ifdef _EDITOR
+	if (Engine.External.GetSkinningMode() < 0)
+	{
+		// FX: Hack для Shader Editor
+		vs_shader = "deffer_base";
+	}
+#endif
+	uber_deffer(C, true, *vs_shader, "deffer_base", !is_blend && !!oBlend.value, 0, true);
 
 	if (is_blend) {
 		C.PassSET_ZB(TRUE, FALSE);

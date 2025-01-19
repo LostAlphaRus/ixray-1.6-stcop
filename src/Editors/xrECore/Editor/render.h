@@ -68,10 +68,13 @@ public:
 		m_Texgen.mul(m_TexelAdjust, RCache.xforms.m_wvp);
 	}
 
-	void reset_light_marker(bool bResetStencil = false) {
+	void reset_light_marker(bool bResetStencil = false)
+	{
 		dwLightMarkerID = 5;
 
-		if(bResetStencil) {
+		if(bResetStencil)
+		{
+			xrCriticalSectionGuard guard(EDevice->Dx11Guard);
 			RContext->ClearDepthStencilView( RDepth, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0 );
 		}
 	}
@@ -220,7 +223,7 @@ public:
 		R_constant* C = &*RCache.get_c("s_base"); // get sampler
 		if(0 == C)			return;
 		VERIFY(RC_dest_sampler == C->destination);
-		VERIFY(RC_sampler == C->type);
+		//VERIFY(RC_sampler == C->type);
 		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));
 		VERIFY(T);
 		float	mtl = T->m_material;

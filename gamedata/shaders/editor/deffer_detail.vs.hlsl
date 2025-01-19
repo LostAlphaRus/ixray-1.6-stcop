@@ -1,11 +1,17 @@
 #include "common.hlsli"
 
-uniform float4 consts;
+cbuffer DetailConstants
+{
+    float4 consts;
 
-uniform float4 wave;
-uniform float4 dir2D;
+    float4 wave;
+    float4 wave_old;
 
-uniform float2x4 array[50];
+    float4 dir2D;
+    float4 dir2D_old;
+
+    float2x4 array[61];
+};
 
 float3x3 setMatrix (float3 hpb)
 {
@@ -32,6 +38,10 @@ void main(in v_detail I, out p_bumped_new O)
 	float3 posi = float3(mm[1].xyz);
 	
 	float scale = mm[0].w;
+
+	float hemi = abs(mm[1].w);
+	float sun = sign(mm[1].w)*0.25f+0.25f;
+
     float4 m0 = float4(mmhpb[0]*scale, posi.x);
     float4 m1 = float4(mmhpb[1]*scale, posi.y);
     float4 m2 = float4(mmhpb[2]*scale, posi.z);
@@ -50,14 +60,14 @@ void main(in v_detail I, out p_bumped_new O)
     N.y = pos.y - m1.w + 0.75f;
     N.z = pos.z - m2.w;
 
-    O.tcdh = float4(tc.xy, 0.7, 0.5);
+    O.tcdh = float4(tc.xy, hemi, sun);
     O.position = float4(Pe, 1.0f);
 
-    N = normalize(mul(m_WV, N));
+    N.xyz = mul((float3x3)m_WV, N.xyz);
 
-    O.M1 = N;
-    O.M2 = N;
-    O.M3 = N;
+    O.M1 = N.xxx;
+    O.M2 = N.yyy;
+    O.M3 = N.zzz;
 
     O.hpos = mul(m_WVP, pos);
-}
+};

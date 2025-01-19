@@ -61,6 +61,7 @@ public:
 class	ECORE_API CTLSprite
 {
 	FTLpolygon		mesh = {};
+	ref_shader		shader;
 public:
 					CTLSprite	( );
 	virtual			~CTLSprite	( );

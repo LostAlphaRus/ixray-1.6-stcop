@@ -30,15 +30,9 @@ const u32 boxcolor = D3DCOLOR_RGBA(255,255,255,0);
 static const int boxvertcount = 48;
 static Fvector boxvert[boxvertcount];
 
-#if 1
-#	define DU_DRAW_RS	EDevice->SetRS
-#	define DU_DRAW_SH_C(a,c){EDevice->SetShader(a);EDevice->SetRS(D3DRS_TEXTUREFACTOR,c);}
-#	define DU_DRAW_SH(a){EDevice->SetShader(a);EDevice->SetRS(D3DRS_TEXTUREFACTOR,0xFFFFFFFF);}
-#else
-#	define DU_DRAW_RS	RCache.dbg_SetRS
-#	define DU_DRAW_SH_C(sh,c){RCache.set_Shader(sh);	RCache.set_c	("tfactor",float(color_get_R(c))/255.f,float(color_get_G(c))/255.f,float(color_get_B(c))/255.f,float(color_get_A(c))/255.f);}
-#	define DU_DRAW_SH(sh){RCache.set_Shader(sh);		RCache.set_c	("tfactor",1,1,1,1);}
-#endif
+#define DU_DRAW_RS	EDevice->SetRS
+#define DU_DRAW_SH_C(sh,c){EDevice->SetShader(sh);	RCache.set_c	("tfactor",float(color_get_R(c))/255.f,float(color_get_G(c))/255.f,float(color_get_B(c))/255.f,float(color_get_A(c))/255.f);}
+#define DU_DRAW_SH(sh){ EDevice->SetShader(sh);		RCache.set_c	("tfactor",1,1,1,1);}
 
 #if 1
 #	define FILL_MODE EDevice->dwFillMode
@@ -379,17 +373,32 @@ void CDrawUtilities::DrawEntity(u32 clr, ref_shader s)
 
     if (s) DU_DRAW_SH(s);
     {
-        // fill VB
-        FVF::LIT*	pv	 = (FVF::LIT*)Stream->Lock(6,vs_LIT->vb_stride,vBase);
-        pv->set		(0.f,1.f,0.f,clr,0.f,0.f);	pv++;
-        pv->set		(0.f,1.f,.5f,clr,1.f,0.f);	pv++;
-        pv->set		(0.f,.5f,.5f,clr,1.f,1.f);	pv++;
-        pv->set		(0.f,.5f,0.f,clr,0.f,1.f);	pv++;
-        pv->set		(0.f,.5f,.5f,clr,1.f,1.f);	pv++;
-        pv->set		(0.f,1.f,.5f,clr,1.f,0.f);	pv++;
-        Stream->Unlock	(6,vs_LIT->vb_stride);
-        // and Render it as line list
-        DU_DRAW_DP		(D3DPT_TRIANGLEFAN,vs_LIT,vBase,4);
+        FVF::LIT* pv = (FVF::LIT*)Stream->Lock(12, vs_LIT->vb_stride, vBase);
+
+        // TRIANGLE 1 (front)
+        pv[0].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+        pv[1].set(0.f, 1.f, .5f, clr, 1.f, 0.f); // v1
+        pv[2].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+
+        // TRIANGLE 2 (front)
+        pv[3].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+        pv[4].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[5].set(0.f, .5f, 0.f, clr, 0.f, 1.f); // v3
+
+        // TRIANGLE 1 (back, reversed winding)
+        pv[6].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[7].set(0.f, 1.f, .5f, clr, 1.f, 0.f); // v1
+        pv[8].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+
+        // TRIANGLE 2 (back, reversed winding)
+        pv[9].set(0.f, .5f, 0.f, clr, 0.f, 1.f); // v3
+        pv[10].set(0.f, .5f, .5f, clr, 1.f, 1.f); // v2
+        pv[11].set(0.f, 1.f, 0.f, clr, 0.f, 0.f); // v0
+
+        Stream->Unlock(12, vs_LIT->vb_stride);
+
+        // теперь рендерим 4 треугольника (12 вершин)
+        DU_DRAW_DP(D3DPT_TRIANGLELIST, vs_LIT, vBase, 4);
     }
 }
 

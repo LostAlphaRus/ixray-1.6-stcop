@@ -2,6 +2,7 @@
 
 
 #include "Blender_Screen_SET.h"
+#include "..\Layers\xrRender\uber_deffer.h"
 
 #define		VER_2_oBlendCount	7
 #define		VER_4_oBlendCount	9
@@ -133,7 +134,12 @@ void	CBlender_Screen_SET::Compile	(CBlender_Compile& C)
 			else 
 			{
 				// 1x R
-				C.r_Pass			("stub_notransform_t", "stub_default", false);
+#ifdef _EDITOR
+				if (EDevice->RenderState == EEditorRenderState::eModel)
+					uber_deffer(C, true, "deffer_base", "deffer_base", false, 0, true);
+				else
+#endif
+				C.r_Pass			("stub_default", "stub_default", false);
 				//C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
 				//C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
 			}

@@ -47,6 +47,10 @@ dx10State* dx10State::Create(SimulatorStates& state_code)
 
 HRESULT dx10State::Apply()
 {
+#ifdef _EDITOR
+	xrCriticalSectionGuard guard(EDevice->Dx11Guard);
+#endif
+
 	VERIFY(m_pRasterizerState);
 	StateManager.SetRasterizerState(m_pRasterizerState);
 	VERIFY(m_pDepthStencilState);
@@ -63,16 +67,6 @@ HRESULT dx10State::Apply()
 	SSManager.HSApplySamplers(m_HSSamplers);
 	SSManager.DSApplySamplers(m_DSSamplers);
 	SSManager.CSApplySamplers(m_CSSamplers);
-
-//	static const FLOAT BlendFactor[4] = {0.000f, 0.000f, 0.000f, 0.000f};
-//	static const UINT SampleMask = 0xffffffff;
-
-//	VERIFY(m_pRasterizerState);
-//	RDevice->RSSetState(m_pRasterizerState);
-//	VERIFY(m_pDepthStencilState);
-//	RDevice->OMSetDepthStencilState(m_pDepthStencilState, m_uiStencilRef);
-//	VERIFY(m_pBlendState);
-//	RDevice->OMSetBlendState(m_pBlendState, BlendFactor, SampleMask);
 
 	return S_OK;
 }

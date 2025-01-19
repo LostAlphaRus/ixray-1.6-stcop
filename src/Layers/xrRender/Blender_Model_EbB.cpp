@@ -195,13 +195,22 @@ void CBlender_Model_EbB::Compile( CBlender_Compile& C )
 {
 	IBlender::Compile(C);
 
+	shared_str vs_shader = "deffer_model";
+
+#ifdef _EDITOR
+	if (Engine.External.GetSkinningMode() < 0)
+	{
+		vs_shader = "deffer_base";
+	}
+#endif
+
 	if (oBlend.value)	
 	{
 		switch(C.iElement) 
 		{
 		case SE_R2_NORMAL_HQ:
 		case SE_R2_NORMAL_LQ:
-			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, "deffer_model", "forward_base", true, 0, true);
+			uber_deffer(C, SE_R2_NORMAL_HQ == C.iElement, *vs_shader, "forward_base", true, 0, true);
 
 			C.PassSET_ZB(TRUE, FALSE);
 			C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, true, 0);
@@ -225,13 +234,13 @@ void CBlender_Model_EbB::Compile( CBlender_Compile& C )
 		switch(C.iElement) 
 		{
 		case SE_R2_NORMAL_HQ: 	// deffer
-			uber_deffer(C, true, "deffer_model", "deffer_base", false, 0, true);
+			uber_deffer(C, true, *vs_shader, "deffer_base", false, 0, true);
 			C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			C.r_StencilRef(0x01);
 			C.r_End();
 			break;
 		case SE_R2_NORMAL_LQ: 	// deffer
-			uber_deffer(C, false, "deffer_model", "deffer_base", false, 0, true);
+			uber_deffer(C, false, *vs_shader, "deffer_base", false, 0, true);
 			C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
 			C.r_StencilRef(0x01);
 			C.r_End();

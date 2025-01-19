@@ -176,6 +176,7 @@ inline u32 TColor(u32 r)
 
 inline HRESULT DX11CreateTexture(UINT Width, UINT Height, UINT Levels, DWORD Usage, DxgiFormat Format, UINT Pool, ID3D11Texture2D** ppTexture, HANDLE* pSharedHandle)
 {
+	xrCriticalSectionGuard guard(EDevice->Dx11Guard);
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = Width;
 	desc.Height = Height;
@@ -200,6 +201,7 @@ inline HRESULT DX11LockRect(
 	DWORD					Flags
 )
 {
+	xrCriticalSectionGuard guard(EDevice->Dx11Guard);
 	D3D11_MAPPED_SUBRESOURCE sb;
 	HRESULT hr = RContext->Map(pTexture, Level, D3D11_MAP_WRITE_DISCARD, 0, &sb);
 
@@ -216,6 +218,7 @@ inline HRESULT DX11UnlockRect(
 	UINT Level
 )
 {
+	xrCriticalSectionGuard guard(EDevice->Dx11Guard);
 	RContext->Unmap(pTexture, Level);
 	return S_OK;
 }
@@ -228,6 +231,7 @@ inline HRESULT DX11Lock(
 	DWORD Flags
 )
 {
+	xrCriticalSectionGuard guard(EDevice->Dx11Guard);
 	D3D11_MAPPED_SUBRESOURCE sb;
 	HRESULT hr = RContext->Map(pResource, 0, D3D11_MAP_WRITE_DISCARD, 0, &sb);
 
@@ -238,6 +242,7 @@ inline HRESULT DX11Lock(
 
 inline HRESULT DX11Unlock(ID3D11Resource* pResource)
 {
+	xrCriticalSectionGuard guard(EDevice->Dx11Guard);
 	RContext->Unmap(pResource, 0);
 	return S_OK;
 }

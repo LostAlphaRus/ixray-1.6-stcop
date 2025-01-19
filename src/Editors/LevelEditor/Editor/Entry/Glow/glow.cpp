@@ -33,7 +33,8 @@ void CGlow::OnDeviceCreate()
 {
 	if (m_bDefLoad) return;
 	// создать заново shaders
-	if (m_TexName.size()&&m_ShaderName.size()) m_GShader.create(*m_ShaderName,*m_TexName);
+	if (m_TexName.size()&&m_ShaderName.size()) 
+        m_GShader.create(*m_ShaderName,*m_TexName);
 	m_bDefLoad = true;
 }
 
