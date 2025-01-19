@@ -35,7 +35,7 @@ void UIDOShuffle::Draw()
 	{
 		ImVec2 StartPos = ImGui::GetCursorPos();
 
-		ImGui::Image(m_MaskTexture._get() ? m_MaskTexture->pSurface : m_TextureNull->pSurface, ImVec2(256, 256));
+		ImGui::Image(m_MaskTexture._get() ? m_MaskTexture->get_SRView() : m_TextureNull->get_SRView(), ImVec2(256, 256));
 		if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 		{
 			ImVec2 ClickPos = ImGui::GetMousePos();
@@ -78,7 +78,7 @@ void UIDOShuffle::Draw()
 
 			m_RealTexture = m_Texture;
 		}
-		ImGui::Image(m_RealTexture ? m_RealTexture :m_TextureNull->pSurface, ImVec2(256, 256));
+		ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView() :m_TextureNull->get_SRView(), ImVec2(256, 256));
 
 		{
 			if (ImGui::Button("+", ImVec2(0, ImGui::GetFrameHeight()))) { UIChooseForm::SelectItem(smObject, 8); m_ChooseObject = true; }; ImGui::SameLine();
@@ -267,14 +267,14 @@ void UIDOShuffle::FillData()
 		{
 			m_MaskTexture = new CTexture();
 			ID3DTexture2D* pTexture = nullptr;
-			R_CHK(REDevice->CreateTexture(256, 256, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pTexture, 0));
+			R_CHK(DX11CreateTexture(256, 256, 1, 0, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 0, &pTexture, 0));
 			{
 				D3DLOCKED_RECT rect;
-				R_CHK(pTexture->LockRect(0, &rect, 0, D3DLOCK_DISCARD));
+				R_CHK(DX11LockRect(pTexture, 0, &rect, 0, D3DLOCK_DISCARD));
 				memcpy(rect.pBits, Pixels.data(), Pixels.size());
-				R_CHK(pTexture->UnlockRect(0));
+				R_CHK(DX11UnlockRect(pTexture, 0));
 
-				m_MaskTexture->pSurface = pTexture;
+				m_MaskTexture->surface_set(pTexture);
 			}
 		}
 	}
@@ -326,7 +326,11 @@ void UIDOShuffle::OnItemFocused(const char* name)
 	}
 	
 	if (m_Thm)
-		m_Thm->Update((ID3DBaseTexture*&)m_Texture);
+	{
+		ID3D11Texture2D* pTex = nullptr;
+		m_Thm->Update(pTex);
+		m_Texture->surface_set(pTex);
+	}
 
 	xr_delete(m_Thm);
 

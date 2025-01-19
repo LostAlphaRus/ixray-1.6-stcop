@@ -42,7 +42,9 @@ void UIEditLibrary::OnItemFocused(ListItem* item)
 
 		if (m_Thm && m_Thm->_FaceCount() != 0 && m_Thm->_VertexCount() != 0)
 		{
-			m_Thm->Update((ID3DBaseTexture*&)m_RealTexture);
+			ID3D11Texture2D* tex = nullptr;
+			m_Thm->Update(tex);
+			m_RealTexture->surface_set(tex);
 			m_Thm->FillInfo(Info);
 			m_Props->AssignItems(Info);
 		}
@@ -316,7 +318,7 @@ void UIEditLibrary::DrawRightBar()
 {
 	if (ImGui::BeginChild("Right", ImVec2(0, 0)))
 	{
-		ImGui::Image(m_RealTexture ? m_RealTexture : EDevice->texture_null->pSurface, ImVec2(200, 200));
+		ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView() : EDevice->texture_null->get_SRView(), ImVec2(200, 200));
 
 		m_Props->Draw();
 

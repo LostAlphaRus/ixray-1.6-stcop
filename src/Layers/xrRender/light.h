@@ -2,8 +2,7 @@
 #define LAYERS_XRRENDER_LIGHT_H_INCLUDED
 
 #include "../../xrCore/Collision/ISpatial.h"
-//#include "../../xrEngine/xr_object.h"
-#if (RENDER==R_R2) || (RENDER==R_R4)
+#if RENDER!=R_R1 && !defined(_EDITOR)
 #	include "light_package.h"
 #	include "light_smapvis.h"
 #endif //(RENDER==R_R2) || (RENDER==R_R4)

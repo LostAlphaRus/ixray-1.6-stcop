@@ -313,7 +313,7 @@ void UIObjectTool::DrawObjectsList()
 		{
 			//if (ImGui::BeginChild("Props"))
 			{
-				ImGui::Image(m_RealTexture ? m_RealTexture : (m_TextureNull->pSurface), ImVec2(128, 128));
+				ImGui::Image(m_RealTexture ? m_RealTexture->get_SRView() : (m_TextureNull->get_SRView()), ImVec2(128, 128));
 				ImGui::SameLine();
 				m_Props->Draw();
 				ImGui::Separator();
@@ -443,7 +443,9 @@ void UIObjectTool::OnItemFocused(ListItem* item)
 		auto * m_Thm = ImageLib.CreateThumbnail(m_Current, EImageThumbnail::ETObject);
 		if (m_Thm)
 		{
-			m_Thm->Update((ID3DBaseTexture*&)m_RealTexture);
+			ID3D11Texture2D* tex = nullptr;
+			m_Thm->Update(tex);
+			m_RealTexture->surface_set(tex);
 			PropItemVec Info;
 			m_Thm->FillInfo(Info);
 			m_Props->AssignItems(Info);

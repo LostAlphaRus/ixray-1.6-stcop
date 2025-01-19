@@ -77,8 +77,13 @@ void CDetailManager::hw_Render(light*L)
 	float scale = 1.f / float(quant);
 	Fvector4 wave, wave_old, consts;
 
+#ifndef _EDITOR 
 	auto LodHQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? SE_R2_NORMAL_HQ : SE_R2_DETAIL_SHADOW_HQ;
 	auto LodLQ = RImplementation.phase == RImplementation.PHASE_NORMAL ? SE_R2_NORMAL_LQ : SE_R2_DETAIL_SHADOW_LQ;
+#else
+	auto LodHQ = SE_R2_NORMAL_HQ;
+	auto LodLQ = SE_R2_NORMAL_LQ;
+#endif
 
 	// Wave0
 	{
@@ -111,8 +116,10 @@ void CDetailManager::hw_Render(light*L)
 
 void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, const Fvector4& wave_old, const Fvector4& wind_old, u32 var_id, u32 lod_id, light* L)
 {
+#ifndef _EDITOR 
     if (RImplementation.phase == CRender::PHASE_SMAP && var_id == 0)
         return;
+#endif
 
 	//Render state, shaders & so on [only 1st pass]
 	RCache.set_Element(objects[0].shader->E[lod_id], 0);
