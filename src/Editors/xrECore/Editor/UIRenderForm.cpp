@@ -129,7 +129,8 @@ void UIRenderForm::DrawVP()
 
 	if ((UI->IsPlayInEditor() && ViewportID == 0) || UI->ViewID == ViewportID)
 	{
-		RDevice->StretchRect(UI->RT->pRT, 0, UI->Views[ViewportID].RTFreez->pRT, 0, D3DTEXF_NONE);
+		RContext->CopyResource(UI->Views[ViewportID].RTFreez->pSurface, UI->RT->pSurface);
+	//	RDevice->StretchRect(UI->RT->pRT, 0, UI->Views[ViewportID].RTFreez->pRT, 0, D3DTEXF_NONE);
 	}
 
 	m_render_pos.right = ImGui::GetWindowSize().x;
