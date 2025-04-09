@@ -13,16 +13,16 @@
 
 uniform float4x4 m_shadow;
 
-uniform Texture2D s_position;
-uniform Texture2D s_normal;
+Texture2D s_position;
+Texture2D s_normal;
 
 uniform float4 Ldynamic_color;
 uniform float4 Ldynamic_pos;
 uniform float4 Ldynamic_dir;
 
-float4 main( float4 hpos : POSITION, float4 tc : TEXCOORD0) : COLOR
+float4 main( float4 hpos : SV_Position, float4 tc : TEXCOORD0) : SV_Target
 {
-	float2 tcproj = tc.xy / hpos.w;
+	float2 tcproj = tc.xy / tc.w;
     float4 _P = s_position.Sample(smp_base, tcproj);
 
 	if(_P.z < 0.001f)
@@ -42,7 +42,7 @@ float4 main( float4 hpos : POSITION, float4 tc : TEXCOORD0) : COLOR
 	
 #ifdef USE_LMAP
     //light *= tex2Dlod(s_lmap, float4(PS.xy / PS.w, 0.0f, 0.0f));
-	light *= s_lmap.Load( int3(0,0,0) ).x;
+	light *= s_lmap.Load( int3(0,0,0) ).x; //LV: Wat?
 #endif
 
 	float4 color = Ldynamic_color * light;

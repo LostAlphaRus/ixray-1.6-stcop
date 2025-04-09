@@ -3,11 +3,17 @@
 #include "lmodel.hlsli"
 #include "hmodel.hlsli"
 
+uniform float4 tfactor;
 void main(p_bumped_new I, out f_editor_gbuffer O)
 {
 	if(is_lighting_enable.x < 0.5f) 
     {
 		O.Color = s_base.Sample(smp_base, I.tcdh.xy);
+
+        if (tfactor.w < 1)
+        {
+            O.Color.xyz = lerp(O.Color.xyz, tfactor.xyz, tfactor.w);
+        }
 		
 #ifdef USE_AREF
     clip(O.Color.w - def_aref);

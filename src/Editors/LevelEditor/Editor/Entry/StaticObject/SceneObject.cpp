@@ -98,40 +98,43 @@ void CSceneObject::Render(int priority, bool strictB2F)
 #ifdef _LEVEL_EDITOR    
     Scene->SelectLightsForObject(this);
 #endif
-	m_pReference->Render(_Transform(), priority, strictB2F, &m_Surfaces);
-    if (Selected()){
-    	if (1==priority){
-            if (false==strictB2F){
-                EDevice->SetShader(EDevice->m_WireShader);
-                RCache.set_xform_world(_Transform());
-                u32 clr = Locked()?0xFFFF0000:0xFFFFFFFF;
-                DU_impl.DrawSelectionBoxB(m_pReference->GetBox(),&clr);
-            }else{
-                RenderBlink	();
+    if (Selected())
+    {
+        if (m_iBlinkTime > 0) 
+        {
+            if (m_iBlinkTime > (int)EDevice->dwTimeGlobal)
+            {
+                int alpha = iFloor(sqrtf(float(m_iBlinkTime - EDevice->dwTimeGlobal) / BLINK_TIME) * 64);
+                EDevice->SetRS(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(alpha, 255, 255, 255));
+                UI->RedrawScene();
+            }
+            else {
+                m_iBlinkTime = 0;
+                m_BlinkSurf = 0;
             }
         }
     }
-}
 
-void CSceneObject::RenderBlink()
-{
-    if (m_iBlinkTime>0){
-        if (m_iBlinkTime>(int)EDevice->dwTimeGlobal){
-        	int alpha = iFloor(sqrtf(float(m_iBlinkTime-EDevice->dwTimeGlobal)/BLINK_TIME)*64);
-			m_pReference->RenderSelection(_Transform(),0, m_BlinkSurf, D3DCOLOR_ARGB(alpha,255,255,255));
-            UI->RedrawScene	();
-        }else{
-            m_iBlinkTime 	= 0;
-            m_BlinkSurf		= 0;
+	m_pReference->Render(_Transform(), priority, strictB2F, &m_Surfaces);
+    if (Selected())
+    {
+    	if (1==priority && !strictB2F)
+        {
+            EDevice->SetShader(EDevice->m_WireShader);
+            RCache.set_xform_world(_Transform());
+            u32 clr = Locked() ? 0xFFFF0000 : 0xFFFFFFFF;
+            DU_impl.DrawSelectionBoxB(m_pReference->GetBox(), &clr);
         }
     }
+
+    EDevice->SetRS(D3DRS_TEXTUREFACTOR, D3DCOLOR_ARGB(255, 255, 255, 255));
 }
 
 void CSceneObject::RenderSingle()
 {
 	if (!m_pReference) 		return;
 	m_pReference->RenderSingle(_Transform());
-    RenderBlink				();
+    //RenderBlink				();
 }
 
 void CSceneObject::RenderBones()

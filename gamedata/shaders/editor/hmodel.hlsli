@@ -3,10 +3,10 @@
 
 #include "common.hlsli"
 
-uniform Texture2D env_s0;
-uniform Texture2D env_s1;
-uniform Texture2D sky_s0;
-uniform Texture2D sky_s1;
+TextureCube env_s0;
+TextureCube env_s1;
+TextureCube sky_s0;
+TextureCube sky_s1;
 
 void hmodel(out float3 hdiffuse, out float3 hspecular,
     float m, float h, float s, float3 Pnt, float3 normal)

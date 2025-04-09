@@ -7,7 +7,7 @@ struct v2p
 };
 
 // Pixel
-float4 main(v2p I) : COLOR
+float4 main(v2p I) : SV_Target
 {
     return I.c * s_base.Sample(smp_base, I.tc0);
 }
