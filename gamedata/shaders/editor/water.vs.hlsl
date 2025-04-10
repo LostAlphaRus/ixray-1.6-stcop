@@ -22,7 +22,7 @@ struct vf
     float4 tctexgen : TEXCOORD7;
     float3 pos : TEXCOORD8;
     float4 c0 : COLOR0;
-    float4 hpos : POSITION;
+    float4 hpos : SV_POSITION;
 };
 
 uniform float4x4 m_texgen;

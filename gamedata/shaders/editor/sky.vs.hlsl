@@ -10,7 +10,7 @@ struct vi
 
 struct vf
 {
-    float4 hpos : POSITION;
+    float4 hpos : SV_POSITION;
     float4 c : COLOR0;
     float3 tc0 : TEXCOORD0;
     float3 tc1 : TEXCOORD1;

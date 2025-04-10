@@ -20,9 +20,10 @@ uniform float4 Ldynamic_color;
 uniform float4 Ldynamic_pos;
 uniform float4 Ldynamic_dir;
 
+uniform float4 screen_res;
 float4 main( float4 hpos : SV_Position, float4 tc : TEXCOORD0) : SV_Target
 {
-	float2 tcproj = tc.xy / tc.w;
+	float2 tcproj = hpos.xy * screen_res.zw;
     float4 _P = s_position.Sample(smp_base, tcproj);
 
 	if(_P.z < 0.001f)
