@@ -54,7 +54,7 @@ void ESceneAIMapTool::OnRender(int priority, bool strictB2F)
             RCache.set_xform_world(Fidentity);
 			if (OBJCLASS_AIMAP==LTools->CurrentClassID()){
 	            u32 clr = 0xffffc000;
-	            EDevice->SetShader	(EDevice->m_WireShader);
+	            EDevice->SetShader	(EDevice->ShaderTransform);
     	        DU_impl.DrawSelectionBoxB	(m_AIBBox,&clr);
             }
             if (Valid()){

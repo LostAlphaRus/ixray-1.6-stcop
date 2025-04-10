@@ -86,7 +86,7 @@ void C3DCursor::Render()
 
 //                UI->D3D_RenderNearer(0.0001);
                 RCache.set_xform_world(Fidentity);
-				EDevice->SetShader(EDevice->m_WireShader);
+				EDevice->SetShader(EDevice->ShaderTransform);
                 DU_impl.DrawPrimitiveL(D3DPT_LINESTRIP,m_RenderBuffer.size(),m_RenderBuffer.data(),m_RenderBuffer.size(),dwColor,true,true);
 //                UI->D3D_ResetNearer();
             }break;
@@ -102,7 +102,7 @@ void C3DCursor::Render()
 				pt[4].set(pt[0].p.x  ,pt[0].p.y+1,pt[0].p.z,pt[0].p.w,dwColor,0,0);
                 EDevice->RenderNearer(0.001);
                 RCache.set_xform_world(Fidentity);
-				EDevice->SetShader(EDevice->m_WireShader);
+				EDevice->SetShader(EDevice->ShaderTransform);
                 DU_impl.DrawPrimitiveTL(D3DPT_POINTLIST,5,pt,5,true,true);
                 EDevice->ResetNearer();
             }break;

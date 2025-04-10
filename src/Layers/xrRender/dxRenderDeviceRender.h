@@ -1,11 +1,5 @@
 #pragma once
 
-#ifndef _EDITOR
-#	define DEV DEV
-#else
-#	define DEV EDevice->Resources
-#endif
-
 #include "../../Include/xrRender/RenderDeviceRender.h"
 #include "xr_effgamma.h"
 
@@ -55,8 +49,14 @@ public:
 
 public:
 	CResourceManager*	Resources;
-	ref_shader			m_WireShader;
+	ref_shader			ShaderTransform;
 	ref_shader			m_SelectionShader;
 
 	CGammaControl		m_Gamma;
 };
+
+#ifndef _EDITOR
+#	define DEV dxRenderDeviceRender::Instance().Resources
+#else
+#	define DEV EDevice->Resources
+#endif

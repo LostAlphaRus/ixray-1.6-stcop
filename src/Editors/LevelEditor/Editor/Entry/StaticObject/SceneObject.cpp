@@ -120,7 +120,7 @@ void CSceneObject::Render(int priority, bool strictB2F)
     {
     	if (1==priority && !strictB2F)
         {
-            EDevice->SetShader(EDevice->m_WireShader);
+            EDevice->SetShader(EDevice->ShaderTransform);
             RCache.set_xform_world(_Transform());
             u32 clr = Locked() ? 0xFFFF0000 : 0xFFFFFFFF;
             DU_impl.DrawSelectionBoxB(m_pReference->GetBox(), &clr);

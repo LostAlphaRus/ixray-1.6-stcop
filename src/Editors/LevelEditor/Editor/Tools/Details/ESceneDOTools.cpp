@@ -88,7 +88,7 @@ void EDetailManager::OnRender(int priority, bool strictB2F)
         	if (false==strictB2F){
             	if (m_Flags.is(flSlotBoxesDraw)){
                     RCache.set_xform_world(Fidentity);
-                    EDevice->SetShader	(EDevice->m_WireShader);
+                    EDevice->SetShader	(EDevice->ShaderTransform);
 
                     Fvector			c;
                     Fbox			bbox;

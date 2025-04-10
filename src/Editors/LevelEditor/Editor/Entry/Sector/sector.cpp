@@ -123,7 +123,7 @@ void CSector::Render(int priority, bool strictB2F)
 				Fcolor color;
 				float k = Selected()?0.4f:0.2f;
 				color.set(sector_color.r,sector_color.g,sector_color.b,k);
-				EDevice->SetShader(EDevice->m_SelectionShader);
+				EDevice->SetShader(EDevice->ShaderTransform);
 				EDevice->SetRS(D3DRS_CULLMODE,D3DCULL_NONE);
 				for (SItemIt it=sector_items.begin();it!=sector_items.end();++it)
 				{
@@ -144,7 +144,7 @@ void CSector::Render(int priority, bool strictB2F)
 			color2.set(sector_color.r*k2,sector_color.g*k2,sector_color.b*k2,1.f);
 			if (lt->m_Flags.is(ESceneSectorTool::flDrawSolid))
 			{
-				EDevice->SetShader(EDevice->m_WireShader);
+				EDevice->SetShader(EDevice->ShaderTransform);
 				EDevice->SetRS(D3DRS_CULLMODE,D3DCULL_NONE);
 				for (SItemIt it=sector_items.begin();it!=sector_items.end();++it)
 				{

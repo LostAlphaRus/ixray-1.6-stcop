@@ -80,7 +80,7 @@ void EScene::Render( const Fmatrix& camera )
 		SceneMToolsIt s_end = scene_tools.end();
 		for (; s_it != s_end; s_it++) 
         {
-			EDevice->SetShader(B ? EDevice->m_SelectionShader : EDevice->m_WireShader);
+			EDevice->SetShader(B ? EDevice->ShaderTransform : EDevice->ShaderTransform);
 			RCache.set_xform_world(Fidentity);
 			try 
             {

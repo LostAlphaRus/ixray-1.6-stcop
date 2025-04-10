@@ -90,7 +90,6 @@ private:
 	bool						m_bOverrideScissoring;
 	BOOL						m_bOverrideScissoringValue;
     UINT						m_uiSampleMask;
-    UINT						m_uiFillMode;
 };
 
 extern	dx10StateManager	StateManager;

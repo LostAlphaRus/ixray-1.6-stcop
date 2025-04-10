@@ -81,7 +81,7 @@ void EParticlesObject::Render(int priority, bool strictB2F)
             if (!strictB2F) 
             {
                 // draw emitter
-                EDevice->SetShader(EDevice->m_WireShader);
+                EDevice->SetShader(EDevice->ShaderTransform);
 
                 if (!Selected())
                     DU_impl.DrawCross(GetPosition(), 0.30f, 0.1f, 0.3f, 0.3f, 0.3f, 0.3f, 0xFFFFEBAA, false);

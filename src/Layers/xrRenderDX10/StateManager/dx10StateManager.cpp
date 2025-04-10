@@ -51,7 +51,6 @@ void dx10StateManager::Reset()
 	m_bOverrideScissoring = false;
 	m_bOverrideScissoringValue = FALSE;
 	m_uiSampleMask = 0xffffffff;
-	m_uiFillMode = 0;
 }
 
 void dx10StateManager::UnmapConstants()
@@ -373,17 +372,16 @@ void dx10StateManager::SetSampleMask(u32 SampleMask)
 
 void dx10StateManager::SetFillMode(u32 Mode)
 {
-	if (m_uiFillMode != Mode)
+	if (m_RDesc.FillMode != Mode)
 	{
-		m_uiFillMode = Mode;
 		m_bRSChanged = true;
 
 		if (Mode == D3DFILL_POINT)
 			FATAL("No point support.");
 		else if (Mode == D3DFILL_WIREFRAME)
-			m_RDesc.FillMode == D3D11_FILL_WIREFRAME;
+			m_RDesc.FillMode = D3D11_FILL_WIREFRAME;
 		else if (Mode == D3DFILL_SOLID)
-			m_RDesc.FillMode == D3D11_FILL_SOLID;
+			m_RDesc.FillMode = D3D11_FILL_SOLID;
 	}
 }
 

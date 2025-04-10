@@ -504,7 +504,7 @@ void CSpawnPoint::SSpawnData::Render(bool bSelected, const Fmatrix& parent,int p
 		m_Motion->animator->DrawPath();
 
 	RCache.set_xform_world		(Fidentity);
-	EDevice->SetShader			(EDevice->m_WireShader);
+	EDevice->SetShader			(EDevice->ShaderTransform);
 	m_Data->on_render			(&DU_impl,this,bSelected,parent,priority,strictB2F);
 
 	if (IdleParticle)
@@ -962,13 +962,13 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 							Fcolor c;
 							c.set(RP_COLORS[r]);
 							c.mul_rgb(k*0.9f+0.1f);
-							DU_impl.DrawEntity(c.get(),EDevice->m_WireShader);
+							DU_impl.DrawEntity(c.get(),EDevice->ShaderTransform);
 						}
 					}break;
 					case ptEnvMod:
 					{
 						Fvector pos={0,0,0};
-						EDevice->SetShader(EDevice->m_WireShader);
+						EDevice->SetShader(EDevice->ShaderTransform);
 						DU_impl.DrawCross(pos,0.25f,Selected()?ENVMOD_SEL_COLOR2:ENVMOD_COLOR,true);
 						if (Selected())
 							switch(m_EM_ShapeType)
@@ -1026,7 +1026,7 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
 				RCache.set_xform_world(Fidentity);
 				Fbox bb; GetBox(bb);
 				u32 clr = Locked()?0xFFFF0000:0xFFFFFFFF;
-				EDevice->SetShader(EDevice->m_WireShader);
+				EDevice->SetShader(EDevice->ShaderTransform);
 				DU_impl.DrawSelectionBoxB(bb,&clr);
 			}
 		}

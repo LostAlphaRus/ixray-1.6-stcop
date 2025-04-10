@@ -45,7 +45,7 @@ void CPortal::Render(int priority, bool strictB2F)
 		FvectorVec& src = m_SimplifyVertices;//(fraBottomBar->miDrawPortalSimpleModel->Checked)?m_SimplifyVertices:m_Vertices;
 		if (src.size() < 2) 	return;
 
-		EDevice->SetShader(EDevice->m_WireShader);
+		EDevice->SetShader(EDevice->ShaderTransform);
 		RCache.set_xform_world(Fidentity);
 
 		u32 				i;

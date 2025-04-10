@@ -46,6 +46,7 @@ void CTLSprite::Render(Fvector &pos, float radius, bool bFixedSize, u32 clr)
 	pv[4].set(b.x + pos.x, b.y + pos.y, b.z + pos.z, clr, 1.f, 0.f);
 	pv[5].set(c.x + pos.x, c.y + pos.y, c.z + pos.z, clr, 1.f, 1.f);
 
+	EDevice->SetShader(EDevice->ShaderNoTransformT);
 	DU_impl.DrawPrimitiveLIT(D3DPT_TRIANGLELIST, 2, pv, 6, false, false);
 }
 

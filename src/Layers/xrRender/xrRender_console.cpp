@@ -388,27 +388,6 @@ public:
 };
 #endif
 
-class CCC_memory_stats : public IConsole_Command
-{
-protected	:
-
-public		:
-
-	CCC_memory_stats(LPCSTR N) :	IConsole_Command(N)	{ bEmptyArgsHandled = true; };
-
-	virtual void	Execute	(LPCSTR args)
-	{
-		u32 m_base = 0;
-		u32 c_base = 0;
-		u32 m_lmaps = 0; 
-		u32 c_lmaps = 0;
-
-		DEVGetMemoryUsage( m_base, c_base, m_lmaps, c_lmaps );
-	}
-
-};
-
-
 #if RENDER!=R_R1
 #include "r__pixel_calculator.h"
 class CCC_BuildSSA : public IConsole_Command
@@ -808,7 +787,6 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r_developer_float_2", &ps_r__test_exp_to_shaders_2, -10000000.0f, 10000000.0f);
 	CMD4(CCC_Float, "r_developer_float_3", &ps_r__test_exp_to_shaders_3, -10000000.0f, 10000000.0f);
 	CMD4(CCC_Float, "r_developer_float_4", &ps_r__test_exp_to_shaders_4, -10000000.0f, 10000000.0f);
-	CMD1(CCC_memory_stats, "render_memory_stats");
 
 	CMD4(CCC_Integer, "r2_wait_sleep", &ps_r2_wait_sleep, 0, 1);
 	CMD4(CCC_Integer, "r2_dhemi_count", &ps_r2_dhemi_count, 4, 25);

@@ -180,11 +180,10 @@ void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, Int
 	RCache.set_xform_world(parent);
 	EDevice->RenderNearer(0.0006);
 	RB_cnt = 0;
-	if (bEdge){
-		EDevice->SetShader(EDevice->m_WireShader);
-		EDevice->SetRS(D3DRS_FILLMODE,D3DFILL_WIREFRAME);
-	}else
-		EDevice->SetShader(EDevice->m_SelectionShader);
+
+	EDevice->SetShader(EDevice->ShaderTransform);
+	EDevice->SetRS(D3DRS_FILLMODE, bEdge ? D3DFILL_WIREFRAME : EDevice->dwFillMode);
+
 	for (IntIt dw_it=fl.begin(); dw_it!=fl.end(); ++dw_it)
 	{
 		st_Face& face 		= m_Faces[*dw_it];
@@ -201,8 +200,7 @@ void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, Int
 	if (RB_cnt)
 		DU_impl.DrawPrimitiveL(D3DPT_TRIANGLELIST,RB_cnt/3,RB,RB_cnt,color,true,false);
 
-	if (bEdge)
-		EDevice->SetRS(D3DRS_FILLMODE,EDevice->dwFillMode);
+	EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 
 	EDevice->ResetNearer();
 }

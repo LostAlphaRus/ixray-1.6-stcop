@@ -33,7 +33,8 @@ extern ECORE_API CEditorRenderDevice* EDevice;
 enum class EEditorRenderState
 {
 	eDefault,
-	eModel
+	eModel,
+	eSelect
 };
 
 class ECORE_API CEditorRenderDevice :
@@ -53,9 +54,10 @@ private:
 
 public:
 	ref_shader m_WireShaderEdges;
-	ref_shader m_WireShader;
 	ref_shader m_WireShaderAxis;
-	ref_shader m_SelectionShader;
+
+	ref_shader ShaderTransform;
+	ref_shader ShaderNoTransformT;
 
 	ref_texture texture_null;
 	Fmaterial m_CurrentMat;
@@ -70,7 +72,6 @@ public:
 	u32 TFactor = 0;
 	EEditorRenderState RenderState = EEditorRenderState::eDefault;
 
-public:
 	float RadiusRender;
 	u32 dwRealWidth, dwRealHeight;
 	float m_RenderArea;
@@ -82,8 +83,7 @@ public:
 	RECT NormalWinSize;
 	bool NormalWinSizeSaved = false;
 	bool isZoomed = false;
-	//bool isMoving = false;
-public:
+
 	// camera
 	CRegistrator<pureDrawUI> seqDrawUI;
 
@@ -197,6 +197,8 @@ public:
 
 public:
 	Shader_xrLC_LIB ShaderXRLC;
+	u32 CullMode = -1;
+	u32 FillMode = -1;
 
 private:
 	virtual void _BCL AddSeqFrame(pureFrame* f, bool mt);

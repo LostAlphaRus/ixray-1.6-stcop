@@ -422,7 +422,7 @@ void CEditShape::Render(int priority, bool strictB2F)
 	inherited::Render(priority, strictB2F);
     if (1==priority){
         if (strictB2F){
-	        EDevice->SetShader			(EDevice->m_WireShader);
+	        EDevice->SetShader			(EDevice->ShaderTransform);
             EDevice->SetRS				(D3DRS_CULLMODE,D3DCULL_NONE);
             u32 clr 					= Selected()?subst_alpha(m_DrawTranspColor, color_get_A(m_DrawTranspColor)*2):m_DrawTranspColor;
                 
@@ -439,7 +439,7 @@ void CEditShape::Render(int priority, bool strictB2F)
                     B.translate_over	(S.P);
                     B.mulA_43			(_Transform());
                     RCache.set_xform_world(B);
-                    EDevice->SetShader	(EDevice->m_WireShader);
+                    EDevice->SetShader	(EDevice->ShaderTransform);
                     DU_impl.DrawCross	(zero,1.f,m_DrawEdgeColor,false);
                     DU_impl.DrawIdentSphere	(true,true,clr,m_DrawEdgeColor);
                 }break;
@@ -454,11 +454,11 @@ void CEditShape::Render(int priority, bool strictB2F)
             }
             EDevice->SetRS(D3DRS_CULLMODE,D3DCULL_CCW);
         }else{
-            if( Selected()&&m_Box.is_valid() ){
-		        EDevice->SetShader		(EDevice->m_SelectionShader);
+            if( Selected()&&m_Box.is_valid() )
+            {
                 RCache.set_xform_world	(_Transform());
                 u32 clr 				= Locked()?0xFFFF0000:0xFFFFFFFF;
-                EDevice->SetShader		(EDevice->m_WireShader);
+                EDevice->SetShader		(EDevice->ShaderTransform);
                 DU_impl.DrawSelectionBoxB(m_Box,&clr);
             }
         }

@@ -854,7 +854,7 @@ void	EPAJet::Render				(const Fmatrix& parent)
 {
 	EParticleAction::Render			(parent);
 	RCache.set_xform_world			(parent);
-	EDevice->SetShader				(EDevice->m_WireShader);
+	EDevice->SetShader				(EDevice->ShaderTransform);
 	DU_impl.DrawCross				(_vector("Center").val, 0.05f,0.05f,0.05f, 0.05f,0.05f,0.05f, 0x600000ff);
 }
 
@@ -912,7 +912,7 @@ void	EPAOrbitLine::Render		(const Fmatrix& parent)
 {
 	EParticleAction::Render			(parent);
 	RCache.set_xform_world			(parent);
-	EDevice->SetShader				(EDevice->m_WireShader);
+	EDevice->SetShader				(EDevice->ShaderTransform);
 	Fvector p0,p1;
 	p0								= _vector("Position").val;
 	p1.add							(p0,_vector("Axis").val);
@@ -939,7 +939,7 @@ void	EPAOrbitPoint::Render		(const Fmatrix& parent)
 {
 	EParticleAction::Render			(parent);
 	RCache.set_xform_world			(parent);
-	EDevice->SetShader				(EDevice->m_WireShader);
+	EDevice->SetShader				(EDevice->ShaderTransform);
 	DU_impl.DrawCross					(_vector("Center").val, 0.05f,0.05f,0.05f, 0.05f,0.05f,0.05f, 0x6000ff00);
 }
 
@@ -1008,7 +1008,7 @@ void	EPAScatter::Render	   		(const Fmatrix& parent)
 {
 	EParticleAction::Render			(parent);
 	RCache.set_xform_world			(parent);
-	EDevice->SetShader				(EDevice->m_WireShader);
+	EDevice->SetShader				(EDevice->ShaderTransform);
 	DU_impl.DrawCross					(_vector("Center").val, 0.05f,0.05f,0.05f, 0.05f,0.05f,0.05f, 0x600000ff);
 }
 
@@ -1311,7 +1311,7 @@ void EPATurbulence::Render(const Fmatrix& parent)
 		}
 	}
 	std::sort(pts.begin(),pts.end(),sort_tp_pred);
-	EDevice->SetShader(EDevice->m_SelectionShader);
+	EDevice->SetShader(EDevice->ShaderTransform);
 	RCache.set_xform_world(Fidentity);
 	for (StpVecIt it=pts.begin(); it!=pts.end(); it++)
 		DU_impl.DrawCross	(it->p, csz,csz,csz, csz,csz,csz, it->c.get(), false);

@@ -225,7 +225,7 @@ void CToolCustom::Clear()
 void CToolCustom::Render()
 {
 	// render errors
-	EDevice->SetShader(EDevice->m_SelectionShader);
+	EDevice->SetShader(EDevice->ShaderTransform);
 	RCache.set_xform_world(Fidentity);
 	EDevice->RenderNearer(0.0003f);
 	EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_NONE);
@@ -248,7 +248,7 @@ void CToolCustom::Render()
 		}
 		DU_impl.dbgDrawVert(vit->p[0], vit->c, s ? s : "");
 	}
-	EDevice->SetShader(EDevice->m_SelectionShader);
+	EDevice->SetShader(EDevice->ShaderTransform);
 
 	temp.clear();
 	temp.resize(64);
@@ -258,7 +258,7 @@ void CToolCustom::Render()
 		if (eit->i)        sprintf(temp.data(), "L: %d", cnt++);
 		DU_impl.dbgDrawEdge(eit->p[0], eit->p[1], eit->c, eit->i ? temp.c_str() : "");
 	}
-	EDevice->SetShader(EDevice->m_SelectionShader);
+	EDevice->SetShader(EDevice->ShaderTransform);
 
 	temp.clear();
 	temp.resize(64);
@@ -270,13 +270,13 @@ void CToolCustom::Render()
 	
 	cnt = 0;
 	if (!m_DebugDraw.m_SolidFaces.empty()) {
-		EDevice->SetShader(EDevice->m_SelectionShader);
+		EDevice->SetShader(EDevice->ShaderTransform);
 		DU_impl.DD_DrawFace_begin(FALSE);
 		for (SDebugDraw::FaceIt fsit = m_DebugDraw.m_SolidFaces.begin(); fsit != m_DebugDraw.m_SolidFaces.end(); fsit++)
 			DU_impl.DD_DrawFace_push(fsit->p[0], fsit->p[1], fsit->p[2], fsit->c);
 		DU_impl.DD_DrawFace_end();
 	}
-	EDevice->SetShader(EDevice->m_SelectionShader);
+	EDevice->SetShader(EDevice->ShaderTransform);
 
 	temp.clear();
 	temp.resize(64);

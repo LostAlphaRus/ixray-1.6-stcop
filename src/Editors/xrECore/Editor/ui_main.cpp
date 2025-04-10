@@ -517,11 +517,8 @@ void TUI::Redraw()
 
 				{
 					xrCriticalSectionGuard guard(EDevice->Dx11Guard);
-					EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
-
 					g_FontManager->Render();
 
-					EDevice->SetRS(D3DRS_FILLMODE, EDevice->dwFillMode);
 					EDevice->seqRender.Process(rp_Render);
 
 					if (g_pGamePersistent->OnRenderPPUI_query())
@@ -533,21 +530,12 @@ void TUI::Redraw()
 					RCache.set_RT(0, 2);
 					RCache.set_RT(0, 3);
 				}
-
-				// TODO DX11 EDITOR !!!
-				/*
-				RDevice->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
-				RDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-				RDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-				RDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-				*/
 			}
 
 #ifndef DEBUG
 			try
 #endif
 			{
-				EDevice->SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
 				g_bRendering = FALSE;
 				// 
 				ID3D11RenderTargetView* RTV = RSwapchainTarget;

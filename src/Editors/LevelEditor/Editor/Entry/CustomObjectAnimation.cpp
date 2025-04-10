@@ -72,7 +72,7 @@ void CCustomObject::AnimationDrawPath()
             path_points.push_back(T);
         }
 
-        EDevice->SetShader		(EDevice->m_WireShader);
+        EDevice->SetShader		(EDevice->ShaderTransform);
         RCache.set_xform_world	(Fidentity);
         if (!path_points.empty())
         	DU_impl.DrawPrimitiveL		(D3DPT_LINESTRIP,path_points.size()-1,path_points.data(),path_points.size(),clr,true,false);
