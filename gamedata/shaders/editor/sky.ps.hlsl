@@ -2,6 +2,7 @@
 
 struct v2p
 {
+    float4 hpos : POSITION;
     float4 factor : COLOR0;
     float3 tc0 : TEXCOORD0;
     float3 tc1 : TEXCOORD1;

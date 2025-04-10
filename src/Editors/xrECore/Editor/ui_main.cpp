@@ -415,9 +415,9 @@ void TUI::Redraw()
 				RTNormal.create("$user$normal", GetRenderWidth(), GetRenderHeight(), DxgiFormat::DXGI_FORMAT_R16G16B16A16_FLOAT);
 				RTDiffuse.create("$user$diffuse", GetRenderWidth(), GetRenderHeight(), DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 
-				RT.create("$user$rt_color", GetRenderWidth(), GetRenderHeight(), DxgiFormat::DXGI_FORMAT_B8G8R8X8_UNORM);
-				View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, DxgiFormat::DXGI_FORMAT_B8G8R8X8_UNORM);
-				RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), DxgiFormat::DXGI_FORMAT_B8G8R8X8_UNORM);
+				RT.create("$user$rt_color", GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
+				View.RTFreez.create(("$user$rt_freez" + xr_string::ToString((u32)UI->ViewID)).c_str(), GetRenderWidth() * EDevice->m_ScreenQuality, GetRenderHeight() * EDevice->m_ScreenQuality, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
+				RTCopy.create("$user$rt_color_copy", GetRenderWidth(), GetRenderHeight(), DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM);
 
 				// TODO FORSERX
 				ZB.create("$user$rt_depth", GetRenderWidth(), GetRenderHeight(), DxgiFormat::DXGI_FORMAT_R24G8_TYPELESS);
