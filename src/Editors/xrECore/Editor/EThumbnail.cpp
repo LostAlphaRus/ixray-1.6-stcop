@@ -52,7 +52,7 @@ void EImageThumbnail::Update(ID3DTexture2D*& Texture)
     if (m_Pixels.size() == 0)
     {
         if (Texture)
-            IM_TEXTURE_RELEASE(Texture);
+            Texture->Release();
 
         Texture = nullptr;
 

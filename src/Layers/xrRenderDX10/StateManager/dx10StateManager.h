@@ -2,7 +2,7 @@
 #define	dx10StateManager_included
 #pragma once
 
-class dx10StateManager
+class ECORE_API dx10StateManager
 {
 public:
 	dx10StateManager();
@@ -92,6 +92,6 @@ private:
     UINT						m_uiSampleMask;
 };
 
-extern	dx10StateManager	StateManager;
+extern	ECORE_API dx10StateManager	StateManager;
 
 #endif	//	dx10StateManager_included

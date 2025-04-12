@@ -1720,7 +1720,7 @@ CContentView::IconData & CContentView::GetTexture(const xr_string & IconPath)
 				CTexture* TempTexture = new CTexture();
 				ID3DTexture2D* pTexture = nullptr;
 				Icons[IconPath] = { TempTexture, false };
-				R_CHK(DX11CreateTexture(BtnSize.x, BtnSize.x, 1, 0, DxgiFormat::DXGI_FORMAT_R8G8B8A8_UNORM, 0, &pTexture, 0));
+				R_CHK(DX11CreateTexture(BtnSize.x, BtnSize.x, 1, 0, DxgiFormat::DXGI_FORMAT_B8G8R8A8_UNORM, 0, &pTexture, 0));
 				{
 					D3DLOCKED_RECT rect;
 					R_CHK(DX11LockRect(pTexture, 0, &rect, 0, D3DLOCK_DISCARD));

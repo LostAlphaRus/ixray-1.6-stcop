@@ -82,11 +82,11 @@ namespace ChoseEvents
         EObjectThumbnail* thm = new EObjectThumbnail(name);
         if (thm->Valid())
         {
-            thm->Update((ID3DBaseTexture*&)ID);
+            thm->Update(ID);
         }
         else if (ID)
         {
-            IM_TEXTURE_RELEASE(ID);
+            ID->Release();
             ID = 0;
         }
         xr_delete(thm);
@@ -112,11 +112,11 @@ namespace ChoseEvents
         EGroupThumbnail* thm = new EGroupThumbnail(name);
         if (thm->Valid())
         {
-            thm->Update((ID3DBaseTexture*&)ID);
+            thm->Update(ID);
         }
         else if(ID)
         {
-            IM_TEXTURE_RELEASE(ID);
+            ID->Release();
             ID = 0;
         }
         xr_delete(thm);
@@ -303,7 +303,7 @@ namespace ChoseEvents
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update((ID3DBaseTexture*&)Texture);
+            if (thm->Valid()) thm->Update(Texture);
             xr_delete(thm);
         }
     }
@@ -323,7 +323,7 @@ namespace ChoseEvents
     {
         if (name && name[0]) {
             ETextureThumbnail* thm = new ETextureThumbnail(name);
-            if (thm->Valid()) thm->Update((ID3DBaseTexture*&)ID);
+            if (thm->Valid()) thm->Update(ID);
             xr_delete(thm);
         }
     }

@@ -2,7 +2,7 @@
 #define	dx10ShaderResourceStateCache_included
 #pragma once
 
-class dx10ShaderResourceStateCache
+class ECORE_API dx10ShaderResourceStateCache
 {
 public:
 	dx10ShaderResourceStateCache();
@@ -52,6 +52,6 @@ private:
 	bool	m_bUpdateCSViews;
 };
 
-extern	dx10ShaderResourceStateCache	SRVSManager;
+extern ECORE_API dx10ShaderResourceStateCache SRVSManager;
 
 #endif	//	dx10ShaderResourceStateCache_included

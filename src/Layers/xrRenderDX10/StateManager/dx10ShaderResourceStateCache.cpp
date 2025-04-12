@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dx10ShaderResourceStateCache.h"
 
-dx10ShaderResourceStateCache	SRVSManager;
+ECORE_API dx10ShaderResourceStateCache SRVSManager;
 
 dx10ShaderResourceStateCache::dx10ShaderResourceStateCache()
 {

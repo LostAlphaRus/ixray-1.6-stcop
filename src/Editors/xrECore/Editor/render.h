@@ -138,11 +138,11 @@ public:
 
 class ECORE_API CRender : public IRender_interface
 {
-	CRenderTarget* Target;
 	Fmatrix					current_matrix;
 	BOOL val_bInvisible;
 	u32 dwFrameCalc = 0;
 public:
+	CRenderTarget* Target;
 	// options
 
 	// Data
@@ -221,7 +221,8 @@ public:
 
 	IC void apply_lmaterial() {
 		R_constant* C = &*RCache.get_c("s_base"); // get sampler
-		if(0 == C)			return;
+		if(0 == C)
+			return;
 		VERIFY(RC_dest_sampler == C->destination);
 		//VERIFY(RC_sampler == C->type);
 		CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index));

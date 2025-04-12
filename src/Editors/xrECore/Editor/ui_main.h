@@ -220,7 +220,7 @@ public:
 
 	virtual LPCSTR 	EditorName			()=0;
 	virtual LPCSTR	EditorDesc			()=0;
-	virtual ImTextureID LoadTexture(const char*) const override;
+	virtual void* LoadTexture(const char*) const override;
 // commands   
 	virtual	void	RegisterCommands			()=0; 
 	void			ClearCommands				();

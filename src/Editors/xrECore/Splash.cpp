@@ -155,7 +155,7 @@ namespace splash
 			"Loading...", 
 			WinW,
 			WinH,
-			SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP | 
+			SDL_WINDOW_BORDERLESS | 
 			SDL_WINDOW_NOT_FOCUSABLE | SDL_WINDOW_TRANSPARENT
 		);
 		

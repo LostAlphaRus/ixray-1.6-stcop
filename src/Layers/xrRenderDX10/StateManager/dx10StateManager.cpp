@@ -4,7 +4,7 @@
 #include "../dx10StateUtils.h"
 #include "dx10StateCache.h"
 
-dx10StateManager	StateManager;
+ECORE_API dx10StateManager	StateManager;
 
 //	DX10: TODO: Implement alpha referense control
 

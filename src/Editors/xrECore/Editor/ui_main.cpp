@@ -82,9 +82,9 @@ TUI::~TUI()
 	TRelease(m_WinClose);
 }
 
-ImTextureID TUI::LoadTexture(const char* Texture) const
+void* TUI::LoadTexture(const char* Texture) const
 {
-	return (void*)EDevice->Resources->_CreateTexture(Texture)->pSurface;
+	return EDevice->Resources->_CreateTexture(Texture)->pSurface;
 }
 
 void TUI::OnDeviceCreate()

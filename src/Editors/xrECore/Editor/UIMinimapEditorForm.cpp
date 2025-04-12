@@ -25,7 +25,7 @@ UIMinimapEditorForm::~UIMinimapEditorForm()
 	for (auto& element : elements)
 	{
 		if (element.Texture)
-			IM_TEXTURE_RELEASE(element.Texture);
+			element.Texture->Unload();
 	}
 
 	if (m_BackgroundTexture)

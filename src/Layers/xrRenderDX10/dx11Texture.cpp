@@ -164,6 +164,12 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 	{
 		goto _DDS;
 	}
+	if (FS.TryLoad(xr_string(fname) + ".dds"))
+	{
+		xr_string editor_name = xr_string(fname) + ".dds";
+		xr_strcpy(fn, editor_name.c_str());
+		goto _DDS;
+	}
 
 	Msg("! Can't find texture '%s'", fname);
 	R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));

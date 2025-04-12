@@ -378,19 +378,18 @@ u32 dxRenderDeviceRender::GetCacheStatPolys()
 void dxRenderDeviceRender::Begin()
 {
 #ifndef _EDITOR
-#ifndef USE_DX11
+#	ifndef USE_DX11
 	CHK_DX					(RDevice->BeginScene());
-#else
-#endif //USE_DX11
+#	endif
 	
 	RCache.OnFrameBegin		();
 	RCache.set_CullMode		(CULL_CW);
 	RCache.set_CullMode		(CULL_CCW);
 	RCache.set_Z			(TRUE);
-#endif
 
-#if defined(USE_DX11) && defined(DEBUG_DRAW)
+#	if defined(USE_DX11) && defined(DEBUG_DRAW)
 	GPUEvents_BeginRendering();
+#	endif
 #endif
 }
 

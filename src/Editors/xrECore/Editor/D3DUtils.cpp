@@ -16,7 +16,6 @@
 #include "EditObject.h"
 #include "ui_main.h"
 #include "../Layers/xrRenderDX10/dx10BufferUtils.h"
-#include "../Layers/xrRender/Debug/dxPixEventWrapper.h"
 
 ECORE_API CDrawUtilities DU_impl;
 
@@ -34,16 +33,9 @@ static Fvector boxvert[boxvertcount];
 #define DU_DRAW_SH_C(sh,c){EDevice->SetShader(sh);	RCache.set_c	("tfactor",float(color_get_R(c))/255.f,float(color_get_G(c))/255.f,float(color_get_B(c))/255.f,float(color_get_A(c))/255.f);}
 #define DU_DRAW_SH(sh){ EDevice->SetShader(sh);		RCache.set_c	("tfactor",1,1,1,1);}
 
-#if 1
-#	define FILL_MODE EDevice->dwFillMode
-#	define SHADE_MODE EDevice->dwShadeMode
-#	define SCREEN_QUALITY EDevice->m_ScreenQuality
-#else
-#	define FILL_MODE D3DFILL_SOLID
-#	define SHADE_MODE D3DSHADE_GOURAUD
-#	define SCREEN_QUALITY 1.f
-#endif
-
+#define FILL_MODE EDevice->dwFillMode
+#define SHADE_MODE EDevice->dwShadeMode
+#define SCREEN_QUALITY EDevice->m_ScreenQuality
 
 // identity box
 const u32 identboxcolor = D3DCOLOR_RGBA(255,255,255,0);
@@ -1136,8 +1128,6 @@ void CDrawUtilities::DrawObjectAxis(const Fmatrix& T, float sz, BOOL sel)
 
 void CDrawUtilities::DrawGrid()
 {
-    PIX_EVENT(RENDER_GRID);
-
 	VERIFY( EDevice->b_is_Ready );
 	_VertexStream*	Stream	= &RCache.Vertex;
     u32 vBase;

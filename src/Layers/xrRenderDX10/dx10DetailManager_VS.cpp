@@ -119,10 +119,10 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 #ifndef _EDITOR 
     if (RImplementation.phase == CRender::PHASE_SMAP && var_id == 0)
         return;
-#endif
 
 	//Render state, shaders & so on [only 1st pass]
 	RCache.set_Element(objects[0].shader->E[lod_id], 0);
+#endif
 
 	//Bind CBuffers
 	RImplementation.apply_lmaterial(); //Material ID
@@ -134,8 +134,14 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 	RCache.set_c("wave_old", wave_old);
 	RCache.set_c("dir2D_old", wind_old);
 
+#ifndef _EDITOR 
 	for (CDetail& Object : objects)
 	{
+#else
+	for (CDetail* D : objects)
+	{
+		CDetail& Object = *D;
+#endif
 		auto it = detailBuffer_map.lower_bound(Object.m_items[var_id][render_key].size());
 
 		//Use largest buffer possible [should keep HUGE buffer around in those cases]
@@ -159,7 +165,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 		for (auto& S : Object.m_items[var_id][render_key])
 		{
 			CDetail::SlotItem& Instance = *S.get();
-
+#ifndef _EDITOR
 			if (RImplementation.pOutdoorSector && PortalTraverser.i_marker != RImplementation.pOutdoorSector->r_marker)
 				continue;
 
@@ -168,7 +174,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 				if(L->position.distance_to_sqr(Instance.pos) >= _sqr(L->range))
 					continue;
 			}
-
+#endif
 			//LVutner: Update the instance buffer
 			if(instanceCount == 0)
 			{

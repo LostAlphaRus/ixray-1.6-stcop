@@ -17,6 +17,7 @@ public:
 
 private:
 	ref_texture Texture;
+	ID3D11ShaderResourceView* SRView;
 	DXTUtils::ImageInfo SrcData;
 
 	enum EChannel : u8

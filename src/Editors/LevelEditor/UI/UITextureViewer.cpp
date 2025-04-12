@@ -99,7 +99,7 @@ void CUITextureViewer::Draw()
 		pos.y += (avail.y - textureSize.y) * 0.5f;
 		
 		ImGui::SetCursorScreenPos(pos);
-		ImGui::Image((void*)Texture->pSurface, textureSize);
+		ImGui::Image(Texture->get_SRView(), textureSize);
 	}
 
 	ImGui::End();
@@ -110,26 +110,17 @@ void CUITextureViewer::LoadFromFile(const xr_path& File)
 	CurrentFileName = File.xfilename();
 	SrcData = DXTUtils::GitPixels(File.xstring().c_str());
 
-	IDirect3DTexture9* pTex = nullptr;
-	HRESULT hr = RDevice->CreateTexture
-	(
-		(UINT)SrcData.W,
-		(UINT)SrcData.H,
-		1,
-		0,
-		D3DFMT_A8R8G8B8,
-		D3DPOOL_MANAGED,
-		&pTex,
-		nullptr
-	);
-
-	if (FAILED(hr) || !pTex)
+	ID3DTexture2D* pTexture = nullptr;
+	HRESULT hr = DX11CreateTexture(SrcData.W, SrcData.H, 1, 0, DxgiFormat::DXGI_FORMAT_B8G8R8A8_UNORM, 0, &pTexture, 0);
+	if (FAILED(hr) || !pTexture)
 	{
 		Msg("! Failed to create texture for viewer");
 		return;
 	}
 
-	Texture->pSurface = pTex;
+	Texture->surface_set(pTexture);
+	pTexture->Release();
+
 	UpdateTexture();
 }
 
@@ -140,14 +131,15 @@ void CUITextureViewer::UpdateTexture()
 		return;
 	}
 
-	IDirect3DTexture9* tex = (IDirect3DTexture9*)Texture->pSurface;
+	auto tex = Texture->pSurface;
 	if (!tex)
 	{
 		return;
 	}
 
 	D3DLOCKED_RECT rect;
-	if (FAILED(tex->LockRect(0, &rect, nullptr, 0)))
+	
+	if (FAILED(DX11LockRect(tex, 0, &rect, 0, 0)))
 	{
 		return;
 	}
@@ -202,5 +194,5 @@ void CUITextureViewer::UpdateTexture()
 		}
 	}
 
-	tex->UnlockRect(0);
+	DX11UnlockRect(tex,0);
 }

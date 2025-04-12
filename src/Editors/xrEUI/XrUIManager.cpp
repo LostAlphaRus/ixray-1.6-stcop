@@ -163,13 +163,10 @@ void XrUIManager::ResetBegin()
 		Ptr->ResetBegin();
 	}
 
-	ImGui_ImplDX11_InvalidateDeviceObjects();
 }
 
 void XrUIManager::ResetEnd(ID3D11Device* device, ID3D11DeviceContext* device_context)
 {
-	ImGui_ImplDX11_Init(device, device_context);
-
 	for (auto Ptr : m_UIArray)
 	{
 		Ptr->ResetEnd();
