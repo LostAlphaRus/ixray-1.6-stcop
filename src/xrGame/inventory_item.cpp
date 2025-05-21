@@ -760,10 +760,6 @@ void CInventoryItem::net_Export			(NET_Packet& P)
 		return;
 	}
 
-	/*if (num_items.mask&CSE_ALifeObjectPhysic::animated)
-	{
-		net_Export_Anim_Params(P);
-	}*/
 	net_Export_PH_Params(P,State,num_items);
 
 	P.w_u8(!!object().PPhysicsShell() && object().PPhysicsShell()->isEnabled());	//not freezed

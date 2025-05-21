@@ -142,6 +142,20 @@ void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
 	}
 }
 
+CUICellItem* CUIDragDropListEx::GetItemByData(void* data)
+{
+	WINDOW_LIST_it it = std::find_if(
+	m_container->GetChildWndList().begin(),
+	m_container->GetChildWndList().end(),
+	[&](CUIWindow* itm)
+	{
+		return static_cast<CUICellItem*>(itm)->m_pData == data;
+	}
+		);
+	VERIFY(it != m_container->GetChildWndList().end());
+	return smart_cast<CUICellItem*>(*it);
+}
+
 void CUIDragDropListEx::DestroyDragItem()
 {
 	if(m_selected_item && m_drag_item && m_drag_item->ParentItem()==m_selected_item)

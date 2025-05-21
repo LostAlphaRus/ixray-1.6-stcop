@@ -128,6 +128,7 @@ public:
 			CUICellItem*	GetItemIdx			(u32 idx);
 	virtual CUICellItem*	RemoveItem			(CUICellItem* itm, bool force_root);
 			void			CreateDragItem		(CUICellItem* itm);
+			CUICellItem*	GetItemByData		(void* data);
 
 			void			DestroyDragItem		();
 			void			ClearAll(bool bDestroy, xr_vector<u16> IgnoredItemsIds = {}); // FFx0001

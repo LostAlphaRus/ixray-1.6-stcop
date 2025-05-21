@@ -177,6 +177,7 @@ void CUIActorMenu::Construct()
 	m_pInventoryBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_bag", this);
 	m_pInventoryBeltList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_belt", this);
 	m_pInventoryStackList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_stack", this);
+	//m_pInventoryStackList->SetGrouping(false);
 
 	m_pTradeActorBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
 	m_pTradeActorList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade", this);
