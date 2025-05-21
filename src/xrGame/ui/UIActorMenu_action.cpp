@@ -28,6 +28,7 @@
 #include "UIMessageBoxEx.h"
 #include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "UIMainIngameWnd.h"
+#include "UICellItemFactory.h"
 
 
 bool  CUIActorMenu::AllowItemDrops(EDDListType from, EDDListType to)
