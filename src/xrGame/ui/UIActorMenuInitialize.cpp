@@ -176,6 +176,7 @@ void CUIActorMenu::Construct()
 
 	m_pInventoryBagList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_bag", this);
 	m_pInventoryBeltList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_belt", this);
+	m_pInventoryStackList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_stack", this);
 
 	m_pTradeActorBagList		= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
 	m_pTradeActorList			= UIHelperGame::CreateDragDropListEx(uiXml, "dragdrop_actor_trade", this);
@@ -381,6 +382,7 @@ void CUIActorMenu::Construct()
 
 	BindDragDropListEvents(m_pInventoryBeltList);
 	BindDragDropListEvents(m_pInventoryBagList);
+	BindDragDropListEvents(m_pInventoryStackList);
 	BindDragDropListEvents(m_pTradeActorBagList);
 	BindDragDropListEvents(m_pTradeActorList);
 	BindDragDropListEvents(m_pTradePartnerBagList);
@@ -457,6 +459,7 @@ void CUIActorMenu::BindDragDropListEvents(CUIDragDropListEx* lst)
 	lst->m_f_item_start_drag		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenu::OnItemStartDrag);
 	lst->m_f_item_db_click			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenu::OnItemDbClick);
 	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenu::OnItemSelected);
+	lst->m_f_item_deselected		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenu::OnItemDeselected);
 	lst->m_f_item_rbutton_click		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenu::OnItemRButtonClick);
 	lst->m_f_item_focus_received	= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenu::OnItemFocusReceive);
 	lst->m_f_item_focus_lost		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUIActorMenu::OnItemFocusLost);

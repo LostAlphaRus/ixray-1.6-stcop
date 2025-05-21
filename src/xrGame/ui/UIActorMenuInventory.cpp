@@ -49,6 +49,7 @@ void CUIActorMenu::InitInventoryMode()
 {
 	m_pInventoryBagList->Show(true);
 	m_pInventoryBeltList->Show(true);
+	m_pInventoryStackList->Show(false);
 
 	for (u8 i = 1; i <= m_slot_count; ++i)
 	{

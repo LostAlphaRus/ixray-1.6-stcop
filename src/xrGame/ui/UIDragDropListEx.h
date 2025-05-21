@@ -48,10 +48,13 @@ protected:
 	CUICellContainer*		m_container;
 	CUIScrollBar*			m_vScrollBar;
 
+	void VerifyDeselected(CUICellItem* new_selected);
+
 	virtual void			OnScrollV				(CUIWindow* w, void* pData);
 	virtual void			OnItemStartDragging		(CUIWindow* w, void* pData);
 	virtual void			OnItemDrop				(CUIWindow* w, void* pData);
 	virtual void			OnItemSelected			(CUIWindow* w, void* pData);
+	virtual void			OnItemDeselected			(CUIWindow* w, void* pData);
 	virtual void			OnItemLButtonClick		(CUIWindow* w, void* pData);
 	virtual void			OnItemRButtonClick		(CUIWindow* w, void* pData);
 	virtual void			OnItemDBClick			(CUIWindow* w, void* pData);
@@ -72,6 +75,7 @@ public:
 	DRAG_CELL_EVENT			m_f_item_start_drag;
 	DRAG_CELL_EVENT			m_f_item_db_click;
 	DRAG_CELL_EVENT			m_f_item_selected;
+	DRAG_CELL_EVENT			m_f_item_deselected;
 	DRAG_CELL_EVENT			m_f_item_lbutton_click;
 	DRAG_CELL_EVENT			m_f_item_rbutton_click;
 	DRAG_CELL_EVENT			m_f_item_focus_received;
