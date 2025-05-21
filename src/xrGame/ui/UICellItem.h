@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UIActorMenu.h"
 #include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrUI/Widgets/UIDialogWnd.h"
 
@@ -45,6 +46,10 @@ protected:
 	virtual void			UpdateItemText			();
 			void			init					();
 public:
+	EDDListType				m_represent_parent_list = EDDListType::iInvalid;
+	CUICellItem*			m_represent_top_parent = nullptr;
+	CUICellItem*			m_represent_parent = nullptr;
+	
 							CUICellItem				();
 	virtual					~CUICellItem			();
 
