@@ -10,7 +10,7 @@
 #include "alife_simulator.h"
 #include "alife_story_registry.h"
 #include "xrServer_Objects_ALife.h"
-#include "ui\uixmlinit.h"
+#include "../xrUI/UIXmlInit.h"
 
 void INFO_DATA::load (IReader& stream) 
 {

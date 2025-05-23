@@ -359,7 +359,7 @@ void AlifeGiveInfo(const CALifeSimulator *alife, const ALife::_OBJECT_ID &id, LP
 
 	if (std::find_if(known_info->begin(), known_info->end(), CFindByIDPred(info_id)) == known_info->end())
 	{
-		known_info->push_back(info_id);
+		known_info->push_back(INFO_DATA(info_id, Level().GetGameTime()));
 	}
 
 	return;
