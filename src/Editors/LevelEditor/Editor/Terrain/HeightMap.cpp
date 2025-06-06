@@ -4,6 +4,16 @@
 using XRay::Editor::HeightmapUtils::SHeightMap;
 using XRay::Editor::HeightmapUtils::SHeightMapRenderData;
 
+struct FTerrainVertex
+{
+	Fvector position;  // float3 в шейдере
+	u32     color;     // uint (обычно преобразуется в float4 через unpack)
+};
+
+ID3D11Buffer* pTerrainVB = nullptr;  // Vertex Buffer для террейна
+
+#define MAX_TERRAIN_VERTICES 1024 * 1024
+
 bool SHeightMap::LoadRAW(const char* filename)
 {
 	if (!FS.TryLoad(filename))
@@ -201,7 +211,7 @@ void SHeightMap::PrecacheRenderData(float scaleY, float cellSize, u32 baseColor,
 						Fvector v2 = { (x + 1) * cellSize - centerX, h2 - CenterY, (z + 1) * cellSize - centerZ };
 						Fvector v3 = { x * cellSize - centerX, h3 - CenterY, (z + 1) * cellSize - centerZ };
 
-						chunk.Vertices.insert(chunk.Vertices.end(), { v0, v1, v2, v0, v2, v3 });
+						chunk.Vertices.insert(chunk.Vertices.end(), { v2, v1, v0, v3, v2, v0 });
 						chunk.BBox.modify(v0);
 						chunk.BBox.modify(v2);
 
@@ -268,14 +278,43 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 	if (RenderData.Chunks.empty())
 		return;
 
-	DU_impl.DD_DrawFace_begin(false);
-	RCache.set_CullMode(CULL_NONE);
-	EDevice->SetShader(EDevice->ShaderTransform);
+	if (!pTerrainVB) {
+		// Размер данных вершин (в байтах)
+		const UINT vertexBufferSize = MAX_TERRAIN_VERTICES * sizeof(FTerrainVertex);
+		
+		// Описание буфера
+		D3D11_BUFFER_DESC bufferDesc = {};
+		bufferDesc.ByteWidth = vertexBufferSize;
+		bufferDesc.Usage = D3D11_USAGE_DYNAMIC;       // Часто обновляется
+		bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+		// Создаём буфер
+		R_CHK(RDevice->CreateBuffer(&bufferDesc, NULL, &pTerrainVB));
+	}
+
+	EDevice->SetShader(EDevice->ShaderTerrain);
+	RCache.set_Element(EDevice->ShaderTerrain->E[0]);
 
 	CFrustum& frustum = ::Render->ViewBase;
+	//EDevice->SetRS(D3DRS_CULLMODE, D3DCULL_NONE);
+
+	//StateManager.Apply();
+	
+	RContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
+	// Текущая позиция в буфере (в вершинах)
+	UINT currentVertexPos = 0;
+
+	// Блокируем буфер для записи (делаем это один раз перед циклом)
+	D3D11_MAPPED_SUBRESOURCE mappedData;
+	R_CHK(RContext->Map(pTerrainVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData));
+
+	FTerrainVertex* pVertices = reinterpret_cast<FTerrainVertex*>(mappedData.pData);
 
 	for (const auto& chunk : RenderData.Chunks)
 	{
+		// Проверка видимости чанка во фрустуме
 		float aabb[6] =
 		{
 			chunk.BBox.min.x, chunk.BBox.min.y, chunk.BBox.min.z,
@@ -286,19 +325,42 @@ void SHeightMap::Draw(float scaleY, float cellSize)
 		if (frustum.testAABB(aabb, mask) == fcvNone)
 			continue;
 
-		for (size_t i = 0; i < chunk.Vertices.size(); i += 3)
-		{
-			DU_impl.DD_DrawFace_push
-			(
-				chunk.Vertices[i],
-				chunk.Vertices[i + 1],
-				chunk.Vertices[i + 2],
-				chunk.Colors[i]
-			);
+		// Если не хватает места — рисуем и сбрасываем буфер
+		if (currentVertexPos + chunk.Vertices.size() > MAX_TERRAIN_VERTICES) {
+			RContext->Unmap(pTerrainVB, 0);
+
+			// Рисуем накопленные данные
+			UINT stride = sizeof(FTerrainVertex);
+			UINT offset = 0;
+			RContext->IASetVertexBuffers(0, 1, &pTerrainVB, &stride, &offset);
+			RContext->Draw(currentVertexPos, 0);
+
+			// Сбрасываем позицию и снова блокируем буфер
+			currentVertexPos = 0;
+			R_CHK(RContext->Map(pTerrainVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedData));
+			pVertices = static_cast<FTerrainVertex*>(mappedData.pData);
 		}
+
+		// Прямое копирование вершин в буфер
+		for (size_t i = 0; i < chunk.Vertices.size(); ++i) {
+			pVertices[currentVertexPos + i].position = chunk.Vertices[i];
+			pVertices[currentVertexPos + i].color = chunk.Colors[i];
+		}
+
+		currentVertexPos += chunk.Vertices.size();
 	}
 
-	DU_impl.DD_DrawFace_end();
+	// Отрисовка оставшихся вершин
+	if (currentVertexPos > 0) {
+		RContext->Unmap(pTerrainVB, 0);
+		UINT stride = sizeof(FTerrainVertex);
+		UINT offset = 0;
+		RContext->IASetVertexBuffers(0, 1, &pTerrainVB, &stride, &offset);
+		RContext->Draw(currentVertexPos, 0);
+	}
+	else {
+		RContext->Unmap(pTerrainVB, 0); // Ничего не рисовали, но буфер нужно разблокировать
+	}
 }
 
 void SHeightMap::MarkDirty()

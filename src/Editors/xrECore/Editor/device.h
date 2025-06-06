@@ -59,6 +59,8 @@ public:
 	ref_shader ShaderTransform;
 	ref_shader ShaderNoTransformT;
 
+	ref_shader ShaderTerrain;
+
 	ref_texture texture_null;
 	Fmaterial m_CurrentMat;
 	Fmaterial m_DefaultMat;

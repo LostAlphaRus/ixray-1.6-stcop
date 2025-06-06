@@ -366,6 +366,8 @@ void CEditorRenderDevice::_Create(IReader* F)
 	m_WireShaderAxis.create("editor_wire_axis");
 	m_WireShaderEdges.create("editor_wire_edges");
 
+	ShaderTerrain.create("editor_terrain");
+
 	//dx10BufferUtils::CreateConstantBuffer( &m_MaterialBuffer, sizeof( Fmaterial ) );
 	//dx10BufferUtils::CreateConstantBuffer( &m_LightBuffer, sizeof( Flight ) * MAX_EDITOR_LIGHT );
 
@@ -667,7 +669,7 @@ void CEditorRenderDevice::SetRS(D3DRENDERSTATETYPE p1, u32 p2)
 		FillMode = p2;
 		break;    /*case D3DFILLMODE */
 	case D3DRS_SHADEMODE: 
-		R_ASSERT(0);
+		//R_ASSERT(0);
 		break;    /*case D3DSHADEMODE */
 	case D3DRS_ZWRITEENABLE: 
 		RCache.set_ZWrite(p2);
