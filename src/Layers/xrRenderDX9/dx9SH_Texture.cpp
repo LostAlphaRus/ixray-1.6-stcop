@@ -84,7 +84,6 @@ void CTexture::CreateEmpty(u32 w, u32 h)
 
 	Preload();
 
-	u32	mem = 0;
 	DWORD usage = 0;
 	D3DPOOL pool = D3DPOOL_MANAGED;
 

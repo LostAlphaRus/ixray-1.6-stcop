@@ -151,7 +151,6 @@ void CTexture::CreateEmpty(u32 w, u32 h)
 
 	Preload();
 
-	u32	mem = w * h * 4;
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = w;
 	desc.Height = h;
@@ -169,7 +168,7 @@ void CTexture::CreateEmpty(u32 w, u32 h)
 
 	if (pSurface)
 	{
-		flags.MemoryUsage = mem;
+		flags.MemoryUsage = w * h * 4;
 		CHK_DX(RDevice->CreateShaderResourceView(pSurface, nullptr, &m_pSRView));
 	}
 
