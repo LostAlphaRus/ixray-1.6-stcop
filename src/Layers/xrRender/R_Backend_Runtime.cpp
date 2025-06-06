@@ -462,13 +462,13 @@ void CBackend::set_Textures			(STextureList* _T) {}
 CTextureAtlas::CTextureAtlas() :
 #ifdef DEBUG
 	init_was_called{},
-	m_name{},
 #endif
 	m_width{},
 	m_height{},
 	m_id{ _kRenderBackend_TextureAtlasInvalidID },
 	m_p_atlas{},
 	m_p_texture{},
+	m_name{},
 	static_atlas_items_storage{},
 	sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) },
 	m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper} }
@@ -479,9 +479,8 @@ CTextureAtlas::CTextureAtlas() :
 CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 #ifdef DEBUG
 	init_was_called{ other.init_was_called },
-	m_name{},
 #endif
-	m_width{ other.m_width }, m_height{ other.m_height }, m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper} }
+	m_width{ other.m_width }, m_height{ other.m_height }, m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, m_name{}, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper} }
 {
 	other.m_p_atlas = nullptr;
 	other.m_p_texture = nullptr;
@@ -495,15 +494,12 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 	}
 
 	other.m_atlas_items.clear();
-
-#ifdef DEBUG
+	
 	if (other.m_name[0] != '\0')
 	{
 		std::memcpy(m_name, other.m_name, strlen(other.m_name));
 	}
-
 	other.m_name[0] = '\0';
-#endif
 }
 
 CTextureAtlas::~CTextureAtlas()
