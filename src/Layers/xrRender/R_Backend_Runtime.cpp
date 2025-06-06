@@ -446,3 +446,46 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fmatrix*	_xform  /*=nullptr */, u32 
 void CBackend::set_Textures			(STextureList* _T) {}
 
 #endif
+
+CTextureAtlas::CTextureAtlas(int width, int height, const char* pName)
+{
+}
+
+CTextureAtlas::CTextureAtlas()
+{
+}
+
+CTextureAtlas::~CTextureAtlas()
+{
+}
+
+void CTextureAtlas::init(int width, int height, const char* pName)
+{
+}
+
+void CTextureAtlas::uninit()
+{
+}
+
+const char* CTextureAtlas::getName(void) const 
+{
+#ifdef DEBUG
+	return m_name;
+#else
+	return "OPTIMIZED_BUILD";
+#endif
+}
+
+void CTextureAtlas::setName(const char* pName)
+{
+#ifdef DEBUG
+	if (!pName || pName[0] == '\0')
+	{
+		unsigned int num = reinterpret_cast<unsigned int>(this);
+		std::sprintf(m_name, "SVGAtlas_%d", num);
+		return;
+	}
+
+	std::memcpy(m_name, pName, sizeof(m_name));
+#endif
+}

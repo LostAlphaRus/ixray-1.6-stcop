@@ -15,6 +15,7 @@
 #include "R_Backend_xform.h"
 #include "R_Backend_hemi.h"
 #include "R_Backend_tree.h"
+#include <memory_resource>
 
 #ifdef USE_DX11
 #	include "..\xrRenderPC_R4\r_backend_lod.h"
@@ -45,6 +46,64 @@ struct	R_statistics			{
 	R_statistics_element		s_dynamic_3B	;
 	R_statistics_element		s_dynamic_4B	;
 };
+
+constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
+constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
+
+class CTextureAtlas
+{
+public:
+	CTextureAtlas(int width, int height, const char* pName);
+	CTextureAtlas();
+	~CTextureAtlas();
+
+	void init(int width=-1, int height=-1, const char* pName=nullptr);
+	void uninit();
+
+	const char* getName(void) const;
+	void setName(const char* pName);
+
+private:
+#ifdef DEBUG
+	int m_width;
+	int m_height;
+	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
+#endif
+};
+
+enum eSVGStorageFlags {
+	// new requested atlases can't be created and you get runtime exception (bad_alloc if memory was run out)
+	kFeatureSVGStorage_Static_Allocation = 1 << 1,
+
+	// if there's big amount of resources and we can't place on static storage we allocate more space and thus atlases
+	kFeatureSVGStorage_Dynamic_Allocation = 1 << 2
+};
+
+template<unsigned char svg_atlas_count, unsigned int svg_flags>
+class CSVGStorage
+{
+public:
+	CSVGStorage();
+	~CSVGStorage();
+
+	void init();
+	void uninit();
+
+	// returns preallocated size that was specified initially (but it doesn't show current size)
+	constexpr unsigned char get_static_size() const;
+
+	// returns current size of storage
+	unsigned int get_size() const;
+
+private:
+#ifdef DEBUG
+	bool init_was_called;
+#endif
+	unsigned char static_storage[std::bit_ceil(sizeof(CTextureAtlas)*svg_atlas_count)];
+	std::pmr::monotonic_buffer_resource ss_wrapper;
+	std::pmr::vector<CTextureAtlas> storage;
+};
+
 
 #pragma warning(push)
 #pragma warning(disable:4324)
@@ -161,6 +220,7 @@ private:
 	STextureList*					T;
 	SMatrixList*					M;
 	SConstantList*					C;
+	CSVGStorage<_kRenderBackend_SVGStorageSizeInitial, eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation> storage_svg;
 
 	// Lists-expanded
 	CTexture*						textures_ps	[mtMaxPixelShaderTextures];	// stages
