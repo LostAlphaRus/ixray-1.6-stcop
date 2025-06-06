@@ -150,7 +150,7 @@ IC CSVGStorage<svg_atlas_count, svg_flags>::CSVGStorage() :
 #endif
 	static_storage{},
 	ss_wrapper{ &static_storage, sizeof(static_storage), svg_flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
-	storage{ &ss_wrapper }
+	storage{ std::pmr::polymorphic_allocator<CTextureAtlas>{&ss_wrapper} }
 {
 	static_assert(!(svg_flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation && svg_flags & eSVGStorageFlags::kFeatureSVGStorage_Dynamic_Allocation), "invalid flags");
 
