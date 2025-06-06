@@ -12,6 +12,7 @@ using namespace DirectX;
 #endif //USE_DX11
 
 #include "dxRenderDeviceRender.h"
+#include "../xrRender/dxUIShader.h"
 
 #include "smol-atlas.h"
 
@@ -463,12 +464,9 @@ CTextureAtlas::CTextureAtlas() :
 #ifdef DEBUG
 	init_was_called{},
 #endif
-	m_width{},
-	m_height{},
 	m_id{ _kRenderBackend_TextureAtlasInvalidID },
 	m_p_atlas{},
 	m_p_texture{},
-	m_name{},
 	static_atlas_items_storage{},
 	sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) },
 	m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper} }
@@ -480,12 +478,10 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 #ifdef DEBUG
 	init_was_called{ other.init_was_called },
 #endif
-	m_width{ other.m_width }, m_height{ other.m_height }, m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, m_name{}, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper} }
+	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper} }
 {
 	other.m_p_atlas = nullptr;
 	other.m_p_texture = nullptr;
-	other.m_width = 0;
-	other.m_height = 0;
 	other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 
 	for (CTextureAtlasItem& item : other.m_atlas_items)
@@ -494,12 +490,6 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 	}
 
 	other.m_atlas_items.clear();
-	
-	if (other.m_name[0] != '\0')
-	{
-		std::memcpy(m_name, other.m_name, strlen(other.m_name));
-	}
-	other.m_name[0] = '\0';
 }
 
 CTextureAtlas::~CTextureAtlas()
@@ -515,8 +505,6 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 	{
 		uninit();
 
-		this->m_width = other.m_width;
-		this->m_height = other.m_height;
 		this->m_id = other.m_id;
 		this->m_p_atlas = other.m_p_atlas;
 
@@ -531,16 +519,8 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 
 		other.m_p_atlas = nullptr;
 		other.m_p_texture = nullptr;
-		other.m_width = 0;
-		other.m_height = 0;
 		other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 		other.m_atlas_items.clear();
-		if (other.m_name[0] != '\0')
-		{
-			std::memcpy(m_name, other.m_name, strlen(other.m_name));
-		}
-
-		other.m_name[0] = '\0';
 
 #ifdef DEBUG
 		init_was_called = other.init_was_called;
@@ -566,10 +546,16 @@ void CTextureAtlas::init(ID3DDevice* p_device, int width, int height, const char
 		R_ASSERT(this->m_p_atlas && "failed to create logical layout atlas!");
 	}
 
-	this->setName(pName);
-	this->m_p_texture = DEV->_CreateEmptyTexture(this->m_name, width, height);
-	this->m_p_texture->setDebugName(pName);
+	this->m_p_texture = DEV->_CreateEmptyTexture(pName, width, height);
+	
+	if (this->m_p_texture)
+		this->m_p_texture->setDebugName(pName);
+	
 	R_ASSERT(this->m_p_texture && "must be created a valid texture from resource manager, failed to create!");
+
+#ifdef DEBUG
+	init_was_called = true;
+#endif
 }
 
 void CTextureAtlas::uninit()
@@ -580,9 +566,6 @@ void CTextureAtlas::uninit()
 		this->m_p_texture->Unload();
 		this->m_p_texture = nullptr;
 	}
-
-	this->m_width = 0;
-	this->m_height = 0;
 
 	if (this->m_p_atlas)
 	{
@@ -623,10 +606,12 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 			CTextureAtlasItem item;
 			item.p_placement = p_current_placement;
 
-			item.u0 = float(x) / float(this->m_width);
-			item.v0 = float(y) / float(this->m_height);
-			item.u1 = float(x + w) / float(this->m_width);
-			item.v1 = float(y + h) / float(this->m_height);
+			u32 w = this->m_p_texture->get_Width();
+			u32 h = this->m_p_texture->get_Height();
+			item.u0 = float(x) / float(w);
+			item.v0 = float(y) / float(h);
+			item.u1 = float(x + w) / float(w);
+			item.v1 = float(y + h) / float(h);
 
 			this->m_atlas_items.push_back(item);
 
@@ -729,20 +714,6 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 
 }
 
-std::string_view CTextureAtlas::getName(void) const
-{
-	return std::string_view(m_name);	
-}
-
-void CTextureAtlas::setName(const char* pName)
-{
-	R_ASSERT(pName && "you must pass a valid name!");
-	R_ASSERT(pName[0] != '\0' && "you must pass a valid name!");
-
-	if (pName && pName[0] != '\0')
-		std::memcpy(m_name, pName, sizeof(m_name));
-}
-
 void* CTextureAtlas::getResource()
 {
 	return nullptr;
@@ -769,43 +740,54 @@ void CTextureAtlas::setID(u32 id)
 CSVGStorage::CSVGStorage(u32 flags) :
 
 #ifdef DEBUG
-	init_was_called{},
+	m_init_was_called{},
 #endif
-	atlas_index_generator{},
-	p_error_shader{},
-	static_storage{},
-	ss_wrapper{ &static_storage, sizeof(static_storage), flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
-	storage{ std::pmr::polymorphic_allocator<CTextureAtlas>{&ss_wrapper} }
+	m_atlas_index_generator{},
+	m_p_default_shader{},
+	m_default_atlas{},
+	m_static_storage{},
+	m_ss_wrapper{ &m_static_storage, sizeof(m_static_storage), flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
+	m_storage{ std::pmr::polymorphic_allocator<CTextureAtlas>{&m_ss_wrapper} }
 {
 	R_ASSERT(!(flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation && flags & eSVGStorageFlags::kFeatureSVGStorage_Dynamic_Allocation) && "invalid flags");
 
 	// if allocation size is changed in static mode you will get throw bad_alloc due to fact that required allocation formula was changed so in such case you have to change the size of static_storage field please
-	storage.reserve(_kRenderBackend_SVGStorageSizeInitial);
+	m_storage.reserve(_kRenderBackend_SVGStorageSizeInitial);
 }
 
 
 CSVGStorage::~CSVGStorage()
 {
 #ifdef DEBUG
-	R_ASSERT(!init_was_called && "you forgot to call uninit!");
+	R_ASSERT(!m_init_was_called && "you forgot to call uninit!");
 #endif
 }
 
-void CSVGStorage::init()
+void CSVGStorage::init(ID3DDevice* p_device, ID3DDeviceContext* p_device_context)
 {
-	init_default_shader();
+	R_ASSERT(p_device && "you must pass a valid ID3DDevice");
+
+#ifdef USE_DX11
+	R_ASSERT(p_device_context && "you must pass a valid ID3DDeviceContext");
+#endif
+
+	this->m_p_device = p_device;
+	this->m_p_device_context = p_device_context;
+	
+	this->init_default();
 
 #ifdef DEBUG
-	init_was_called = true;
+	m_init_was_called = true;
 #endif
 }
 
 void CSVGStorage::uninit() 
 {
-	xr_delete(p_error_shader);
+	xr_delete(m_p_default_shader);
+	this->m_default_atlas.uninit();
 
 #ifdef DEBUG
-	init_was_called = false;
+	m_init_was_called = false;
 #endif
 }
 
@@ -818,14 +800,31 @@ constexpr unsigned char CSVGStorage::get_static_size() const
 // returns current size of storage
 unsigned int CSVGStorage::get_size() const
 {
-	return this->storage.size();
+	return this->m_storage.size();
 }
 
 // if returns u32(-1) means it is failed to add atlas
 // see allocation policies that defined in eSVGStorageFlags
-u32 CSVGStorage::add_atlas()
+u32 CSVGStorage::add_atlas(u32 w, u32 h, const char* pName)
 {
-	return u32();
+	R_ASSERT(pName && pName[0] != '\0' && "you have to pass a valid and not empty string!");
+
+	u32 result = generate_id();
+
+	return result;
+}
+
+u32 CSVGStorage::add_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool is_generate_id)
+{
+	R_ASSERT(pName && pName[0] != '\0' && "you have to pass a valid and not empty string!");
+
+	u32 result = u32(-1);
+	if (is_generate_id)
+		result = this->generate_id();
+
+	instance.init(this->m_p_device, w, h, pName);
+
+	return result;
 }
 
 CTextureAtlas* CSVGStorage::get_atlas(u32 id)
@@ -857,7 +856,7 @@ void CSVGStorage::load_cache()
 const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& subpath)
 {
 	R_ASSERT(subpath.empty() == false && "must be valid path");
-	R_ASSERT(p_error_shader && "default shader must be initialized!");
+	R_ASSERT(m_p_default_shader && "default shader must be initialized!");
 
 	if (subpath.empty() == false)
 	{
@@ -869,22 +868,45 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& sub
 
 const FactoryPtr<IUIShader>& CSVGStorage::get_default_shader()
 {
-	R_ASSERT(p_error_shader && "must be valid and initialized!");
-	if (p_error_shader)
+	R_ASSERT(m_p_default_shader && "must be valid and initialized!");
+	if (m_p_default_shader)
 	{
-		return *(p_error_shader);
+		return *(m_p_default_shader);
 	}
 
 	return FactoryPtr<IUIShader>();
 }
 
+void CSVGStorage::init_default()
+{
+	this->init_default_atlas();
+	this->init_default_shader();
+}
+
+void CSVGStorage::init_default_atlas()
+{
+	this->add_atlas(512, 512, _kSVGStorage_DefaultAtlasName, this->m_default_atlas);
+	this->m_default_atlas.setID(_kSVGStorage_DefaultAtlasID);
+}
+
 void CSVGStorage::init_default_shader()
 {
-	p_error_shader = new FactoryPtr<IUIShader>();
+	m_p_default_shader = new FactoryPtr<IUIShader>();
 
-	R_ASSERT(p_error_shader && "failed to allocate default shader");
-	if (p_error_shader)
+	R_ASSERT(m_p_default_shader && "failed to allocate default shader");
+	if (m_p_default_shader)
 	{
-
+		(*m_p_default_shader)->create("hud\\default", _kSVGStorage_DefaultAtlasName);
 	}
+}
+
+u32 CSVGStorage::generate_id()
+{
+	++m_atlas_index_generator;
+
+	// we should regenerate id due to avoiding collision with defined id
+	if (m_atlas_index_generator == _kSVGStorage_DefaultAtlasID)
+		++m_atlas_index_generator;
+
+	return m_atlas_index_generator;
 }

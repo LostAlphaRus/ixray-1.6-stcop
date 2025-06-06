@@ -171,9 +171,6 @@ public:
 
 	void addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch = 0);
 
-	std::string_view getName(void) const;
-	void setName(const char* pName);
-
 	void* getResource();
 
 	void saveOnDisk();
@@ -192,8 +189,6 @@ private:
 	bool init_was_called;
 #endif
 
-	u32 m_width;
-	u32 m_height;
 	u32 m_id;
 
 	// logical layout placement 
@@ -201,9 +196,6 @@ private:
 
 	// returned from resource manager and resource manager stores this texture (because later user will need to SetShader calling and for building we need to compile "blender" for that we need to obtain our texture from resource manager otherwise we can't use original way of rendering svg)
 	CTexture* m_p_texture;
-
-	// using for identification purposes due to GSC's renderer architecture (see how blenders work and how to define a pass)
-	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
 	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(CTextureAtlasItem), _kRenderBackend_TextureAtlasPreallocatedItems)];
 	std::pmr::monotonic_buffer_resource sais_wrapper;
 	// todo: probably we need to define possibility for removing image from atlas-(es)

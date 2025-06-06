@@ -624,6 +624,10 @@ CTexture* CResourceManager::_CreateEmptyTexture(LPCSTR _Name, u32 w, u32 h)
 	xrCriticalSectionGuard guard(creationGuard);
 
 	fix_texture_name(Name);
+
+	for (u32 i = 0; i < strlen(Name); ++i)
+		Name[i] = std::tolower(Name[i]);
+
 	// ***** first pass - search already loaded texture
 	LPSTR N = LPSTR(Name);
 	map_TextureIt I = m_textures.find(N);

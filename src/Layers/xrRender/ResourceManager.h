@@ -25,7 +25,7 @@ enum eSVGStorageFlags {
 constexpr const char* _kSVGStorage_DefaultSVGTextureName = "ui_vector_error.svg";
 constexpr const char* _kSVGStorage_DefaultAtlasName = "SVGDefaultAtlas_";
 constexpr unsigned short _kSVGStorage_MaxSubpathLength = 128;
-
+constexpr u32 _kSVGStorage_DefaultAtlasID = 10;
 
 /// @brief author: wh1t3lord
 class ECORE_API CSVGStorage
@@ -41,7 +41,7 @@ public:
 	~CSVGStorage();
 
 	/// @brief call it only after RenderFactory was initialized and can allocate instances based on FactoryPtr
-	void init();
+	void init(ID3DDevice* p_device, ID3DDeviceContext* p_device_context);
 	void uninit();
 
 	// returns preallocated size that was specified initially (but it doesn't show current size)
@@ -52,7 +52,8 @@ public:
 
 	// if returns u32(-1) means it is failed to add atlas
 	// see allocation policies that defined in eSVGStorageFlags
-	u32 add_atlas();
+	u32 add_atlas(u32 w, u32 h, const char* pName);
+	u32 add_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool generate_id=false);
 
 	CTextureAtlas* get_atlas(u32 id);
 
@@ -69,17 +70,24 @@ public:
 	const FactoryPtr<IUIShader>& get_default_shader();
 
 private:
+	void init_default();
+	void init_default_atlas();
 	void init_default_shader();
+	// always linerally adds new value to existed atlas_index_generator field (so obviously really trivial and efficient)
+	u32 generate_id();
 
 private:
 #ifdef DEBUG
-	bool init_was_called;
+	bool m_init_was_called;
 #endif
-	u32 atlas_index_generator;
-	FactoryPtr<IUIShader>* p_error_shader;
-	unsigned char static_storage[calculate_reserve_count(sizeof(CTextureAtlas), static_cast<size_t>(_kRenderBackend_SVGStorageSizeInitial))];
-	std::pmr::monotonic_buffer_resource ss_wrapper;
-	std::pmr::vector<CTextureAtlas> storage;
+	u32 m_atlas_index_generator;
+	FactoryPtr<IUIShader>* m_p_default_shader;
+	ID3DDevice* m_p_device;
+	ID3DDeviceContext* m_p_device_context;
+	CTextureAtlas m_default_atlas;
+	unsigned char m_static_storage[calculate_reserve_count(sizeof(CTextureAtlas), static_cast<size_t>(_kRenderBackend_SVGStorageSizeInitial))];
+	std::pmr::monotonic_buffer_resource m_ss_wrapper;
+	std::pmr::vector<CTextureAtlas> m_storage;
 	
 };
 
@@ -296,7 +304,7 @@ public:
 	Shader*							_lua_Create			(LPCSTR		s_shader,	LPCSTR s_textures);
 	BOOL							_lua_HasShader		(LPCSTR		s_shader);
 
-	CResourceManager						()	: bDeferredLoad(TRUE){	}
+	CResourceManager() : bDeferredLoad(TRUE) { m_pStorageSVG = nullptr; }
 	~CResourceManager						()	;
 
 	void			OnDeviceCreate			(IReader* F);

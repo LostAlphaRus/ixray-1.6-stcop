@@ -8,6 +8,13 @@
 void	CResourceManager::OnDeviceDestroy(BOOL )
 {
 	if (RDEVICE.b_is_Ready)				return;
+
+	if (this->m_pStorageSVG)
+	{
+		this->m_pStorageSVG->uninit();
+		xr_delete(this->m_pStorageSVG);
+	}
+
 	m_textures_description.UnLoad		();
 
 	// Matrices
@@ -115,6 +122,13 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 	}
 
 	m_textures_description.Load				();
+
+	// we don't use storage svg if rendering ui is raster because there's no need in such creation
+	if (!this->m_pStorageSVG && !EngineExternal().isRenderingUIRaster())
+	{
+		this->m_pStorageSVG = new CSVGStorage(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation);
+		this->m_pStorageSVG->init(RDevice, RContext);
+	}
 }
 
 void	CResourceManager::OnDeviceCreate	(LPCSTR shName)
