@@ -162,10 +162,10 @@ public:
 
 	CTextureAtlas& operator=(CTextureAtlas&& other) noexcept;
 
-	void init(IXRRenderDevice* p_device, int width, int height, const char* pName);
+	void init(ID3DDevice* p_device, int width, int height, const char* pName);
 	void uninit();
 
-	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch = 0);
+	void addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch = 0);
 
 	const char* getName(void) const;
 	void setName(const char* pName);

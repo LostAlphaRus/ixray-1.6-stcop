@@ -553,7 +553,7 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 	return *this;
 }
 
-void CTextureAtlas::init(IXRRenderDevice* p_device, int width, int height, const char* pName)
+void CTextureAtlas::init(ID3DDevice* p_device, int width, int height, const char* pName)
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
 
@@ -606,7 +606,7 @@ void CTextureAtlas::uninit()
 #endif
 }
 
-void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch)
+void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT(this->m_p_atlas && "must be initialized before calling this method!");
 	R_ASSERT(this->m_p_texture && "you forgot to call init because texture wasn't initialized!");
