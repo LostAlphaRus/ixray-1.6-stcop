@@ -710,7 +710,6 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 	destBox.bottom = y + h;
 	destBox.back = 1;
 
-	// rowPitch = bytes per row of your source image
 	UINT rowPitch = pitch;
 
 	p_context->UpdateSubresource(
