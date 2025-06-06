@@ -35,6 +35,15 @@ CEngineExternal::CEngineExternal() : m_platform_type(EEngineExternalPlatform::Un
 		R_ASSERT2(false, "Unknown platform mode specified. Please check your engine_external.ltx.");
 	}
 	gamesaveSize = READ_IF_EXISTS(pOptions, r_ivector2, "general", "SaveImageSize", Ivector2().set(128, 128));
+	const char* pRenderingUIType = READ_IF_EXISTS(pOptions, r_string, "ui", "RenderingType", "default");
+	if (!strcmp(pRenderingUIType, "default") || !strcmp(pRenderingUIType, "raster"))
+	{
+		preferredUIRendering = static_cast<unsigned char>(EEngineExternalUIRenderingType::Raster);
+	}
+	else
+	{
+		preferredUIRendering = static_cast<unsigned char>(EEngineExternalUIRenderingType::Vector);
+	}
 }
 
 CEngineExternal::~CEngineExternal() 

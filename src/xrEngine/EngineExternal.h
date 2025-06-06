@@ -59,6 +59,13 @@ enum class EEngineExternalPlatform : unsigned char
 	Unknown = static_cast<unsigned char>(-1)
 };
 
+enum class EEngineExternalUIRenderingType : unsigned char
+{
+	Raster,
+	Vector,
+	Unknown = unsigned char(-1)
+};
+
 constexpr const char* kPlatformNameCOP = "cop";
 constexpr const char* kPlatformNameCS = "cs";
 constexpr const char* kPlatformNameSOC = "soc";
@@ -104,6 +111,7 @@ public:
 
 	xr_string_map<xr_string, xr_string> ShadersOptions;
 	Ivector2 gamesaveSize;
+	unsigned char preferredUIRendering;
 
 private:
 	void InitPlatform(const char* pPlatformName);

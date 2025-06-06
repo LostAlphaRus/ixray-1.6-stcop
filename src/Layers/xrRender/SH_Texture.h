@@ -100,6 +100,8 @@ public:	//	Public class members (must be encapsulated furthur)
 	};
 
 	ID3DBaseTexture* pSurface;
+
+	void setDebugName(const char* pName);
 private:
 	// Sequence data
 	xr_vector<ID3DBaseTexture*>			seqDATA;

@@ -397,3 +397,13 @@ BOOL CTexture::video_IsPlaying	()
 { 
 	return (pTheora)?pTheora->IsPlaying():FALSE; 
 }
+
+void CTexture::setDebugName(const char* pName)
+{
+#ifdef DEBUG
+	if (pSurface)
+	{
+		pSurface->SetPrivateData(WKPDID_D3DDebugObjectName, pName, strlen(pName) + 1, 0);
+	}
+#endif
+}

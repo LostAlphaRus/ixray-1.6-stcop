@@ -667,6 +667,16 @@ D3D_USAGE CTexture::GetUsage()
 	return res;
 }
 
+void CTexture::setDebugName(const char* pName)
+{
+#ifdef DEBUG
+	if (pSurface)
+	{
+		pSurface->SetPrivateData(WKPDID_D3DDebugObjectName, xr_strlen(pName)+1, pName);
+	}
+#endif
+}
+
 void CTexture::video_Play		(BOOL looped, u32 _time)	
 { 
 	if (pTheora) pTheora->Play	(looped,(_time!=0xFFFFFFFF)?(m_play_time=_time):Device.dwTimeContinual); 

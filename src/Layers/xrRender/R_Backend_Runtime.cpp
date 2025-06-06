@@ -568,6 +568,7 @@ void CTextureAtlas::init(ID3DDevice* p_device, int width, int height, const char
 
 	this->setName(pName);
 	this->m_p_texture = DEV->_CreateEmptyTexture(this->m_name, width, height);
+	this->m_p_texture->setDebugName(pName);
 	R_ASSERT(this->m_p_texture && "must be created a valid texture from resource manager, failed to create!");
 }
 
