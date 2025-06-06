@@ -638,7 +638,7 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 	}
 }
 
-void CTextureAtlas::addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
+void CTextureAtlas::addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
 
@@ -683,7 +683,7 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u3
 #endif
 }
 
-void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
+void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
 
