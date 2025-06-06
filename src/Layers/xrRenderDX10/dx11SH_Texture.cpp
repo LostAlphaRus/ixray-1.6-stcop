@@ -45,6 +45,7 @@ CTexture::CTexture		()
 	flags.seqCycles		= FALSE;
 	flags.bLoadedAsStaging = FALSE;
 	m_material			= 1.0f;
+	can_unload = true;
 	bind				= xr_make_delegate(this,&CTexture::apply_load);
 }
 
@@ -173,6 +174,8 @@ void CTexture::CreateEmpty(u32 w, u32 h)
 	}
 
 	PostLoad();
+
+	can_unload = false;
 }
 
 void CTexture::PostLoad	()
@@ -574,6 +577,8 @@ void CTexture::Load		()
 
 void CTexture::Unload	()
 {
+	if (!can_unload) return;
+
 #ifdef DEBUG
 	string_path				msg_buff;
 	xr_sprintf				(msg_buff,sizeof(msg_buff),"* Unloading texture [%s] pSurface RefCount=",cName.c_str());

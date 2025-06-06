@@ -22,6 +22,12 @@ enum eSVGStorageFlags {
 	kFeatureSVGStorage_Dynamic_Allocation = 1 << 2
 };
 
+#ifdef IXR_WINDOWS
+constexpr const char* _kSVGStorge_DefaultSVGTextureSubPathName = "ui\\ui_vector_error.svg";
+#else
+constexpr const char* _kSVGStorge_DefaultSVGTextureSubPathName = "ui/ui_vector_error.svg";
+#endif
+
 constexpr const char* _kSVGStorage_DefaultSVGTextureName = "ui_vector_error.svg";
 constexpr const char* _kSVGStorage_DefaultAtlasName = "SVGDefaultAtlas_";
 constexpr unsigned short _kSVGStorage_MaxSubpathLength = 128;
@@ -56,8 +62,8 @@ public:
 	u32 add_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool generate_id=false);
 
 	CTextureAtlas* get_atlas(u32 id);
-
 	const CTextureAtlas* get_atlas(u32 id) const;
+	const std::pmr::vector<CTextureAtlas>& get_atlases(void) const;
 
 	void delete_atlas(u32 id);
 

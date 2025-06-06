@@ -100,7 +100,8 @@ public:	//	Public class members (must be encapsulated furthur)
 	};
 
 	ID3DBaseTexture* pSurface;
-
+	// create from CreateEmpty and supposed to be manually created/allocated
+	bool can_unload;
 	void setDebugName(const char* pName);
 private:
 	// Sequence data
@@ -130,6 +131,7 @@ constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
 constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
 constexpr u32 _kRenderBackend_TextureAtlasInvalidID = u32(-1);
 constexpr u32 _kRenderBackend_TextureAtlasPreallocatedItems = 256;
+constexpr u32 _kRenderBackend_TextureAtlasPreallocatedDimensions = 8;
 
 inline constexpr size_t calculate_reserve_count(size_t bytes, size_t amount)
 {
@@ -147,7 +149,7 @@ struct smol_atlas_item_t;
 class ECORE_API CTextureAtlas
 {
 public:
-	struct ECORE_API CTextureAtlasItem
+	struct ECORE_API CTextureAtlasElement
 	{
 		float u0 = 0.0f;
 		float v0 = 0.0f;
@@ -155,6 +157,11 @@ public:
 		float v1 = 0.0f;
 
 		smol_atlas_item_t* p_placement = nullptr;
+
+		float x() const;
+		float y() const;
+		float w() const;
+		float h() const;
 	};
 
 public:
@@ -175,8 +182,13 @@ public:
 
 	void saveOnDisk();
 
-	u32 getID();
+	u32 getID() const;
 	void setID(u32);
+
+	u32 getWidth(void) const;
+	u32 getHeight(void) const;
+
+	const std::pmr::vector<CTextureAtlasElement>& getElements(void) const;
 
 private:
 	// for older GAPI < DX11
@@ -196,10 +208,10 @@ private:
 
 	// returned from resource manager and resource manager stores this texture (because later user will need to SetShader calling and for building we need to compile "blender" for that we need to obtain our texture from resource manager otherwise we can't use original way of rendering svg)
 	CTexture* m_p_texture;
-	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(CTextureAtlasItem), _kRenderBackend_TextureAtlasPreallocatedItems)];
+	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(CTextureAtlasElement), _kRenderBackend_TextureAtlasPreallocatedItems)];
 	std::pmr::monotonic_buffer_resource sais_wrapper;
 	// todo: probably we need to define possibility for removing image from atlas-(es)
-	std::pmr::vector<CTextureAtlasItem> m_atlas_items;
+	std::pmr::vector<CTextureAtlasElement> m_atlas_items;
 };
 
 #endif

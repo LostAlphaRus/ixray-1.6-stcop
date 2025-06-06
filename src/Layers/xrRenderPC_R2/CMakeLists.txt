@@ -74,3 +74,13 @@ target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex
 
 ## RenderDoc
 target_include_directories(xrRender_R2 PUBLIC "${RENDERDOC_API}")
+
+## lunaSVG
+
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_LUNASVG_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+)
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${IXR_LUNASVG_INC})
+target_link_libraries(${PROJECT_NAME} PUBLIC ${IXR_LUNASVG_LIB})

@@ -7,6 +7,8 @@
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/xr_object.h"
 
+#include "dxRenderDeviceRender.h"
+
 #include "FBasicVisual.h"
 #include "CHudInitializer.h"
 #include "SkeletonCustom.h"
@@ -524,10 +526,39 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 {
 	if (ImGui::Begin("Render Debug - SVG Storage"))
 	{
-		ImGui::Text("Cache folder: ");
+		if (DEV)
+		{
+			CSVGStorage* pStorage = DEV->GetSVGStorage();
 
+			if (pStorage)
+			{
+				if (ImGui::CollapsingHeader("Runtime"))
+				{
+					CTextureAtlas* pDefault = pStorage->get_atlas(_kSVGStorage_DefaultAtlasID);
+					char name[32];
+					std::sprintf(name, "[%d] %s", pDefault->getID(), _kSVGStorage_DefaultAtlasName);
 
+					if (ImGui::CollapsingHeader(name))
+					{
+						const auto& elements = pDefault->getElements();
 
-		ImGui::End();
+						ImGui::Text("Elements:");
+						for (const auto& element : elements)
+						{
+							ImGui::Text("\t[w=%.2f;h=%.2f] | x=%.2f y=%.2f", element.w(), element.h(), element.x(), element.y());
+						}
+
+						ImGui::Image(pDefault->getResource(), { static_cast<float>(pDefault->getWidth()), static_cast<float>(pDefault->getHeight()) });
+					}
+				}
+
+				if (ImGui::CollapsingHeader("Cache"))
+				{
+
+				}
+			}
+		}
 	}
+	ImGui::End();
+
 }
