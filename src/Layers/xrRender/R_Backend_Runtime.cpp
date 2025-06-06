@@ -783,8 +783,9 @@ void CSVGStorage::init(ID3DDevice* p_device, ID3DDeviceContext* p_device_context
 
 void CSVGStorage::uninit() 
 {
-	xr_delete(m_p_default_shader);
 	this->m_default_atlas.uninit();
+	xr_delete(m_p_default_shader);
+
 
 #ifdef DEBUG
 	m_init_was_called = false;
