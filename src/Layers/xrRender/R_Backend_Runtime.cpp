@@ -1040,8 +1040,8 @@ void CSVGStorage::init_default_atlas()
 			{
 				float fStartDim = 32.0f;
 				fStartDim *= i;
-				const lunasvg::Bitmap& bmp = doc->renderToBitmap(fStartDim, fStartDim);
-
+				lunasvg::Bitmap bmp = doc->renderToBitmap(fStartDim, fStartDim);
+				bmp.convertToRGBA();
 				this->m_default_atlas.addRegion(this->m_p_device, this->m_p_device_context, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
 			}
 		}
