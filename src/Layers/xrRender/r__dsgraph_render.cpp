@@ -520,3 +520,14 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 	}
 }
 
+void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
+{
+	if (ImGui::Begin("Render Debug - SVG Storage"))
+	{
+		ImGui::Text("Cache folder: ");
+
+
+
+		ImGui::End();
+	}
+}

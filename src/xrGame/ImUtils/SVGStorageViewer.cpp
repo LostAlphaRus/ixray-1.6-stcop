@@ -16,4 +16,8 @@
 
 void RenderToolsRenderDebugSVGStorageViewerWindow()
 {
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)])
+		return;
+
+	Render->renderImGuiDebugWindow_SVGStorage();
 }
