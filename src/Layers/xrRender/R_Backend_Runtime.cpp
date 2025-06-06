@@ -713,15 +713,13 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 	// rowPitch = bytes per row of your source image
 	UINT rowPitch = pitch;
 
-	// context is your ID3D11DeviceContext*
-	// atlasTex is your ID3D11Texture2D*
 	p_context->UpdateSubresource(
-		pResourceTexture,         // Destination resource
-		0,                // Mip slice
-		&destBox,         // Subresource region to update
-		pData,          // Pointer to the raw texel data
-		rowPitch,         // Row pitch in bytes
-		0                 // Depth pitch (unused for 2D)
+		pResourceTexture,          
+		0,                
+		&destBox,         
+		pData,         
+		rowPitch,        
+		0                  
 	);
 
 #else
