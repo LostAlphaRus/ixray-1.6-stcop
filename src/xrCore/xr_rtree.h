@@ -158,7 +158,7 @@ namespace rtree2d {
 			std::pmr::vector<Candidate> _buffer{ allocator_ };
 			_buffer.reserve(PreallocNodes);
 
-			std::priority_queue<Candidate, std::pmr::vector<Candidate>, Cmp> pq{};
+			std::priority_queue<Candidate, std::pmr::vector<Candidate>, Cmp> pq{Cmp(), std::move(_buffer)};
 			// Start from root: distance from q to root MBR is 0 if q inside, else boundary dist.
 			pq.push({ root_, root_->mbr.distance2(q) });
 
