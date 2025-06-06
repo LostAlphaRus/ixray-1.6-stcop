@@ -73,6 +73,7 @@ constexpr const char* kPlatformNameSOC = "soc";
 constexpr const char* g_PlatformNames[] = {kPlatformNameSOC, kPlatformNameCS, kPlatformNameCOP};
 constexpr EEngineExternalPlatform g_Platforms[] = {EEngineExternalPlatform::ShadowOfChernobyl, EEngineExternalPlatform::ClearSky, EEngineExternalPlatform::CallOfPripyat};
 
+constexpr const char* kUIConfigField_InventoryVectorIcon = "inv_vec_icon";
 
 static_assert((sizeof(g_PlatformNames) / sizeof(g_PlatformNames[0])) == static_cast<unsigned char>(EEngineExternalPlatform::EnumSize), "you must register names that will be equal to EEngineExternalPlatform, you forgot to add a new platform to g_PlatformNames");
 static_assert((sizeof(g_Platforms) / sizeof(g_Platforms[0])) == static_cast<unsigned char>(EEngineExternalPlatform::EnumSize), "must be equal, probably you forgot to register a new platform in enum or you forgot to add platform to g_Platforms");

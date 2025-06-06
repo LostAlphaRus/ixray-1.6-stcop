@@ -686,48 +686,65 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	shared_str sect_name	= m_pPickUpItem->object().cNameSect();
 
+	bool isRaster = EngineExternal().isRenderingUIRaster();
+
+	if (isRaster == false)
+		isRaster = !(pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon));
+	
+
 	//properties used by inventory menu
-	int m_iGridWidth	= pSettings->r_u32(sect_name, "inv_grid_width");
-	int m_iGridHeight	= pSettings->r_u32(sect_name, "inv_grid_height");
-
-	int m_iXPos			= pSettings->r_u32(sect_name, "inv_grid_x");
-	int m_iYPos			= pSettings->r_u32(sect_name, "inv_grid_y");
-
-	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name.c_str(), "icons_texture", nullptr);
-	UIPickUpItemIcon->SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
-
-	float scale_x = m_iPickUpItemIconWidth /
-		float(m_iGridWidth * INV_GRID_WIDTH(isHQIcons));
-	float scale_y = m_iPickUpItemIconHeight /
-		float(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons));
-
-	scale_x = (scale_x>1) ? 1.0f : scale_x;
-	scale_y = (scale_y>1) ? 1.0f : scale_y;
-
-	if (isHQIcons)
+	if (isRaster)
 	{
-		scale_x = m_iPickUpItemIconWidth /
-			(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) / 2);
-		scale_y = m_iPickUpItemIconHeight /
-			(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) / 2);
+		int m_iGridWidth = pSettings->r_u32(sect_name, "inv_grid_width");
+		int m_iGridHeight = pSettings->r_u32(sect_name, "inv_grid_height");
 
-		scale_x = (scale_x > 1) ? 0.5f : scale_x / 2;
-		scale_y = (scale_y > 1) ? 0.5f : scale_y / 2;
+		int m_iXPos = pSettings->r_u32(sect_name, "inv_grid_x");
+		int m_iYPos = pSettings->r_u32(sect_name, "inv_grid_y");
+
+		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name.c_str(), "icons_texture", nullptr);
+		const ui_shader& ui_shader = InventoryUtilities::GetEquipmentIconsShader(icons_texture);
+		UIPickUpItemIcon->SetShader(ui_shader);
+		float scale_x = m_iPickUpItemIconWidth /
+			float(m_iGridWidth * INV_GRID_WIDTH(isHQIcons));
+		float scale_y = m_iPickUpItemIconHeight /
+			float(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons));
+
+		scale_x = (scale_x > 1) ? 1.0f : scale_x;
+		scale_y = (scale_y > 1) ? 1.0f : scale_y;
+
+		if (isHQIcons)
+		{
+			scale_x = m_iPickUpItemIconWidth /
+				(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) / 2);
+			scale_y = m_iPickUpItemIconHeight /
+				(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) / 2);
+
+			scale_x = (scale_x > 1) ? 0.5f : scale_x / 2;
+			scale_y = (scale_y > 1) ? 0.5f : scale_y / 2;
+		}
+
+		float scale = scale_x < scale_y ? scale_x : scale_y;
+
+		Frect texture_rect = {};
+		texture_rect.lt.set(m_iXPos * INV_GRID_WIDTH(isHQIcons), m_iYPos * INV_GRID_HEIGHT(isHQIcons));
+		texture_rect.rb.set(m_iGridWidth * INV_GRID_WIDTH(isHQIcons), m_iGridHeight * INV_GRID_HEIGHT(isHQIcons));
+		texture_rect.rb.add(texture_rect.lt);
+		UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
+		UIPickUpItemIcon->SetWidth(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) * scale * UI().get_current_kx());
+		UIPickUpItemIcon->SetHeight(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) * scale);
 	}
+	else
+	{
+		std::string_view icon_subpath = pSettings->r_string(sect_name, kUIConfigField_InventoryVectorIcon);
 
-	float scale = scale_x<scale_y?scale_x:scale_y;
+		if (icon_subpath.empty()==false)
+		{
+			
+		}
+	}
+	
 
-	Frect texture_rect = {};
-	texture_rect.lt.set		(m_iXPos*INV_GRID_WIDTH(isHQIcons), m_iYPos*INV_GRID_HEIGHT(isHQIcons));
-	texture_rect.rb.set		(m_iGridWidth*INV_GRID_WIDTH(isHQIcons), m_iGridHeight*INV_GRID_HEIGHT(isHQIcons));
-	texture_rect.rb.add		(texture_rect.lt);
-	UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
 	UIPickUpItemIcon->SetStretchTexture(true);
-
-
-	UIPickUpItemIcon->SetWidth(m_iGridWidth*INV_GRID_WIDTH(isHQIcons) * scale*UI().get_current_kx());
-	UIPickUpItemIcon->SetHeight(m_iGridHeight*INV_GRID_HEIGHT(isHQIcons) * scale);
-
 	UIPickUpItemIcon->SetWndPos(Fvector2().set(	m_iPickUpItemIconX+(m_iPickUpItemIconWidth-UIPickUpItemIcon->GetWidth())/2.0f,
 												m_iPickUpItemIconY+(m_iPickUpItemIconHeight-UIPickUpItemIcon->GetHeight())/2.0f) );
 
