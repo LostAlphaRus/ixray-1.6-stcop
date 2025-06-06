@@ -4,6 +4,8 @@
 
 #include "../../xrCore/xr_resource.h"
 
+#include <memory_resource>
+
 class  ENGINE_API CAviPlayerCustom;
 class  CTheoraSurface;
 
@@ -119,5 +121,88 @@ struct 		resptrcode_texture	: public resptr_base<CTexture>
 };
 typedef	resptr_core<CTexture,resptrcode_texture >	
 	ref_texture;
+
+constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
+constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
+constexpr u32 _kRenderBackend_TextureAtlasInvalidID = u32(-1);
+constexpr u32 _kRenderBackend_TextureAtlasPreallocatedItems = 256;
+
+inline constexpr size_t calculate_reserve_count(size_t bytes, size_t amount)
+{
+#ifndef DEBUG
+	return std::bit_ceil(bytes * amount);
+#else
+	return std::bit_ceil(bytes * amount) * 2;
+#endif
+}
+
+struct smol_atlas_t;
+struct smol_atlas_item_t;
+
+/// @brief author: wh1t3lord
+class ECORE_API CTextureAtlas
+{
+public:
+	struct ECORE_API CTextureAtlasItem
+	{
+		float u0 = 0.0f;
+		float v0 = 0.0f;
+		float u1 = 0.0f;
+		float v1 = 0.0f;
+
+		smol_atlas_item_t* p_placement = nullptr;
+	};
+
+public:
+	CTextureAtlas();
+	CTextureAtlas(CTextureAtlas&& other) noexcept;
+	CTextureAtlas(const CTextureAtlas&) = delete;
+	CTextureAtlas& operator=(const CTextureAtlas&) = delete;
+	~CTextureAtlas();
+
+	CTextureAtlas& operator=(CTextureAtlas&& other) noexcept;
+
+	void init(IXRRenderDevice* p_device, int width, int height, const char* pName);
+	void uninit();
+
+	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch = 0);
+
+	const char* getName(void) const;
+	void setName(const char* pName);
+
+	void* getResource();
+
+	void saveOnDisk();
+
+	u32 getID();
+	void setID(u32);
+
+private:
+	// for older GAPI < DX11
+	void addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
+
+	// for newer GAPI >= DX11
+	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
+private:
+#ifdef DEBUG
+	bool init_was_called;
+	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
+#endif
+
+	u32 m_width;
+	u32 m_height;
+	u32 m_id;
+
+	// logical layout placement 
+	smol_atlas_t* m_p_atlas;
+
+	// returned from resource manager and resource manager stores this texture (because later user will need to SetShader calling and for building we need to compile "blender" for that we need to obtain our texture from resource manager otherwise we can't use original way of rendering svg)
+	CTexture* m_p_texture;
+
+	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(CTextureAtlasItem), _kRenderBackend_TextureAtlasPreallocatedItems)];
+	std::pmr::monotonic_buffer_resource sais_wrapper;
+	// todo: probably we need to define possibility for removing image from atlas-(es)
+	std::pmr::vector<CTextureAtlasItem> m_atlas_items;
+};
 
 #endif

@@ -11,6 +11,8 @@ using namespace DirectX;
 #include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
 #endif //USE_DX11
 
+#include "dxRenderDeviceRender.h"
+
 #include "smol-atlas.h"
 
 #ifdef DEBUG
@@ -159,7 +161,7 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=nullptr */, u32 c
 		CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
 		return;
 	}
-
+	
 	// Enable and setup planes
 	VERIFY	(_planes && count);
 	if		(count>Caps.geometry.dwClipPlanes)	count=Caps.geometry.dwClipPlanes;
@@ -456,37 +458,30 @@ void CBackend::set_Textures			(STextureList* _T) {}
 
 #endif
 
+
 CTextureAtlas::CTextureAtlas() :
 #ifdef DEBUG
-init_was_called{},
-m_name{},
+	init_was_called{},
+	m_name{},
 #endif
-m_width{},
-m_height{},
-m_id{_kRenderBackend_TextureAtlasInvalidID},
-m_p_atlas{},
-#ifdef IXR_WINDOWS
-#if defined(D3D12_SDK_VERSION)
-#elif defined(D3D11_SDK_VERSION)
-m_p_texture{},
-#elif defined(D3D10_SDK_VERSION)
-#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
-m_p_texture{},
-#endif
-#endif
-static_atlas_items_storage{},
-sais_wrapper{&static_atlas_items_storage, sizeof(static_atlas_items_storage)},
-m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper}}
+	m_width{},
+	m_height{},
+	m_id{ _kRenderBackend_TextureAtlasInvalidID },
+	m_p_atlas{},
+	m_p_texture{},
+	static_atlas_items_storage{},
+	sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) },
+	m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper} }
 {
 	m_atlas_items.reserve(_kRenderBackend_TextureAtlasPreallocatedItems);
 }
 
-CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept : 
+CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 #ifdef DEBUG
-	init_was_called{other.init_was_called},
+	init_was_called{ other.init_was_called },
 	m_name{},
 #endif
-	m_width{ other.m_width }, m_height{ other.m_height }, m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{&static_atlas_items_storage, sizeof(static_atlas_items_storage)}, m_atlas_items{std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper}}
+	m_width{ other.m_width }, m_height{ other.m_height }, m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper} }
 {
 	other.m_p_atlas = nullptr;
 	other.m_p_texture = nullptr;
@@ -529,15 +524,8 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 		this->m_id = other.m_id;
 		this->m_p_atlas = other.m_p_atlas;
 
-#ifdef IXR_WINDOWS
-#if defined(D3D12_SDK_VERSION)
-#elif defined(D3D11_SDK_VERSION)
-	 
-#elif defined(D3D10_SDK_VERSION)
-#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
 		this->m_p_texture = other.m_p_texture;
-#endif
-#endif
+
 		R_ASSERT(this->m_atlas_items.capacity() != 0 && "it MUST be initialized through ctor otherwise something is broken or memory corruption!");
 
 		for (CTextureAtlasItem& item : other.m_atlas_items)
@@ -569,8 +557,8 @@ void CTextureAtlas::init(IXRRenderDevice* p_device, int width, int height, const
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
 
-	R_ASSERT(width>0 && "must be valid");
-	R_ASSERT(height>0 && "must be valid!");
+	R_ASSERT(width > 0 && "must be valid");
+	R_ASSERT(height > 0 && "must be valid!");
 	R_ASSERT(!this->m_p_atlas && "must be not initialized otherwise you forgot to call uninit!");
 
 	if (!this->m_p_atlas)
@@ -580,76 +568,18 @@ void CTextureAtlas::init(IXRRenderDevice* p_device, int width, int height, const
 		R_ASSERT(this->m_p_atlas && "failed to create logical layout atlas!");
 	}
 
-#ifdef IXR_WINDOWS
-#if defined(D3D12_SDK_VERSION)
-#elif defined(D3D11_SDK_VERSION)
-#elif defined(D3D10_SDK_VERSION)
-#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
-
-	DWORD usage = 0;
-	D3DPOOL pool = D3DPOOL_MANAGED;
-
-	usage = D3DUSAGE_DYNAMIC;
-	pool = D3DPOOL_DEFAULT;
-	m_width = width;
-	m_height = height;
-
-	HRESULT hr = p_device->CreateTexture(
-		width, height,
-		1,                // mip levels
-		usage,
-		D3DFMT_A8R8G8B8,  // 32-bit RGBA
-		pool,
-		&m_p_texture,
-		nullptr
-	);
-	
-
-	R_ASSERT(!(FAILED(hr)) && "failed to create texture");
-
-#ifdef DEBUG
-	init_was_called = true;
-	if (pName && SUCCEEDED(hr))
-	{
-		std::memcpy(m_name, pName, strlen(pName));
-
-
-		if (this->m_p_texture)
-		{
-			R_ASSERT(this->m_p_texture && "must be valid");
-
-			hr = this->m_p_texture->SetPrivateData(WKPDID_D3DDebugObjectName, pName, static_cast<UINT>(strlen(pName) + 1), 0);
-			
-			R_ASSERT(SUCCEEDED(hr) && "must be success operation otherwise bug on driver/os level");
-		}
-	}
-#endif
-
-#else
-#error provide sdk 
-#endif
-#endif
+	// todo: create texture!
 
 }
 
 void CTextureAtlas::uninit()
 {
-#ifdef IXR_WINDOWS
-#if defined(D3D12_SDK_VERSION)
-#elif defined(D3D11_SDK_VERSION)
-#elif defined(D3D10_SDK_VERSION)
-#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
-
 	if (this->m_p_texture)
 	{
-		this->m_p_texture->Release();
+		DEV->_DeleteTexture(this->m_p_texture);
+		this->m_p_texture->Unload();
 		this->m_p_texture = nullptr;
 	}
-
-#else
-#error provide sdk 
-#endif
-#endif
 
 	this->m_width = 0;
 	this->m_height = 0;
@@ -692,7 +622,7 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext*
 
 			CTextureAtlasItem item;
 			item.p_placement = p_current_placement;
-			
+
 			item.u0 = float(x) / float(this->m_width);
 			item.v0 = float(y) / float(this->m_height);
 			item.u1 = float(x + w) / float(this->m_width);
@@ -701,7 +631,7 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext*
 			this->m_atlas_items.push_back(item);
 
 			if (pitch == 0)
-				pitch = w * 4; 
+				pitch = w * 4;
 
 			addRegion(p_device, p_context, x, y, w, h, pData, pitch);
 		}
@@ -716,8 +646,14 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u3
 #if defined(D3D10_SDK_VERSION)
 #elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
 
+	R_ASSERT(m_p_texture && "must be valid!");
+	R_ASSERT(m_p_texture->pSurface && "must be valid!");
+	R_ASSERT(dynamic_cast<ID3DTexture2D*>(m_p_texture->pSurface) && "must be casted to ID3DTexture2D!");
+
+	ID3DTexture2D* pCasted = static_cast<ID3DTexture2D*>(m_p_texture->pSurface);
+
 	D3DLOCKED_RECT lr = {};
-	HRESULT hr = m_p_texture->LockRect(
+	HRESULT hr = pCasted->LockRect(
 		0,
 		&lr,
 		nullptr,
@@ -739,7 +675,7 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u3
 		std::memcpy(destRow, srcRow, w * 4);
 	}
 
-	m_p_texture->UnlockRect(0);
+	pCasted->UnlockRect(0);
 
 #else
 #error provide sdk 
@@ -769,7 +705,7 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext*
 
 }
 
-const char* CTextureAtlas::getName(void) const 
+const char* CTextureAtlas::getName(void) const
 {
 #ifdef DEBUG
 	return m_name;
@@ -812,4 +748,77 @@ u32 CTextureAtlas::getID()
 void CTextureAtlas::setID(u32 id)
 {
 	this->m_id = id;
+}
+
+
+CSVGStorage::CSVGStorage(u32 flags) :
+
+#ifdef DEBUG
+	init_was_called{},
+#endif
+	static_storage{},
+	ss_wrapper{ &static_storage, sizeof(static_storage), flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
+	storage{ std::pmr::polymorphic_allocator<CTextureAtlas>{&ss_wrapper} }
+{
+	R_ASSERT(!(flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation && flags & eSVGStorageFlags::kFeatureSVGStorage_Dynamic_Allocation) && "invalid flags");
+
+	// if allocation size is changed in static mode you will get throw bad_alloc due to fact that required allocation formula was changed so in such case you have to change the size of static_storage field please
+	storage.reserve(_kRenderBackend_SVGStorageSizeInitial);
+}
+
+
+CSVGStorage::~CSVGStorage()
+{
+
+}
+
+void CSVGStorage::init()
+{
+}
+
+void CSVGStorage::uninit() {}
+
+// returns preallocated size that was specified initially (but it doesn't show current size)
+constexpr unsigned char CSVGStorage::get_static_size() const
+{
+	return _kRenderBackend_SVGStorageSizeInitial;
+}
+
+// returns current size of storage
+unsigned int CSVGStorage::get_size() const
+{
+	return this->storage.size();
+}
+
+// if returns u32(-1) means it is failed to add atlas
+// see allocation policies that defined in eSVGStorageFlags
+u32 CSVGStorage::add_atlas()
+{
+	return u32();
+}
+
+CTextureAtlas* CSVGStorage::get_atlas(u32 id)
+{
+	return nullptr;
+}
+
+const CTextureAtlas* CSVGStorage::get_atlas(u32 id) const
+{
+	return nullptr;
+}
+
+void CSVGStorage::delete_atlas(u32 id)
+{
+
+}
+
+void CSVGStorage::cache_atlases()
+{
+
+}
+
+// make it optional field that will check should we cache
+void CSVGStorage::load_cache()
+{
+
 }

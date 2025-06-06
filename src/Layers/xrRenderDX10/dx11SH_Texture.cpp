@@ -12,6 +12,9 @@
 
 #include "../xrRender/dxRenderDeviceRender.h"
 
+
+#include "../xrRender/smol-atlas.h"
+
 #include "StateManager/dx10ShaderResourceStateCache.h"
 
 #define		PRIORITY_HIGH	12

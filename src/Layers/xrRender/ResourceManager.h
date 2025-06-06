@@ -14,6 +14,54 @@ struct		lua_State;
 
 class dx10ConstantBuffer;
 
+enum eSVGStorageFlags {
+	// new requested atlases can't be created and you get runtime exception (bad_alloc if memory was run out)
+	kFeatureSVGStorage_Static_Allocation = 1 << 1,
+
+	// if there's big amount of resources and we can't place on static storage we allocate more space and thus atlases
+	kFeatureSVGStorage_Dynamic_Allocation = 1 << 2
+};
+
+/// @brief author: wh1t3lord
+class ECORE_API CSVGStorage
+{
+public:
+	CSVGStorage(u32 flags);
+	~CSVGStorage();
+
+	void init();
+	void uninit();
+
+	// returns preallocated size that was specified initially (but it doesn't show current size)
+	constexpr unsigned char get_static_size() const;
+
+	// returns current size of storage
+	unsigned int get_size() const;
+
+	// if returns u32(-1) means it is failed to add atlas
+	// see allocation policies that defined in eSVGStorageFlags
+	u32 add_atlas();
+
+	CTextureAtlas* get_atlas(u32 id);
+
+	const CTextureAtlas* get_atlas(u32 id) const;
+
+	void delete_atlas(u32 id);
+
+	void cache_atlases();
+
+	// make it optional field that will check should we cache
+	void load_cache();
+
+private:
+#ifdef DEBUG
+	bool init_was_called;
+#endif
+	unsigned char static_storage[calculate_reserve_count(sizeof(CTextureAtlas), static_cast<size_t>(_kRenderBackend_SVGStorageSizeInitial))];
+	std::pmr::monotonic_buffer_resource ss_wrapper;
+	std::pmr::vector<CTextureAtlas> storage;
+};
+
 // defs
 class ECORE_API CResourceManager
 {
@@ -247,6 +295,8 @@ public:
 	void			Dump					(bool bBrief);
 
 private:
+	CSVGStorage* m_pStorageSVG;
+
 #ifdef USE_DX11
 	map_DS	m_ds;
 	map_HS	m_hs;

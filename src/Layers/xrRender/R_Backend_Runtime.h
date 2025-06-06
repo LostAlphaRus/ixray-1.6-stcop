@@ -142,42 +142,4 @@ ICF void CBackend::set_Shader(Shader* S, u32 pass)
 	set_Element(S->E[0], pass);
 }
 
-template<unsigned char svg_atlas_count, unsigned int svg_flags>
-IC CSVGStorage<svg_atlas_count, svg_flags>::CSVGStorage() :
-
-#ifdef DEBUG
-	init_was_called{},
-#endif
-	static_storage{},
-	ss_wrapper{ &static_storage, sizeof(static_storage), svg_flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
-	storage{ std::pmr::polymorphic_allocator<CTextureAtlas>{&ss_wrapper} }
-{
-	static_assert(!(svg_flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation && svg_flags & eSVGStorageFlags::kFeatureSVGStorage_Dynamic_Allocation), "invalid flags");
-
-	// if allocation size is changed in static mode you will get throw bad_alloc due to fact that required allocation formula was changed so in such case you have to change the size of static_storage field please
-	storage.reserve(svg_atlas_count);
-}
-
-template<unsigned char svg_atlas_count, unsigned int svg_flags>
-IC CSVGStorage<svg_atlas_count, svg_flags>::~CSVGStorage()
-{
-}
-
-template<unsigned char svg_atlas_count, unsigned int svg_flags>
-IC void CSVGStorage<svg_atlas_count, svg_flags>::uninit()
-{
-}
-
-template<unsigned char svg_atlas_count, unsigned int svg_flags>
-IC constexpr unsigned char CSVGStorage<svg_atlas_count, svg_flags>::get_static_size() const
-{
-	return svg_atlas_count;
-}
-
-template<unsigned char svg_atlas_count, unsigned int svg_flags>
-IC unsigned int CSVGStorage<svg_atlas_count, svg_flags>::get_size() const
-{
-	return storage.size();
-}
-
 #endif

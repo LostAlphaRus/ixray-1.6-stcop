@@ -15,7 +15,6 @@
 #include "R_Backend_xform.h"
 #include "R_Backend_hemi.h"
 #include "R_Backend_tree.h"
-#include <memory_resource>
 
 #ifdef USE_DX11
 #	include "..\xrRenderPC_R4\r_backend_lod.h"
@@ -45,147 +44,6 @@ struct	R_statistics			{
 	R_statistics_element		s_dynamic_2B	;
 	R_statistics_element		s_dynamic_3B	;
 	R_statistics_element		s_dynamic_4B	;
-};
-
-constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
-constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
-constexpr u32 _kRenderBackend_TextureAtlasInvalidID = u32(-1);
-constexpr u32 _kRenderBackend_TextureAtlasPreallocatedItems = 256;
-
-inline constexpr size_t calculate_reserve_count(size_t bytes, size_t amount)
-{
-#ifndef DEBUG
-	return std::bit_ceil(bytes * amount);
-#else
-	return std::bit_ceil(bytes * amount) * 2;
-#endif
-}
-
-struct smol_atlas_t;
-struct smol_atlas_item_t;
-
-/// @brief author: wh1t3lord
-class CTextureAtlas
-{
-public:
-	struct CTextureAtlasItem
-	{
-		float u0 = 0.0f;
-		float v0 = 0.0f;
-		float u1 = 0.0f;
-		float v1 = 0.0f;
-
-		smol_atlas_item_t* p_placement = nullptr;
-	};
-
-public:
-	CTextureAtlas();
-	CTextureAtlas(CTextureAtlas&& other) noexcept;
-	CTextureAtlas(const CTextureAtlas&) = delete;		
-	CTextureAtlas& operator=(const CTextureAtlas&) = delete; 
-	~CTextureAtlas();
-
-	CTextureAtlas& operator=(CTextureAtlas&& other) noexcept;
-
-	void init(IXRRenderDevice* p_device, int width, int height, const char* pName);
-	void uninit();
-
-	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch=0);
-
-	const char* getName(void) const;
-	void setName(const char* pName);
-
-	void* getResource();
-
-	void saveOnDisk();
-
-	u32 getID();
-	void setID(u32);
-
-private:
-	// for older GAPI < DX11
-	void addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
-
-	// for newer GAPI >= DX11
-	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
-private:
-#ifdef DEBUG
-	bool init_was_called;
-	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
-#endif
-
-	u32 m_width;
-	u32 m_height;
-	u32 m_id;
-
-	// logical layout placement 
-	smol_atlas_t* m_p_atlas;
-
-#ifdef IXR_WINDOWS
-#if defined(D3D12_SDK_VERSION)
-#elif defined(D3D11_SDK_VERSION)
-	ID3D11Texture2D* m_p_texture;
-#elif defined(D3D10_SDK_VERSION)
-#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
-	IDirect3DTexture9* m_p_texture;
-#endif
-#endif
-
-	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(CTextureAtlasItem), _kRenderBackend_TextureAtlasPreallocatedItems)];
-	std::pmr::monotonic_buffer_resource sais_wrapper;
-	// todo: probably we need to define possibility for removing image from atlas-(es)
-	std::pmr::vector<CTextureAtlasItem> m_atlas_items;
-};
-
-enum eSVGStorageFlags {
-	// new requested atlases can't be created and you get runtime exception (bad_alloc if memory was run out)
-	kFeatureSVGStorage_Static_Allocation = 1 << 1,
-
-	// if there's big amount of resources and we can't place on static storage we allocate more space and thus atlases
-	kFeatureSVGStorage_Dynamic_Allocation = 1 << 2
-};
-
-/// @brief author: wh1t3lord
-/// @tparam svg_atlas_count preallocated count of atlases
-/// @tparam svg_flags flags for defining memory allocation policies and etc
-template<unsigned char svg_atlas_count, unsigned int svg_flags>
-class CSVGStorage
-{
-public:
-	CSVGStorage();
-	~CSVGStorage();
-
-	void init();
-	void uninit();
-
-	// returns preallocated size that was specified initially (but it doesn't show current size)
-	constexpr unsigned char get_static_size() const;
-
-	// returns current size of storage
-	unsigned int get_size() const;
-
-	// if returns u32(-1) means it is failed to add atlas
-	// see allocation policies that defined in eSVGStorageFlags
-	u32 add_atlas();
-
-	CTextureAtlas* get_atlas(u32 id);
-	
-	const CTextureAtlas* get_atlas(u32 id) const;
-	
-	void delete_atlas(u32 id);
-
-	void cache_atlases();
-
-	// make it optional field that will check should we cache
-	void load_cache();
-
-private:
-#ifdef DEBUG
-	bool init_was_called;
-#endif
-	unsigned char static_storage[calculate_reserve_count(sizeof(CTextureAtlas),svg_atlas_count)];
-	std::pmr::monotonic_buffer_resource ss_wrapper;
-	std::pmr::vector<CTextureAtlas> storage;
 };
 
 
@@ -304,7 +162,6 @@ private:
 	STextureList*					T;
 	SMatrixList*					M;
 	SConstantList*					C;
-	CSVGStorage<_kRenderBackend_SVGStorageSizeInitial, eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation> storage_svg;
 
 	// Lists-expanded
 	CTexture*						textures_ps	[mtMaxPixelShaderTextures];	// stages
