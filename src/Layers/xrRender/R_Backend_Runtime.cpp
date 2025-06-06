@@ -642,15 +642,15 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u3
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
 
-#ifdef IXR_WINDOWS
-#if defined(D3D10_SDK_VERSION)
-#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
-
 	R_ASSERT(m_p_texture && "must be valid!");
 	R_ASSERT(m_p_texture->pSurface && "must be valid!");
 	R_ASSERT(dynamic_cast<ID3DTexture2D*>(m_p_texture->pSurface) && "must be casted to ID3DTexture2D!");
 
 	ID3DTexture2D* pCasted = static_cast<ID3DTexture2D*>(m_p_texture->pSurface);
+
+#ifdef IXR_WINDOWS
+#if defined(D3D10_SDK_VERSION)
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
 
 	D3DLOCKED_RECT lr = {};
 	HRESULT hr = pCasted->LockRect(
