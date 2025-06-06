@@ -225,5 +225,5 @@ float CEngineExternal::GetSprintFovFactor() const
 
 bool CEngineExternal::isRenderingUIRaster() const
 {
-	return preferredUIRendering == EEngineExternalUIRenderingType::Raster;
+	return m_preferredUIRendering == EEngineExternalUIRenderingType::Raster;
 }
