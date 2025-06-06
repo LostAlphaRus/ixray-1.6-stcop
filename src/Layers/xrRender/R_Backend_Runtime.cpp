@@ -11,6 +11,15 @@ using namespace DirectX;
 #include "../xrRenderDX10/StateManager/dx10ShaderResourceStateCache.h"
 #endif //USE_DX11
 
+#include "smol-atlas.h"
+
+#ifdef DEBUG
+#ifdef IXR_WINDOWS
+// for setting debug names for DirectX resources due to GUID definitions
+#pragma comment(lib, "dxguid.lib")
+#endif
+#endif
+
 void CBackend::OnFrameEnd	()
 {
 //#ifndef DEDICATED_SERVER
@@ -450,22 +459,56 @@ void CBackend::set_Textures			(STextureList* _T) {}
 CTextureAtlas::CTextureAtlas() :
 #ifdef DEBUG
 init_was_called{},
-m_width{-1},
-m_height{-1},
 m_name{},
 #endif
+m_width{},
+m_height{},
 m_id{_kRenderBackend_TextureAtlasInvalidID},
+m_p_atlas{},
 #ifdef IXR_WINDOWS
 #if defined(D3D12_SDK_VERSION)
 #elif defined(D3D11_SDK_VERSION)
-m_p_texture{}
+m_p_texture{},
 #elif defined(D3D10_SDK_VERSION)
 #elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
-m_p_texture{}
+m_p_texture{},
 #endif
 #endif
-
+static_atlas_items_storage{},
+sais_wrapper{&static_atlas_items_storage, sizeof(static_atlas_items_storage)},
+m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper}}
 {
+	m_atlas_items.reserve(_kRenderBackend_TextureAtlasPreallocatedItems);
+}
+
+CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept : 
+#ifdef DEBUG
+	init_was_called{other.init_was_called},
+	m_name{},
+#endif
+	m_width{ other.m_width }, m_height{ other.m_height }, m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{&static_atlas_items_storage, sizeof(static_atlas_items_storage)}, m_atlas_items{std::pmr::polymorphic_allocator<CTextureAtlasItem>{&sais_wrapper}}
+{
+	other.m_p_atlas = nullptr;
+	other.m_p_texture = nullptr;
+	other.m_width = 0;
+	other.m_height = 0;
+	other.m_id = _kRenderBackend_TextureAtlasInvalidID;
+
+	for (CTextureAtlasItem& item : other.m_atlas_items)
+	{
+		m_atlas_items.push_back(std::move(item));
+	}
+
+	other.m_atlas_items.clear();
+
+#ifdef DEBUG
+	if (other.m_name[0] != '\0')
+	{
+		std::memcpy(m_name, other.m_name, strlen(other.m_name));
+	}
+
+	other.m_name[0] = '\0';
+#endif
 }
 
 CTextureAtlas::~CTextureAtlas()
@@ -475,22 +518,67 @@ CTextureAtlas::~CTextureAtlas()
 #endif
 }
 
+CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
+{
+	if (this != &other)
+	{
+		uninit();
+
+		this->m_width = other.m_width;
+		this->m_height = other.m_height;
+		this->m_id = other.m_id;
+		this->m_p_atlas = other.m_p_atlas;
+
+#ifdef IXR_WINDOWS
+#if defined(D3D12_SDK_VERSION)
+#elif defined(D3D11_SDK_VERSION)
+	 
+#elif defined(D3D10_SDK_VERSION)
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
+		this->m_p_texture = other.m_p_texture;
+#endif
+#endif
+		R_ASSERT(this->m_atlas_items.capacity() != 0 && "it MUST be initialized through ctor otherwise something is broken or memory corruption!");
+
+		for (CTextureAtlasItem& item : other.m_atlas_items)
+		{
+			this->m_atlas_items.push_back(std::move(item));
+		}
+
+		other.m_p_atlas = nullptr;
+		other.m_p_texture = nullptr;
+		other.m_width = 0;
+		other.m_height = 0;
+		other.m_id = _kRenderBackend_TextureAtlasInvalidID;
+		other.m_atlas_items.clear();
+#ifdef DEBUG
+		init_was_called = other.init_was_called;
+		if (other.m_name[0] != '\0')
+		{
+			std::memcpy(m_name, other.m_name, strlen(other.m_name));
+		}
+
+		other.m_name[0] = '\0';
+#endif
+	}
+
+	return *this;
+}
+
 void CTextureAtlas::init(IXRRenderDevice* p_device, int width, int height, const char* pName)
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
 
 	R_ASSERT(width>0 && "must be valid");
-	R_ASSERT(height > 0 && "must be valid!");
+	R_ASSERT(height>0 && "must be valid!");
+	R_ASSERT(!this->m_p_atlas && "must be not initialized otherwise you forgot to call uninit!");
 
-#ifdef DEBUG
-	init_was_called = true;
-	m_width = width;
-	m_height = height;
-	if (pName)
+	if (!this->m_p_atlas)
 	{
-		std::memcpy(m_name, pName, strlen(pName));
+		this->m_p_atlas = sma_atlas_create(width, height);
+
+		R_ASSERT(this->m_p_atlas && "failed to create logical layout atlas!");
 	}
-#endif
 
 #ifdef IXR_WINDOWS
 #if defined(D3D12_SDK_VERSION)
@@ -503,6 +591,8 @@ void CTextureAtlas::init(IXRRenderDevice* p_device, int width, int height, const
 
 	usage = D3DUSAGE_DYNAMIC;
 	pool = D3DPOOL_DEFAULT;
+	m_width = width;
+	m_height = height;
 
 	HRESULT hr = p_device->CreateTexture(
 		width, height,
@@ -513,13 +603,25 @@ void CTextureAtlas::init(IXRRenderDevice* p_device, int width, int height, const
 		&m_p_texture,
 		nullptr
 	);
+	
 
 	R_ASSERT(!(FAILED(hr)) && "failed to create texture");
 
 #ifdef DEBUG
-	if (pName)
+	init_was_called = true;
+	if (pName && SUCCEEDED(hr))
 	{
+		std::memcpy(m_name, pName, strlen(pName));
 
+
+		if (this->m_p_texture)
+		{
+			R_ASSERT(this->m_p_texture && "must be valid");
+
+			hr = this->m_p_texture->SetPrivateData(WKPDID_D3DDebugObjectName, pName, static_cast<UINT>(strlen(pName) + 1), 0);
+			
+			R_ASSERT(SUCCEEDED(hr) && "must be success operation otherwise bug on driver/os level");
+		}
 	}
 #endif
 
@@ -538,15 +640,72 @@ void CTextureAtlas::uninit()
 #elif defined(D3D10_SDK_VERSION)
 #elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
 
-	if (m_p_texture)
+	if (this->m_p_texture)
 	{
-		m_p_texture->Release();
+		this->m_p_texture->Release();
+		this->m_p_texture = nullptr;
 	}
 
 #else
 #error provide sdk 
 #endif
 #endif
+
+	this->m_width = 0;
+	this->m_height = 0;
+
+	if (this->m_p_atlas)
+	{
+		for (CTextureAtlasItem& item : this->m_atlas_items)
+		{
+			R_ASSERT(item.p_placement && "must be valid otherwise you didn't remove item from vector properly");
+			if (item.p_placement)
+			{
+				sma_item_remove(this->m_p_atlas, item.p_placement);
+			}
+		}
+
+		sma_atlas_destroy(this->m_p_atlas);
+
+		this->m_atlas_items.clear();
+		this->m_p_atlas = nullptr;
+	}
+
+#ifdef DEBUG
+	init_was_called = false;
+#endif
+}
+
+void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch)
+{
+	R_ASSERT(this->m_p_atlas && "must be initialized before calling this method!");
+	R_ASSERT(this->m_p_texture && "you forgot to call init because texture wasn't initialized!");
+
+	if (this->m_p_atlas && this->m_p_texture)
+	{
+		smol_atlas_item_t* p_current_placement = sma_item_add(this->m_p_atlas, w, h);
+		R_ASSERT(p_current_placement && "failed to create logical placement item");
+		if (p_current_placement)
+		{
+			u32 x = static_cast<u32>(sma_item_x(p_current_placement));
+			u32 y = static_cast<u32>(sma_item_y(p_current_placement));
+
+			CTextureAtlasItem item;
+			item.p_placement = p_current_placement;
+			
+			item.u0 = float(x) / float(this->m_width);
+			item.v0 = float(y) / float(this->m_height);
+			item.u1 = float(x + w) / float(this->m_width);
+			item.v1 = float(y + h) / float(this->m_height);
+
+			this->m_atlas_items.push_back(item);
+
+			if (pitch == 0)
+				pitch = w * 4; 
+
+			addRegion(p_device, p_context, x, y, w, h, pData, pitch);
+		}
+	}
 }
 
 void CTextureAtlas::addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
@@ -565,7 +724,7 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u3
 		D3DLOCK_NOOVERWRITE
 	);
 
-	R_ASSERT(!(FAILED(hr)) && "failed to lockrect");
+	R_ASSERT(SUCCEEDED(hr) && "failed to lockrect");
 
 	// Copy row by row
 	BYTE* destBase = reinterpret_cast<BYTE*>(lr.pBits);

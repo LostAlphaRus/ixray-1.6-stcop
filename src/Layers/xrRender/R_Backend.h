@@ -50,17 +50,47 @@ struct	R_statistics			{
 constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
 constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
 constexpr u32 _kRenderBackend_TextureAtlasInvalidID = u32(-1);
+constexpr u32 _kRenderBackend_TextureAtlasPreallocatedItems = 256;
 
+inline constexpr size_t calculate_reserve_count(size_t bytes, size_t amount)
+{
+#ifndef DEBUG
+	return std::bit_ceil(bytes * amount);
+#else
+	return std::bit_ceil(bytes * amount) * 2;
+#endif
+}
+
+struct smol_atlas_t;
+struct smol_atlas_item_t;
+
+/// @brief author: wh1t3lord
 class CTextureAtlas
 {
 public:
+	struct CTextureAtlasItem
+	{
+		float u0 = 0.0f;
+		float v0 = 0.0f;
+		float u1 = 0.0f;
+		float v1 = 0.0f;
+
+		smol_atlas_item_t* p_placement = nullptr;
+	};
+
+public:
 	CTextureAtlas();
+	CTextureAtlas(CTextureAtlas&& other) noexcept;
+	CTextureAtlas(const CTextureAtlas&) = delete;		
+	CTextureAtlas& operator=(const CTextureAtlas&) = delete; 
 	~CTextureAtlas();
+
+	CTextureAtlas& operator=(CTextureAtlas&& other) noexcept;
 
 	void init(IXRRenderDevice* p_device, int width, int height, const char* pName);
 	void uninit();
 
-	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
+	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch=0);
 
 	const char* getName(void) const;
 	void setName(const char* pName);
@@ -76,15 +106,20 @@ private:
 	// for older GAPI < DX11
 	void addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
 
+	// for newer GAPI >= DX11
+	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
 private:
 #ifdef DEBUG
 	bool init_was_called;
-	int m_width;
-	int m_height;
 	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
 #endif
 
+	u32 m_width;
+	u32 m_height;
 	u32 m_id;
+
+	// logical layout placement 
+	smol_atlas_t* m_p_atlas;
 
 #ifdef IXR_WINDOWS
 #if defined(D3D12_SDK_VERSION)
@@ -95,6 +130,11 @@ private:
 	IDirect3DTexture9* m_p_texture;
 #endif
 #endif
+
+	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(CTextureAtlasItem), _kRenderBackend_TextureAtlasPreallocatedItems)];
+	std::pmr::monotonic_buffer_resource sais_wrapper;
+	// todo: probably we need to define possibility for removing image from atlas-(es)
+	std::pmr::vector<CTextureAtlasItem> m_atlas_items;
 };
 
 enum eSVGStorageFlags {
@@ -105,6 +145,9 @@ enum eSVGStorageFlags {
 	kFeatureSVGStorage_Dynamic_Allocation = 1 << 2
 };
 
+/// @brief author: wh1t3lord
+/// @tparam svg_atlas_count preallocated count of atlases
+/// @tparam svg_flags flags for defining memory allocation policies and etc
 template<unsigned char svg_atlas_count, unsigned int svg_flags>
 class CSVGStorage
 {
@@ -140,7 +183,7 @@ private:
 #ifdef DEBUG
 	bool init_was_called;
 #endif
-	unsigned char static_storage[std::bit_ceil(sizeof(CTextureAtlas)*svg_atlas_count)];
+	unsigned char static_storage[calculate_reserve_count(sizeof(CTextureAtlas),svg_atlas_count)];
 	std::pmr::monotonic_buffer_resource ss_wrapper;
 	std::pmr::vector<CTextureAtlas> storage;
 };
