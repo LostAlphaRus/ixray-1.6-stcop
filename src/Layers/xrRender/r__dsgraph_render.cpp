@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "../../xrEngine/Render.h"
 #include "../../xrEngine/IRenderable.h"
@@ -542,13 +542,142 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 					{
 						const auto& elements = pDefault->getElements();
 
+						ImGui::SeparatorText("Info");
 						ImGui::Text("Elements:");
 						for (const auto& element : elements)
 						{
 							ImGui::Text("\t[w=%.2f;h=%.2f] | x=%.2f y=%.2f", element.w(), element.h(), element.x(), element.y());
 						}
 
-						ImGui::Image(pDefault->getResource(), { static_cast<float>(pDefault->getWidth()), static_cast<float>(pDefault->getHeight()) });
+						ImGui::SeparatorText("Atlas");
+
+						float atlasPixelW = pDefault->getWidth();
+						float atlasPixelH = pDefault->getHeight();
+
+						ImVec2 atlasDisplaySize = ImVec2((float)atlasPixelW, (float)atlasPixelH);
+						
+						ImGui::Image(pDefault->getResource(), atlasDisplaySize, ImVec2(0,0), ImVec2(1,1), ImVec4(1,1,1,1), ImVec4(1,1,1,1));
+
+						ImVec2 atlasMin = ImGui::GetItemRectMin();
+						ImVec2 atlasMax = ImGui::GetItemRectMax();
+						ImVec2 atlasOnScreenSize = ImVec2(atlasMax.x - atlasMin.x,
+							atlasMax.y - atlasMin.y);
+
+						float scaleX = atlasOnScreenSize.x / (float)atlasPixelW;
+						float scaleY = atlasOnScreenSize.y / (float)atlasPixelH;
+
+						ImVec2 parentCursorBackup = ImGui::GetCursorPos();
+
+						int hoveredIndex = -1;
+						ImVec2   hoveredSubMin, hoveredSubSize;
+
+						ImVec2 mousePos = ImGui::GetMousePos();
+
+						int i = 0; 
+						for (const auto& element : elements)
+						{
+ 
+							ImVec2 subMin = ImVec2(
+								atlasMin.x + 1 + element.x() * scaleX,
+								atlasMin.y + 1 + element.y() * scaleY
+							);
+ 
+							ImVec2 subSize = ImVec2(
+								element.w() * scaleX,
+								element.h() * scaleY
+							);
+							ImVec2 subMax = ImVec2(subMin.x + subSize.x,
+								subMin.y + subSize.y);
+
+ 
+							if (mousePos.x >= subMin.x && mousePos.x <= subMax.x &&
+								mousePos.y >= subMin.y && mousePos.y <= subMax.y)
+							{
+								hoveredIndex = i;
+								hoveredSubMin = subMin;
+								hoveredSubSize = subSize;
+								break; // stop after first hit (assuming subregions don’t overlap)
+							}
+
+							++i;
+						}
+
+						i = 0;
+ 
+						for (const auto& element : elements)
+						{
+ 
+							ImVec2 subMin = ImVec2(
+								atlasMin.x + 1 + element.x() * scaleX,
+								atlasMin.y + 1 + element.y() * scaleY
+							);
+							ImVec2 subSize = ImVec2(
+								element.w() * scaleX,
+								element.h() * scaleY
+							);
+
+ 
+							ImU32 borderColor = (i == hoveredIndex)
+								? IM_COL32(255, 255, 0, 255) // yellow
+								: IM_COL32(255, 0, 0, 255); // red
+
+ 
+							ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+							ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
+
+							ImGuiWindowFlags childFlags =
+								ImGuiWindowFlags_NoTitleBar |
+								ImGuiWindowFlags_NoResize |
+								ImGuiWindowFlags_NoMove |
+								ImGuiWindowFlags_NoScrollbar |
+								ImGuiWindowFlags_NoScrollWithMouse |
+								ImGuiWindowFlags_NoSavedSettings;
+
+							ImGui::SetCursorScreenPos(subMin);
+							ImGui::BeginChild(
+								("SubRegion##" + std::to_string(i)).c_str(),
+								subSize,
+								/*border=*/false,
+								childFlags
+							);
+
+ 
+							ImDrawList* dl = ImGui::GetWindowDrawList();
+							ImVec2 rectMin = ImVec2(subMin.x - 0.5f,
+								subMin.y - 1.0f);
+							ImVec2 rectMax = ImVec2(subMin.x + subSize.x + 0.5f,
+								subMin.y + subSize.y - 0.5f);
+
+							dl->AddRect(rectMin,
+								rectMax,
+								borderColor,
+								0.0f,
+								0,
+								2.0f);
+
+ 
+							ImGui::Dummy(subSize);
+
+							ImGui::EndChild();
+							ImGui::PopStyleColor();
+							ImGui::PopStyleVar();
+
+ 
+							ImGui::SetCursorPos(parentCursorBackup);
+
+							++i;
+						}
+
+ 
+						if (hoveredIndex >= 0)
+						{
+							ImGui::BeginTooltip();
+							ImGui::Text("SubRegion #%d", hoveredIndex);
+							// (Optionally show its pixel‐coords inside the atlas:)
+							const auto& element = elements[hoveredIndex];
+							ImGui::Text("x=%.2f, y=%.2f, w=%.2f, h=%.2f", element.x(), element.y(), element.w(), element.h());
+							ImGui::EndTooltip();
+						}
 					}
 				}
 
