@@ -644,9 +644,9 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
  
 							ImDrawList* dl = ImGui::GetWindowDrawList();
 							ImVec2 rectMin = ImVec2(subMin.x - 0.5f,
-								subMin.y - 1.0f);
+								subMin.y);
 							ImVec2 rectMax = ImVec2(subMin.x + subSize.x + 0.5f,
-								subMin.y + subSize.y - 0.5f);
+								subMin.y + subSize.y);
 
 							dl->AddRect(rectMin,
 								rectMax,

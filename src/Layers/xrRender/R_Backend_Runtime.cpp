@@ -1013,7 +1013,7 @@ void CSVGStorage::init_default_atlas()
 
 	if (pReader)
 	{
-		this->add_atlas(512, 512, _kSVGStorage_DefaultAtlasName, this->m_default_atlas);
+		this->add_atlas(384, 384, _kSVGStorage_DefaultAtlasName, this->m_default_atlas);
 		this->m_default_atlas.setID(_kSVGStorage_DefaultAtlasID);
 
 		u32 len = pReader->length();
