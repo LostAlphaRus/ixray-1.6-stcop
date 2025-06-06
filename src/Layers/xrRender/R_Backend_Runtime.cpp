@@ -535,14 +535,15 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 		other.m_height = 0;
 		other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 		other.m_atlas_items.clear();
-#ifdef DEBUG
-		init_was_called = other.init_was_called;
 		if (other.m_name[0] != '\0')
 		{
 			std::memcpy(m_name, other.m_name, strlen(other.m_name));
 		}
 
 		other.m_name[0] = '\0';
+
+#ifdef DEBUG
+		init_was_called = other.init_was_called;
 #endif
 	}
 
