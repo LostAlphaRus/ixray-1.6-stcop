@@ -64,3 +64,5 @@ set(FREEIMAGE ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FreeImage.WinMerge.
 
 # Nuget
 set(NVTT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.Nvtt.2020.12.21-open/)
+
+# TODO: ixray-team add lunasvg please
