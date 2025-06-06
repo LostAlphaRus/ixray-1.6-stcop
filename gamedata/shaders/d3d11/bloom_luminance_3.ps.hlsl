@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 MiddleGray;
-
 float sample(float2 tc)
 {
     float4 data = s_image.Sample(smp_rtlinear, tc);

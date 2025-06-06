@@ -7,8 +7,6 @@ struct PSInput
 	float3 world_position : TEXCOORD0;	
 };
 
-uniform float3 water_intensity;
-
 Texture2D s_nmap;
 TextureCube s_env0;
 TextureCube s_env1;

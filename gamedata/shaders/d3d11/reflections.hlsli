@@ -9,8 +9,6 @@
 // #define VSLR_SLOW_BREAK
 // #define SSLR_SLOW_BREAK
 
-uniform float4 scaled_screen_res;
-
 float get_depth_fast(float2 tc)
 {
     float P = s_position.SampleLevel(smp_rtlinear, tc, 0).x;

@@ -1,5 +1,4 @@
 #include "common.hlsli"
-uniform float4 m_hud_params;
 
 float main(float Z : TEXCOORD0, float4 pos2d : SV_POSITION) : SV_Depth
 {

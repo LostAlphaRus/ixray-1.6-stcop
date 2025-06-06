@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 weight[2];
-
 float4 main(p_filter I) : SV_Target
 {
     float4 accum = weight[1].w * s_bloom.Sample(smp_rtlinear, I.Tex0.xy);

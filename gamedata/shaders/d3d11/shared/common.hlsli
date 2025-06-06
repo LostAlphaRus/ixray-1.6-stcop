@@ -8,20 +8,20 @@
 //	Used by VS
 cbuffer dynamic_transforms
 {
-    uniform float4x4 m_WVP;
-    uniform float3x4 m_WV;
-    uniform float3x4 m_W;
+    float4x4 m_WVP;
+    float3x4 m_WV;
+    float3x4 m_W;
 
-    uniform float4x4 m_WVP_old;
-    uniform float3x4 m_WV_old;
-    uniform float3x4 m_W_old;
+    float4x4 m_WVP_old;
+    float3x4 m_WV_old;
+    float3x4 m_W_old;
 
-    uniform float4x4 m_P_hud;
+    float4x4 m_P_hud;
 
-    uniform float4 L_material;
-    uniform float4 hemi_cube_pos_faces;
-    uniform float4 hemi_cube_neg_faces;
-    uniform float4 dt_params;
+    float4 L_material;
+    float4 hemi_cube_pos_faces;
+    float4 hemi_cube_neg_faces;
+    float4 dt_params;
 }
 
 cbuffer shader_params
@@ -31,38 +31,38 @@ cbuffer shader_params
 
 cbuffer static_globals
 {
-    uniform float3x4 m_invV;
+    float3x4 m_invV;
 
-    uniform float3x4 m_V;
-    uniform float4x4 m_P;
-    uniform float4x4 m_VP;
+    float3x4 m_V;
+    float4x4 m_P;
+    float4x4 m_VP;
 
-    uniform float3x4 m_V_old;
-    uniform float4x4 m_P_old;
-    uniform float4x4 m_VP_old;
+    float3x4 m_V_old;
+    float4x4 m_P_old;
+    float4x4 m_VP_old;
 
-    uniform float4 timers;
+    float4 timers;
 
-    uniform float4 fog_plane;
-    uniform float4 fog_params;
-    uniform float4 fog_color;
+    float4 fog_plane;
+    float4 fog_params;
+    float4 fog_color;
 
-    uniform float4 L_ambient;
-    uniform float3 L_sun_color;
-    uniform float3 L_sun_dir_w;
-    uniform float4 L_sky_color;
-    uniform float4 L_hemi_color;
+    float4 L_ambient;
+    float3 L_sun_color;
+    float3 L_sun_dir_w;
+    float4 L_sky_color;
+    float4 L_hemi_color;
 
-    uniform float3 eye_position;
+    float3 eye_position;
 
-    uniform float4 pos_decompression_params;
-    uniform float4 pos_decompression_params2;
-    uniform float4 pos_decompression_params_hud;
-    uniform float4 depth_unpack;
-    uniform float def_aref;
-    uniform float4 parallax;
+    float4 pos_decompression_params;
+    float4 pos_decompression_params2;
+    float4 pos_decompression_params_hud;
+    float4 depth_unpack;
+    float def_aref;
+    float4 parallax;
 
-    uniform float4 m_taa_jitter;
+    float4 m_taa_jitter;
 }
 
 float calc_cyclic(float x)

@@ -7,8 +7,6 @@
 Texture2D jitter0;
 sampler smp_jitter;
 
-float4 scaled_screen_res;
-
 float3 uv_to_eye(float2 uv, float eye_z)
 {
     uv = uv * float2(2.0f, 2.0f) - float2(1.0f, 1.0f);

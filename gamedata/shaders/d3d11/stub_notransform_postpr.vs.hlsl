@@ -1,6 +1,5 @@
 #include "common_iostructs.hlsli"
-
-uniform float4 screen_res; // Screen resolution (x-Width,y-Height, zw - 1/resolution)
+#include "common_cbuffers.hlsli"
 
 // Vertex
 v2p_postpr main(v_postpr I)

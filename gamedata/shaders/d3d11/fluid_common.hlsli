@@ -1,3 +1,5 @@
+#include "common_cbuffers.hlsli"
+
 //--------------------------------------------------------------------------------------
 // Defines
 //--------------------------------------------------------------------------------------
@@ -35,39 +37,6 @@ sampler samLinear;
 //--------------------------------------------------------------------------------------
 // Variables
 //--------------------------------------------------------------------------------------
-
-cbuffer FluidSimConfig
-{
-    float textureHeight;
-    float textureWidth;
-    float textureDepth;
-
-    float modulate = 1.0;
-    float epsilon;
-    float timestep;
-    float forward = 1.0;
-    float4 floatVolumeDim; //	Actually float3. We don't support float3 and float2
-}
-
-cbuffer AABBBounds
-{
-    float4 boxLBDcorner; //	float3
-    float4 boxRTUcorner; //	float3
-}
-
-cbuffer EmitterParams
-{
-    float size;
-    float4 center; //	Actually float3. We don't support float3 and float2
-    float4 splatColor;
-}
-
-cbuffer OOBBClipPlanes
-{
-    float4 OOBBClipPlane[6];
-    //	0 - Top
-    //	1 - Bottom
-}
 
 //	For fire simulation. Fuel extinction speed.
 static const float k = 0.006;

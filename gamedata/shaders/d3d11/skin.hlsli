@@ -54,17 +54,6 @@ float4 u_position(float4 v)
     return float4(v.xyz, 1.f);
 } // -12..+12
 
-#define MAX_BONES_COUNT 128
-
-cbuffer SkinConstants
-{
-	float4 sbones_array[MAX_BONES_COUNT * 3];
-	
-#ifndef DISABLE_VELOCITY
-	float4 sbones_array_old[MAX_BONES_COUNT * 3];
-#endif
-}
-
 float3 skinning_dir(float3 dir, float3 m0, float3 m1, float3 m2)
 {
     float3 U = unpack_normal(dir);

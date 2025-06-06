@@ -1,5 +1,4 @@
 #include "common.hlsli"
-uniform float4 screen_res;
 
 float4 main(p_shadow I) : SV_Target
 {

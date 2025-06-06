@@ -1,3 +1,5 @@
+#include "common_cbuffers.hlsli"
+
 //--------------------------------------------------------------------------------------
 // Defines
 //--------------------------------------------------------------------------------------
@@ -38,28 +40,6 @@ sampler samRepeat;
 //--------------------------------------------------------------------------------------
 // Variables
 //--------------------------------------------------------------------------------------
-//	Set once per volume
-//	Use for all rendering passes
-cbuffer FluidRenderConfig
-{
-    float RTWidth;
-    float RTHeight;
-
-    float4 DiffuseLight;
-	float4 DepthUnpack;
-
-    float4x4 WorldViewProjection;
-    float4x4 InvWorldViewProjection;
-
-    float ZNear;
-    float ZFar;
-
-    float4 gridDim; //	float3
-    float4 recGridDim; //	float3
-    float maxGridDim;
-    float gridScaleFactor = 1.0;
-    float4 eyeOnGrid; //	float3
-}
 
 // static	float		edgeThreshold = 0.2;
 // static	float		edgeThreshold = 0.1;

@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform	float4 		m_actor_params;
-
 struct 	v2p
 {
  	float2 	tc0: 		TEXCOORD0;	// base

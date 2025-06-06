@@ -24,7 +24,6 @@ struct PSInput
 };
 
 Texture2D s_image_prev; //Previous rt_generic_0
-float4 scaled_screen_res; //Render resolution
 
 //Settings...
 #define TAA_ALT_PATH //Different min-max estimation. Old path may be slower [todo: check]

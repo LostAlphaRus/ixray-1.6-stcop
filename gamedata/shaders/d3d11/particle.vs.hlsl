@@ -21,8 +21,6 @@ struct v2p
     float fog : FOG;
 };
 
-uniform float4x4 mVPTexgen;
-
 v2p main(vv v)
 {
     v2p o;

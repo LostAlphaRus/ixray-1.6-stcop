@@ -1,7 +1,5 @@
 #include "common.hlsli"
 
-uniform float4 b_params;
-
 float4 main(p_build I) : SV_Target
 {
     float3 s0 = s_image.Sample(smp_rtlinear, I.Tex0.xy).xyz;
