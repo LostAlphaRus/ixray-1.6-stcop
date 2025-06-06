@@ -278,6 +278,19 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				if (ImGui::BeginMenu("Editors##ToolsInGameImGui"))
 				{
 					ImGui::MenuItem("OMF##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
+
+					if (ImGui::BeginMenu("Render##ToolsInGameImGui"))
+					{
+						if (ImGui::BeginMenu("Debug##RenderToolsInGameImGui"))
+						{
+							ImGui::MenuItem("SVGStorageViewer##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_RenderDebug_SVGStorageViewer)]);
+
+							ImGui::EndMenu();
+						}
+
+						ImGui::EndMenu();
+					}
+
 					ImGui::EndMenu();
 				}
 

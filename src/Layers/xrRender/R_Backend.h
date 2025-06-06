@@ -49,6 +49,7 @@ struct	R_statistics			{
 
 constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
 constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
+constexpr u32 _kRenderBackend_TextureAtlasInvalidID = u32(-1);
 
 class CTextureAtlas
 {
@@ -68,6 +69,13 @@ public:
 
 	void saveOnDisk();
 
+	u32 getID();
+	void setID(u32);
+
+private:
+	// for older GAPI < DX11
+	void addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
+
 private:
 #ifdef DEBUG
 	bool init_was_called;
@@ -75,6 +83,8 @@ private:
 	int m_height;
 	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
 #endif
+
+	u32 m_id;
 
 #ifdef IXR_WINDOWS
 #if defined(D3D12_SDK_VERSION)
@@ -110,6 +120,21 @@ public:
 
 	// returns current size of storage
 	unsigned int get_size() const;
+
+	// if returns u32(-1) means it is failed to add atlas
+	// see allocation policies that defined in eSVGStorageFlags
+	u32 add_atlas();
+
+	CTextureAtlas* get_atlas(u32 id);
+	
+	const CTextureAtlas* get_atlas(u32 id) const;
+	
+	void delete_atlas(u32 id);
+
+	void cache_atlases();
+
+	// make it optional field that will check should we cache
+	void load_cache();
 
 private:
 #ifdef DEBUG

@@ -153,6 +153,8 @@ IC CSVGStorage<svg_atlas_count, svg_flags>::CSVGStorage() :
 	storage{ &ss_wrapper }
 {
 	static_assert(!(svg_flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation && svg_flags & eSVGStorageFlags::kFeatureSVGStorage_Dynamic_Allocation), "invalid flags");
+
+	// if allocation size is changed in static mode you will get throw bad_alloc due to fact that required allocation formula was changed so in such case you have to change the size of static_storage field please
 	storage.reserve(svg_atlas_count);
 }
 

@@ -454,7 +454,7 @@ m_width{-1},
 m_height{-1},
 m_name{},
 #endif
-
+m_id{_kRenderBackend_TextureAtlasInvalidID},
 #ifdef IXR_WINDOWS
 #if defined(D3D12_SDK_VERSION)
 #elif defined(D3D11_SDK_VERSION)
@@ -516,6 +516,13 @@ void CTextureAtlas::init(IXRRenderDevice* p_device, int width, int height, const
 
 	R_ASSERT(!(FAILED(hr)) && "failed to create texture");
 
+#ifdef DEBUG
+	if (pName)
+	{
+
+	}
+#endif
+
 #else
 #error provide sdk 
 #endif
@@ -542,17 +549,12 @@ void CTextureAtlas::uninit()
 #endif
 }
 
-void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
+void CTextureAtlas::addRegion(IXRRenderDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
-#if defined(D3D11_SDK_VERSION) || defined(D3D12_SDK_VERSION)
-	R_ASSERT2(p_context, "you must pass a valid context! For D3D11 device context, for D3D12 command list!");
-#endif
 
 #ifdef IXR_WINDOWS
-#if defined(D3D12_SDK_VERSION)
-#elif defined(D3D11_SDK_VERSION)
-#elif defined(D3D10_SDK_VERSION)
+#if defined(D3D10_SDK_VERSION)
 #elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
 
 	D3DLOCKED_RECT lr = {};
@@ -582,6 +584,27 @@ void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext*
 
 #else
 #error provide sdk 
+#endif
+#endif
+}
+
+void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
+{
+	R_ASSERT2(p_device, "you must pass a valid device!");
+
+
+#ifdef IXR_WINDOWS
+#if defined(D3D12_SDK_VERSION)
+	R_ASSERT2(p_context, "you must pass a valid context! For D3D11 device context, for D3D12 command list!");
+
+#elif defined(D3D11_SDK_VERSION)
+	R_ASSERT2(p_context, "you must pass a valid context! For D3D11 device context, for D3D12 command list!");
+
+#else
+	if (!p_context)
+	{
+		addRegion(p_device, x, y, w, h, pData, pitch);
+	}
 #endif
 #endif
 
@@ -620,4 +643,14 @@ void CTextureAtlas::saveOnDisk()
 #ifdef DEBUG
 
 #endif
+}
+
+u32 CTextureAtlas::getID()
+{
+	return this->m_id;
+}
+
+void CTextureAtlas::setID(u32 id)
+{
+	this->m_id = id;
 }
