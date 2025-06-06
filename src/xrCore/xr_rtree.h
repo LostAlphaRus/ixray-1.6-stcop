@@ -513,4 +513,7 @@ namespace rtree2d {
 
 } // namespace rtree2d
 
+template<typename Type, std::size_t MaxEntries, std::size_t PreallocatedNodeAmount>
+using xr_rtree2d = rtree2d::RTree<Type, MaxEntries, PreallocatedNodeAmount>;
+
 #endif // RTREE2D_PMR_NOREC_HPP
