@@ -133,6 +133,49 @@ ID3DBaseTexture*	CTexture::surface_get	()
 	return pSurface;
 }
 
+void CTexture::CreateEmpty(u32 w, u32 h)
+{
+	R_ASSERT(RDevice && "must be valid");
+
+	flags.bLoaded = true;
+	desc_cache = 0;
+	if (pSurface)					return;
+
+	flags.bUser = false;
+	flags.MemoryUsage = 0;
+	if (0 == _stricmp(*cName, "$null"))	return;
+	if (0 != strstr(*cName, "$user$")) {
+		flags.bUser = true;
+		return;
+	}
+
+	Preload();
+
+	u32	mem = w * h * 4;
+	D3D11_TEXTURE2D_DESC desc = {};
+	desc.Width = w;
+	desc.Height = h;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	
+	ID3D11Texture2D* pTexture = nullptr;
+
+	CHK_DX(RDevice->CreateTexture2D(&desc, nullptr, &pTexture));
+	pSurface = pTexture;
+
+	if (pSurface)
+	{
+		flags.MemoryUsage = mem;
+		CHK_DX(RDevice->CreateShaderResourceView(pSurface, nullptr, &m_pSRView));
+	}
+
+	PostLoad();
+}
+
 void CTexture::PostLoad	()
 {
 	if (pTheora)				bind		= xr_make_delegate(this,&CTexture::apply_theora);

@@ -560,6 +560,7 @@ void CTextureAtlas::init(ID3DDevice* p_device, int width, int height, const char
 	R_ASSERT(width > 0 && "must be valid");
 	R_ASSERT(height > 0 && "must be valid!");
 	R_ASSERT(!this->m_p_atlas && "must be not initialized otherwise you forgot to call uninit!");
+	R_ASSERT(DEV && "early calling?");
 
 	if (!this->m_p_atlas)
 	{
@@ -568,8 +569,9 @@ void CTextureAtlas::init(ID3DDevice* p_device, int width, int height, const char
 		R_ASSERT(this->m_p_atlas && "failed to create logical layout atlas!");
 	}
 
-	// todo: create texture!
-
+	this->setName(pName);
+	this->m_p_texture = DEV->_CreateEmptyTexture(this->m_name, width, height);
+	R_ASSERT(this->m_p_texture && "must be created a valid texture from resource manager, failed to create!");
 }
 
 void CTextureAtlas::uninit()
@@ -694,6 +696,33 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 
 #elif defined(D3D11_SDK_VERSION)
 	R_ASSERT2(p_context, "you must pass a valid context! For D3D11 device context, for D3D12 command list!");
+	R_ASSERT(m_p_texture && "must be valid!");
+	R_ASSERT(m_p_texture->pSurface && "must be valid!");
+	R_ASSERT(dynamic_cast<ID3DTexture2D*>(m_p_texture->pSurface) && "must be casted to ID3DTexture2D!");
+
+	ID3DTexture2D* pResourceTexture = static_cast<ID3DTexture2D*>(m_p_texture->pSurface);
+
+	D3D11_BOX destBox;
+	destBox.left = x;
+	destBox.top = y;
+	destBox.front = 0;
+	destBox.right = x + w;
+	destBox.bottom = y + h;
+	destBox.back = 1;
+
+	// rowPitch = bytes per row of your source image
+	UINT rowPitch = pitch;
+
+	// context is your ID3D11DeviceContext*
+	// atlasTex is your ID3D11Texture2D*
+	p_context->UpdateSubresource(
+		pResourceTexture,         // Destination resource
+		0,                // Mip slice
+		&destBox,         // Subresource region to update
+		pData,          // Pointer to the raw texel data
+		rowPitch,         // Row pitch in bytes
+		0                 // Depth pitch (unused for 2D)
+	);
 
 #else
 	if (!p_context)
@@ -705,27 +734,18 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 
 }
 
-const char* CTextureAtlas::getName(void) const
+std::string_view CTextureAtlas::getName(void) const
 {
-#ifdef DEBUG
-	return m_name;
-#else
-	return "OPTIMIZED_BUILD";
-#endif
+	return std::string_view(m_name);	
 }
 
 void CTextureAtlas::setName(const char* pName)
 {
-#ifdef DEBUG
-	if (!pName || pName[0] == '\0')
-	{
-		unsigned int num = reinterpret_cast<unsigned int>(this);
-		std::sprintf(m_name, "SVGAtlas_%d", num);
-		return;
-	}
+	R_ASSERT(pName && "you must pass a valid name!");
+	R_ASSERT(pName[0] != '\0' && "you must pass a valid name!");
 
-	std::memcpy(m_name, pName, sizeof(m_name));
-#endif
+	if (pName && pName[0] != '\0')
+		std::memcpy(m_name, pName, sizeof(m_name));
 }
 
 void* CTextureAtlas::getResource()

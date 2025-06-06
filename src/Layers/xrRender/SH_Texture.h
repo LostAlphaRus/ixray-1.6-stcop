@@ -34,6 +34,8 @@ public:
 
 	void								Preload			();
 	void								Load			();
+	/// @brief just creates resources but without uploading and filling
+	void								CreateEmpty(u32 w, u32 h);
 	void								PostLoad		();
 	void								Unload			(void);
 //	void								Apply			(u32 dwStage);
@@ -167,7 +169,7 @@ public:
 
 	void addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch = 0);
 
-	const char* getName(void) const;
+	std::string_view getName(void) const;
 	void setName(const char* pName);
 
 	void* getResource();
@@ -186,7 +188,6 @@ private:
 private:
 #ifdef DEBUG
 	bool init_was_called;
-	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
 #endif
 
 	u32 m_width;
@@ -199,6 +200,8 @@ private:
 	// returned from resource manager and resource manager stores this texture (because later user will need to SetShader calling and for building we need to compile "blender" for that we need to obtain our texture from resource manager otherwise we can't use original way of rendering svg)
 	CTexture* m_p_texture;
 
+	// using for identification purposes due to GSC's renderer architecture (see how blenders work and how to define a pass)
+	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
 	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(CTextureAtlasItem), _kRenderBackend_TextureAtlasPreallocatedItems)];
 	std::pmr::monotonic_buffer_resource sais_wrapper;
 	// todo: probably we need to define possibility for removing image from atlas-(es)

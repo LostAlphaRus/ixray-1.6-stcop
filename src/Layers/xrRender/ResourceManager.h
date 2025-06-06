@@ -190,6 +190,14 @@ public:
 
 	// Low level resource creation
 	CTexture*						_CreateTexture		(LPCSTR Name);
+
+	/// @brief creates a valid CTexture with allocated by GPU ID3DTexture and ID3DShaderResourceView, initial usage of this method is for creating atlas textures and where user needs own 'freedom' for working on resource, but at the same time maintain GSC's renderer usage of blenders and passes creation on high level (frontend, see CTextureAtlas class)
+	/// @param pName a name this field must be valid e.g. a not empty string and not null pointer
+	/// @param w width in pixels (like 1920)
+	/// @param h height in pixels (like 1080)
+	/// @return allocated CTexture instance
+	CTexture* _CreateEmptyTexture(LPCSTR pName, u32 w, u32 h);
+
 	void							_DeleteTexture		(const CTexture* T);
 
 	CMatrix*						_CreateMatrix		(LPCSTR Name);

@@ -65,6 +65,53 @@ ID3DBaseTexture*	CTexture::surface_get	()
 	return pSurface;
 }
 
+
+void CTexture::CreateEmpty(u32 w, u32 h)
+{
+	R_ASSERT(RDevice && "must be valid");
+
+	flags.bLoaded = true;
+	desc_cache = 0;
+	if (pSurface)					return;
+
+	flags.bUser = false;
+	flags.MemoryUsage = 0;
+	if (0 == _stricmp(*cName, "$null"))	return;
+	if (0 != strstr(*cName, "$user$")) {
+		flags.bUser = true;
+		return;
+	}
+
+	Preload();
+
+	u32	mem = 0;
+	DWORD usage = 0;
+	D3DPOOL pool = D3DPOOL_MANAGED;
+
+	usage = D3DUSAGE_DYNAMIC;
+	pool = D3DPOOL_DEFAULT;
+
+	IDirect3DTexture9* pTexture = nullptr;
+
+	HRESULT hr = RDevice->CreateTexture(
+		w, h,
+		1,                // mip levels
+		usage,
+		D3DFMT_A8R8G8B8,  // 32-bit RGBA
+		pool,
+		&pTexture,
+		nullptr
+	);
+	pSurface = pTexture;
+
+	if (pSurface)
+	{
+		flags.MemoryUsage = w * h * 4;
+	}
+
+	PostLoad();
+}
+
 void CTexture::PostLoad()
 {
 	if (pTheora)				bind = xr_make_delegate(this, &CTexture::apply_theora);
