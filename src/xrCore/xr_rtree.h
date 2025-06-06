@@ -314,7 +314,11 @@ namespace rtree2d {
 
 		Node* split_node(Node* node) {
 			// Gather all entries:
-			std::vector<Entry> all;
+			unsigned char _buffer_entries[calculate_reserve_count(sizeof(Entry), MaxEntries)];
+			std::pmr::monotonic_buffer_resource _resource{ &_buffer_entries, sizeof(_buffer_entries), std::pmr::null_memory_resource()};
+			std::pmr::polymorphic_allocator<Entry> _allocator_entries{ &_resource };
+
+			std::pmr::vector<Entry> all{ _allocator_entries };
 			all.reserve(node->entries.size());
 			for (auto& e : node->entries) {
 				all.push_back(std::move(e));
@@ -326,7 +330,13 @@ namespace rtree2d {
 
 			{   // Choose seeds
 				struct Center { float cx, cy; };
-				std::vector<Center> centers(N);
+
+				unsigned char _buffer_centers[calculate_reserve_count(sizeof(Center), MaxEntries)];
+				std::pmr::monotonic_buffer_resource _resource_centers{ &_buffer_centers, sizeof(_buffer_centers), std::pmr::null_memory_resource()};
+				std::pmr::polymorphic_allocator<Center> _allocator_centers{ _resource_centers };
+
+				std::pmr::vector<Center> centers{_allocator_centers};
+				centers.reserve(N);
 				Rect overall = Rect::infinite_negative();
 				for (std::size_t i = 0; i < N; ++i) {
 					centers[i].cx = (all[i].box.minx + all[i].box.maxx) * 0.5f;
