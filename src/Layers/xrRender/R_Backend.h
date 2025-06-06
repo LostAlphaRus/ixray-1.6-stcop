@@ -53,21 +53,37 @@ constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
 class CTextureAtlas
 {
 public:
-	CTextureAtlas(int width, int height, const char* pName);
 	CTextureAtlas();
 	~CTextureAtlas();
 
-	void init(int width=-1, int height=-1, const char* pName=nullptr);
+	void init(IXRRenderDevice* p_device, int width, int height, const char* pName);
 	void uninit();
+
+	void addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
 
 	const char* getName(void) const;
 	void setName(const char* pName);
 
+	void* getResource();
+
+	void saveOnDisk();
+
 private:
 #ifdef DEBUG
+	bool init_was_called;
 	int m_width;
 	int m_height;
 	char m_name[_kRenderBackend_DebugTextureAtlasNameLength];
+#endif
+
+#ifdef IXR_WINDOWS
+#if defined(D3D12_SDK_VERSION)
+#elif defined(D3D11_SDK_VERSION)
+	ID3D11Texture2D* m_p_texture;
+#elif defined(D3D10_SDK_VERSION)
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
+	IDirect3DTexture9* m_p_texture;
+#endif
 #endif
 };
 

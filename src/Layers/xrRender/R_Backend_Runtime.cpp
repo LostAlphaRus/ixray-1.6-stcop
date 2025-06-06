@@ -447,24 +447,144 @@ void CBackend::set_Textures			(STextureList* _T) {}
 
 #endif
 
-CTextureAtlas::CTextureAtlas(int width, int height, const char* pName)
-{
-}
+CTextureAtlas::CTextureAtlas() :
+#ifdef DEBUG
+init_was_called{},
+m_width{-1},
+m_height{-1},
+m_name{},
+#endif
 
-CTextureAtlas::CTextureAtlas()
+#ifdef IXR_WINDOWS
+#if defined(D3D12_SDK_VERSION)
+#elif defined(D3D11_SDK_VERSION)
+m_p_texture{}
+#elif defined(D3D10_SDK_VERSION)
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
+m_p_texture{}
+#endif
+#endif
+
 {
 }
 
 CTextureAtlas::~CTextureAtlas()
 {
+#ifdef DEBUG
+	R_ASSERT2(!init_was_called, "you forgot to call uninit or destroy this instance!");
+#endif
 }
 
-void CTextureAtlas::init(int width, int height, const char* pName)
+void CTextureAtlas::init(IXRRenderDevice* p_device, int width, int height, const char* pName)
 {
+	R_ASSERT2(p_device, "you must pass a valid device!");
+
+	R_ASSERT(width>0 && "must be valid");
+	R_ASSERT(height > 0 && "must be valid!");
+
+#ifdef DEBUG
+	init_was_called = true;
+	m_width = width;
+	m_height = height;
+	if (pName)
+	{
+		std::memcpy(m_name, pName, strlen(pName));
+	}
+#endif
+
+#ifdef IXR_WINDOWS
+#if defined(D3D12_SDK_VERSION)
+#elif defined(D3D11_SDK_VERSION)
+#elif defined(D3D10_SDK_VERSION)
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
+
+	DWORD usage = 0;
+	D3DPOOL pool = D3DPOOL_MANAGED;
+
+	usage = D3DUSAGE_DYNAMIC;
+	pool = D3DPOOL_DEFAULT;
+
+	HRESULT hr = p_device->CreateTexture(
+		width, height,
+		1,                // mip levels
+		usage,
+		D3DFMT_A8R8G8B8,  // 32-bit RGBA
+		pool,
+		&m_p_texture,
+		nullptr
+	);
+
+	R_ASSERT(!(FAILED(hr)) && "failed to create texture");
+
+#else
+#error provide sdk 
+#endif
+#endif
+
 }
 
 void CTextureAtlas::uninit()
 {
+#ifdef IXR_WINDOWS
+#if defined(D3D12_SDK_VERSION)
+#elif defined(D3D11_SDK_VERSION)
+#elif defined(D3D10_SDK_VERSION)
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
+
+	if (m_p_texture)
+	{
+		m_p_texture->Release();
+	}
+
+#else
+#error provide sdk 
+#endif
+#endif
+}
+
+void CTextureAtlas::addRegion(IXRRenderDevice* p_device, IXRRenderDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
+{
+	R_ASSERT2(p_device, "you must pass a valid device!");
+#if defined(D3D11_SDK_VERSION) || defined(D3D12_SDK_VERSION)
+	R_ASSERT2(p_context, "you must pass a valid context! For D3D11 device context, for D3D12 command list!");
+#endif
+
+#ifdef IXR_WINDOWS
+#if defined(D3D12_SDK_VERSION)
+#elif defined(D3D11_SDK_VERSION)
+#elif defined(D3D10_SDK_VERSION)
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
+
+	D3DLOCKED_RECT lr = {};
+	HRESULT hr = m_p_texture->LockRect(
+		0,
+		&lr,
+		nullptr,
+		D3DLOCK_NOOVERWRITE
+	);
+
+	R_ASSERT(!(FAILED(hr)) && "failed to lockrect");
+
+	// Copy row by row
+	BYTE* destBase = reinterpret_cast<BYTE*>(lr.pBits);
+	for (UINT row = 0; row < h; ++row)
+	{
+		BYTE* destRow = destBase
+			+ (y + row) * lr.Pitch
+			+ (x * 4);
+		const BYTE* srcRow = reinterpret_cast<const BYTE*>(pData)
+			+ row * pitch;
+
+		std::memcpy(destRow, srcRow, w * 4);
+	}
+
+	m_p_texture->UnlockRect(0);
+
+#else
+#error provide sdk 
+#endif
+#endif
+
 }
 
 const char* CTextureAtlas::getName(void) const 
@@ -487,5 +607,17 @@ void CTextureAtlas::setName(const char* pName)
 	}
 
 	std::memcpy(m_name, pName, sizeof(m_name));
+#endif
+}
+
+void* CTextureAtlas::getResource()
+{
+	return nullptr;
+}
+
+void CTextureAtlas::saveOnDisk()
+{
+#ifdef DEBUG
+
 #endif
 }

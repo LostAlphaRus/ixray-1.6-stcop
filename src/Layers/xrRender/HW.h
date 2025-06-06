@@ -32,3 +32,22 @@ struct SDL_Window;
 #endif
 
 #define RFeatureLevel Device.GetFeatureLevel()
+
+#ifdef IXR_WINDOWS
+#if defined(D3D12_SDK_VERSION)
+using IXRRenderDevice = ID3D12Device;
+using IXRRenderDeviceContext = ID3D12GraphicsCommandList;
+#elif defined(D3D11_SDK_VERSION)
+using IXRRenderDevice = ID3D11Device;
+using IXRRenderDeviceContext = ID3D11DeviceContext;
+#elif defined(D3D10_SDK_VERSION)
+using IXRRenderDevice = ID3D10Device;
+using IXRRenderDeviceContext = IUnknown;
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION >= 0x0900
+using IXRRenderDevice = IDirect3DDevice9;
+// since we don't have the context interface at all just make it unknown
+using IXRRenderDeviceContext = IUnknown;
+#else
+#error unknown DirectX SDK
+#endif
+#endif
