@@ -3,7 +3,7 @@
 
 ENGINE_API CEngineExternal* g_pEngineExternal = nullptr;
 
-CEngineExternal::CEngineExternal() : m_platform_type(EEngineExternalPlatform::Unknown), pOptions(nullptr)
+CEngineExternal::CEngineExternal() : m_preferredUIRendering(EEngineExternalUIRenderingType::Unknown), m_platform_type(EEngineExternalPlatform::Unknown), pOptions(nullptr)
 {
 	string_path fname;
 	FS.update_path(fname, "$game_config$", "engine_external.ltx");
@@ -38,11 +38,11 @@ CEngineExternal::CEngineExternal() : m_platform_type(EEngineExternalPlatform::Un
 	const char* pRenderingUIType = READ_IF_EXISTS(pOptions, r_string, "ui", "RenderingType", "default");
 	if (!strcmp(pRenderingUIType, "default") || !strcmp(pRenderingUIType, "raster"))
 	{
-		preferredUIRendering = static_cast<unsigned char>(EEngineExternalUIRenderingType::Raster);
+		m_preferredUIRendering = EEngineExternalUIRenderingType::Raster;
 	}
 	else
 	{
-		preferredUIRendering = static_cast<unsigned char>(EEngineExternalUIRenderingType::Vector);
+		m_preferredUIRendering = EEngineExternalUIRenderingType::Vector;
 	}
 }
 
@@ -221,4 +221,9 @@ float CEngineExternal::GetTalkFovScale() const
 float CEngineExternal::GetSprintFovFactor() const
 {
 	return READ_IF_EXISTS(pOptions, r_float, "gameplay", "SprintFovFactor", 7.0f);
+}
+
+bool CEngineExternal::isRenderingUIRaster() const
+{
+	return preferredUIRendering == EEngineExternalUIRenderingType::Raster;
 }
