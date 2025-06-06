@@ -771,6 +771,8 @@ CSVGStorage::CSVGStorage(u32 flags) :
 #ifdef DEBUG
 	init_was_called{},
 #endif
+	atlas_index_generator{},
+	p_error_shader{},
 	static_storage{},
 	ss_wrapper{ &static_storage, sizeof(static_storage), flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
 	storage{ std::pmr::polymorphic_allocator<CTextureAtlas>{&ss_wrapper} }
@@ -784,14 +786,28 @@ CSVGStorage::CSVGStorage(u32 flags) :
 
 CSVGStorage::~CSVGStorage()
 {
-
+#ifdef DEBUG
+	R_ASSERT(!init_was_called && "you forgot to call uninit!");
+#endif
 }
 
 void CSVGStorage::init()
 {
+	init_default_shader();
+
+#ifdef DEBUG
+	init_was_called = true;
+#endif
 }
 
-void CSVGStorage::uninit() {}
+void CSVGStorage::uninit() 
+{
+	xr_delete(p_error_shader);
+
+#ifdef DEBUG
+	init_was_called = false;
+#endif
+}
 
 // returns preallocated size that was specified initially (but it doesn't show current size)
 constexpr unsigned char CSVGStorage::get_static_size() const
@@ -836,4 +852,39 @@ void CSVGStorage::cache_atlases()
 void CSVGStorage::load_cache()
 {
 
+}
+
+const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& subpath)
+{
+	R_ASSERT(subpath.empty() == false && "must be valid path");
+	R_ASSERT(p_error_shader && "default shader must be initialized!");
+
+	if (subpath.empty() == false)
+	{
+
+	}
+
+	return get_default_shader();
+}
+
+const FactoryPtr<IUIShader>& CSVGStorage::get_default_shader()
+{
+	R_ASSERT(p_error_shader && "must be valid and initialized!");
+	if (p_error_shader)
+	{
+		return *(p_error_shader);
+	}
+
+	return FactoryPtr<IUIShader>();
+}
+
+void CSVGStorage::init_default_shader()
+{
+	p_error_shader = new FactoryPtr<IUIShader>();
+
+	R_ASSERT(p_error_shader && "failed to allocate default shader");
+	if (p_error_shader)
+	{
+
+	}
 }

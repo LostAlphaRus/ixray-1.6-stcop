@@ -545,3 +545,40 @@ void  dxRenderDeviceRender::OnAssetsChanged()
 	Resources->m_textures_description.Load();
 #endif
 }
+
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::string_view& subpath)
+{
+	if (Resources)
+	{
+		R_ASSERT(subpath.empty() == false && "must be not empty path");
+
+		CSVGStorage* pStorage = Resources->GetSVGStorage();
+
+		R_ASSERT(pStorage && "must be valid!");
+
+		if (pStorage)
+		{
+			
+		}
+	}
+
+	return FactoryPtr<IUIShader>();
+}
+
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const char* pSubpath)
+{
+	R_ASSERT(pSubpath && "invalid string (nullptr)");
+	R_ASSERT(pSubpath[0] != '\0' && "empty string");
+
+	return GetSVGShader(std::string_view(pSubpath));
+}
+
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGDefaultShader()
+{
+	if (Resources)
+	{
+
+	}
+
+	return FactoryPtr<IUIShader>();
+}

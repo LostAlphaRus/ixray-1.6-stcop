@@ -60,6 +60,9 @@ public:
 	static	bool	is_ultrawide					();
 	static	float	get_current_kx					();
 	shared_str		get_xml_name					(LPCSTR fn);
+
+	const ui_shader& GetVectorShader(const std::string_view& subpath);
+	const ui_shader& GetVectorShader(const char* pSubpath);
 	
 	IUIRender::ePointType		m_currentPointType;
 };

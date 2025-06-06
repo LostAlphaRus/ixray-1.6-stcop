@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ui_base.h"
 #include "../xrEngine/IGame_Persistent.h"
+#include "../xrEngine/Render.h"
 #include "UICursor.h"
 
 UI_API ui_core* m_pUI_core = nullptr;
@@ -336,4 +337,23 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 #endif // #ifdef DEBUG
 	}
 	return str;
+}
+
+const ui_shader& ui_core::GetVectorShader(const std::string_view& subpath)
+{
+	R_ASSERT(DevicePtr && "Render must be initialized otherwise early calling!");
+	R_ASSERT(DevicePtr->m_pRender && "Resource manager");
+
+	if (DevicePtr == nullptr || DevicePtr->m_pRender == nullptr)
+		return ui_shader();
+
+	return DevicePtr->m_pRender->GetSVGShader(subpath);
+}
+
+const ui_shader& ui_core::GetVectorShader(const char* pSubpath)
+{
+	R_ASSERT(pSubpath && "invalid string (nullptr)");
+	R_ASSERT(pSubpath[0] != '\0' && "invalid subpath (empty string)");
+
+	return GetVectorShader(std::string_view(pSubpath));
 }

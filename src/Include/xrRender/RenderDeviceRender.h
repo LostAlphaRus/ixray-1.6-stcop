@@ -62,6 +62,9 @@ public:
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;
+	virtual const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath) = 0;
+	virtual const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath) = 0;
+	virtual const FactoryPtr<IUIShader>& GetSVGDefaultShader() = 0;
 };
 
 #endif	//	RenderDeviceRender_included

@@ -53,6 +53,10 @@ public:
 	virtual void SetCacheXformOld(Fmatrix &mView, Fmatrix &mProject);
 	void OnAssetsChanged() override;
 
+	const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath) override;
+	const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath) override;
+	const FactoryPtr<IUIShader>& GetSVGDefaultShader() override;
+
 public:
 	CResourceManager*	Resources;
 	ref_shader			m_WireShader;

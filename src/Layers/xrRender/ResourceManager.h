@@ -22,13 +22,25 @@ enum eSVGStorageFlags {
 	kFeatureSVGStorage_Dynamic_Allocation = 1 << 2
 };
 
+constexpr const char* _kSVGStorage_DefaultSVGTextureName = "ui_vector_error.svg";
+constexpr const char* _kSVGStorage_DefaultAtlasName = "SVGDefaultAtlas_";
+constexpr unsigned short _kSVGStorage_MaxSubpathLength = 128;
+
+
 /// @brief author: wh1t3lord
 class ECORE_API CSVGStorage
 {
 public:
+	struct IconElement
+	{
+
+	};
+
+public:
 	CSVGStorage(u32 flags);
 	~CSVGStorage();
 
+	/// @brief call it only after RenderFactory was initialized and can allocate instances based on FactoryPtr
 	void init();
 	void uninit();
 
@@ -53,13 +65,22 @@ public:
 	// make it optional field that will check should we cache
 	void load_cache();
 
+	const FactoryPtr<IUIShader>& get_shader(const std::string_view& subpath);
+	const FactoryPtr<IUIShader>& get_default_shader();
+
+private:
+	void init_default_shader();
+
 private:
 #ifdef DEBUG
 	bool init_was_called;
 #endif
+	u32 atlas_index_generator;
+	FactoryPtr<IUIShader>* p_error_shader;
 	unsigned char static_storage[calculate_reserve_count(sizeof(CTextureAtlas), static_cast<size_t>(_kRenderBackend_SVGStorageSizeInitial))];
 	std::pmr::monotonic_buffer_resource ss_wrapper;
 	std::pmr::vector<CTextureAtlas> storage;
+	
 };
 
 // defs
@@ -301,6 +322,8 @@ public:
 	void			StoreNecessaryTextures	();
 	void			DestroyNecessaryTextures();
 	void			Dump					(bool bBrief);
+
+	CSVGStorage* GetSVGStorage() const;
 
 private:
 	CSVGStorage* m_pStorageSVG;
