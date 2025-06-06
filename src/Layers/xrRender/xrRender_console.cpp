@@ -616,6 +616,45 @@ public:
 	}
 };
 
+class CCC_DetailButhing : public CCC_Integer
+{
+public:
+ 	CCC_DetailButhing(LPCSTR N, int* V, int _min = 0, int _max = 999) : CCC_Integer(N, V, _min, _max)
+	{
+ 	};
+
+	virtual void Execute(LPCSTR args) 
+	{
+		CCC_Integer::Execute(args);
+ 		 
+		dm_current_size = iFloor((float)ps_r__detail_radius / 4) * 2;
+		dm_current_cache1_line = dm_current_size * 2 / 4;		// assuming cache1_count = 4
+		dm_current_cache_line = dm_current_size + 1 + dm_current_size;
+		dm_current_cache_size = dm_current_cache_line * dm_current_cache_line;
+		dm_current_fade = float(2 * dm_current_size) - .5f;
+
+		if (RImplementation.b_loaded)
+		{
+			Device.details_task.wait();
+
+			RImplementation.Details->hw_Unload();
+			RImplementation.Details->hw_Load();
+
+			RImplementation.Details->cache_task.clear();
+
+			RImplementation.Details->cache_Free();
+			RImplementation.Details->cache_Alloc();
+			RImplementation.Details->cache_Initialize();
+		}
+	}
+
+	virtual void Status(TStatus& S) {
+		CCC_Integer::Status(S);
+	}
+};
+
+
+
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
 {
@@ -629,7 +668,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	1.2f		);
-	CMD4(CCC_Float,		"r__detail_density",	&ps_current_detail_density,		0.2f,	0.8f	);
+	CMD4(CCC_Float,		"r__detail_density",	&ps_current_detail_density,		0.05f,	0.8f	);
+	CMD4(CCC_DetailButhing, "r__detail_buthing", &hw_BatchSize, 50, 1024);
 
 #ifdef DEBUG
 	CMD4(CCC_Float,		"r__detail_l_ambient",	&ps_r__Detail_l_ambient,	.5f,	.95f	);

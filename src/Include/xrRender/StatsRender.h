@@ -10,6 +10,13 @@ class IStatsRender
 public:
 	virtual ~IStatsRender() {;}
 	virtual void Copy(IStatsRender &_in) = 0;
+
+	virtual void DrawCalls(u32& value) = 0;
+	virtual void DrawVerticy(u32& value) = 0;
+	virtual void DrawPoly(u32& value) = 0;
+	virtual void OutDetails(CGameFont& F) = 0;
+
+
 	virtual void OutData1 (CGameFont &F) = 0;
 	virtual void OutData2 (CGameFont &F) = 0;
 	virtual void OutData3 (CGameFont &F) = 0;

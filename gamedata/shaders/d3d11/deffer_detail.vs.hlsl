@@ -10,7 +10,7 @@ cbuffer DetailConstants
     float4 dir2D;
     float4 dir2D_old;
 
-    float2x4 array[61];
+    float2x4 array[1024];
 };
 
 float3x3 setMatrix (float3 hpb)

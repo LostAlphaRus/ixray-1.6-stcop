@@ -14,6 +14,9 @@
 const float dbgOffset			= 0.f;
 const int	dbgItems			= 128;
 
+
+int		hw_BatchSize = 50;
+
 u32			dm_size = 24;
 u32 		dm_cache1_line = 12;
 u32			dm_cache_line = 49;
@@ -172,10 +175,16 @@ extern ECORE_API float r_ssaDISCARD;
 void CDetailManager::UpdateVisibleM()
 {
 	PROF_EVENT("CDetailManager");
+	Device.Statistic->RenderDUMP_DT_Cache.Begin();
+
 	Fvector		EYE				= RDEVICE.vCameraPosition_saved;
 	cache_Update(EYE);
 
+	Device.Statistic->RenderDUMP_DT_Cache.End();
+
+
 	PROF_EVENT("UpdateVisibleM");
+	Device.Statistic->RenderDUMP_DT_VIS.Begin();
 	CFrustum	View;
 	View.CreateFromMatrix		(RDEVICE.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 	
@@ -270,6 +279,8 @@ void CDetailManager::UpdateVisibleM()
 			}
 		}
 	}
+
+	Device.Statistic->RenderDUMP_DT_VIS.End();
 }
 
 void CDetailManager::Render()

@@ -7,6 +7,26 @@ void dxStatsRender::Copy(IStatsRender&_in)
 {
 	*this = *((dxStatsRender*)&_in);
 }
+ 
+void dxStatsRender::DrawCalls(u32& value)
+{
+	value = RCache.stat.calls;
+}
+
+void dxStatsRender::DrawVerticy(u32& value)
+{
+	value = RCache.stat.verts;
+}
+
+void dxStatsRender::DrawPoly(u32& value)
+{
+	value = RCache.stat.polys;
+}
+
+void dxStatsRender::OutDetails(CGameFont& F)
+{
+	F.OutNext("r_details:       %3.1f/%d", RCache.stat.r.s_details.verts / 1024.f, RCache.stat.r.s_details.dips);
+}
 
 void dxStatsRender::OutData1 (CGameFont &F)
 {

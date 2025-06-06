@@ -36,8 +36,9 @@ static float GetDistFromCamera(const Fvector& from_position)
 void CRender::render_main	(bool deffered, bool zfill)
 {
 	GPU_EVENT(render_main);
-//	Msg						("---begin");
-	marker					++;
+	Device.Statistic->RenderMain.Begin();
+
+ 	marker					++;
 	bool dont_test_sectors = Sectors.size() <= 1;
 
 	// Calculate sector(s) and their objects
@@ -86,6 +87,7 @@ void CRender::render_main	(bool deffered, bool zfill)
 				}
 			}
 		}
+	
 		Fmatrix mftrans;
 		if(zfill)
 		{
@@ -111,6 +113,8 @@ void CRender::render_main	(bool deffered, bool zfill)
 				//. disabled scissoring (HW.Caps.bScissor?CPortalTraverser::VQ_SCISSOR:0)	// generate scissoring info
 				);
 		}
+
+		Device.Statistic->RenderMainVIS_Static.Begin();
 		// Determine visibility for static geometry hierrarhy
 		if(psDeviceFlags.test(rsDrawStatic))
 		{
@@ -135,7 +139,11 @@ void CRender::render_main	(bool deffered, bool zfill)
 				}
 			}
 		}
+		Device.Statistic->RenderMainVIS_Static.End();
+
+
 		PROF_EVENT("add_dynamic")
+		Device.Statistic->RenderMainVIS_Dynamic.Begin();
 		// Traverse frustums
 		for (u32 o_it=0; o_it<lstRenderablesMain.size(); o_it++)
 		{
@@ -281,6 +289,8 @@ void CRender::render_main	(bool deffered, bool zfill)
 				}
 			}
 		}
+		Device.Statistic->RenderMainVIS_Dynamic.End();
+
 		if (g_pGameLevel && psDeviceFlags.test(rsDrawDynamic) && (phase==PHASE_NORMAL))	
 		{
 			PROF_EVENT("Render HUD");
@@ -296,6 +306,9 @@ void CRender::render_main	(bool deffered, bool zfill)
 			g_hud->Render_Last();		// HUD
 		}
 	}
+
+	
+	Device.Statistic->RenderMain.End();
 }
 
 void CRender::render_menu() {
@@ -359,11 +372,10 @@ bool is_render_cubemap = false;
 void CRender::Render()
 {
 	GPU_EVENT(CRender_Render);
+	CScopeTimer(Device.Statistic->RenderTOTAL);  
 
 	g_r						= 1;
 	VERIFY					(0==mapDistort.size() + mapHUDDistort.size());
-
-//	rmNormal();
 
 	bool	_menu_pp		= g_pGamePersistent?g_pGamePersistent->OnRenderPPUI_query():false;
 	if (_menu_pp)			{
@@ -727,7 +739,9 @@ void CRender::Render()
 	{
 		GPU_EVENT(DEFER_SUN);
 		RImplementation.stats.l_visible		++;
+		Device.Statistic->RenderSun.Begin();
 		render_sun_cascades();
+		Device.Statistic->RenderSun.End();
 		Target->increment_light_marker();
 	}
 
@@ -752,34 +766,40 @@ void CRender::Render()
 		r_dsgraph_render_hud_ui();
 	}
 
+	
+
 	// Lighting, non dependant on OCCQ
 	{
-		GPU_EVENT(DEFER_LIGHT_NO_OCCQ);
-		Target->phase_accumulator				();
-		render_lights							(LP_normal);
+		GPU_EVENT(DEFER_LIGHT);
+
+		Device.Statistic->RenderLights.Begin();
+  		Target->phase_accumulator				();
+		render_lights							(LP_normal);		// OCC TEST
+  		render_lights							(LP_pending);		// ALL
+ 		Device.Statistic->RenderLights.End();
 	}
 
-	// Lighting, dependant on OCCQ
-	{
-		GPU_EVENT(DEFER_LIGHT_OCCQ);
-		render_lights							(LP_pending);
-	}
 
 	phase = PHASE_NORMAL;
+
+
 
 	// Postprocess
 	{
 		GPU_EVENT(DEFER_LIGHT_COMBINE);
+
+		Device.Statistic->Render_postprocess.Begin();
 		Target->phase_combine					();
+		Device.Statistic->Render_postprocess.End();
 	}
-
-	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
-
-	//HWOCC.occq_stats();
+ 
+ 	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
 }
 
 void CRender::render_forward				()
 {
+	
+
 	VERIFY	(0==mapDistort.size() + mapHUDDistort.size());
 	RImplementation.o.distortion				= RImplementation.o.distortion_enabled;	// enable distorion
 
@@ -793,14 +813,22 @@ void CRender::render_forward				()
 		//	Igor: we don't want to render old lods on next frame.
 		mapLOD.clear							();
 		CParticlesAsync::Wait();
-		r_dsgraph_render_graph					(1)	;					// normal level, secondary priority
-		PortalTraverser.fade_render				()	;					// faded-portals
-		r_dsgraph_render_sorted					(false)	;					// strict-sorted geoms
-		g_pGamePersistent->Environment().RenderLast()	;					// rain/thunder-bolts
+		
+		{
+			CScopeTimer(Device.Statistic->RenderDUMP_Second);
 
-		RContext->CopyResource(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
-		r_dsgraph_render_sorted_hud();
+ 			r_dsgraph_render_graph(1);					// normal level, secondary priority
+			PortalTraverser.fade_render();					// faded-portals
+			r_dsgraph_render_sorted(false);					// strict-sorted geoms
+			g_pGamePersistent->Environment().RenderLast();					// rain/thunder-bolts
+
+			RContext->CopyResource(Target->rt_Accumulator->pSurface, Target->rt_Generic_0->pSurface);
+			r_dsgraph_render_sorted_hud();
+  		}
+		
 	}
 
 	RImplementation.o.distortion				= FALSE;				// disable distorion
+
+	
 }

@@ -279,8 +279,7 @@ void CRenderDevice::on_idle		()
 
 	if (!g_dedicated_server)
 	{
-		Statistic->RenderTOTAL_Real.FrameStart();
-		Statistic->RenderTOTAL_Real.Begin();
+ 		Statistic->RenderTOTAL_Real.Begin();
 		if (b_is_Active)
 		{
 			if (Begin())
@@ -293,8 +292,9 @@ void CRenderDevice::on_idle		()
 			}
 		}
 		Statistic->RenderTOTAL_Real.End();
-		Statistic->RenderTOTAL_Real.FrameEnd();
-		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+
+
+ 		Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
 	}
 	secondary_tasks.wait();
 

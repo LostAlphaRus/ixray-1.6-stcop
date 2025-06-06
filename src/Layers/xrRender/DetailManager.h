@@ -35,6 +35,7 @@
 	const int	dm_max_decompress	= 7;
 #endif
 
+extern int		hw_BatchSize;
 const int		dm_obj_in_slot = 4;
 const int		dm_cache1_count = 4;
 const int		dm_cache_count = 16;
@@ -138,7 +139,7 @@ public:
 #endif
 
 	ref_geom						hw_Geom;
-	u32								hw_BatchSize;
+
 	ID3DVertexBuffer*				hw_VB;
 	ID3DIndexBuffer*				hw_IB;
 	ref_constant					hwc_consts;

@@ -318,8 +318,18 @@ public:
 
 	ICF	void						set_Vertices		(ID3DVertexBuffer* _vb, u32 _vb_stride);
 	ICF	void						set_Indices			(ID3DIndexBuffer* _ib);
+
+#ifdef USE_DX11
+	ICF	void						set_Indices_u32		(ID3DIndexBuffer* _ib);
+	ICF void						set_Geometry_u32(SGeometry* _geom);
+	ICF void						set_Geometry_u32(ref_geom& _geom) { set_Geometry_u32(&*_geom); }
+#endif
+
 	ICF void						set_Geometry		(SGeometry* _geom);
+
 	ICF void						set_Geometry		(ref_geom& _geom)					{	set_Geometry(&*_geom);		}
+
+
 	IC  void						set_Stencil			(u32 _enable, u32 _func=D3DCMP_ALWAYS, u32 _ref=0x00, u32 _mask=0x00, u32 _writemask=0x00, u32 _fail=D3DSTENCILOP_KEEP, u32 _pass=D3DSTENCILOP_KEEP, u32 _zfail=D3DSTENCILOP_KEEP);
 	IC  void						set_Z				(u32 _enable);
 	IC  void						set_ZFunc			(u32 _func);

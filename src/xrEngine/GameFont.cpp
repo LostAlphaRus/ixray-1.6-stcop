@@ -486,6 +486,13 @@ void CGameFont::SetHeight(float S)
 	}
 }
 
+void CGameFont::SetHeightI(float S)
+{
+	VERIFY(uFlags & fsDeviceIndependent);
+	fCurrentHeight = S * RDEVICE.Height;
+};
+
+
 const CGameFont::Glyph* CGameFont::GetGlyphInfo(int ch)
 {
 	auto symbolInfoIterator = GlyphData.find(ch);

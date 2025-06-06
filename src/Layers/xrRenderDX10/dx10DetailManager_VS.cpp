@@ -26,10 +26,6 @@ struct	vertHW
 #pragma pack(pop)
 
 short QC (float v);
-//{
-//	int t=iFloor(v*float(quant)); clamp(t,-32768,32767);
-//	return short(t&0xffff);
-//}
 
 void CDetailManager::hw_Load_Shaders()
 {
@@ -48,13 +44,15 @@ void CDetailManager::hw_Load_Shaders()
 
 void CDetailManager::hw_Render(light*L)
 {
+	Device.Statistic->RenderDUMP_DT_Render.Begin();
+
 	PROF_EVENT("CDetailManager::hw_Render")
 
 	RCache.set_CullMode		(CULL_NONE);
 	RCache.set_xform_world	(Fidentity);
 
 	// Setup geometry and DMA
-	RCache.set_Geometry(hw_Geom);
+	RCache.set_Geometry_u32(hw_Geom);
 
 	float scale = 1.f / float(quant);
 	Fvector4 wave, wave_old, consts;
@@ -89,6 +87,8 @@ void CDetailManager::hw_Render(light*L)
 	}
 
 	RCache.set_CullMode		(CULL_CCW);
+
+	Device.Statistic->RenderDUMP_DT_Render.End();
 }
 
 struct InstanceData

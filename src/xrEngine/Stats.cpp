@@ -45,348 +45,459 @@ void _draw_cam_pos(CGameFont* pFont)
 	pFont->OnRender	();
 }
 
-void CStats::Show() 
+#define FONT_SIZE 15.f
+#define SKIP_SIZE 0.25f
+
+void drawStatParam(CGameFont* F, LPCSTR text)
 {
-	// Stop timers
-	{
-		EngineTOTAL.FrameEnd		();	
-		Sheduler.FrameEnd			();	
-		UpdateClient.FrameEnd		();	
-		Physics.FrameEnd			();	
-		ph_collision.FrameEnd		();
-		ph_core.FrameEnd			();
-		Animation.FrameEnd			();	
-		AI_Think.FrameEnd			();
-		AI_Range.FrameEnd			();
-		AI_Path.FrameEnd			();
-		AI_Node.FrameEnd			();
-		AI_Vis.FrameEnd				();
-		AI_Vis_Query.FrameEnd		();
-		AI_Vis_RayTests.FrameEnd	();
-		
-		RenderTOTAL.FrameEnd		();
-		RenderCALC.FrameEnd			();
-		RenderCALC_HOM.FrameEnd		();
-		RenderDUMP.FrameEnd			();	
-		RenderDUMP_RT.FrameEnd		();
-		RenderDUMP_SKIN.FrameEnd	();	
-		RenderDUMP_Wait.FrameEnd	();	
-		RenderDUMP_Wait_S.FrameEnd	();	
-		RenderDUMP_HUD.FrameEnd		();	
-		RenderDUMP_Glows.FrameEnd	();	
-		RenderDUMP_Lights.FrameEnd	();	
-		RenderDUMP_WM.FrameEnd		();	
-		RenderDUMP_DT_VIS.FrameEnd	();	
-		RenderDUMP_DT_Render.FrameEnd();	
-		RenderDUMP_DT_Cache.FrameEnd();
-		RenderDUMP_Pcalc.FrameEnd	();	
-		RenderDUMP_Scalc.FrameEnd	();	
-		RenderDUMP_Srender.FrameEnd	();	
-		
-		Sound.FrameEnd				();
-		Input.FrameEnd				();
-		clRAY.FrameEnd				();	
-		clBOX.FrameEnd				();
-		clFRUSTUM.FrameEnd			();
-		
-		netClient1.FrameEnd			();
-		netClient2.FrameEnd			();
-		netServer.FrameEnd			();
+	F->SetColor(color_rgba(128, 128, 192, 255));
+	F->OutNext(text);
+	F->OutSkip(SKIP_SIZE);
+}
 
-		netClientCompressor.FrameEnd();
-		netServerCompressor.FrameEnd();
-		
-		TEST0.FrameEnd				();
-		TEST1.FrameEnd				();
-		TEST2.FrameEnd				();
-		TEST3.FrameEnd				();
 
-		g_SpatialSpace->stat_insert.FrameEnd		();
-		g_SpatialSpace->stat_remove.FrameEnd		();
-		g_SpatialSpacePhysic->stat_insert.FrameEnd	();
-		g_SpatialSpacePhysic->stat_remove.FrameEnd	();
-	}
+void drawStatParamBy(CGameFont* F, CStats* stats, LPCSTR text, u32 calls)
+{
+	F->SetColor(color_rgba(0, 255, 0, 255));
+	F->OutNext(text, calls);
+	F->OutSkip(SKIP_SIZE);
+};
 
+void drawStatParamByMS(float MAX_Stat, CGameFont* F, CStats* stats, LPCSTR text, float stat)
+{
+	if (stat < MAX_Stat)
+		F->SetColor(color_rgba(128, 128, 192, 255));
+	else
+		if (stat > MAX_Stat && stat < MAX_Stat * 2)
+			F->SetColor(color_rgba(255, 0, 128, 255));
+		else
+			F->SetColor(color_rgba(255, 0, 0, 255));
+
+	F->OutNext(text, stat);
+	F->OutSkip(SKIP_SIZE);
+};
+
+
+void drawStatParamByMS(float MAX_Stat, CGameFont* F, CStats* stats, LPCSTR text, float stat, float stat2)
+{
+	if (stat < MAX_Stat)
+		F->SetColor(color_rgba(128, 128, 192, 255));
+	else
+		if (stat > MAX_Stat && stat < MAX_Stat * 2)
+			F->SetColor(color_rgba(255, 0, 128, 255));
+		else
+			F->SetColor(color_rgba(255, 0, 0, 255));
+
+	F->OutNext(text, stat, stat2);
+	F->OutSkip(SKIP_SIZE);
+};
+
+void drawStatParamByMS(float MAX_Stat, CGameFont* F, CStats* stats, LPCSTR text, float stat, u32 stat2, float stat3)
+{
+	if (stat < MAX_Stat)
+		F->SetColor(color_rgba(128, 128, 192, 255));
+	else
+		if (stat > MAX_Stat && stat < MAX_Stat * 2)
+			F->SetColor(color_rgba(255, 0, 128, 255));
+		else
+			F->SetColor(color_rgba(255, 0, 0, 255));
+
+	F->OutNext(text, stat, stat2, stat3);
+	F->OutSkip(SKIP_SIZE);
+};
+
+
+CGameFont* pFontGame = 0;
+
+
+void CStats::Show()
+{
 	// calc FPS & TPS
-	if (Device.fTimeDelta>EPS_S) {
-		float fps  = 1.f/Device.fTimeDelta;
+	if (Device.fTimeDelta > EPS_S)
+	{
+		float fps = 1.f / Device.fTimeDelta;
 		//if (Engine.External.tune_enabled)	vtune.update	(fps);
 		float fOne = 0.3f;
-		float fInv = 1.f-fOne;
-		fFPS = fInv*fFPS + fOne*fps;
-
-		if (RenderTOTAL.result>EPS_S) {
+		float fInv = 1.f - fOne;
+		fFPS = fInv * fFPS + fOne * fps;
+		FPS = fFPS;
+		if (RenderTOTAL.result > EPS_S)
+		{
 			u32	rendered_polies = Device.m_pRender->GetCacheStatPolys();
-			fTPS = fInv*fTPS + fOne*float(rendered_polies)/(RenderTOTAL.result*1000.f);
+			fTPS = fInv * fTPS + fOne * float(rendered_polies) / (RenderTOTAL.result * 1000.f);
 			//fTPS = fInv*fTPS + fOne*float(RCache.stat.polys)/(RenderTOTAL.result*1000.f);
-			fRFPS= fInv*fRFPS+ fOne*1000.f/RenderTOTAL.result;
+			fRFPS = fInv * fRFPS + fOne * 1000.f / RenderTOTAL.result;
 		}
 	}
+
 	{
-		float mem_count		= float	(Memory.stat_calls);
-		if (mem_count>fMem_calls)	fMem_calls	=	mem_count;
-		else						fMem_calls	=	.9f*fMem_calls + .1f*mem_count;
-		Memory.stat_calls	= 0		;
+		float mem_count = float(Memory.stat_calls);
+		if (mem_count > fMem_calls)	fMem_calls = mem_count;
+		else						fMem_calls = .9f * fMem_calls + .1f * mem_count;
+		Memory.stat_calls = 0;
 	}
 
 	////////////////////////////////////////////////
 	if (g_dedicated_server) return;
 	////////////////////////////////////////////////
-	int frm = 2000;
-	div_t ddd = div(Device.dwFrame,frm);
-	if( ddd.rem < frm/2.0f ){
-		pFont->SetColor	(0xFFFFFFFF	);
-		pFont->OutSet	(0,0);
-		pFont->OutNext	(*eval_line_1);
-		pFont->OutNext	(*eval_line_2);
-		pFont->OutNext	(*eval_line_3);
-		pFont->OnRender	();
+
+
+	// Stop timers
+	if (true)
+	{
+		for (auto& stat : FrameTicks)
+			stat.second.FrameEnd();
+
+		EngineFrame.FrameEnd();
+		EngineMTFrame.FrameEnd();
+		EngineMTFrameSCore.FrameEnd();
+
+		Sheduler.FrameEnd();
+		ShedulerLow.FrameEnd();
+
+		UpdateClient.FrameEnd();
+		Physics.FrameEnd();
+		ph_collision.FrameEnd();
+		ph_core.FrameEnd();
+		Animation.FrameEnd();
+		AI_Think.FrameEnd();
+		AI_Range.FrameEnd();
+		AI_Path.FrameEnd();
+		AI_Node.FrameEnd();
+		AI_Vis.FrameEnd();
+		AI_Vis_Query.FrameEnd();
+		AI_Vis_RayTests.FrameEnd();
+
+		RenderTOTAL.FrameEnd();
+		RenderCALC.FrameEnd();
+		RenderCALC_HOM.FrameEnd();
+
+		RenderDUMP.FrameEnd();
+		RenderDUMP_Second.FrameEnd();
+
+		RenderDUMP_RT.FrameEnd();
+
+		RenderDUMP_SKIN.FrameEnd();
+		RenderDUMP_Wait.FrameEnd();
+		RenderDUMP_Wait_S.FrameEnd();
+		RenderDUMP_HUD.FrameEnd();
+		RenderDUMP_Glows.FrameEnd();
+		RenderDUMP_Lights.FrameEnd();
+		RenderDUMP_WM.FrameEnd();
+		RenderDUMP_DT_VIS.FrameEnd();
+		RenderDUMP_DT_Render.FrameEnd();
+		RenderDUMP_DT_Cache.FrameEnd();
+		RenderDUMP_Pcalc.FrameEnd();
+		RenderDUMP_Scalc.FrameEnd();
+		RenderDUMP_Srender.FrameEnd();
+
+		Sound.FrameEnd();
+		Input.FrameEnd();
+		clRAY.FrameEnd();
+		clBOX.FrameEnd();
+		clFRUSTUM.FrameEnd();
+
+		netClient1.FrameEnd();
+		netClient2.FrameEnd();
+		netServer.FrameEnd();
+
+		netClientCompressor.FrameEnd();
+		netServerCompressor.FrameEnd();
+
+		TEST0.FrameEnd();
+		TEST1.FrameEnd();
+		TEST2.FrameEnd();
+		TEST3.FrameEnd();
+
+		g_SpatialSpace->stat_insert.FrameEnd();
+		g_SpatialSpace->stat_remove.FrameEnd();
+		g_SpatialSpacePhysic->stat_insert.FrameEnd();
+		g_SpatialSpacePhysic->stat_remove.FrameEnd();
+
+		RenderTOTAL_Real.FrameEnd();
+		RenderMain.FrameEnd();
+		RenderMain_Calcualte.FrameEnd();
+
+		RenderMainVIS_Static.FrameEnd();
+		RenderMainVIS_Dynamic.FrameEnd();
+		RenderSun.FrameEnd();
+		RenderLights.FrameEnd();
+		Render_dsgHUD_UI.FrameEnd();
+		Render_postprocess.FrameEnd();
+
+		NetworkSpawnCreate_xrEngine.FrameEnd();
+		NetworkSpawn.FrameEnd();
+		NetworkSpawn_ProcessCSE.FrameEnd();
+		NetworkRelcase.FrameEnd();
+
+
+		Particles_update_Time.FrameEnd();
+		Particles_render_Time.FrameEnd();
+
+
+		ThreadEngine.FrameEnd();
+		ThreadParticles.FrameEnd();
+		ThreadSecond.FrameEnd();
+
+
+		OnFrame1.FrameEnd();
+		OnFrame2.FrameEnd();
+		OnFrame3.FrameEnd();
+		OnFrame4.FrameEnd();
+
+		// UpdateCL DATA !!!!
+		UpdateClientPH.FrameEnd();
+		UpdateClientUnsorted.FrameEnd();
+		UpdateClientA.FrameEnd();
+		UpdateClientAI_mutant.FrameEnd();
+		UpdateClientAI.FrameEnd();
+		UpdateClientInv.FrameEnd();
+
+		RenderMainVIS_StaticTraverce.FrameEnd();
 	}
 
-	CGameFont& F = *pFont;
-	float f_base_size = 15.0f;
-	F.SetHeight(f_base_size);
+	///////////////////////////////////////////////////
+	/////////////// TIMERS END
+	//////////////////////////////////////////////////
 
-	// Show them
+	if (!pFontGame)
+	{
+		Msg("!pFont");
+		pFontGame = new CGameFont("ui_font_graffiti22_russian", CGameFont::fsDeviceIndependent);
+	}
+	 
+
+	CGameFont& F = *pFontGame;
+ 	pFontGame->OutSet(100, 40);
+
+	bool any_flag = psDeviceFlags.test(rsStatistic);
+
+	if (any_flag)
+	{
+		pFontGame->SetHeight(FONT_SIZE);
+		F.SetColor(color_rgba(128, 128, 192, 255));
+		F.OutSet(1550, 20);
+	}
+
 	if (psDeviceFlags.test(rsStatistic))
 	{
-		static float	r_ps		= 0;
-		static float	b_ps		= 0;
-		r_ps						= .99f*r_ps + .01f*(clRAY.count/clRAY.result);
-		b_ps						= .99f*b_ps + .01f*(clBOX.count/clBOX.result);
+  		F.SetColor(color_rgba(128, 128, 192, 255));
+		F.OutNext("FPS:   %3.0f", fFPS);
 
-		CSound_stats				snd_stat;
-		::Sound->statistic			(&snd_stat,0);
-		F.SetColor	(0xFFFFFFFF	);
+  		drawStatParam(pFontGame, "----------------");
 
-		F.OutSet	(10,35);
-		F.OutNext	("FPS/RFPS:    %3.1f/%3.1f",fFPS,fRFPS);
-		F.OutNext	("TPS:         %2.2f M",	fTPS);
-		m_pRender->OutData1(F);
-		//F.OutNext	("VERT:        %d/%d",		RCache.stat.verts,RCache.stat.calls?RCache.stat.verts/RCache.stat.calls:0);
-		//F.OutNext	("POLY:        %d/%d",		RCache.stat.polys,RCache.stat.calls?RCache.stat.polys/RCache.stat.calls:0);
-		//F.OutNext	("DIP/DP:      %d",			RCache.stat.calls);
-#ifdef _DEBUG
-		F.OutSkip	();
-		F.OutNext	("mapped:      %d",			g_file_mapped_memory);
-		F.OutSkip	();
-		m_pRender->OutData2(F);
-		//F.OutNext	("SH/T/M/C:    %d/%d/%d/%d",RCache.stat.states,RCache.stat.textures,RCache.stat.matrices,RCache.stat.constants);
-		//F.OutNext	("RT/PS/VS:    %d/%d/%d",	RCache.stat.target_rt,RCache.stat.ps,RCache.stat.vs);
-		//F.OutNext	("DCL/VB/IB:   %d/%d/%d",   RCache.stat.decl,RCache.stat.vb,RCache.stat.ib);
-#endif
-		m_pRender->OutData3(F);
-		//F.OutNext	("xforms:      %d",			RCache.stat.xforms);
-		F.OutSkip	();
+		drawStatParamByMS(10, pFontGame, this, "EngineFrame:		%2.4fms", EngineFrame.result);
 
-#define PPP(a) (100.f*float(a)/float(EngineTOTAL.result))
-		F.OutNext	("*** ENGINE:  %2.2fms",EngineTOTAL.result);	
-		F.OutNext	("Memory:      %2.2fa",fMem_calls);
-		F.OutNext	("uClients:    %2.2fms, %2.1f%%, crow(%d)/active(%d)/total(%d)",UpdateClient.result,PPP(UpdateClient.result),UpdateClient_crows,UpdateClient_active,UpdateClient_total);
-		F.OutNext	("uSheduler:   %2.2fms, %2.1f%%",Sheduler.result,		PPP(Sheduler.result));
-		F.OutNext	("uSheduler_L: %2.2fms",fShedulerLoad);
-		F.OutNext	("uParticles:  Qstart[%d] Qactive[%d] Qdestroy[%d]",	Particles_starting,Particles_active,Particles_destroy);
-		F.OutNext	("spInsert:    o[%.2fms, %2.1f%%], p[%.2fms, %2.1f%%]",	g_SpatialSpace->stat_insert.result, PPP(g_SpatialSpace->stat_insert.result),	g_SpatialSpacePhysic->stat_insert.result, PPP(g_SpatialSpacePhysic->stat_insert.result));
-		F.OutNext	("spRemove:    o[%.2fms, %2.1f%%], p[%.2fms, %2.1f%%]",	g_SpatialSpace->stat_remove.result, PPP(g_SpatialSpace->stat_remove.result),	g_SpatialSpacePhysic->stat_remove.result, PPP(g_SpatialSpacePhysic->stat_remove.result));
-		F.OutNext	("Physics:     %2.2fms, %2.1f%%",Physics.result,		PPP(Physics.result));	
-		F.OutNext	("  collider:  %2.2fms", ph_collision.result);	
-		F.OutNext	("  solver:    %2.2fms, %d",ph_core.result,ph_core.count);	
-		F.OutNext	("aiThink:     %2.2fms, %d",AI_Think.result,AI_Think.count);	
-		F.OutNext	("  aiRange:   %2.2fms, %d",AI_Range.result,AI_Range.count);
-		F.OutNext	("  aiPath:    %2.2fms, %d",AI_Path.result,AI_Path.count);
-		F.OutNext	("  aiNode:    %2.2fms, %d",AI_Node.result,AI_Node.count);
-		F.OutNext	("aiVision:    %2.2fms, %d",AI_Vis.result,AI_Vis.count);
-		F.OutNext	("  Query:     %2.2fms",	AI_Vis_Query.result);
-		F.OutNext	("  RayCast:   %2.2fms",	AI_Vis_RayTests.result);
-		F.OutSkip	();
-								   
-#undef  PPP
-#define PPP(a) (100.f*float(a)/float(RenderTOTAL.result))
-		F.OutNext	("*** RENDER:  %2.2fms",RenderTOTAL.result);
-		F.OutNext	("R_CALC:      %2.2fms, %2.1f%%",RenderCALC.result,	PPP(RenderCALC.result));	
-		F.OutNext	("  HOM:       %2.2fms, %d",RenderCALC_HOM.result,	RenderCALC_HOM.count);
-		F.OutNext	("  Skeletons: %2.2fms, %d",Animation.result,		Animation.count);
-		F.OutNext	("R_DUMP:      %2.2fms, %2.1f%%",RenderDUMP.result,	PPP(RenderDUMP.result));	
-		F.OutNext	("  Wait-L:    %2.2fms",RenderDUMP_Wait.result);	
-		F.OutNext	("  Wait-S:    %2.2fms",RenderDUMP_Wait_S.result);	
-		F.OutNext	("  Skinning:  %2.2fms",RenderDUMP_SKIN.result);	
-		F.OutNext	("  DT_Vis/Cnt:%2.2fms/%d",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
-		F.OutNext	("  DT_Render: %2.2fms",RenderDUMP_DT_Render.result);	
-		F.OutNext	("  DT_Cache:  %2.2fms",RenderDUMP_DT_Cache.result);	
-		F.OutNext	("  Wallmarks: %2.2fms, %d/%d - %d",RenderDUMP_WM.result,RenderDUMP_WMS_Count,RenderDUMP_WMD_Count,RenderDUMP_WMT_Count);
-		F.OutNext	("  Glows:     %2.2fms",RenderDUMP_Glows.result);	
-		F.OutNext	("  Lights:    %2.2fms, %d",RenderDUMP_Lights.result,RenderDUMP_Lights.count);
-		F.OutNext	("  RT:        %2.2fms, %d",RenderDUMP_RT.result,RenderDUMP_RT.count);
-		F.OutNext	("  HUD:       %2.2fms",RenderDUMP_HUD.result);	
-		F.OutNext	("  P_calc:    %2.2fms",RenderDUMP_Pcalc.result);
-		F.OutNext	("  S_calc:    %2.2fms",RenderDUMP_Scalc.result);
-		F.OutNext	("  S_render:  %2.2fms, %d",RenderDUMP_Srender.result,RenderDUMP_Srender.count);
-		F.OutSkip	();
-		F.OutSet(500, 35);
-		F.OutNext	("*** SOUND:   %2.2fms",Sound.result);
-		F.OutNext	("  TGT/SIM/E: %d/%d/%d",  snd_stat._rendered, snd_stat._simulated, snd_stat._events);
-		F.OutNext	("  HIT/MISS:  %d/%d",  snd_stat._cache_hits, snd_stat._cache_misses);
-		F.OutSkip	();
-		F.OutNext	("Input:       %2.2fms",Input.result);
-		F.OutNext	("clRAY:       %2.2fms, %d, %2.0fK",clRAY.result,		clRAY.count,r_ps);
-		F.OutNext	("clBOX:       %2.2fms, %d, %2.0fK",clBOX.result,		clBOX.count,b_ps);
-		F.OutNext	("clFRUSTUM:   %2.2fms, %d",		clFRUSTUM.result,	clFRUSTUM.count	);
-		F.OutSkip	();
-		F.OutNext	("netClientRecv:   %2.2fms, %d",	netClient1.result,netClient1.count);
-		F.OutNext	("netClientSend:   %2.2fms, %d",	netClient2.result,netClient2.count);
-		F.OutNext	("netServer:   %2.2fms, %d",		netServer.result,netServer.count);
-		F.OutNext	("netClientCompressor:   %2.2fms",	netClientCompressor.result);
-		F.OutNext	("netServerCompressor:   %2.2fms",	netServerCompressor.result);
-		
-		F.OutSkip	();
+		// drawStatParam(pFontGame, "----------------");
+		// drawStatParamByMS(pFontGame, this, "uUpdateCL:			%2.4fms | %2.4fms(relcase)", UpdateClient.result, NetworkRelcase.result);
+		// drawStatParamByMS(pFontGame, this, "uShedule:			%2.4fms | %2.4fms(low)", Sheduler.result, ShedulerLow.result);
 
-		F.OutSkip	();
-		F.OutNext	("TEST 0:      %2.2fms, %d",TEST0.result,TEST0.count);
-		F.OutNext	("TEST 1:      %2.2fms, %d",TEST1.result,TEST1.count);
-		F.OutNext	("TEST 2:      %2.2fms, %d",TEST2.result,TEST2.count);
-		F.OutNext	("TEST 3:      %2.2fms, %d",TEST3.result,TEST3.count);
-		F.OutSkip	();
-		F.OutNext	("qpc[%3d]",CPU::qpc_counter);
-		CPU::qpc_counter	=	0		;
-//		F.OutSet	(640,0);
-		F.OutSkip	();
-		m_pRender->OutData4(F);
-		/*
-		F.OutNext	("static:        %3.1f/%d",	RCache.stat.r.s_static.verts/1024.f,		RCache.stat.r.s_static.dips );
-		F.OutNext	("flora:         %3.1f/%d",	RCache.stat.r.s_flora.verts/1024.f,			RCache.stat.r.s_flora.dips );
-		F.OutNext	("  flora_lods:  %3.1f/%d",	RCache.stat.r.s_flora_lods.verts/1024.f,	RCache.stat.r.s_flora_lods.dips );
-		F.OutNext	("dynamic:       %3.1f/%d",	RCache.stat.r.s_dynamic.verts/1024.f,		RCache.stat.r.s_dynamic.dips );
-		F.OutNext	("  dynamic_sw:  %3.1f/%d",	RCache.stat.r.s_dynamic_sw.verts/1024.f,	RCache.stat.r.s_dynamic_sw.dips );
-		F.OutNext	("  dynamic_inst:%3.1f/%d",	RCache.stat.r.s_dynamic_inst.verts/1024.f,	RCache.stat.r.s_dynamic_inst.dips );
-		F.OutNext	("  dynamic_1B:  %3.1f/%d",	RCache.stat.r.s_dynamic_1B.verts/1024.f,	RCache.stat.r.s_dynamic_1B.dips );
-		F.OutNext	("  dynamic_2B:  %3.1f/%d",	RCache.stat.r.s_dynamic_2B.verts/1024.f,	RCache.stat.r.s_dynamic_2B.dips );
-		F.OutNext	("details:       %3.1f/%d",	RCache.stat.r.s_details.verts/1024.f,		RCache.stat.r.s_details.dips );
-*/
-		//////////////////////////////////////////////////////////////////////////
-		// Renderer specific
-		F.OutSet						(200,0);
-		Render->Statistics				(&F);
+		drawStatParam(pFontGame, "----------------");
+		drawStatParamByMS(6, pFontGame, this, "Render:				%2.4fms", RenderTOTAL_Real.result);
 
-		//////////////////////////////////////////////////////////////////////////
-		// Game specific
-		F.OutSet						(400,0);
-		g_pGamePersistent->Statistics	(&F);
+		drawStatParam(pFontGame, "----------------");
+		drawStatParamByMS(1, pFontGame, this, "Render Wait Gpus:	%2.4fms", RenderDUMP_Wait_S.result);
 
-		//////////////////////////////////////////////////////////////////////////
-		// process PURE STATS
-		seqStats.Process				(rp_Stats);
-		pFont->OnRender					();
-	};
+		// drawStatParamByMS(1, pFontGame, this, "Render Build Total:		%2.4fms", RenderMain.result);
+		drawStatParamByMS(1, pFontGame, this, "Render Build Static:		%2.4fms", RenderMainVIS_Static.result);
+		drawStatParamByMS(1, pFontGame, this, "Render Build Dynamic:	%2.4fms", RenderMainVIS_Dynamic.result);
+ 
+ 		drawStatParamByMS(3, pFontGame, this, "Render GPU Draw:	%2.4fms",	  RenderDUMP.result);
+		drawStatParamByMS(1, pFontGame, this, "Render GPU DrawFwd:	%2.4fms", RenderDUMP_Second.result);
 
-	if( /*psDeviceFlags.test(rsStatistic) ||*/ psDeviceFlags.test(rsCameraPos) ){
-		_draw_cam_pos					(pFont);
-		pFont->OnRender					();
-	};
-#ifdef DEBUG
-	//////////////////////////////////////////////////////////////////////////
-	// PERF ALERT
-	if (!g_bDisableRedText)
-	{
-		CGameFont&	F_ = *((CGameFont*)pFont);
-		F_.SetColor						(color_rgba(255,16,16,255));
-		F_.OutSet						(300,360);
-		if (fFPS<30)					F_.OutNext	("FPS       < 30:   %3.1f",	fFPS);
-		//if (RCache.stat.verts>500000)	F.OutNext	("Verts     > 500k: %d",	RCache.stat.verts);
-		m_pRender->GuardVerts(F_);
-		////if (RCache.stat.polys>500000)	F.OutNext	("Polys     > 500k: %d",	RCache.stat.polys);
-		if (psDeviceFlags.test(rsStatistic))
-		{
-			m_pRender->GuardDrawCalls(F_);
-			//if (RCache.stat.calls>1000)		F.OutNext	("DIP/DP    > 1k:   %d",	RCache.stat.calls);
-			////if (RCache.stat.textures>1000)F.OutNext	("T_change  > 500:  %d",	RCache.stat.textures);
-			if (RenderDUMP_DT_Count>1000)	F_.OutNext	("DT_count  > 1000: %u",	RenderDUMP_DT_Count);
-			F_.OutSkip						();
-			//if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
-			if (Sheduler.result>3.f)		F_.OutNext	("Update     > 3ms:	%3.1f",	Sheduler.result);
-			if (UpdateClient.result>3.f)	F_.OutNext	("UpdateCL   > 3ms: %3.1f",	UpdateClient.result);
-			if (Physics.result>5.f)			F_.OutNext	("Physics    > 5ms: %3.1f",	Physics.result);	
-		}
+		drawStatParam(pFontGame, "----------------");
+		drawStatParamByMS(2, pFontGame, this, "R_Main_Sun:			%2.4fms", RenderSun.result);
+		drawStatParamByMS(2, pFontGame, this, "R_Main_Lights:		%2.4fms", RenderLights.result);
+		drawStatParamByMS(2, pFontGame, this, "R_Postprocess:		%2.4fms", Render_postprocess.result);
+
+		drawStatParamByMS(1, pFontGame, this, "RDT_Ren:   %2.4fms", RenderDUMP_DT_Render.result);
+		drawStatParamByMS(1, pFontGame, this, "RDT_Vis:   %2.4fms", RenderDUMP_DT_VIS.result);
+		drawStatParamByMS(1, pFontGame, this, "RDT_Cache: %2.4fms", RenderDUMP_DT_Cache.result);
+
+
+		drawStatParam(pFontGame, "----------------");
+		u32 dcalls; u32 verts; u32 polys;
+		m_pRender->DrawCalls(dcalls); m_pRender->DrawVerticy(verts); m_pRender->DrawPoly(polys);
+
+		drawStatParamBy(pFontGame, this, "Draw Calls(DPI):		%u", dcalls);
+		drawStatParamBy(pFontGame, this, "Draw Vertex:			%u", verts);
+		drawStatParamBy(pFontGame, this, "Draw Pollys:			%u", polys);
+
+		// drawStatParam(pFontGame, "----------------");
+		// pFontGame->SetColor(color_rgba(0, 255, 0, 200));
+		// pFontGame->OutNext("UpdateCL by Objects:");
+		// pFontGame->OutNext("PH:   %.2fms, NPC:   %.2fms, Monster: %.2fms", UpdateClientPH.result, UpdateClientAI.result, UpdateClientAI_mutant.result);
+		// pFontGame->OutNext("Item: %.2fms, Actor: %.2fms, Other:   %.2fms", UpdateClientInv.result, UpdateClientA.result, UpdateClientUnsorted.result);
 	}
-
-	//////////////////////////////////////////////////////////////////////////
-	// Show errors
-	if (!g_bDisableRedText && errors.size())
+	else
+	if (psDeviceFlags.test(rsStatistic))
 	{
-		CGameFont&	F_ = *((CGameFont*)pFont);
-		F_.SetColor	(color_rgba(255,16,16,191));
-		F_.OutSet	(750,35);
-#if 0
-		for (u32 it=0; it<errors.size(); it++)
-			F_.OutNext("%s",errors[it].c_str());
-#else
-		for (u32 it=(u32)_max(int(0),(int)errors.size() - g_ErrorLineCount); it<errors.size(); it++)
-			F_.OutNext("%s",errors[it].c_str());
-#endif
-		F_.OnRender	();
+  		F.SetColor(color_rgba(128, 128, 192, 255));
+
+		F.OutNext("FPS:   %3.0f", fFPS);
+
+		drawStatParamByMS(10, pFontGame, this, "ThreadMain:			 %2.4fms", ThreadEngine.result);
+		drawStatParamByMS(10, pFontGame, this, "ThreadSecond:		 %2.4fms", ThreadSecond.result);
+		drawStatParamByMS(10, pFontGame, this, "ThreadParticles:	 %2.4fms", ThreadParticles.result);
+
+		drawStatParamByMS(10, pFontGame, this, "EngineMTFrame:	 %2.4fms", EngineMTFrame.result);
+		drawStatParamByMS(10, pFontGame, this, "EngineFrame:	 %2.4fms", EngineFrame.result);
+
+		drawStatParamByMS(3, pFontGame, this, "uUpdateCL:		 %2.4fms", UpdateClient.result);
+		drawStatParamByMS(2, pFontGame, this, "uShedule:		 %2.4fms", Sheduler.result);
+		drawStatParamByMS(2, pFontGame, this, "uSheduleLov:		 %2.4fms", ShedulerLow.result);
+
+		drawStatParamByMS(1, pFontGame, this, "Physics:		 %2.2fms", Physics.result);
+		drawStatParamByMS(1, pFontGame, this, "  collider:	 %2.2fms", ph_collision.result);
+		drawStatParamByMS(1, pFontGame, this, "  solver:		 %2.2fms", ph_core.result);
+
+		m_pRender->OutDetails(*pFontGame);
+
+		drawStatParamByMS(6, pFontGame, this, "Render:			 %2.4fms", RenderTOTAL_Real.result);
+		drawStatParamByMS(2, pFontGame, this, "Particles_update: %2.4fms", Particles_update_Time.result);
+		drawStatParamByMS(2, pFontGame, this, "Particles_render: %2.4fms", Particles_render_Time.result);
+
+		//drawStatParamByMS(pFontGame, this, "Memory:      %2.2fa", fMem_calls);
+		//drawStatParamByMS(pFontGame, this, "Network_xrEngine: %2.2f ms", NetworkSpawnCreate_xrEngine.result);
+		//drawStatParamByMS(pFontGame, this, "Network_Spawn:    %2.2f ms", NetworkSpawn.result);
+		//drawStatParamByMS(pFontGame, this, "Network_CSE:      %2.2f ms", NetworkSpawn_ProcessCSE.result);		
+		//drawStatParamByMS(pFontGame, this, "Network_Relcase	  %2.2f ms", NetworkRelcase.result);
+		//drawStatParamByMS	(pFontGame, this, "aiThink:     %2.2fms, %d",AI_Think.result, AI_Think.count);	
+		//drawStatParamByMS	(pFontGame, this, "  aiRange:   %2.2fms, %d",AI_Range.result, AI_Range.count);
+		//drawStatParamByMS	(pFontGame, this, "  aiPath:    %2.2fms, %d",AI_Path.result,  AI_Path.count);
+		//drawStatParamByMS	(pFontGame, this, "  aiNode:    %2.2fms, %d",AI_Node.result,  AI_Node.count);
+		//drawStatParamByMS	(pFontGame, this, "aiVision:    %2.2fms, %d",AI_Vis.result,  AI_Vis.count);
+		//drawStatParamByMS	(pFontGame, this, "  Query:     %2.2fms",	AI_Vis_Query.result);
+		//drawStatParamByMS	(pFontGame, this, "  RayCast:   %2.2fms",	AI_Vis_RayTests.result);
+		//drawStatParamByMS	(pFontGame, this, "netClientRecv:   %2.2fms, %d",	netClient1.result, netClient1.count);
+		//drawStatParamByMS	(pFontGame, this, "netClientSend:   %2.2fms, %d",	netClient2.result, netClient2.count);
 	}
-#endif
+ 
+	if (psDeviceFlags.test(rsCameraPos))
+ 		_draw_cam_pos(pFontGame);
 
+	if (any_flag)
+		pFontGame->OnRender();
+
+
+	if (true)
 	{
-		EngineTOTAL.FrameStart		();	
-		Sheduler.FrameStart			();	
-		UpdateClient.FrameStart		();	
-		Physics.FrameStart			();	
-		ph_collision.FrameStart		();
-		ph_core.FrameStart			();
-		Animation.FrameStart		();	
-		AI_Think.FrameStart			();
-		AI_Range.FrameStart			();
-		AI_Path.FrameStart			();
-		AI_Node.FrameStart			();
-		AI_Vis.FrameStart			();
-		AI_Vis_Query.FrameStart		();
-		AI_Vis_RayTests.FrameStart	();
-		
-		RenderTOTAL.FrameStart		();
-		RenderCALC.FrameStart		();
-		RenderCALC_HOM.FrameStart	();
-		RenderDUMP.FrameStart		();	
-		RenderDUMP_RT.FrameStart	();
-		RenderDUMP_SKIN.FrameStart	();	
-		RenderDUMP_Wait.FrameStart	();	
-		RenderDUMP_Wait_S.FrameStart();	
-		RenderDUMP_HUD.FrameStart	();	
-		RenderDUMP_Glows.FrameStart	();	
-		RenderDUMP_Lights.FrameStart();	
-		RenderDUMP_WM.FrameStart	();	
-		RenderDUMP_DT_VIS.FrameStart();	
-		RenderDUMP_DT_Render.FrameStart();	
-		RenderDUMP_DT_Cache.FrameStart();	
-		RenderDUMP_Pcalc.FrameStart	();	
-		RenderDUMP_Scalc.FrameStart	();	
-		RenderDUMP_Srender.FrameStart();	
-		
-		Sound.FrameStart			();
-		Input.FrameStart			();
-		clRAY.FrameStart			();	
-		clBOX.FrameStart			();
-		clFRUSTUM.FrameStart		();
-		
-		netClient1.FrameStart		();
-		netClient2.FrameStart		();
-		netServer.FrameStart		();
+		for (auto& stat : FrameTicks)
+			stat.second.FrameStart();
+
+
+		EngineFrame.FrameStart();
+		EngineMTFrame.FrameStart();
+		EngineMTFrameSCore.FrameStart();
+
+		Sheduler.FrameStart();
+		ShedulerLow.FrameStart();
+		UpdateClient.FrameStart();
+		Physics.FrameStart();
+		ph_collision.FrameStart();
+		ph_core.FrameStart();
+		Animation.FrameStart();
+		AI_Think.FrameStart();
+		AI_Range.FrameStart();
+		AI_Path.FrameStart();
+		AI_Node.FrameStart();
+		AI_Vis.FrameStart();
+		AI_Vis_Query.FrameStart();
+		AI_Vis_RayTests.FrameStart();
+
+		RenderTOTAL.FrameStart();
+		RenderCALC.FrameStart();
+		RenderCALC_HOM.FrameStart();
+
+		RenderDUMP.FrameStart();
+		RenderDUMP_Second.FrameStart();
+		RenderDUMP_RT.FrameStart();
+
+		RenderDUMP_SKIN.FrameStart();
+		RenderDUMP_Wait.FrameStart();
+		RenderDUMP_Wait_S.FrameStart();
+		RenderDUMP_HUD.FrameStart();
+		RenderDUMP_Glows.FrameStart();
+		RenderDUMP_Lights.FrameStart();
+		RenderDUMP_WM.FrameStart();
+		RenderDUMP_DT_VIS.FrameStart();
+		RenderDUMP_DT_Render.FrameStart();
+		RenderDUMP_DT_Cache.FrameStart();
+		RenderDUMP_Pcalc.FrameStart();
+		RenderDUMP_Scalc.FrameStart();
+		RenderDUMP_Srender.FrameStart();
+
+		Sound.FrameStart();
+		Input.FrameStart();
+		clRAY.FrameStart();
+		clBOX.FrameStart();
+		clFRUSTUM.FrameStart();
+
+		netClient1.FrameStart();
+		netClient2.FrameStart();
+		netServer.FrameStart();
 		netClientCompressor.FrameStart();
 		netServerCompressor.FrameStart();
 
-		TEST0.FrameStart			();
-		TEST1.FrameStart			();
-		TEST2.FrameStart			();
-		TEST3.FrameStart			();
+		TEST0.FrameStart();
+		TEST1.FrameStart();
+		TEST2.FrameStart();
+		TEST3.FrameStart();
 
-		g_SpatialSpace->stat_insert.FrameStart		();
-		g_SpatialSpace->stat_remove.FrameStart		();
+		g_SpatialSpace->stat_insert.FrameStart();
+		g_SpatialSpace->stat_remove.FrameStart();
 
 		g_SpatialSpacePhysic->stat_insert.FrameStart();
 		g_SpatialSpacePhysic->stat_remove.FrameStart();
+
+		RenderTOTAL_Real.FrameStart();
+		RenderMain.FrameStart();
+		RenderMain_Calcualte.FrameStart();
+
+		RenderMainVIS_Static.FrameStart();
+		RenderMainVIS_Dynamic.FrameStart();
+
+		RenderSun.FrameStart();
+		RenderLights.FrameStart();
+
+
+		Render_dsgHUD_UI.FrameStart();
+		Render_postprocess.FrameStart();
+
+		NetworkSpawnCreate_xrEngine.FrameStart();
+		NetworkSpawn.FrameStart();
+		NetworkSpawn_ProcessCSE.FrameStart();
+		NetworkRelcase.FrameStart();
+
+		Particles_update_Time.FrameStart();
+		Particles_render_Time.FrameStart();
+
+		ThreadEngine.FrameStart();
+		ThreadParticles.FrameStart();
+		ThreadSecond.FrameStart();
+
+		OnFrame1.FrameStart();
+		OnFrame2.FrameStart();
+		OnFrame3.FrameStart();
+		OnFrame4.FrameStart();
+
+
+		UpdateClientPH.FrameStart();
+		UpdateClientUnsorted.FrameStart();
+		UpdateClientA.FrameStart();
+		UpdateClientAI_mutant.FrameStart();
+		UpdateClientAI.FrameStart();
+		UpdateClientInv.FrameStart();
+
+
+		RenderMainVIS_StaticTraverce.FrameStart();
 	}
+
+
 	dwSND_Played = dwSND_Allocated = 0;
 	Particles_starting = Particles_active = Particles_destroy = 0;
 }
+
 
 void	_LogCallback(LPCSTR string)
 {

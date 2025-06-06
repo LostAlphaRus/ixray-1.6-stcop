@@ -41,12 +41,14 @@ void CDetailManager::hw_Load	()
 
 void CDetailManager::hw_Load_Geom()
 {
-	// Analyze batch-size
-	hw_BatchSize = 50;
+	// hw_BatchSize = std::max(50, std::min(hw_BatchSize, 1024));
 
-#ifdef USE_DX11
-	hw_BatchSize = 61;
-#endif
+	if (hw_BatchSize < 50)
+	 	hw_BatchSize = 50;
+	else if (hw_BatchSize > 1024)
+	 	hw_BatchSize = 1024;
+
+	Msg("Selected Batch: %u", hw_BatchSize);
 
 	// Pre-process objects
 	u32			dwVerts		= 0;
@@ -73,11 +75,13 @@ void CDetailManager::hw_Load_Geom()
 	R_CHK			(RDevice->CreateIndexBuffer	(dwIndices*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&hw_IB,0));
 
 #endif	//	USE_DX11
+	
 	Msg("* [DETAILS] Batch(%d), VB(%dK), IB(%dK)", hw_BatchSize, (dwVerts * vSize) / 1024, (dwIndices * 2) / 1024);
 
 	// Fill VB
 	{
 		vertHW* pV{};
+
 #ifdef USE_DX11
 		vertHW*			pVOriginal;
 		pVOriginal	=	xr_alloc<vertHW>(dwVerts);
@@ -109,6 +113,7 @@ void CDetailManager::hw_Load_Geom()
 				}
 			}
 		}
+
 #ifdef USE_DX11
 		R_CHK(dx10BufferUtils::CreateVertexBuffer(&hw_VB, pVOriginal, dwVerts*vSize));
 		xr_free(pVOriginal);
@@ -119,10 +124,14 @@ void CDetailManager::hw_Load_Geom()
 
 	// Fill IB
 	{
-		u16* pI{};
+		typedef u32 INDEX_TYPE;
+
+
+		INDEX_TYPE* pI{};
+
 #ifdef USE_DX11
-		u16*			pIOriginal;
-		pIOriginal = xr_alloc<u16>(dwIndices);
+		INDEX_TYPE*			pIOriginal;
+		pIOriginal = xr_alloc<INDEX_TYPE>(dwIndices);
 		pI	= pIOriginal;
 #else //USE_DX11
 		R_CHK			(hw_IB->Lock(0,0,(void**)(&pI),0));
@@ -134,16 +143,16 @@ void CDetailManager::hw_Load_Geom()
 #else
 			const CDetail& D	=	*objects[o];
 #endif
-			u16		offset	=	0;
+			INDEX_TYPE		offset	=	0;
 			for (u32 batch=0; batch<hw_BatchSize; batch++)
 			{
 				for (u32 i=0; i<u32(D.number_indices); i++)
-					*pI++	=	u16(u16(D.indices[i]) + u16(offset));
-				offset		=	u16(offset+u16(D.number_vertices));
+					*pI++	= INDEX_TYPE(INDEX_TYPE(D.indices[i]) + INDEX_TYPE(offset));
+				offset		= INDEX_TYPE(offset+ INDEX_TYPE(D.number_vertices));
 			}
 		}
 #ifdef USE_DX11
-		R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices*2));
+		R_CHK(dx10BufferUtils::CreateIndexBuffer(&hw_IB, pIOriginal, dwIndices * sizeof(INDEX_TYPE) ));
 		xr_free(pIOriginal);
 #else //USE_DX11
 		R_CHK			(hw_IB->Unlock());

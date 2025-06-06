@@ -94,7 +94,7 @@ public:
 	inline void SetColor(u32 C) { dwCurrentColor = C; };
 	inline void SetGradientColor(u32 C) { dwGradientColor = C; };
 
-	//inline void SetHeightI(float S);
+	inline void SetHeightI(float S);
 	inline void SetHeight(float S);
 
 	inline float GetHeight() { return fCurrentHeight; };

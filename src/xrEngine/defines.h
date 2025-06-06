@@ -21,6 +21,7 @@ enum {
 	rsWireframe						= (1ul<<3ul),
 	rsOcclusion						= (1ul<<4ul),
 	rsStatistic						= (1ul<<5ul),
+
 	rsDetails						= (1ul<<6ul),
 	rsRefresh60hz					= (1ul<<7ul),
 	rsConstantFPS					= (1ul<<8ul),
@@ -41,6 +42,9 @@ enum {
 	rsR4							= (1ul<<20ul),
 
 	rsDeviceActive					= (1ul<<21ul),
+	rsStatistic_fps					= (1ul << 22ul),
+
+
 	// 22-32 bit - reserved to Editor
 };
 

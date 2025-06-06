@@ -8,7 +8,13 @@ class dxStatsRender : public IStatsRender
 {
 public:
 	virtual void Copy(IStatsRender &_in);
+ 
+	virtual void DrawCalls(u32& value) override;
+	virtual void DrawVerticy(u32& value) override;
+	virtual void DrawPoly(u32& value) override;
+	virtual void OutDetails(CGameFont& F) override;
 
+ 
 	virtual void OutData1 (CGameFont &F);
 	virtual void OutData2 (CGameFont &F);
 	virtual void OutData3 (CGameFont &F);

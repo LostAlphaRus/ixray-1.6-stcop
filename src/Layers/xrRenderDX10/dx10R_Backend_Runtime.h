@@ -4,6 +4,7 @@
 
 #include "StateManager/dx10StateManager.h"
 #include "StateManager/dx10ShaderResourceStateCache.h"
+#include "R_Backend.h"
 
 IC void CBackend::set_xform( u32 ID, const Fmatrix& M_ )
 {
@@ -202,6 +203,21 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 	}
 }
 
+
+ICF void CBackend::set_Indices_u32(ID3DIndexBuffer* _ib)
+{
+	if (ib != _ib)
+	{
+		PGO(Msg("PGO:IB:%x", _ib));
+#ifdef DEBUG
+		stat.ib++;
+#endif
+		ib = _ib;
+		RContext->IASetIndexBuffer(ib, DXGI_FORMAT_R32_UINT, 0);
+	}
+}
+
+
 IC D3D_PRIMITIVE_TOPOLOGY TranslateTopology(D3DPRIMITIVETYPE T)
 {
 	static	D3D_PRIMITIVE_TOPOLOGY translateTable[] =
@@ -372,6 +388,15 @@ IC void CBackend::set_Geometry(SGeometry* _geom)
 	
 	set_Vertices		(_geom->vb, _geom->vb_stride);
 	set_Indices			(_geom->ib);
+}
+
+
+IC void CBackend::set_Geometry_u32(SGeometry* _geom)
+{
+	set_Format(&*_geom->dcl);
+
+	set_Vertices(_geom->vb, _geom->vb_stride);
+	set_Indices_u32(_geom->ib);
 }
 
 IC void	CBackend::set_Scissor(Irect*	R)
