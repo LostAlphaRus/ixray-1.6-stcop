@@ -95,6 +95,71 @@ namespace rtree2d {
 
 	template <typename Value, std::size_t MaxEntries = 4, std::size_t PreallocNodes = 32>
 	class RTree {
+		struct Node;
+		struct Entry {
+			Point   pt;     // valid if leaf-entry
+			Node* child;  // valid if internal-entry, nullptr if leaf
+			Rect    box;
+			Value   value;  // valid if leaf-entry
+
+
+			// Leaf-entry constructor:
+			Entry(const Point& p, const Value& v)
+				: pt(p), child(nullptr), box(Rect::from_point(p)), value(v) {
+			}
+
+			// Internal-entry constructor from a child Node*:
+			explicit Entry(Node* c)
+				: pt(Point{ 0,0 }), child(c), box(c->mbr), value() {
+			}
+		};
+
+		struct Node {
+			bool                is_leaf;
+			Node* parent;
+			Rect                mbr;      // MBR of all entries
+
+
+			std::pmr::monotonic_buffer_resource pool_;
+			std::pmr::polymorphic_allocator<Entry> allocator_;
+			std::pmr::vector<Entry>  entries;  // up to MaxEntries+1 while splitting
+			unsigned char buffer_[calculate_reserve_count(sizeof(Entry), MaxEntries)];
+
+			Node(bool leaf, Node* parent_)
+				: is_leaf(leaf), parent(parent_), mbr(Rect::infinite_negative()), pool_{ &buffer_, sizeof(buffer_), std::pmr::null_memory_resource() }, allocator_{ &pool_ }, entries{ allocator_ } {
+				entries.reserve(MaxEntries);
+			}
+
+			Node(const Node&) = delete; // No copying of nodes
+			Node& operator=(const Node&) = delete; // No assignment of nodes
+
+			Node(Node&& other) noexcept
+				: is_leaf(other.is_leaf), parent(other.parent), mbr(other.mbr), pool_{ &buffer_, sizeof(buffer_), std::pmr::null_memory_resource() }, allocator_{ &pool_ }, entries{ allocator_ } {
+				entries.reserve(MaxEntries);
+
+				for (auto& entry : other.entries) {
+					entries.push_back(std::move(entry));
+				}
+
+				other.entries.clear();
+				other.parent = nullptr; // Prevent double deletion
+			}
+
+			Node& operator=(Node&& other) noexcept {
+				if (this != &other) {
+					is_leaf = other.is_leaf;
+					parent = other.parent;
+					mbr = other.mbr;
+					entries.clear();
+					for (auto& entry : other.entries) {
+						entries.push_back(std::move(entry));
+					}
+					other.entries.clear();
+					other.parent = nullptr; // Prevent double deletion
+				}
+				return *this;
+			}
+		};
 	public:
 		static_assert(MaxEntries >= 2, "MaxEntries must be ≥ 2");
 		static_assert(PreallocNodes >= 2, "PreallocNodes must be ≥ 2");
@@ -107,8 +172,80 @@ namespace rtree2d {
 			// Allocate the root node (as a leaf):
 			root_ = allocate_node(/*is_leaf=*/true, /*parent=*/nullptr);
 		}
+		
+		RTree(const RTree& other) : pool_{ &buffer_, sizeof(buffer_), std::pmr::get_default_resource() }, alloc_{ &pool_ } 
+		{
+			nodes_.reserve(PreallocNodes);
+			root_ = allocate_node(true, nullptr);
+			// Copy entries from other tree
+			for (const auto& node : other.nodes_)
+			{
+				for (const auto& entry : node.entries)
+				{
+					insert(entry.pt, entry.value);
+				}
+			}
+		}
+		RTree& operator=(const RTree& other)
+		{
+			if (this != &other ) {
+				// Clear current tree
+				nodes_.clear();
+				root_ = allocate_node(true, nullptr);
+				// Copy entries from other tree
+				for (const auto& node : other.nodes_)
+				{
+					for (const auto& entry : node.entries)
+					{
+						insert(entry.pt, entry.value);
+					}
+				}
+			}
+			return *this;
+		}
+		RTree& operator=(RTree&& other) noexcept 
+		{
+			if (this != &other) {
+				root_ = allocate_node(true, nullptr);
+
+				for (auto& node : other.nodes_)
+				{
+					for (auto& entry : node.entries)
+					{
+						insert(entry.pt, entry.value);
+					}
+					node.entries.clear();
+				}
+
+				other.nodes_.clear();
+
+				other.root_ = nullptr;
+			}
+
+			return *this;
+		}
+
+		RTree(RTree&& other) noexcept : pool_{ &buffer_, sizeof(buffer_), std::pmr::get_default_resource() }, alloc_{ &pool_ } {
+			nodes_.reserve(PreallocNodes);
+
+			root_ = allocate_node(true, nullptr);
+
+			for (auto& node : other.nodes_)
+			{
+				for (auto& entry : node.entries)
+				{
+					insert(entry.pt, entry.value);
+				}
+				node.entries.clear();
+			}
+
+			other.nodes_.clear();
+			other.root_ = nullptr;
+		}
 
 		~RTree() = default; // nodes_ will be destroyed automatically
+
+		const std::pmr::vector<Node>& get_nodes(void) const { return this->nodes_; }
 
 		// Insert (point → value) into the R-Tree (O(log N) amortized).
 		void insert(const Point& p, const Value& value) {
@@ -227,46 +364,6 @@ namespace rtree2d {
 		}
 
 	private:
-		//-------------------------------------------------------------------------------
-		// 2.1) Internal types: Entry and Node
-		//-------------------------------------------------------------------------------
-
-		struct Node;
-
-		struct Entry {
-			Point   pt;     // valid if leaf-entry
-			Node* child;  // valid if internal-entry, nullptr if leaf
-			Rect    box;
-			Value   value;  // valid if leaf-entry
-
-
-			// Leaf-entry constructor:
-			Entry(const Point& p, const Value& v)
-				: pt(p), child(nullptr), box(Rect::from_point(p)), value(v) {
-			}
-
-			// Internal-entry constructor from a child Node*:
-			explicit Entry(Node* c)
-				: pt(Point{ 0,0 }), child(c), box(c->mbr), value() {
-			}
-		};
-
-		struct Node {
-			bool                is_leaf;
-			Node* parent;
-			Rect                mbr;      // MBR of all entries
-
-
-			std::pmr::monotonic_buffer_resource pool_;
-			std::pmr::polymorphic_allocator<Entry> allocator_;
-			std::pmr::vector<Entry>  entries;  // up to MaxEntries+1 while splitting
-			unsigned char buffer_[calculate_reserve_count(sizeof(Entry), MaxEntries)];
-
-			Node(bool leaf, Node* parent_)
-				: is_leaf(leaf), parent(parent_), mbr(Rect::infinite_negative()), pool_{ &buffer_, sizeof(buffer_), std::pmr::null_memory_resource() }, allocator_{ &pool_ }, entries{ allocator_ } {
-				entries.reserve(MaxEntries);
-			}
-		};
 
 		//-------------------------------------------------------------------------------
 		// 2.2) PMR and preallocation
@@ -333,7 +430,7 @@ namespace rtree2d {
 
 				unsigned char _buffer_centers[calculate_reserve_count(sizeof(Center), MaxEntries)];
 				std::pmr::monotonic_buffer_resource _resource_centers{ &_buffer_centers, sizeof(_buffer_centers), std::pmr::null_memory_resource()};
-				std::pmr::polymorphic_allocator<Center> _allocator_centers{ _resource_centers };
+				std::pmr::polymorphic_allocator<Center> _allocator_centers{ &_resource_centers };
 
 				std::pmr::vector<Center> centers{_allocator_centers};
 				centers.reserve(N);

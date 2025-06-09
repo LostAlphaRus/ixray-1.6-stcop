@@ -535,150 +535,204 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 				if (ImGui::CollapsingHeader("Runtime"))
 				{
 					CTextureAtlas* pDefault = pStorage->get_atlas(_kSVGStorage_DefaultAtlasID);
-					char name[32];
-					std::sprintf(name, "[%d] %s", pDefault->getID(), _kSVGStorage_DefaultAtlasName);
 
-					if (ImGui::CollapsingHeader(name))
-					{
-						const auto& elements = pDefault->getElements();
+					auto p_atlas_draw = [](CTextureAtlas* pAtlas)->void {
+						char name[32];
+						std::sprintf(name, "[%d] %s", pAtlas->getID(), _kSVGStorage_DefaultAtlasName);
 
-						ImGui::SeparatorText("Info");
-						ImGui::Text("Elements:");
-						for (const auto& element : elements)
+						if (ImGui::CollapsingHeader(name))
 						{
-							ImGui::Text("\t[w=%.2f;h=%.2f] | x=%.2f y=%.2f", element.w(), element.h(), element.x(), element.y());
-						}
+							const auto& elements = pAtlas->getElements();
 
-						ImGui::SeparatorText("Atlas");
+							ImGui::SeparatorText("Info");
 
-						float atlasPixelW = pDefault->getWidth();
-						float atlasPixelH = pDefault->getHeight();
+							ImGui::Text("atlas width: %.2f", pAtlas->getWidth());
+							ImGui::Text("atlas height: %.2f", pAtlas->getHeight());
 
-						ImVec2 atlasDisplaySize = ImVec2((float)atlasPixelW, (float)atlasPixelH);
-						
-						ImGui::Image(pDefault->getResource(), atlasDisplaySize, ImVec2(0,0), ImVec2(1,1), ImVec4(1,1,1,1), ImVec4(1,1,1,1));
-
-						ImVec2 atlasMin = ImGui::GetItemRectMin();
-						ImVec2 atlasMax = ImGui::GetItemRectMax();
-						ImVec2 atlasOnScreenSize = ImVec2(atlasMax.x - atlasMin.x,
-							atlasMax.y - atlasMin.y);
-
-						float scaleX = atlasOnScreenSize.x / (float)atlasPixelW;
-						float scaleY = atlasOnScreenSize.y / (float)atlasPixelH;
-
-						ImVec2 parentCursorBackup = ImGui::GetCursorPos();
-
-						int hoveredIndex = -1;
-						ImVec2   hoveredSubMin, hoveredSubSize;
-
-						ImVec2 mousePos = ImGui::GetMousePos();
-
-						int i = 0; 
-						for (const auto& element : elements)
-						{
- 
-							ImVec2 subMin = ImVec2(
-								atlasMin.x + 1 + element.x() * scaleX,
-								atlasMin.y + 1 + element.y() * scaleY
-							);
- 
-							ImVec2 subSize = ImVec2(
-								element.w() * scaleX,
-								element.h() * scaleY
-							);
-							ImVec2 subMax = ImVec2(subMin.x + subSize.x,
-								subMin.y + subSize.y);
-
- 
-							if (mousePos.x >= subMin.x && mousePos.x <= subMax.x &&
-								mousePos.y >= subMin.y && mousePos.y <= subMax.y)
+							ImGui::Text("Elements:");
+							for (const auto& pair : elements)
 							{
-								hoveredIndex = i;
-								hoveredSubMin = subMin;
-								hoveredSubSize = subSize;
-								break; // stop after first hit (assuming subregions don’t overlap)
+								ImGui::Text("\t[%s]", pair.first.data());
+								for (const auto& node : pair.second.get_nodes())
+								{
+									for (const auto& entry : node.entries)
+									{
+										ImGui::Text("\t\tw=%.2f h=%.2f x=%.2f y=%.2f", entry.value.w(), entry.value.h(), entry.value.x(), entry.value.y());
+									}
+								}
 							}
 
-							++i;
+							ImGui::SeparatorText("Atlas");
+
+							float atlasPixelW = pAtlas->getWidth();
+							float atlasPixelH = pAtlas->getHeight();
+
+							ImVec2 atlasDisplaySize = ImVec2((float)atlasPixelW, (float)atlasPixelH);
+
+							ImGui::Image(pAtlas->getResource(), atlasDisplaySize, ImVec2(0, 0), ImVec2(1, 1), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+
+							ImVec2 atlasMin = ImGui::GetItemRectMin();
+							ImVec2 atlasMax = ImGui::GetItemRectMax();
+							ImVec2 atlasOnScreenSize = ImVec2(atlasMax.x - atlasMin.x,
+								atlasMax.y - atlasMin.y);
+
+							float scaleX = atlasOnScreenSize.x / (float)atlasPixelW;
+							float scaleY = atlasOnScreenSize.y / (float)atlasPixelH;
+
+							ImVec2 parentCursorBackup = ImGui::GetCursorPos();
+
+							int hoveredIndex = -1;
+							ImVec2   hoveredSubMin, hoveredSubSize;
+
+							ImVec2 mousePos = ImGui::GetMousePos();
+
+							bool break_called = false;
+							xr_string_view hovered_icon_name;
+							u32 hovered_icon_w;
+							u32 hovered_icon_h;
+
+							int i = 0;
+							for (const auto& pair : elements)
+							{
+								for (const auto& node : pair.second.get_nodes())
+								{
+									for (const auto& entry : node.entries)
+									{
+										const auto& element = entry.value;
+
+										ImVec2 subMin = ImVec2(
+											atlasMin.x + 1 + element.x() * scaleX,
+											atlasMin.y + 1 + element.y() * scaleY
+										);
+
+										ImVec2 subSize = ImVec2(
+											element.w() * scaleX,
+											element.h() * scaleY
+										);
+										ImVec2 subMax = ImVec2(subMin.x + subSize.x,
+											subMin.y + subSize.y);
+
+
+										if (mousePos.x >= subMin.x && mousePos.x <= subMax.x &&
+											mousePos.y >= subMin.y && mousePos.y <= subMax.y)
+										{
+											hoveredIndex = i;
+											
+											hovered_icon_w = element.w();
+											hovered_icon_h = element.h();
+											hovered_icon_name = pair.first;
+
+											hoveredSubMin = subMin;
+											hoveredSubSize = subSize;
+											break_called = true;
+											break; // stop after first hit (assuming subregions don’t overlap)
+										}
+
+										++i;
+									}
+
+									if (break_called)
+										break;
+								}
+
+								if (break_called)
+									break;
+							}
+
+							i = 0;
+
+							for (const auto& pair : elements)
+							{
+								for (const auto& node : pair.second.get_nodes())
+								{
+									for (const auto& entry : node.entries)
+									{
+										const auto& element = entry.value;
+
+										ImVec2 subMin = ImVec2(
+											atlasMin.x + 1 + element.x() * scaleX,
+											atlasMin.y + 1 + element.y() * scaleY
+										);
+										ImVec2 subSize = ImVec2(
+											element.w() * scaleX,
+											element.h() * scaleY
+										);
+
+
+										ImU32 borderColor = (i == hoveredIndex)
+											? IM_COL32(255, 255, 0, 255) // yellow
+											: IM_COL32(255, 0, 0, 255); // red
+
+
+										ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+										ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
+
+										ImGuiWindowFlags childFlags =
+											ImGuiWindowFlags_NoTitleBar |
+											ImGuiWindowFlags_NoResize |
+											ImGuiWindowFlags_NoMove |
+											ImGuiWindowFlags_NoScrollbar |
+											ImGuiWindowFlags_NoScrollWithMouse |
+											ImGuiWindowFlags_NoSavedSettings;
+
+										ImGui::SetCursorScreenPos(subMin);
+										ImGui::BeginChild(
+											("SubRegion##" + std::to_string(i)).c_str(),
+											subSize,
+											/*border=*/false,
+											childFlags
+										);
+
+
+										ImDrawList* dl = ImGui::GetWindowDrawList();
+										ImVec2 rectMin = ImVec2(subMin.x - 0.5f,
+											subMin.y);
+										ImVec2 rectMax = ImVec2(subMin.x + subSize.x + 0.5f,
+											subMin.y + subSize.y);
+
+										dl->AddRect(rectMin,
+											rectMax,
+											borderColor,
+											0.0f,
+											0,
+											2.0f);
+
+
+										ImGui::Dummy(subSize);
+
+										ImGui::EndChild();
+										ImGui::PopStyleColor();
+										ImGui::PopStyleVar();
+
+
+										ImGui::SetCursorPos(parentCursorBackup);
+
+										++i;
+									}
+								}
+							}
+
+
+							if (hoveredIndex >= 0 && hovered_icon_name.empty()==false && hovered_icon_w && hovered_icon_h)
+							{
+								ImGui::BeginTooltip();
+								ImGui::Text("Region=%s [w=%.2f|h=%.2f]", hovered_icon_name.data(), hovered_icon_w, hovered_icon_h);
+								// (Optionally show its pixel‐coords inside the atlas:)
+
+								auto* p_element = elements.at(hovered_icon_name).nearest({ static_cast<float>(hovered_icon_w), static_cast<float>(hovered_icon_h) });
+								R_ASSERT(p_element && "must be obtainable!");
+
+								if (p_element)
+								{
+									ImGui::Text("Name=%s w=%.2f h=%.2f x=%.2f y=%.2f", hovered_icon_name.data(), p_element->w(), p_element->h(), p_element->x(), p_element->y());
+								}
+								ImGui::EndTooltip();
+							}
 						}
+					};
 
-						i = 0;
- 
-						for (const auto& element : elements)
-						{
- 
-							ImVec2 subMin = ImVec2(
-								atlasMin.x + 1 + element.x() * scaleX,
-								atlasMin.y + 1 + element.y() * scaleY
-							);
-							ImVec2 subSize = ImVec2(
-								element.w() * scaleX,
-								element.h() * scaleY
-							);
+					p_atlas_draw(pDefault);
 
- 
-							ImU32 borderColor = (i == hoveredIndex)
-								? IM_COL32(255, 255, 0, 255) // yellow
-								: IM_COL32(255, 0, 0, 255); // red
-
- 
-							ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-							ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
-
-							ImGuiWindowFlags childFlags =
-								ImGuiWindowFlags_NoTitleBar |
-								ImGuiWindowFlags_NoResize |
-								ImGuiWindowFlags_NoMove |
-								ImGuiWindowFlags_NoScrollbar |
-								ImGuiWindowFlags_NoScrollWithMouse |
-								ImGuiWindowFlags_NoSavedSettings;
-
-							ImGui::SetCursorScreenPos(subMin);
-							ImGui::BeginChild(
-								("SubRegion##" + std::to_string(i)).c_str(),
-								subSize,
-								/*border=*/false,
-								childFlags
-							);
-
- 
-							ImDrawList* dl = ImGui::GetWindowDrawList();
-							ImVec2 rectMin = ImVec2(subMin.x - 0.5f,
-								subMin.y);
-							ImVec2 rectMax = ImVec2(subMin.x + subSize.x + 0.5f,
-								subMin.y + subSize.y);
-
-							dl->AddRect(rectMin,
-								rectMax,
-								borderColor,
-								0.0f,
-								0,
-								2.0f);
-
- 
-							ImGui::Dummy(subSize);
-
-							ImGui::EndChild();
-							ImGui::PopStyleColor();
-							ImGui::PopStyleVar();
-
- 
-							ImGui::SetCursorPos(parentCursorBackup);
-
-							++i;
-						}
-
- 
-						if (hoveredIndex >= 0)
-						{
-							ImGui::BeginTooltip();
-							ImGui::Text("SubRegion #%d", hoveredIndex);
-							// (Optionally show its pixel‐coords inside the atlas:)
-							const auto& element = elements[hoveredIndex];
-							ImGui::Text("x=%.2f, y=%.2f, w=%.2f, h=%.2f", element.x(), element.y(), element.w(), element.h());
-							ImGui::EndTooltip();
-						}
-					}
 				}
 
 				if (ImGui::CollapsingHeader("Cache"))

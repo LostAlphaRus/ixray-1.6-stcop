@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../../xrCore/xr_resource.h"
+#include "../../xrCore/xr_rtree.h"
 
 #include <memory_resource>
 
@@ -130,7 +131,7 @@ typedef	resptr_core<CTexture,resptrcode_texture >
 constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
 constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
 constexpr u32 _kRenderBackend_TextureAtlasInvalidID = u32(-1);
-constexpr u32 _kRenderBackend_TextureAtlasPreallocatedItems = 256;
+constexpr u32 _kRenderBackend_TextureAtlasPreallocatedItems = 64;
 constexpr u32 _kRenderBackend_TextureAtlasPreallocatedDimensions = 8;
 
 inline constexpr size_t calculate_reserve_count(size_t bytes, size_t amount)
@@ -151,11 +152,6 @@ class ECORE_API CTextureAtlas
 public:
 	struct ECORE_API CTextureAtlasElement
 	{
-		float u0 = 0.0f;
-		float v0 = 0.0f;
-		float u1 = 0.0f;
-		float v1 = 0.0f;
-
 		smol_atlas_item_t* p_placement = nullptr;
 
 		float x() const;
@@ -163,6 +159,9 @@ public:
 		float w() const;
 		float h() const;
 	};
+
+	using storage_type = std::pmr::unordered_map<xr_string_view, xr_rtree2d<CTextureAtlasElement, 2, 8>>;
+	using storage_allocator = std::pmr::polymorphic_allocator<storage_type::value_type>;
 
 public:
 	CTextureAtlas();
@@ -176,7 +175,9 @@ public:
 	void init(ID3DDevice* p_device, int width, int height, const char* pName);
 	void uninit();
 
-	void addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch = 0);
+	void addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch = 0);
+
+	void getRegion(const xr_string_view& icon_subpath_name, u32& w, u32& h);
 
 	void* getResource();
 
@@ -188,7 +189,7 @@ public:
 	u32 getWidth(void) const;
 	u32 getHeight(void) const;
 
-	const std::pmr::vector<CTextureAtlasElement>& getElements(void) const;
+	const storage_type& getElements(void) const;
 
 private:
 	// for older GAPI < DX11
@@ -208,10 +209,9 @@ private:
 
 	// returned from resource manager and resource manager stores this texture (because later user will need to SetShader calling and for building we need to compile "blender" for that we need to obtain our texture from resource manager otherwise we can't use original way of rendering svg)
 	CTexture* m_p_texture;
-	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(CTextureAtlasElement), _kRenderBackend_TextureAtlasPreallocatedItems)];
+	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(storage_type::value_type), _kRenderBackend_TextureAtlasPreallocatedItems)];
 	std::pmr::monotonic_buffer_resource sais_wrapper;
-	// todo: probably we need to define possibility for removing image from atlas-(es)
-	std::pmr::vector<CTextureAtlasElement> m_atlas_items;
+	storage_type m_atlas_items;
 };
 
 #endif

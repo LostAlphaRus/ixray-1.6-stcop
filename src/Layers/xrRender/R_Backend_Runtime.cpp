@@ -506,7 +506,7 @@ CTextureAtlas::CTextureAtlas() :
 	m_p_texture{},
 	static_atlas_items_storage{},
 	sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) },
-	m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasElement>{&sais_wrapper} }
+	m_atlas_items{ storage_allocator{&sais_wrapper} }
 {
 	m_atlas_items.reserve(_kRenderBackend_TextureAtlasPreallocatedItems);
 }
@@ -515,15 +515,15 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 #ifdef DEBUG
 	init_was_called{ other.init_was_called },
 #endif
-	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ std::pmr::polymorphic_allocator<CTextureAtlasElement>{&sais_wrapper} }
+	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ storage_allocator{&sais_wrapper} }
 {
 	other.m_p_atlas = nullptr;
 	other.m_p_texture = nullptr;
 	other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 
-	for (CTextureAtlasElement& item : other.m_atlas_items)
+	for (auto& pair : other.m_atlas_items)
 	{
-		m_atlas_items.push_back(std::move(item));
+		this->m_atlas_items.insert(std::move(pair));
 	}
 
 	other.m_atlas_items.clear();
@@ -547,11 +547,10 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 
 		this->m_p_texture = other.m_p_texture;
 
-		R_ASSERT(this->m_atlas_items.capacity() != 0 && "it MUST be initialized through ctor otherwise something is broken or memory corruption!");
 
-		for (CTextureAtlasElement& item : other.m_atlas_items)
+		for (const auto& pair : other.m_atlas_items)
 		{
-			this->m_atlas_items.push_back(std::move(item));
+			this->m_atlas_items.insert(std::move(pair));
 		}
 
 		other.m_p_atlas = nullptr;
@@ -607,12 +606,27 @@ void CTextureAtlas::uninit()
 
 	if (this->m_p_atlas)
 	{
+		/*
 		for (CTextureAtlasElement& item : this->m_atlas_items)
 		{
 			R_ASSERT(item.p_placement && "must be valid otherwise you didn't remove item from vector properly");
 			if (item.p_placement)
 			{
 				sma_item_remove(this->m_p_atlas, item.p_placement);
+			}
+		}
+		*/
+
+		for (auto& pair_iconname_and_elements : this->m_atlas_items)
+		{
+			// we suppose that each of node of rtree doesn't share or have same elements otherwise you have to report to developers so it is expected that user must pass only unique dimensions for icon and later it will be placed on atlas space
+			for (auto& node : pair_iconname_and_elements.second.get_nodes())
+			{
+				for (auto& element : node.entries)
+				{
+					sma_item_remove(this->m_p_atlas,
+						element.value.p_placement);
+				}
 			}
 		}
 
@@ -627,7 +641,7 @@ void CTextureAtlas::uninit()
 #endif
 }
 
-void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch)
+void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT(this->m_p_atlas && "must be initialized before calling this method!");
 	R_ASSERT(this->m_p_texture && "you forgot to call init because texture wasn't initialized!");
@@ -646,12 +660,15 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 
 			u32 _w = this->m_p_texture->get_Width();
 			u32 _h = this->m_p_texture->get_Height();
-			item.u0 = float(x) / float(_w);
-			item.v0 = float(y) / float(_h);
-			item.u1 = float(x + w) / float(_w);
-			item.v1 = float(y + h) / float(_h);
 
-			this->m_atlas_items.push_back(item);
+			// we don't need to store it but we need to calculate at runtime
+		//	item.u0 = float(x) / float(_w);
+		//	item.v0 = float(y) / float(_h);
+		//	item.u1 = float(x + w) / float(_w);
+		//	item.v1 = float(y + h) / float(_h);
+
+		//	this->m_atlas_items.push_back(item);
+			this->m_atlas_items[icon_subpath_name].insert({ static_cast<float>(w),static_cast<float>(h) }, item);
 
 			if (pitch == 0)
 				pitch = _w * 4;
@@ -661,13 +678,19 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 	}
 }
 
+void CTextureAtlas::getRegion(const xr_string_view& icon_subpath_name, u32& w, u32& h)
+{
+}
+
 void CTextureAtlas::addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
 
 	R_ASSERT(m_p_texture && "must be valid!");
 	R_ASSERT(m_p_texture->pSurface && "must be valid!");
-	R_ASSERT(dynamic_cast<ID3DTexture2D*>(m_p_texture->pSurface) && "must be casted to ID3DTexture2D!");
+#ifndef USE_DX11
+	R_ASSERT(D3DRTYPE_TEXTURE == m_p_texture->pSurface->GetType());
+#endif
 
 	ID3DTexture2D* pCasted = static_cast<ID3DTexture2D*>(m_p_texture->pSurface);
 
@@ -818,7 +841,7 @@ u32 CTextureAtlas::getHeight(void) const
 	return 0;
 }
 
-const std::pmr::vector<CTextureAtlas::CTextureAtlasElement>& CTextureAtlas::getElements(void) const
+const CTextureAtlas::storage_type& CTextureAtlas::getElements(void) const
 {
 	return this->m_atlas_items;
 }
@@ -1042,7 +1065,7 @@ void CSVGStorage::init_default_atlas()
 				fStartDim *= i;
 				lunasvg::Bitmap bmp = doc->renderToBitmap(fStartDim, fStartDim);
 				bmp.convertToRGBA();
-				this->m_default_atlas.addRegion(this->m_p_device, this->m_p_device_context, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+				this->m_default_atlas.addRegion(this->m_p_device, this->m_p_device_context, _kSVGStorge_DefaultSVGTextureSubPathName, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
 			}
 		}
 
