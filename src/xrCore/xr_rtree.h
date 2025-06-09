@@ -166,14 +166,14 @@ namespace rtree2d {
 
 		// Public interface:
 
-		RTree() : pool_{ &buffer_, sizeof(buffer_), std::pmr::get_default_resource() }, alloc_{ &pool_ } {
+		RTree() : pool_{ &buffer_, sizeof(buffer_), std::pmr::get_default_resource() }, alloc_{ &pool_ }, nodes_{ alloc_ } {
 			nodes_.reserve(PreallocNodes);
 
 			// Allocate the root node (as a leaf):
 			root_ = allocate_node(/*is_leaf=*/true, /*parent=*/nullptr);
 		}
 		
-		RTree(const RTree& other) : pool_{ &buffer_, sizeof(buffer_), std::pmr::get_default_resource() }, alloc_{ &pool_ } 
+		RTree(const RTree& other) : pool_{ &buffer_, sizeof(buffer_), std::pmr::get_default_resource() }, alloc_{ &pool_ }, nodes_{alloc_}
 		{
 			nodes_.reserve(PreallocNodes);
 			root_ = allocate_node(true, nullptr);
@@ -225,7 +225,7 @@ namespace rtree2d {
 			return *this;
 		}
 
-		RTree(RTree&& other) noexcept : pool_{ &buffer_, sizeof(buffer_), std::pmr::get_default_resource() }, alloc_{ &pool_ } {
+		RTree(RTree&& other) noexcept : pool_{ &buffer_, sizeof(buffer_), std::pmr::get_default_resource() }, alloc_{ &pool_ }, nodes_{ alloc_ } {
 			nodes_.reserve(PreallocNodes);
 
 			root_ = allocate_node(true, nullptr);
