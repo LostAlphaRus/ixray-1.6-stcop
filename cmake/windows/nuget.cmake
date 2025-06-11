@@ -111,3 +111,6 @@ set(YAML_LIB_NAME yaml-cpp.dll)
 set(REDIMAGE_INCL ${CMAKE_BINARY_DIR}/packages/IXRay.RedImage.0.1.1/include/)
 set(REDIMAGE_LIB  ${CMAKE_BINARY_DIR}/packages/IXRay.RedImage.0.1.1/lib/RedImageTool.lib)
 set(REDIMAGE_BIN  ${CMAKE_BINARY_DIR}/packages/IXRay.RedImage.0.1.1/bin/RedImageTool.dll)
+
+# MySQL Connector
+set(MYSQLCONNECTOR ${CMAKE_BINARY_DIR}/packages/IXRay.MySQLConnector.8.0.33/)
