@@ -72,7 +72,7 @@ IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 	CLSID2TEXT((*I)->clsid(),temp);
 	xr_string actual = "Actual ";
 	actual.append(temp);
-	VERIFY((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
+	VERIFY3((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
 #endif
 
 	/*{
@@ -156,7 +156,7 @@ IC	int	CObjectFactory::script_clsid	(const CLASS_ID &clsid) const
 	CLSID2TEXT((*I)->clsid(),temp);
 	xr_string actual = "Actual ";
 	actual.append(temp);
-	VERIFY((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
+	VERIFY4((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
 #endif
 	
 	/*{
