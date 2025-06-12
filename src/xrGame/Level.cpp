@@ -579,6 +579,11 @@ void CLevel::OnFrame()
 	DBG_RenderUpdate();
 #endif // #ifdef DEBUG
 
+	if (GCondlistGC != nullptr)
+	{
+		GCondlistGC->Update();
+	}
+
 	Fvector	temp_vector;
 	m_feel_deny.feel_touch_update(temp_vector, 0.f);
 

@@ -116,6 +116,8 @@ bool CScriptXRParser::isSymbolEvent(char nSymbol) const
 
 const char* CScriptXRParser::lua_pickSectionFromCondlist(luabind::object pClientPlayer, luabind::object pServerObject, const char* pSourceName)
 {
+	PROF_EVENT("Parse condlist");
+
 	bool was_found_check = false;
 	bool was_found_set = false;
 	bool was_found_section = false;
@@ -132,7 +134,7 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(luabind::object pClient
 
 	CCondlistInfo current_info;
 
-	xr_shared_ptr<CCondlistEmbedded> condlist = xr_make_shared<CCondlistEmbedded>();
+	CCondlistEmbedded* condlist = &GCondlistGC->GetEmbedded();
 
 	const char* pResult = nullptr;
 
@@ -173,8 +175,8 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(luabind::object pClient
 
 				was_found_section = false;
 				bool bNeedToBreak = false;
-				parseCondlistInfo(current_info, condlist);
-				pResult = pickSectionFromCondlist(condlist, pClientPlayer, pServerObject, bNeedToBreak);
+				parseCondlistInfo(current_info, *condlist);
+				pResult = pickSectionFromCondlist(*condlist, pClientPlayer, pServerObject, bNeedToBreak);
 
 				if (bNeedToBreak)
 					return pResult;
@@ -256,7 +258,6 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(luabind::object pClient
 					R_ASSERT2(current_section_size <= ixray::kCondlistInfoStringSize, "too big section name!");
 
 					current_info.setText(current_section_name, current_section_size);
-					std::memset(current_section_name, 0, ixray::kCondlistInfoStringSize);
 					current_section_size = 0;
 					was_found_section = false;
 				}
@@ -344,8 +345,8 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(luabind::object pClient
 		}
 
 		bool bNeedToBreak{};
-		parseCondlistInfo(current_info, condlist);
-		pResult = pickSectionFromCondlist(condlist, pClientPlayer, pServerObject, bNeedToBreak);
+		parseCondlistInfo(current_info, *condlist);
+		pResult = pickSectionFromCondlist(*condlist, pClientPlayer, pServerObject, bNeedToBreak);
 
 		if (bNeedToBreak)
 			return pResult;
@@ -356,14 +357,14 @@ const char* CScriptXRParser::lua_pickSectionFromCondlist(luabind::object pClient
 	return pResult;
 }
 
-void CScriptXRParser::parseCondlistInfo(CCondlistInfo& info, xr_shared_ptr<CCondlistEmbedded> result)
+void CScriptXRParser::parseCondlistInfo(CCondlistInfo& info, CCondlistEmbedded& result)
 {
-	result->setSectionName(info.getTextName());
-	u32 nCheckSize = parseInfoportions(info.getInfoCheckName(), result->getInfoPortionCheck());
-	u32 nSetSize = parseInfoportions(info.getInfoSetName(), result->getInfoPortionSet());
+	result.setSectionName(info.getTextName());
+	u32 nCheckSize = parseInfoportions(info.getInfoCheckName(), result.getInfoPortionCheck());
+	u32 nSetSize = parseInfoportions(info.getInfoSetName(), result.getInfoPortionSet());
 
-	result->setArrayCheckSize(nCheckSize);
-	result->setArraySetSize(nSetSize);
+	result.setArrayCheckSize(nCheckSize);
+	result.setArraySetSize(nSetSize);
 }
 
 u32 CScriptXRParser::parseInfoportions(const char* pBuffer, CCondlistEmbedded::xr_condlistdata& result)
@@ -586,21 +587,34 @@ void CScriptXRParser::script_register(lua_State* pState)
 	}
 }
 
-const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbedded> condlist, luabind::object pActor, luabind::object pObject, bool& bNeedToBreak)
+const char* CScriptXRParser::pickSectionFromCondlist(CCondlistEmbedded& condlist, luabind::object pActor, luabind::object pObject, bool& bNeedToBreak)
 {
 	CScriptGameObject* ClientActor = luabind::object_cast_nothrow<CScriptGameObject*>(pActor).value_or(nullptr);
 	CScriptGameObject* ClientObject = luabind::object_cast_nothrow<CScriptGameObject*>(pObject).value_or(nullptr);
 
-	CSE_ALifeDynamicObject* ServerActor = luabind::object_cast_nothrow<CSE_ALifeDynamicObject*>(pActor).value_or(nullptr);
-	CSE_ALifeDynamicObject* ServerObject = luabind::object_cast_nothrow<CSE_ALifeDynamicObject*>(pObject).value_or(nullptr);
+	CSE_ALifeDynamicObject* ServerActor = nullptr;
+	CSE_ALifeDynamicObject* ServerObject = nullptr;
+
+	if (ClientActor == nullptr)
+	{
+		ServerActor = luabind::object_cast_nothrow<CSE_ALifeDynamicObject*>(pActor).value_or(nullptr);
+	}
+
+	if (ClientObject == nullptr)
+	{
+		ServerObject = luabind::object_cast_nothrow<CSE_ALifeDynamicObject*>(pObject).value_or(nullptr);
+	}
+
+	VERIFY(ClientActor  != nullptr || ServerActor != nullptr);
+	VERIFY(ClientObject != nullptr || ServerObject != nullptr);
 
 	bool is_infoportion_conditions_met = true;
 
 	u32 probability = Random.randI(0, 100);
 
-	for (int i = 0; i < condlist->getArrayCheckSize(); ++i)
+	for (int i = 0; i < condlist.getArrayCheckSize(); ++i)
 	{
-		CCondlistData& data = condlist->getInfoPortionCheck()[i];
+		CCondlistData& data = condlist.getInfoPortionCheck()[i];
 
 		if (data.getProbability() && strlen(data.getProbability()) > 0)
 		{
@@ -637,8 +651,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbe
 				static_assert(ixray::kXRParserParamsBufferSize >= 1 && "can't be negative or zero!");
 				static_assert(ixray::kXRParserParamBufferSize >= 1 && "can't be negative");
 
-				luabind::object params_to_lua =
-					luabind::newtable(ai().script_engine().lua());
+				luabind::object params_to_lua = luabind::newtable(ai().script_engine().lua());
 
 				for (int i = 0; i < nParsedBufferSize; ++i)
 				{
@@ -670,17 +683,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbe
 					}
 				}
 
-				char function_name[ixray::kXRParserFunctionNameBufferSize] = "xr_conditions.";
-
-				constexpr auto sizeOfXRConditionsString = sizeof("xr_conditions.");
-
-				R_ASSERT2(sizeOfXRConditionsString + strlen(data.getFunctionName()) <= ixray::kXRParserFunctionNameBufferSize, "overflow!");
-
-				std::memcpy(function_name + (sizeOfXRConditionsString - 1), data.getFunctionName(), strlen(data.getFunctionName()));
-
-				luabind::functor<bool> function_from_xr_conditions;
-				R_ASSERT3(ai().script_engine().functor(function_name, function_from_xr_conditions), "Not found function: ", function_name);
-
+				luabind::functor<bool>& function_from_xr_conditions = GCondlistGC->GetFunctorCond(data.getFunctionName());
 				if (data.getParams() && strlen(data.getParams()))
 				{
 					bool bResultFromCalling = [&]()->bool
@@ -803,9 +806,9 @@ const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbe
 
 	if (is_infoportion_conditions_met)
 	{
-		for (int i = 0; i < condlist->getArraySetSize(); ++i)
+		for (int i = 0; i < condlist.getArraySetSize(); ++i)
 		{
-			CCondlistData& data = condlist->getInfoPortionSet()[i];
+			CCondlistData& data = condlist.getInfoPortionSet()[i];
 			if (data.getFunctionName() && strlen(data.getFunctionName()))
 			{
 #ifdef IXRAY_XR_PARSER_USE_LUA_BACKEND
@@ -857,18 +860,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbe
 						}
 					}
 
-					luabind::functor<void> function_from_xr_effects;
-
-					char function_name[ixray::kXRParserFunctionNameBufferSize] = "xr_effects.";
-
-					constexpr auto sizeOfXREffectsString = sizeof("xr_effects.");
-
-					R_ASSERT2(sizeOfXREffectsString + strlen(data.getFunctionName()) <= ixray::kXRParserFunctionNameBufferSize, "overflow!");
-
-					std::memcpy(function_name + (sizeOfXREffectsString - 1), data.getFunctionName(), strlen(data.getFunctionName()));
-
-					ai().script_engine().functor(function_name, function_from_xr_effects);
-
+					luabind::functor<void>& function_from_xr_effects = GCondlistGC->GetFunctorEffect(data.getFunctionName());
 					if (data.getParams() && strlen(data.getParams()))
 					{
 						if (ClientActor != nullptr)
@@ -949,7 +941,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbe
 			}
 		}
 
-		std::string_view section_name = condlist->getSectionName();
+		std::string_view section_name = condlist.getSectionName();
 
 		if (section_name == ixray::kReservedWordNever)
 		{
@@ -959,7 +951,7 @@ const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbe
 		else
 		{
 			bNeedToBreak = true;
-			return GCondlistGC->Registry(condlist->getSectionName());
+			return GCondlistGC->Registry(condlist.getSectionName());
 		}
 	}
 

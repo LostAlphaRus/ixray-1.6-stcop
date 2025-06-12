@@ -211,7 +211,7 @@ class CCondlistData
 {
 public:
 	CCondlistData();
-	~CCondlistData();
+	~CCondlistData() = default;
 
 	bool getRequired(void) const;
 	void setRequired(bool bValue);
@@ -231,9 +231,11 @@ public:
 	const char* getParams(void) const;
 	void setParams(const char* pString);
 
+	void Clear();
+
 private:
-	bool m_bRequired;
-	bool m_bExpected;
+	bool m_bRequired = false;
+	bool m_bExpected = false;
 	// because in some cases it is not initialized field and make it obvious
 	// using raw string much better than storing invalid number value yk~~
 	char m_probability[ixray::kCondlistProbabilityStringSize];
@@ -300,6 +302,7 @@ public:
 	int getArraySetSize(void) const;
 	void setArraySetSize(int nSize);
 
+	void Clear();
 private:
 	int m_nArrayCheckSize;
 	int m_nArraySetSize;

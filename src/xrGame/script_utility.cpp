@@ -144,12 +144,9 @@ int ixray::get_script_clsid(LPCSTR str)
 }
 
 CCondlistData::CCondlistData() :
-	m_bRequired{}, m_bExpected{}, m_probability{}, m_functionname{},
-	m_infoportionname{}, m_params{}
+	m_probability{}, m_functionname{}, m_infoportionname{}, m_params{}
 {
 }
-
-CCondlistData::~CCondlistData() {}
 
 bool CCondlistData::getRequired(void) const
 {
@@ -178,11 +175,9 @@ const char* CCondlistData::getProbability(void) const
 
 void CCondlistData::setProbability(const char* pString)
 {
-	R_ASSERT2(
-		strlen(pString) <= (sizeof(m_probability) / sizeof(char)), "overflow");
+	R_ASSERT2(strlen(pString) <= (sizeof(m_probability) / sizeof(char)), "overflow");
 
-	std::memset(m_probability, 0, sizeof(m_probability));
-	std::memcpy(m_probability, pString, strlen(pString) * sizeof(char));
+	xr_strcpy(m_probability, pString);
 }
 
 const char* CCondlistData::getFunctionName(void) const
@@ -192,11 +187,9 @@ const char* CCondlistData::getFunctionName(void) const
 
 void CCondlistData::setFunctionName(const char* pString)
 {
-	R_ASSERT2(
-		strlen(pString) <= (sizeof(m_functionname) / sizeof(char)), "overflow");
+	R_ASSERT2(strlen(pString) <= (sizeof(m_functionname) / sizeof(char)), "overflow");
 
-	std::memset(m_functionname, 0, sizeof(m_functionname));
-	std::memcpy(m_functionname, pString, strlen(pString) * sizeof(char));
+	xr_strcpy(m_functionname, pString);
 }
 
 const char* CCondlistData::getInfoPortionName(void) const
@@ -209,8 +202,7 @@ void CCondlistData::setInfoPortionName(const char* pString)
 	R_ASSERT2(strlen(pString) <= (sizeof(m_infoportionname) / sizeof(char)),
 		"overflow");
 
-	std::memset(m_infoportionname, 0, sizeof(m_infoportionname));
-	std::memcpy(m_infoportionname, pString, strlen(pString) * sizeof(char));
+	xr_strcpy(m_infoportionname, pString);
 }
 
 const char* CCondlistData::getParams(void) const
@@ -222,8 +214,19 @@ void CCondlistData::setParams(const char* pString)
 {
 	R_ASSERT2(
 		strlen(pString) <= (sizeof(m_params) / sizeof(char)), "overflow!");
-	std::memset(m_params, 0, sizeof(m_params));
-	std::memcpy(m_params, pString, strlen(pString) * sizeof(char));
+
+	xr_strcpy(m_params, pString);
+}
+
+void CCondlistData::Clear()
+{
+	m_bRequired = false;
+	m_bExpected = false;
+
+	m_probability[0] = 0;
+	m_functionname[0] = 0;
+	m_infoportionname[0] = 0;
+	m_params[0] = 0;
 }
 
 CCondlist::CCondlist() : m_sectionname{} {}
@@ -286,9 +289,7 @@ void CCondlist::setSectionName(const char* pFSStringField)
 	R_ASSERT2(strlen(pFSStringField) <= (sizeof(m_sectionname) / sizeof(char)),
 		"overflow, shrink buffer!");
 
-	std::memset(m_sectionname, 0, sizeof(m_sectionname));
-	std::memcpy(
-		m_sectionname, pFSStringField, strlen(pFSStringField) * sizeof(char));
+	xr_strcpy(m_sectionname, pFSStringField);
 }
 
 CCondlistInfo::CCondlistInfo() :
@@ -303,17 +304,14 @@ void CCondlistInfo::setInfoCheck(const char* pBuffer, size_t nStringLength)
 	R_ASSERT2(nStringLength <= (sizeof(m_infocheck_name) / sizeof(char)),
 		"overflow, shrink buffer!");
 
-	std::memset(m_infocheck_name, 0, sizeof(m_infocheck_name));
-	std::memcpy(m_infocheck_name, pBuffer, nStringLength);
+	xr_strcpy(m_infocheck_name, pBuffer);
 }
 
 void CCondlistInfo::setInfoSet(const char* pBuffer, size_t nStringLength)
 {
-	R_ASSERT2(nStringLength <= (sizeof(m_infoset_name) / sizeof(char)),
-		"overflow, shrink buffer!");
+	R_ASSERT2(nStringLength <= (sizeof(m_infoset_name) / sizeof(char)), "overflow, shrink buffer!");
 
-	std::memset(m_infoset_name, 0, sizeof(m_infoset_name));
-	std::memcpy(m_infoset_name, pBuffer, nStringLength);
+	xr_strcpy(m_infoset_name, pBuffer);
 }
 
 void CCondlistInfo::setText(const char* pBuffer, size_t nStringLength)
@@ -321,23 +319,22 @@ void CCondlistInfo::setText(const char* pBuffer, size_t nStringLength)
 	R_ASSERT2(nStringLength <= (sizeof(m_text_name) / sizeof(char)),
 		"overflow, shrink  buffer!");
 
-	std::memset(m_text_name, 0, sizeof(m_text_name));
-	std::memcpy(m_text_name, pBuffer, nStringLength);
+	xr_strcpy(m_text_name, pBuffer);
 }
 
 void CCondlistInfo::clearInfoCheck()
 {
-	std::memset(m_infocheck_name, 0, sizeof(m_infocheck_name));
+	m_infocheck_name[0] = 0;
 }
 
 void CCondlistInfo::clearInfoSet()
 {
-	std::memset(m_infoset_name, 0, sizeof(m_infoset_name));
+	m_infoset_name[0] = 0;
 }
 
 void CCondlistInfo::clearText()
 {
-	std::memset(m_text_name, 0, sizeof(m_text_name));
+	m_text_name[0] = 0;
 }
 
 void CCondlistInfo::clear()
@@ -415,8 +412,7 @@ void CCondlistEmbedded::setSectionName(const char* pString)
 	R_ASSERT2(strlen(pString) <= (sizeof(this->m_sectionname) / sizeof(char)),
 		"overflow! too big string");
 
-	std::memset(this->m_sectionname, 0, sizeof(this->m_sectionname));
-	std::memcpy(this->m_sectionname, pString, strlen(pString) * sizeof(char));
+	xr_strcpy(m_sectionname, pString);
 }
 
 int CCondlistEmbedded::getArrayCheckSize(void) const
@@ -437,4 +433,23 @@ int CCondlistEmbedded::getArraySetSize(void) const
 void CCondlistEmbedded::setArraySetSize(int nSize) 
 {
 	m_nArraySetSize = nSize;
+}
+
+void CCondlistEmbedded::Clear()
+{
+	PROF_EVENT("Clear old Embedded");
+
+	m_nArrayCheckSize = 0;
+	m_nArraySetSize = 0;
+	m_sectionname[0] = 0;
+
+	for (auto& Info : m_aInfoPortionCheck)
+	{
+		Info.Clear();
+	}
+
+	for (auto& Info : m_aInfoPortionSet)
+	{
+		Info.Clear();
+	}
 }
