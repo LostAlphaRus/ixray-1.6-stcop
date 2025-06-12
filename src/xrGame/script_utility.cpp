@@ -7,7 +7,6 @@
 #include "alife_simulator.h"
 #include "InfoPortionDefs.h"
 #include "alife_registry_container.h"
-#include "alife_registry_container_composition.h"
 
 bool ixray::is_weapon(CScriptGameObject* pObject)
 {
@@ -124,7 +123,7 @@ bool ixray::has_alife_info(LPCSTR info_id)
 		return result;
 
 	const KNOWN_INFO_VECTOR* known_info =
-		ai().alife().registry(info_portions).object(0, true);
+		ai().alife().registry().get<CInfoPortionRegistry>().object(0, true);
 
 	if (!known_info)
 		return result;

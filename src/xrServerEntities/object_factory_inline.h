@@ -72,7 +72,7 @@ IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 	CLSID2TEXT((*I)->clsid(),temp);
 	xr_string actual = "Actual ";
 	actual.append(temp);
-	VERIFY3((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
+	VERIFY4((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
 #endif
 
 	/*{
@@ -92,7 +92,7 @@ IC	const CObjectItemAbstract *CObjectFactory::item	(const CLASS_ID &clsid, bool 
 	{
 		string16			temp;
 		CLSID2TEXT(clsid,temp);
-		R_ASSERT(I != clsids().end(), "Unable to find class_id", temp);
+		R_ASSERT3(I != clsids().end(), "Unable to find class_id", temp);
 		return nullptr;
 	}
 #ifdef DEBUG
@@ -103,7 +103,7 @@ IC	const CObjectItemAbstract *CObjectFactory::item	(const CLASS_ID &clsid, bool 
 	CLSID2TEXT((*I)->clsid(),temp);
 	xr_string actual = "Actual ";
 	actual.append(temp);
-	VERIFY((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
+	VERIFY4((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
 #endif
 	
 	/*{

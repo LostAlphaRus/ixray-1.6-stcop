@@ -27,11 +27,11 @@ void CScriptStoryIDManager::VerifiedRegisterObject(CSE_Abstract* se_obj)
         LPCSTR value;
         if (!ini.r_line("story_object", 0, &key, &value) || !key)
         {
-            R_ASSERT(false, "There is no 'story_id' field in [story_object] section :object", se_obj->name());
+            R_ASSERT3(false, "There is no 'story_id' field in [story_object] section :object", se_obj->name());
         }
         if (!value)
         {
-            R_ASSERT(false, "Field 'story_id' in [story_object] section got no value :object", se_obj->name());
+            R_ASSERT3(false, "Field 'story_id' in [story_object] section got no value :object", se_obj->name());
         }
         self.Register(se_obj->ID, value);
         return;
@@ -94,7 +94,7 @@ void CScriptStoryIDManager::Register(ALife::_OBJECT_ID obj_id, shared_str script
         auto NewName = ai().alife().objects().object(obj_id)->name();
         message.append(NewName);
         message.append("]");
-        R_ASSERT(ByScriptStoryIDIt == m_containers_by_script_story_id.end(), message.c_str());
+        R_ASSERT2(ByScriptStoryIDIt == m_containers_by_script_story_id.end(), message.c_str());
     }
     if (ByIDIt != m_containers_by_id.end()){
         VERIFY(ByScriptStoryIDIt != m_containers_by_script_story_id.end());
@@ -103,7 +103,7 @@ void CScriptStoryIDManager::Register(ALife::_OBJECT_ID obj_id, shared_str script
             message.append(script_story_id.c_str());
             message.append("] is already in story_objects_registry with story_id[");
             message.append(ByIDIt->second.c_str());
-            R_ASSERT(ByScriptStoryIDIt != m_containers_by_script_story_id.end(), message.c_str());
+            R_ASSERT2(ByScriptStoryIDIt != m_containers_by_script_story_id.end(), message.c_str());
         }else
         {
             return;
