@@ -80,7 +80,7 @@ void CScriptStoryIDManager::script_register(lua_State* L)
 
 void CScriptStoryIDManager::Register(ALife::_OBJECT_ID obj_id, shared_str script_story_id)
 {
-    xrSRWLockGuard guard(m_containers_lock.get());
+    xrSRWLockGuard guard(m_containers_lock);
     auto ByIDIt = m_containers_by_id.find(obj_id);
     auto ByScriptStoryIDIt = m_containers_by_script_story_id.find(script_story_id);
     if (ByScriptStoryIDIt != m_containers_by_script_story_id.end() && ByScriptStoryIDIt->second != obj_id)
@@ -115,7 +115,7 @@ void CScriptStoryIDManager::Register(ALife::_OBJECT_ID obj_id, shared_str script
 
 void CScriptStoryIDManager::Unregister(ALife::_OBJECT_ID obj_id)
 {
-    xrSRWLockGuard guard(m_containers_lock.get());
+    xrSRWLockGuard guard(m_containers_lock);
     if (m_containers_by_id.contains(obj_id)){
         auto elem = *m_containers_by_id.find(obj_id);
         m_containers_by_id.erase(elem.first);
@@ -125,7 +125,7 @@ void CScriptStoryIDManager::Unregister(ALife::_OBJECT_ID obj_id)
 
 void CScriptStoryIDManager::Unregister(LPCSTR script_story_id)
 {
-    xrSRWLockGuard guard(m_containers_lock.get());
+    xrSRWLockGuard guard(m_containers_lock);
     if (m_containers_by_script_story_id.contains(script_story_id)){
         auto elem = *m_containers_by_script_story_id.find(script_story_id);
         m_containers_by_id.erase(elem.second);
@@ -135,14 +135,14 @@ void CScriptStoryIDManager::Unregister(LPCSTR script_story_id)
 
 ALife::_OBJECT_ID CScriptStoryIDManager::GetID(LPCSTR script_story_id) const
 {
-    xrSRWLockGuard guard(m_containers_lock.get(), true);
+    xrSRWLockGuard guard(m_containers_lock, true);
     auto it = m_containers_by_script_story_id.find(script_story_id);
     return it != m_containers_by_script_story_id.end() ? it->second : ALife::_OBJECT_ID(-1);
 }
 
 LPCSTR CScriptStoryIDManager::GetID(ALife::_OBJECT_ID obj_id) const
 {
-    xrSRWLockGuard guard(m_containers_lock.get(), true);
+    xrSRWLockGuard guard(m_containers_lock, true);
     auto it = m_containers_by_id.find(obj_id);
     return it != m_containers_by_id.end() ? it->second.c_str() : nullptr;
 }
