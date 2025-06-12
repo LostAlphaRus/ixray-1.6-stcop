@@ -29,7 +29,6 @@
 #	include "ui/UIActorMenu.h"
 #	include	"ActorCondition.h"
 #	include "script_xr_logic.h"
-#	include <StoryID/ScriptStoryIDManager.h>
 #endif
 
 void export_classes	(lua_State *L)
@@ -282,6 +281,5 @@ void export_classes	(lua_State *L)
 	CWeaponAmmo::script_register(L);
 	CGameTaskManager::script_register(L);
 	CScriptXRParser::script_register(L);
-	CScriptStoryIDManager::script_register(L);
 #endif
 }

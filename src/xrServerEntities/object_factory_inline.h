@@ -57,30 +57,13 @@ IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 	actualize			();
 	const_iterator		I = std::lower_bound(clsids().begin(),clsids().end(),clsid,CObjectItemPredicate());
 
-	if (I == clsids().end())
-	{
-		string16			temp;
-		CLSID2TEXT(clsid,temp);
-		R_ASSERT3(I != clsids().end(), "Unable to find class_id", temp);
-		return (**I);
-	}
-#ifdef DEBUG
-	string16			temp;
-	CLSID2TEXT(clsid,temp);
-	xr_string expected = "Expected ";
-	expected.append(temp);
-	CLSID2TEXT((*I)->clsid(),temp);
-	xr_string actual = "Actual ";
-	actual.append(temp);
-	VERIFY((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
-#endif
+	if (I == clsids().end() || (*I)->clsid() != clsid) {
+		string16 TextID = "";
+		CLSID2TEXT(clsid, TextID);
 
-	/*{
-		string16			temp;
-		CLSID2TEXT(clsid,temp);
-		Msg("Get obj of clsid! %s", temp);
-	}*/
-	
+		Msg("! [ERROR]: Invalid clsid! %s", TextID);
+	}
+
 	return (**I);
 }
 #else
@@ -88,30 +71,10 @@ IC	const CObjectItemAbstract *CObjectFactory::item	(const CLASS_ID &clsid, bool 
 {
 	actualize			();
 	const_iterator		I = std::lower_bound(clsids().begin(),clsids().end(),clsid,CObjectItemPredicate());
-	if (I == clsids().end())
-	{
-		string16			temp;
-		CLSID2TEXT(clsid,temp);
-		R_ASSERT(I != clsids().end(), "Unable to find class_id", temp);
-		return nullptr;
+	if ((I == clsids().end()) || ((*I)->clsid() != clsid)) {
+		R_ASSERT		(no_assert);
+		return			(0);
 	}
-#ifdef DEBUG
-	string16			temp;
-	CLSID2TEXT(clsid,temp);
-	xr_string expected = "Expected ";
-	expected.append(temp);
-	CLSID2TEXT((*I)->clsid(),temp);
-	xr_string actual = "Actual ";
-	actual.append(temp);
-	VERIFY((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
-#endif
-	
-	/*{
-		string16			temp;
-		CLSID2TEXT(clsid,temp);
-		Msg("Get obj of clsid! %s", temp);
-	}*/
-	
 	return				(*I);
 }
 #endif
@@ -141,31 +104,8 @@ IC	int	CObjectFactory::script_clsid	(const CLASS_ID &clsid) const
 {
 	actualize			();
 	const_iterator		I = std::lower_bound(clsids().begin(),clsids().end(),clsid,CObjectItemPredicate());
-	if (I == clsids().end())
-	{
-		string16			temp;
-		CLSID2TEXT(clsid,temp);
-		R_ASSERT3(I != clsids().end(), "Unable to find class_id", temp);
-		return (int(I - clsids().begin()));
-	}
-#ifdef DEBUG
-	string16			temp;
-	CLSID2TEXT(clsid,temp);
-	xr_string expected = "Expected ";
-	expected.append(temp);
-	CLSID2TEXT((*I)->clsid(),temp);
-	xr_string actual = "Actual ";
-	actual.append(temp);
-	VERIFY((*I)->clsid() == clsid, "Invalid found value", expected.c_str(), actual.c_str());
-#endif
-	
-	/*{
-		string16			temp;
-		CLSID2TEXT(clsid,temp);
-		Msg("Get obj of clsid! %s", temp);
-	}*/
-	
-	return (int(I - clsids().begin()));
+	VERIFY				((I != clsids().end()) && ((*I)->clsid() == clsid));
+	return				(int(I - clsids().begin()));
 }
 
 #ifndef NO_XR_GAME

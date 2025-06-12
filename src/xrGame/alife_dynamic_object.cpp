@@ -16,7 +16,6 @@
 #include "game_level_cross_table.h"
 #include "game_graph.h"
 #include "xrServer.h"
-#include "StoryID/ScriptStoryIDManager.h"
 
 void CSE_ALifeDynamicObject::on_spawn				()
 {
@@ -32,8 +31,6 @@ void CSE_ALifeDynamicObject::on_register			()
 		object			= ai().alife().objects().object(object->ID_Parent);
 		VERIFY			(object);
 	}
-
-	CScriptStoryIDManager::GetInstance().VerifiedRegisterObject(this);
 
 	if (!alife().graph().level().object(object->ID,true))
 		clear_client_data();
@@ -59,7 +56,6 @@ void CSE_ALifeDynamicObject::on_unregister()
 
 
 	Level().MapManager().OnObjectDestroyNotify(ID);
-	CScriptStoryIDManager::GetInstance().Unregister(ID);
 }
 
 void CSE_ALifeDynamicObject::switch_online			()
