@@ -643,8 +643,31 @@ const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbe
 				for (int i = 0; i < nParsedBufferSize; ++i)
 				{
 					// because in lua indexing starts from 1 not from 0!
-					params_to_lua[i + 1] =
-						static_cast<const char*>(&parsed_params[i][0]);
+					std::string_view view_param(static_cast<const char*>(&parsed_params[i][0]));
+
+					auto begin = view_param.data();
+					auto end = view_param.data() + view_param.size();
+					int t1{};
+					double t2{};
+					auto result = std::from_chars(begin, end, t1);
+
+					if (result.ec == std::errc() && result.ptr == end)
+					{
+						params_to_lua[i + 1] = t1;
+					}
+					else
+					{
+						result = std::from_chars(begin, end, t2, std::chars_format::general);
+
+						if (result.ec == std::errc() && result.ptr == end)
+						{
+							params_to_lua[i + 1] = t2;
+						}
+						else
+						{
+							params_to_lua[i + 1] = static_cast<const char*>(&parsed_params[i][0]);
+						}
+					}
 				}
 
 				char function_name[ixray::kXRParserFunctionNameBufferSize] = "xr_conditions.";
