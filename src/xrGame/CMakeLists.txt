@@ -58,6 +58,9 @@ file(GLOB_RECURSE XGM_SOURCE_SERV_FILES
 	"xrServer*.*"
 	"game_*.*"
 )
+file(GLOB_RECURSE XGM_SOURCE_STORY_ID_FILES
+	"StoryID/*.*"
+)
 
 file(GLOB_RECURSE XGM_SOURCE_AI_BASE_FILES "ai/monsters/base_monster/*.*")
 file(GLOB_RECURSE XGM_SOURCE_AI_GS_FILES "ai/monsters/group_states/*.*")
@@ -119,6 +122,7 @@ source_group("ikan" FILES ${XGM_SOURCE_IKAN_FILES})
 source_group("inventory" FILES ${XGM_SOURCE_INV_FILES})
 source_group("Legacy" FILES ${XGM_SOURCE_LEGACY_FILES})
 source_group("AnimNotify" FILES ${XGM_SOURCE_ANIM_NOTIFY_FILES})
+source_group("StoryID" FILES ${XGM_SOURCE_STORY_ID_FILES})
 
 source_group("imgui/utils" FILES ${XGM_SOURCE_IMGUI_INGAME_FILES})
 
