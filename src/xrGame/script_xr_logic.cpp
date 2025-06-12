@@ -807,7 +807,13 @@ const char* CScriptXRParser::pickSectionFromCondlist(xr_shared_ptr<CCondlistEmbe
 					for (int i = 0; i < nParsedBufferSize; ++i)
 					{
 						// because in lua indexing starts from 1 not from 0!
-						params_to_lua[i + 1] = static_cast<const char*>(&parsed_params[i][0]);
+						try
+						{
+							params_to_lua[i + 1] = std::stod(&parsed_params[i][0]);
+						} catch (std::invalid_argument& e)
+						{
+							params_to_lua[i + 1] = static_cast<const char*>(&parsed_params[i][0]);
+						}
 					}
 
 					luabind::functor<void> function_from_xr_effects;
