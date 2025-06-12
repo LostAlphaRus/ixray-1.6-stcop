@@ -24,9 +24,9 @@
 #include "../xrPhysics/PhysicsCommon.h"
 
 // lua to cpp
-#include "script_xr_conditions.h"
-#include "script_xr_effects.h"
-#include "script_xr_logic.h"
+#include "ScriptsSubsystems/Condlist/script_xr_conditions.h"
+#include "ScriptsSubsystems/Condlist/script_xr_effects.h"
+#include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 
 ENGINE_API bool g_dedicated_server;
 

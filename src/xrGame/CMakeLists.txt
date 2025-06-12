@@ -58,9 +58,8 @@ file(GLOB_RECURSE XGM_SOURCE_SERV_FILES
 	"xrServer*.*"
 	"game_*.*"
 )
-file(GLOB_RECURSE XGM_SOURCE_STORY_ID_FILES
-	"StoryID/*.*"
-)
+file(GLOB_RECURSE XGM_SOURCE_STORY_ID_FILES "ScriptsSubsystems/StoryID/*.*")
+file(GLOB_RECURSE XGM_SOURCE_CONDLIST_ID_FILES "ScriptsSubsystems/Condlist/*.*")
 
 file(GLOB_RECURSE XGM_SOURCE_AI_BASE_FILES "ai/monsters/base_monster/*.*")
 file(GLOB_RECURSE XGM_SOURCE_AI_GS_FILES "ai/monsters/group_states/*.*")
@@ -114,15 +113,16 @@ source_group("ai/monsters/snork" FILES ${XGM_SOURCE_AI_SNORK_FILES})
 source_group("ai/monsters/tushkano" FILES ${XGM_SOURCE_AI_TUSH_FILES})
 source_group("ai/monsters/zombie" FILES ${XGM_SOURCE_AI_ZOMB_FILES})
 source_group("alife" FILES ${XGM_SOURCE_ALIFE_FILES})
-source_group("script" FILES ${XGM_SOURCE_SCRIPT_FILES})
 source_group("server" FILES ${XGM_SOURCE_SERV_FILES})
 source_group("actor" FILES ${XGM_SOURCE_ACTOR_FILES})
 source_group("level" FILES ${XGM_SOURCE_LEVEL_FILES})
 source_group("ikan" FILES ${XGM_SOURCE_IKAN_FILES})
 source_group("inventory" FILES ${XGM_SOURCE_INV_FILES})
-source_group("Legacy" FILES ${XGM_SOURCE_LEGACY_FILES})
+source_group("ai/legacy_planner" FILES ${XGM_SOURCE_LEGACY_FILES})
 source_group("AnimNotify" FILES ${XGM_SOURCE_ANIM_NOTIFY_FILES})
-source_group("StoryID" FILES ${XGM_SOURCE_STORY_ID_FILES})
+source_group("scripts/story_id" FILES ${XGM_SOURCE_STORY_ID_FILES})
+source_group("scripts/condlist" FILES ${XGM_SOURCE_CONDLIST_ID_FILES})
+source_group("scripts/others" FILES ${XGM_SOURCE_SCRIPT_FILES})
 
 source_group("imgui/utils" FILES ${XGM_SOURCE_IMGUI_INGAME_FILES})
 

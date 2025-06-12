@@ -16,35 +16,33 @@
 #include "game_level_cross_table.h"
 #include "game_graph.h"
 #include "xrServer.h"
-#include "StoryID/ScriptStoryIDManager.h"
+#include "Level.h"
+#include "map_manager.h"
 
-void CSE_ALifeDynamicObject::on_spawn				()
+#include "ScriptsSubsystems/StoryID/StoryIDManager.h"
+
+void CSE_ALifeDynamicObject::on_spawn()
 {
-#ifdef DEBUG
-//	Msg			("[LSS] spawning object [%d][%d][%s][%s]",ID,ID_Parent,name(),name_replace());
-#endif
 }
 
-void CSE_ALifeDynamicObject::on_register			()
+void CSE_ALifeDynamicObject::on_register()
 {
-	CSE_ALifeObject		*object = this;
-	while (object->ID_Parent != ALife::_OBJECT_ID(-1)) {
-		object			= ai().alife().objects().object(object->ID_Parent);
-		VERIFY			(object);
+	CSE_ALifeObject* object = this;
+	while (object->ID_Parent != ALife::_OBJECT_ID(-1))
+	{
+		object = ai().alife().objects().object(object->ID_Parent);
+		VERIFY(object);
 	}
 
 	CScriptStoryIDManager::GetInstance().VerifiedRegisterObject(this);
 
-	if (!alife().graph().level().object(object->ID,true))
+	if (!alife().graph().level().object(object->ID, true))
 		clear_client_data();
 }
 
 void CSE_ALifeDynamicObject::on_before_register		()
 {
 }
-
-#include "Level.h"
-#include "map_manager.h"
 
 void CSE_ALifeDynamicObject::on_unregister()
 {

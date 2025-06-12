@@ -28,8 +28,8 @@
 #	include "ai/crow/ai_crow.h"
 #	include "ui/UIActorMenu.h"
 #	include	"ActorCondition.h"
-#	include "script_xr_logic.h"
-#	include <StoryID/ScriptStoryIDManager.h>
+#	include "ScriptsSubsystems/Condlist/script_xr_logic.h"
+#	include "ScriptsSubsystems/StoryID/StoryIDManager.h"
 #endif
 
 void export_classes	(lua_State *L)

@@ -16,9 +16,9 @@
 #include "object_factory.h"
 
 // lua to cpp
-#include "script_xr_conditions.h"
-#include "script_xr_effects.h"
-#include "script_xr_logic.h"
+#include "ScriptsSubsystems/Condlist/script_xr_conditions.h"
+#include "ScriptsSubsystems/Condlist/script_xr_effects.h"
+#include "ScriptsSubsystems/Condlist/script_xr_logic.h"
 
 int		g_cl_save_demo = 0;
 extern XRCORE_API bool g_allow_heap_min;
