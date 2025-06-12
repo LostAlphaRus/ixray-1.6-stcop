@@ -92,7 +92,7 @@ void ImGui_Render2DWidget(float grid_step=24.0f)
 
 void RenderHUDAdjustManager()
 {
-	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_HudAdjustManager)])
+	if (!Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)])
 		return;
 
 	if (!g_pGameLevel)
@@ -116,7 +116,7 @@ void RenderHUDAdjustManager()
 
 	ImGui::BeginDisabled(!p_item);
 
-	if (ImGui::Begin("Hud Adjust", &Engine.External.EditorStates[static_cast<u8>(EditorUI::Game_HudAdjustManager)]))
+	if (ImGui::Begin("Hud Adjust", &Engine.External.EditorStates[static_cast<u8>(EditorUI::HudAdjust)]))
 	{
 		if (ImGui::BeginTabBar("Header"))
 		{

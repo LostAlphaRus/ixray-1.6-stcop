@@ -212,13 +212,8 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Edit")) {
-				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
-				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("View")) {
+			if (ImGui::BeginMenu("View"))
+			{
 				ImGui::MenuItem("Debug Render", nullptr, &States[static_cast<u8>(EditorUI::DebugDraw)]);
 				ImGui::MenuItem("Actor InfoPortions", nullptr, &States[static_cast<u8>(EditorUI::ActorInfos)]);
 				ImGui::MenuItem("Scenes Viewer", nullptr, &States[static_cast<u8>(EditorUI::ScenesViewer)]);
@@ -232,9 +227,7 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::MenuItem("Spawn Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SpawnManager)]);
 				ImGui::MenuItem("Weapon Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_WeaponManager)]);
 				ImGui::MenuItem("Search Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_SearchManager)]);
-				ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
 				ImGui::MenuItem("Time Manager", nullptr, &States[static_cast<u8>(EditorUI::Game_TimeManager)]);
-				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::Game_HudAdjustManager)]);
 
 				ImGui::EndMenu();
 			}
@@ -244,6 +237,22 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 				ImGui::MenuItem("Lua: Run code", nullptr, &States[static_cast<u8>(EditorUI::LuaCodespace)]);
 				ImGui::MenuItem("Lua: Attach to VSCode", nullptr, &States[static_cast<u8>(EditorUI::LuaDebug)]);
 				ImGui::MenuItem("Shader Debug", nullptr, &States[static_cast<u8>(EditorUI::Shaders)]);
+				ImGui::MenuItem("Console variables", nullptr, &States[static_cast<u8>(EditorUI::CmdVars)]);
+				ImGui::MenuItem("Hud Adjust", nullptr, &States[static_cast<u8>(EditorUI::HudAdjust)]);
+
+				if (ImGui::BeginMenu("Editors##ToolsInGameImGui"))
+				{
+					ImGui::MenuItem("Weather Editor", nullptr, &States[static_cast<u8>(EditorUI::Weather)]);
+					ImGui::MenuItem("OMF##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
+					ImGui::EndMenu();
+				}
+
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("Profiler"))
+			{
 				if (ImGui::MenuItem("Optick Start Capture"))
 				{
 					PROF_START_CAPTURE();
@@ -254,17 +263,8 @@ bool CRenderDevice::InitRenderDevice(APILevel API)
 					PROF_STOP_CAPTURE();
 					PROF_SAVE_CAPTURE("ixr.opt");
 				}
-
-				if (ImGui::BeginMenu("Editors##ToolsInGameImGui"))
-				{
-					ImGui::MenuItem("OMF##ToolsInGameImGui", nullptr, &States[static_cast<u8>(EditorUI::Tools_OMFEditor)]);
-					ImGui::EndMenu();
-				}
-
-
 				ImGui::EndMenu();
 			}
-
 			ImGui::EndMainMenuBar();
 		}
 
