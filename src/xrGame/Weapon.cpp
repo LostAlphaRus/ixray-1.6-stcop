@@ -2744,22 +2744,28 @@ bool CWeapon::IsUIForceHiding() const
 	if (bino && IsZoomed())
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
 	else if (get_ScopeStatus() == 1 && IsZoomed())
-		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", false);
+		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
 	else if (get_ScopeStatus() == 2 && IsScopeAttached() && IsZoomed())
-		return READ_IF_EXISTS(pSettings, r_bool, GetCurrentScopeSection(), "zoom_hide_ui", false);
-	else
-		return false;
+		return READ_IF_EXISTS(pSettings, r_bool, GetScopeName(), "zoom_hide_ui", true);
+
+	return false;
 }
 
 bool CWeapon::IsCollimatorInstalled() const
 {
 	if (!IsScopeAttached() || get_ScopeStatus() != 2)
+	{
 		return false;
+	}
 
-	shared_str scope = GetCurrentScopeSection();
-	scope = pSettings->r_string(scope, "scope_name");
+	shared_str scope = GetScopeName();
+	if (pSettings->line_exist(scope, "scope_name"))
+	{
+		scope = pSettings->r_string(scope, "scope_name");
+		return READ_IF_EXISTS(pSettings, r_bool, scope, "collimator", false);
+	}
 
-	return READ_IF_EXISTS(pSettings, r_bool, scope, "collimator", false);
+	return false;
 }
 
 bool CWeapon::IsHudModelForceUnhide() const
@@ -2776,9 +2782,18 @@ bool CWeapon::IsUIForceUnhiding() const
 		/*if (buf.IsAlterZoomMode())
 			result = true;
 		else */if (get_ScopeStatus() == 1)
+		{
 			result = !READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", false);
+		}
 		else if (get_ScopeStatus() == 2 && IsScopeAttached())
-			result = !READ_IF_EXISTS(pSettings, r_bool, pSettings->r_string(GetCurrentScopeSection(), "scope_name"), "zoom_hide_ui", false);
+		{
+			shared_str scope = GetScopeName();
+			if (pSettings->line_exist(scope, "scope_name"))
+			{
+				scope = pSettings->r_string(scope, "scope_name");
+				result = !READ_IF_EXISTS(pSettings, r_bool, scope, "zoom_hide_ui", false);
+			}
+		}
 	}
 
 	return result;
