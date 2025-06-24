@@ -96,7 +96,7 @@ void	CDestroyablePhysicsObject::Hit					(SHit* pHDS)
 		HDS.bone()
 	);
 
-	if (!hit_object_name.contains(HDS.who->cName()))
+	if (!hit_object_name.empty() && !hit_object_name.contains(HDS.who->cName()))
 		return;
 
 	HDS.power=CHitImmunity::AffectHit(HDS.power,HDS.hit_type);
