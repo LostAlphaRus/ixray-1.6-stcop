@@ -55,7 +55,7 @@ CWeapon::CWeapon()
 	iAmmoElapsed			= -1;
 	iMagazineSize			= -1;
 
-	iAmmoChamberElapsed = 1;
+	iAmmoChamberElapsed = 0;
 	iChamberSize = 1;
 
 	m_ammoType				= 0;
@@ -772,6 +772,9 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 			m_magazine.push_back(m_DefaultCartridge);
 	}
 
+	iAmmoChamberElapsed = E->a_chamber_elapsed;
+	m_ChamberAmmoType = E->chamber_ammo_type;
+
 	if (m_bAmmoInChamber)
 	{
 		m_DefaultCartridgeInChamber.Load(*m_ammoTypes[m_ChamberAmmoType], u8(m_ChamberAmmoType));
@@ -788,6 +791,8 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 		iAmmoChamberElapsed = 0;
 		iChamberSize = 0;
 	}
+
+	GiveAmmoFromMagToChamber();
 
 	UpdateAltScope();
 	UpdateAddonsVisibility();
@@ -841,6 +846,8 @@ void CWeapon::net_Export(NET_Packet& P)
 	P.w_u8					((u8)bMisfire);
 	P.w_float				(m_fRTZoomFactor);
 	P.w_u8					((u8)m_cur_scope);
+	P.w_u8					((u8)m_ChamberAmmoType);
+	P.w_u16					((u16)iAmmoChamberElapsed);
 }
 
 void CWeapon::net_Import(NET_Packet& P)
@@ -885,6 +892,13 @@ void CWeapon::net_Import(NET_Packet& P)
 	P.r_u8					(scope);
 	m_cur_scope				= scope;
 
+	u8 chamber_type;
+	P.r_u8(chamber_type);
+	m_ChamberAmmoType = chamber_type;
+
+	u16 chamber_ammo_elapsed = 0;
+	P.r_u16(chamber_ammo_elapsed);
+
 	if (H_Parent() && H_Parent()->Remote())
 	{
 		if (Zoom) OnZoomIn();
@@ -906,6 +920,11 @@ void CWeapon::net_Import(NET_Packet& P)
 			{
 				m_ammoType = ammoType;
 				SetAmmoElapsed((ammo_elapsed));
+				if (m_bAmmoInChamber)
+				{
+					SetChamberAmmoElapsed(chamber_ammo_elapsed);
+					GiveAmmoFromMagToChamber();
+				}
 			}
 		}break;
 	}
@@ -2405,25 +2424,58 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 
 void CWeapon::SetAmmoElapsed(int ammo_count)
 {
-	iAmmoElapsed				= ammo_count;
+	iAmmoElapsed = ammo_count;
 
-	u32 uAmmo					= u32(iAmmoElapsed);
+	u32 uAmmo = u32(iAmmoElapsed);
 
 	if (uAmmo != m_magazine.size())
 	{
 		if (uAmmo > m_magazine.size())
 		{
-			CCartridge			l_cartridge; 
-			l_cartridge.Load	(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
+			CCartridge l_cartridge;
+			l_cartridge.Load(m_ammoTypes[m_ammoType].c_str(), m_ammoType);
+
 			while (uAmmo > m_magazine.size())
+			{
 				m_magazine.push_back(l_cartridge);
+			}
 		}
 		else
 		{
 			while (uAmmo < m_magazine.size())
+			{
 				m_magazine.pop_back();
-		};
-	};
+			}
+		}
+	}
+}
+
+void CWeapon::SetChamberAmmoElapsed(int ammo_count)
+{
+	iAmmoChamberElapsed = ammo_count;
+
+	u32 uAmmo = u32(iAmmoChamberElapsed);
+
+	if (uAmmo != m_chamber.size())
+	{
+		if (uAmmo > m_chamber.size())
+		{
+			CCartridge l_cartridge;
+			l_cartridge.Load(m_ammoTypes[m_ChamberAmmoType].c_str(), m_ChamberAmmoType);
+
+			while (uAmmo > m_chamber.size())
+			{
+				m_chamber.push_back(l_cartridge);
+			}
+		}
+		else
+		{
+			while (uAmmo < m_chamber.size())
+			{
+				m_chamber.pop_back();
+			}
+		}
+	}
 }
 
 u32	CWeapon::ef_main_weapon_type	() const

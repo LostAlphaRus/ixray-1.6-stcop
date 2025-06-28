@@ -536,6 +536,7 @@ public:
 	int						GetSuitableAmmoTotal(bool use_item_to_spawn = false) const;
 
 	void					SetAmmoElapsed		(int ammo_count);
+	void					SetChamberAmmoElapsed(int ammo_count);
 
 	virtual void			OnMagazineEmpty		();
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
