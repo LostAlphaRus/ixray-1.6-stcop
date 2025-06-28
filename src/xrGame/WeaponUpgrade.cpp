@@ -34,59 +34,8 @@ bool CWeapon::install_upgrade_impl( LPCSTR section, bool test )
 	result |= install_upgrade_hud_sect_scope(section, test);
 	result |= install_upgrade_hud_sect_gl(section, test);
 	result |= install_upgrade_bones		( section, test );
+	result |= install_upgrade_ammo_bones( section, test );
 	result |= process_if_exists_set(section, "collimator_problems_level", &CInifile::r_float, m_fCollimatorLevelsProblem, test) && !test;
-
-	if (pSettings->line_exist(hud_sect, "shell_params_section"))
-	{
-		for (auto& bone_param : m_shell_bones)
-		{
-			if (bone_param->AmmoType == undefined_ammo_type)
-			{
-				bone_param->Load(pSettings->r_string(hud_sect, "shell_params_section"), iMagazineSize + 1);
-			}
-		}
-	}
-	else for (int i = 0; i < m_ammoTypes.size(); i++)
-	{
-		static shared_str params_section;
-		params_section.printf("shell_params_section_%d", i);
-		if (pSettings->line_exist(hud_sect, *params_section))
-		{
-			for (auto& bone_param : m_shell_bones)
-			{
-				if (bone_param->AmmoType == i)
-				{
-					bone_param->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize + 1);
-				}
-			}
-		}
-	}
-
-	if (pSettings->line_exist(hud_sect, "ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "ammo_params_section")))
-	{
-		for (auto& bone_param : m_ammo_bones_mag)
-		{
-			if (bone_param->AmmoType == undefined_ammo_type)
-			{
-				bone_param->Load(pSettings->r_string(hud_sect, "ammo_params_section"), iMagazineSize + 1);
-			}
-		}
-	}
-	else for (int i = 0; i < m_ammoTypes.size(); i++)
-	{
-		static shared_str params_section;
-		params_section.printf("ammo_params_section_%d", i);
-		if (pSettings->line_exist(hud_sect, *params_section))
-		{
-			for (auto& bone_param : m_ammo_bones_mag)
-			{
-				if (bone_param->AmmoType == i)
-				{
-					bone_param->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize + 1);
-				}
-			}
-		}
-	}
 
 	return result;
 }
@@ -559,6 +508,69 @@ bool CWeapon::install_upgrade_bones(LPCSTR section, bool test)
 	UpdateAddonsVisibility();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
+
+	return result;
+}
+
+bool CWeapon::install_upgrade_ammo_bones(LPCSTR section, bool test)
+{
+	bool result = false;
+
+	if (pSettings->line_exist(hud_sect, "shell_params_section"))
+	{
+		for (auto& bone_param : m_shell_bones)
+		{
+			if (bone_param->AmmoType == undefined_ammo_type)
+			{
+				bone_param->Load(pSettings->r_string(hud_sect, "shell_params_section"), iMagazineSize + 1);
+				result = true;
+			}
+		}
+	}
+	else for (int i = 0; i < m_ammoTypes.size(); i++)
+	{
+		static shared_str params_section;
+		params_section.printf("shell_params_section_%d", i);
+		if (pSettings->line_exist(hud_sect, *params_section))
+		{
+			for (auto& bone_param : m_shell_bones)
+			{
+				if (bone_param->AmmoType == i)
+				{
+					bone_param->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize + 1);
+					result = true;
+				}
+			}
+		}
+	}
+
+	if (pSettings->line_exist(hud_sect, "ammo_params_section") && pSettings->section_exist(pSettings->r_string(hud_sect, "ammo_params_section")))
+	{
+		for (auto& bone_param : m_ammo_bones_mag)
+		{
+			if (bone_param->AmmoType == undefined_ammo_type)
+			{
+				bone_param->Load(pSettings->r_string(hud_sect, "ammo_params_section"), iMagazineSize + 1);
+				result = true;
+			}
+		}
+	}
+	else for (int i = 0; i < m_ammoTypes.size(); i++)
+	{
+		static shared_str params_section;
+		params_section.printf("ammo_params_section_%d", i);
+		if (pSettings->line_exist(hud_sect, *params_section))
+		{
+			for (auto& bone_param : m_ammo_bones_mag)
+			{
+				if (bone_param->AmmoType == i)
+				{
+					bone_param->Load(pSettings->r_string(hud_sect, *params_section), iMagazineSize + 1);
+					result = true;
+				}
+			}
+		}
+	}
 
 	return result;
 }

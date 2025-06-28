@@ -662,6 +662,7 @@ private:
 			bool			install_upgrade_hud_sect_gl(LPCSTR section, bool test);
 
 			bool			install_upgrade_bones		( LPCSTR section, bool test );
+			bool			install_upgrade_ammo_bones	( LPCSTR section, bool test );
 protected:
 	virtual bool			install_upgrade_impl		( LPCSTR section, bool test );
 
