@@ -345,7 +345,8 @@ bool CCustomDetector::CanThrowHand() const
 
 bool CCustomDetector::CanKick() const
 {
-	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_kick) && (GetState() == eIdle || GetState() == eHandKick1 || GetState() == eHandKick2 || GetState() == eShowing || GetState() == eSprintEnd || GetState() == eSprintStart);
+	return m_eAnimationsFlags.test(EAnimationsFlags::af_det_hand_kick) &&
+	(GetState() == eIdle || GetState() == eHandKick1 || GetState() == eHandKick2 || GetState() == eShowing || GetState() == eSprintEnd || GetState() == eSprintStart || GetState() == eHandDraw || GetState() == eHandHide);
 }
 
 void CCustomDetector::UpdateXForm()
