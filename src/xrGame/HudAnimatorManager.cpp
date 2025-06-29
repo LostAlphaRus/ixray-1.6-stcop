@@ -237,7 +237,7 @@ void CHudAnimatorManager::OnAnimationEnd()
 
 	if (m_bRestoreDetector && m_actor->GetDetector(true))
 	{
-		m_actor->GetDetector(true)->switch_detector();
+		m_actor->GetDetector(true)->ToggleDetector(true);
 		m_bRestoreDetector = false;
 	}
 }
