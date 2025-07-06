@@ -101,6 +101,7 @@ void CWeaponMagazined::Load(LPCSTR section)
 	else
 	{
 		m_aFireModes.push_back(1);
+		m_iCurFireMode = 1;
 	}
 
 	LoadSilencerKoeffs();
@@ -2098,6 +2099,10 @@ void CWeaponMagazined::OnH_A_Chield()
 	{
 		SetQueueSize(H_Parent() && H_Parent()->cast_actor() ? GetCurrentFireMode() : -1);
 	}
+	else
+	{
+		SetQueueSize(1);
+	}
 
 	inherited::OnH_A_Chield();
 };
@@ -2154,18 +2159,15 @@ bool CWeaponMagazined::GetBriefInfo( II_BriefInfo& info )
 		info.cur_ammo = "∞";
 	}
 
-	if ( HasFireModes() )
+	if (m_iQueueSize == WEAPON_ININITE_QUEUE)
 	{
-		if (m_iQueueSize == WEAPON_ININITE_QUEUE)
-		{
-			info.fire_mode		= "A" ;
-		}else
-		{
-			xr_sprintf			( int_str, "%d", m_iQueueSize );
-			info.fire_mode		= int_str;
-		}
-	}else
-		info.fire_mode			= "";
+		info.fire_mode = "A";
+	}
+	else
+	{
+		xr_sprintf(int_str, "%d", m_iQueueSize);
+		info.fire_mode = int_str;
+	}
 	
 	if ( m_pInventory->ModifyFrame() <= m_BriefInfo_CalcFrame )
 	{
