@@ -27,12 +27,12 @@ XRCORE_API xrGUID generate_guid()
 		default: break;
 	}
 #else
-	uuid_t uuid;
-	uuid_generate(uuid);
-	Memory.mem_copy(&result, &uuid, sizeof(uuid_t));
+//	uuid_t uuid;
+//	uuid_generate(uuid);
+//	Memory.mem_copy(&result, &uuid, sizeof(uuid_t));
 #endif
 
-	ZeroMemory(&result, sizeof(result));
+	memset(&result, 0,  sizeof(result));
 	u64 temp = CPU::GetCLK();
 	Memory.mem_copy(&result, &temp, sizeof(temp));
 	return (result);
@@ -56,19 +56,19 @@ XRCORE_API LPCSTR generate_guid(const xrGUID& guid, LPSTR buffer, const u32& buf
 	xr_strcpy(buffer, buffer_size, (LPCSTR)temp2);
 	RpcStringFreeA(&temp2);
 #else
-	uuid_t uuid;
-	std::memcpy(&uuid, &guid, sizeof(uuid));
-
-	char uuid_str[37];
-	uuid_unparse(uuid, uuid_str);
-
-	if (buffer_size <= 36)
-	{
-		NODEFAULT;
-		return nullptr;
-	}
-
-	std::strcpy(buffer, uuid_str);
+//	uuid_t uuid;
+//	std::memcpy(&uuid, &guid, sizeof(uuid));
+//
+//	char uuid_str[37];
+//	uuid_unparse(uuid, uuid_str);
+//
+//	if (buffer_size <= 36)
+//	{
+//		NODEFAULT;
+//		return nullptr;
+//	}
+//
+//	std::strcpy(buffer, uuid_str);
 #endif
 	return buffer;
 }
