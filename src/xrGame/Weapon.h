@@ -250,6 +250,12 @@ public:
 	bool m_bIsAimStarted = false;
 	bool m_bRestGlSil;
 	bool m_bTacticalTorchStatus = false;
+	bool m_bJustAfterReload = false;
+	bool m_bIsPreloaded = false;
+	bool m_bAddCartridgeInOpen = false;
+	bool m_bIsEmptyPreloadMode = false;
+	bool m_bNeedFirstShootAnims = false;
+	bool m_bNeedFinalCloseAnims = false;
 	bool m_bBlockReload;
 
 	shared_str hud_silencer;

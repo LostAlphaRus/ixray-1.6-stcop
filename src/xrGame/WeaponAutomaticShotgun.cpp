@@ -23,7 +23,7 @@ void CWeaponAutomaticShotgun::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "tri_state_reload"))
 	{
 		m_bTriStateReload = !!pSettings->r_bool(section, "tri_state_reload");
-	};
+	}
 
 	inherited::Load(section);
 }
@@ -37,7 +37,32 @@ void CWeaponAutomaticShotgun::LoadSounds(LPCSTR section)
 		m_sounds.LoadSound(section, "snd_open_weapon", "sndOpen", false, m_eSoundOpen);
 		m_sounds.LoadSound(section, "snd_add_cartridge", "sndAddCartridge", false, m_eSoundAddCartridge);
 		m_sounds.LoadSound(section, "snd_close_weapon", "sndClose", false, m_eSoundClose);
-	};
+	}
+
+	if (SoundExist(section, "snd_open_weapon_empty"))
+	{
+		m_sounds.LoadSound(section, "snd_open_weapon_empty", "sndOpenEmpty", false, m_eSoundOpen);
+	}
+
+	if (SoundExist(section, "snd_add_cartridge_empty"))
+	{
+		m_sounds.LoadSound(section, "snd_add_cartridge_empty", "sndAddCartridgeEmpty", false, m_eSoundAddCartridge);
+	}
+
+	if (SoundExist(section, "snd_add_cartridge_preloaded"))
+	{
+		m_sounds.LoadSound(section, "snd_add_cartridge_preloaded", "sndAddCartridgePreloaded", false, m_eSoundAddCartridge);
+	}
+
+	if (SoundExist(section, "snd_close_weapon_empty"))
+	{
+		m_sounds.LoadSound(section, "snd_close_weapon_empty", "sndCloseEmpty", false, m_eSoundClose);
+	}
+
+	if (SoundExist(section, "snd_close_weapon_preloaded"))
+	{
+		m_sounds.LoadSound(section, "snd_close_weapon_preloaded", "sndClosePreloaded", false, m_eSoundClose);
+	}
 }
 
 void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state) 
@@ -57,13 +82,27 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 	{
 		case eSubstateReloadBegin:
 		{
-			m_sub_state = eSubstateReloadInProcess;
+			if (m_bAddCartridgeInOpen)
+			{
+				AddCartridge(1);
+			}
+
+			if (bStopReloadSignal)
+			{
+				m_sub_state = eSubstateReloadEnd;
+			}
+			else
+			{
+				m_sub_state = eSubstateReloadInProcess;
+			}
 			SwitchState(eReload);
 		}break;
 		case eSubstateReloadInProcess:
 		{
 			if(0 != AddCartridge(1) || bStopReloadSignal)
+			{
 				m_sub_state = eSubstateReloadEnd;
+			}
 			SwitchState(eReload);
 		}break;
 		case eSubstateReloadEnd:
@@ -71,7 +110,6 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 			bStopReloadSignal = false;
 			bReloadKeyPressed = false;
 			bAmmotypeKeyPressed = false;
-			bStopReloadSignal = false;
 			SwitchState(eIdle);
 		}break;
 		
@@ -115,68 +153,179 @@ void CWeaponAutomaticShotgun::OnStateSwitch	(u32 S)
 
 	CWeapon::OnStateSwitch(S);
 
-	if( m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1) )
+	if ((u32)m_magazine.size() == (u32)iMagazineSize || !HaveCartridgeInInventory(1))
 	{
-			switch2_EndReload();
-			m_sub_state = eSubstateReloadEnd;
-			return;
+		switch2_EndReload();
+		m_sub_state = eSubstateReloadEnd;
+		return;
 	};
 
 	switch (m_sub_state)
 	{
 		case eSubstateReloadBegin:
-			if(HaveCartridgeInInventory(1))
-			switch2_StartReload	();
-		break;
+		{
+			switch2_StartReload();
+			break;
+		}
 		case eSubstateReloadInProcess:
-			if(HaveCartridgeInInventory(1))
-				switch2_AddCartgidge();
-		break;
+		{
+			switch2_AddCartgidge();
+			break;
+		}
 		case eSubstateReloadEnd:
+		{
 			switch2_EndReload();
-		break;
+			break;
+		}
 	};
 }
 
 void CWeaponAutomaticShotgun::switch2_StartReload()
 {
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
-	PlaySound			("sndOpen",get_LastFP());
-	PlayAnimOpenWeapon	();
-	SetPending			(TRUE);
+
+	if (m_sounds.FindSoundItem("sndOpenEmpty", false) && m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	{
+		PlaySound("sndOpenEmpty", get_LastFP());
+	}
+	else
+	{
+		PlaySound("sndOpen", get_LastFP());
+	}
+
+	PlayAnimOpenWeapon();
+	SetPending(TRUE);
 }
 
-void CWeaponAutomaticShotgun::switch2_AddCartgidge	()
+void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 {
-	PlaySound	("sndAddCartridge",get_LastFP());
+	if (m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && !m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	{
+		PlaySound("sndAddCartridgeEmpty", get_LastFP());
+	}
+	else if (m_sounds.FindSoundItem("sndAddCartridgePreloaded", false) && m_bIsEmptyPreloadMode && m_bIsPreloaded)
+	{
+		PlaySound("sndAddCartridgePreloaded", get_LastFP());
+	}
+	else
+	{
+		PlaySound("sndAddCartridge", get_LastFP());
+	}
+
 	PlayAnimAddOneCartridgeWeapon();
-	SetPending			(TRUE);
+	SetPending(TRUE);
 }
 
-void CWeaponAutomaticShotgun::switch2_EndReload	()
+void CWeaponAutomaticShotgun::switch2_EndReload()
 {
-	SetPending			(FALSE);
-	PlaySound			("sndClose",get_LastFP());
-	PlayAnimCloseWeapon	();
+	SetPending(FALSE);
+
+	if (m_sounds.FindSoundItem("sndCloseEmpty", false) && !m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	{
+		PlaySound("sndCloseEmpty", get_LastFP());
+	}
+	else if (m_sounds.FindSoundItem("sndClosePreloaded", false) && m_bIsEmptyPreloadMode && m_bIsPreloaded)
+	{
+		PlaySound("sndClosePreloaded", get_LastFP());
+	}
+	else
+	{
+		PlaySound("sndClose", get_LastFP());
+	}
+
+	PlayAnimCloseWeapon();
+}
+
+shared_str CWeaponAutomaticShotgun::SelectOpenWeaponAnimation()
+{
+	shared_str anim = "anm_open";
+
+	if (ParentIsActor())
+	{
+		if (m_bIsEmptyPreloadMode && iAmmoElapsed + iAmmoChamberElapsed == 0)
+		{
+			AddSuffixName(anim, "_empty");
+			m_bIsPreloaded = true;
+			m_bJustAfterReload = true;
+		}
+		else if (m_bNeedFirstShootAnims)
+		{
+			if (m_bJustAfterReload)
+			{
+				AddSuffixName(anim, "_first");
+			}
+			else
+			{
+				m_bJustAfterReload = true;
+			}
+		}
+	}
+
+	return anim;
 }
 
 void CWeaponAutomaticShotgun::PlayAnimOpenWeapon()
 {
-	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_open", FALSE, GetState());
+	VERIFY(GetState() == eReload);
+
+	PlayHUDMotion(SelectOpenWeaponAnimation(), false, eReload);
+}
+
+shared_str CWeaponAutomaticShotgun::SelectAddCartridgeWeaponAnimation()
+{
+	shared_str anim = "anm_add_cartridge";
+
+	if (ParentIsActor())
+	{
+		if (!m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
+		{
+			AddSuffixName(anim, "_empty");
+		}
+
+		if (m_bIsEmptyPreloadMode && m_bIsPreloaded)
+		{
+			AddSuffixName(anim, "_preloaded");
+			m_bIsPreloaded = false;
+		}
+	}
+
+	return anim;
 }
 
 void CWeaponAutomaticShotgun::PlayAnimAddOneCartridgeWeapon()
 {
-	VERIFY(GetState()==eReload);
-	PlayHUDMotion("anm_add_cartridge", FALSE, GetState());
+	VERIFY(GetState() == eReload);
+
+	PlayHUDMotion(SelectAddCartridgeWeaponAnimation(), false, eReload);
+}
+
+shared_str CWeaponAutomaticShotgun::SelectCloseWeaponAnimation()
+{
+	shared_str anim = "anm_close";
+
+	if (ParentIsActor())
+	{
+		if (m_bIsEmptyPreloadMode && m_bIsPreloaded)
+		{
+			AddSuffixName(anim, "_preloaded");
+			m_bIsPreloaded = false;
+		}
+
+		if (m_bNeedFinalCloseAnims && iAmmoElapsed + iAmmoChamberElapsed >= iMagazineSize)
+		{
+			AddSuffixName(anim, "_final");
+			m_bJustAfterReload = true;
+		}
+	}
+
+	return anim;
 }
 
 void CWeaponAutomaticShotgun::PlayAnimCloseWeapon()
 {
-	VERIFY(GetState()==eReload);
+	VERIFY(GetState() == eReload);
 
-	PlayHUDMotion("anm_close", FALSE, GetState());
+	PlayHUDMotion(SelectCloseWeaponAnimation(), false, eReload);
 }
 
 BOOL CWeaponAutomaticShotgun::net_Spawn(CSE_Abstract* DC)
