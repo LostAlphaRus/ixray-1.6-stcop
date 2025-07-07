@@ -182,7 +182,8 @@ void CWeaponAutomaticShotgun::OnStateSwitch	(u32 S)
 
 void CWeaponAutomaticShotgun::switch2_StartReload()
 {
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
+	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 
 	if (m_sounds.FindSoundItem("sndOpenEmpty", false) && m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
@@ -218,6 +219,7 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 
 void CWeaponAutomaticShotgun::switch2_EndReload()
 {
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
 	SetPending(FALSE);
 
 	if (m_sounds.FindSoundItem("sndCloseEmpty", false) && !m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)

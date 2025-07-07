@@ -636,6 +636,9 @@ void CWeapon::Load		(LPCSTR section)
 	m_bNeedFirstShootAnims = READ_IF_EXISTS(pSettings, r_bool, section, "need_first_shoot_anims", false);
 	m_bNeedFinalCloseAnims = READ_IF_EXISTS(pSettings, r_bool, section, "need_final_close_anims", false);
 
+	m_bBlockUpdateAmmoBonesShooting = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_toggle_shooting", false);
+	m_bUseLastAmmoType = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_last_cartridge_type", false);
+
 	m_bBlockReload = READ_IF_EXISTS(pSettings, r_bool, section, "block_reload", false);
 
 	if (pSettings->line_exist(hud_sect, "shell_params_section"))
@@ -957,6 +960,7 @@ void CWeapon::save(NET_Packet &output_packet)
 	save_data		(m_zoom_params.m_bIsZoomModeNow,output_packet);
 	save_data		(m_bTacticalTorchStatus,		output_packet);
 	save_data		(m_bJustAfterReload,			output_packet);
+	save_data		(m_LastShotAmmoType,			output_packet);
 }
 
 void CWeapon::load(IReader &input_packet)
@@ -971,6 +975,7 @@ void CWeapon::load(IReader &input_packet)
 	load_data		(m_zoom_params.m_bIsZoomModeNow,input_packet);
 	load_data		(m_bTacticalTorchStatus,		input_packet);
 	load_data		(m_bJustAfterReload,			input_packet);
+	load_data		(m_LastShotAmmoType,			input_packet);
 
 	if (m_zoom_params.m_bIsZoomModeNow)	
 			OnZoomIn();
@@ -1252,7 +1257,8 @@ void CWeapon::ForceUpdateHUD()
 	UpdateScopePosition();
 	UpdateHUDAddonsVisibility();
 	ProcessScope();
-	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 	UpdateShellBones(iAmmoElapsed, m_ammoType);
 }
 
@@ -2760,7 +2766,8 @@ void CWeapon::OnStateSwitch	(u32 S)
 
 	if (S == eBore)
 	{
-		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, m_ammoType);
+		u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
+		UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 	}
 
 	if(EnableDof && GetState()==eReload)
@@ -3355,6 +3362,11 @@ void CWeapon::OnMotionMark(u32 state, const motion_marks& mark)
 
 void CWeapon::UpdateAmmoBones(xr_vector<SAmmoBonesParams*>& lVector, u32 idx, u8 type)
 {
+	if (lVector.empty())
+	{
+		return;
+	}
+
 	attachable_hud_item* HID = HudItemData();
 	if (HID == nullptr)
 	{
