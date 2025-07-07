@@ -782,7 +782,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 
 	if (m_bAmmoInChamber)
 	{
-		m_DefaultCartridgeInChamber.Load(*m_ammoTypes[m_ChamberAmmoType], u8(m_ChamberAmmoType));
+		m_DefaultCartridgeInChamber.Load(*getAmmoTypes()[m_ChamberAmmoType], u8(m_ChamberAmmoType));
 		if (iAmmoChamberElapsed)
 		{
 			m_fCurrentCartirdgeDisp = m_DefaultCartridgeInChamber.param_s.kDisp;
