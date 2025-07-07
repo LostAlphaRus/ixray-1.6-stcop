@@ -250,6 +250,7 @@ public:
 	bool m_bIsAimStarted = false;
 	bool m_bRestGlSil;
 	bool m_bTacticalTorchStatus = false;
+	bool m_bBlockReload;
 
 	shared_str hud_silencer;
 	shared_str hud_scope;
