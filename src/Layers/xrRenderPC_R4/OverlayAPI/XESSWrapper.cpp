@@ -20,7 +20,8 @@ bool XeSSWrapper::Create(const ContextParameters& params)
         if (params.fpMessage)
             params.fpMessage("[XeSS] Failed to create context");
 
-        Msg("! Error XESS initial:%s", *XeSSResultToString(result));
+        if (result != XESS_RESULT_ERROR_UNSUPPORTED_DEVICE)
+            Msg("! Error XESS initial:%s", *XeSSResultToString(result));
 
         return false;
     }
@@ -78,7 +79,7 @@ bool XeSSWrapper::Draw(const DrawParameters& params)
 
     xess_result_t result = xessD3D11Execute(m_context, &execParams);
 
-    if (result != XESS_RESULT_SUCCESS)
+    if (result != XESS_RESULT_SUCCESS && result != XESS_RESULT_ERROR_UNSUPPORTED_DEVICE)
     {
         Msg("! Error XESS initial:%s", *XeSSResultToString(result));
     }
