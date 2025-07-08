@@ -88,7 +88,7 @@ void CUIGameCTA::Init(int stage)
 		m_pRankIndicator->SetAutoDelete	(true);
 		m_pRankIndicator->InitFromXml	(uiXml);
 
-		if (uiXml.NavigateToNode("reinforcement:texture"))
+		if (uiXml.NavigateToNode("reinforcement:front"))
 		{
 			m_pReinforcementInidcator_old = new CUIProgressShape();
 			CUIXmlInit::InitProgressShape(uiXml, "reinforcement", 0, m_pReinforcementInidcator_old);

@@ -38,7 +38,7 @@ void CUIGameAHunt::Init	(int stage)
 		CUIXmlInit::InitWindow			(uiXml, "global", 0,		m_window);
 		CUIXmlInit::InitStatic			(uiXml, "fraglimit",0,		m_pFragLimitIndicator);
 
-		if (uiXml.NavigateToNode("reinforcement:texture"))
+		if (uiXml.NavigateToNode("reinforcement:front"))
 		{
 			m_pReinforcementInidcator_old = new CUIProgressShape();
 			CUIXmlInit::InitProgressShape(uiXml, "reinforcement", 0, m_pReinforcementInidcator_old);
