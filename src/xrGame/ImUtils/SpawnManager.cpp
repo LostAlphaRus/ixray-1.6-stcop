@@ -24,6 +24,10 @@ struct SectionData
 struct
 {
 	// weapon tab
+	bool sort_by_grenade_launcher{};
+	bool sort_by_scope_status{};
+	bool sort_by_silencer_status{};
+
 	bool sort_by_max_cost{};
 	bool weapon_sort_by_max_hit_power{};
 	bool weapon_sort_by_max_fire_distance{};
@@ -398,6 +402,18 @@ void RenderSpawnManagerWindow() {
 					}
 					};
 
+				if (ImGui::Checkbox("sort by grenade launcher##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_grenade_launcher))
+				{
+				}
+
+				if (ImGui::Checkbox("sort by scope status##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_scope_status))
+				{
+				}
+
+				if (ImGui::Checkbox("sort by silencer status##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_silencer_status))
+				{
+				}
+
 				if (ImGui::Checkbox("sort by max fire distance##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_max_fire_distance))
 				{
 					imgui_spawn_manager.weapon_sort_by_max_hit_power = false;
@@ -644,8 +660,63 @@ void RenderSpawnManagerWindow() {
 						});
 				}
 
+				Section filteredWeapons = imgui_spawn_manager.WeaponsSections.Sorted;
+
+				if (imgui_spawn_manager.sort_by_grenade_launcher ||
+					imgui_spawn_manager.sort_by_scope_status ||
+					imgui_spawn_manager.sort_by_silencer_status)
+				{
+					// Создаём временный отфильтрованный список
+					Section tempFiltered;
+
+					std::copy_if(
+						filteredWeapons.begin(),
+						filteredWeapons.end(),
+						std::back_inserter(tempFiltered),
+						[&](const auto& pair) {
+							if (!pair.second)
+								return false;
+
+							const char* section = pair.first.data();
+							bool meetsConditions = true;
+
+							// Проверяем гранатомёт (если фильтр активен)
+							if (imgui_spawn_manager.sort_by_grenade_launcher)
+							{
+								if (!pSettings->line_exist(section, "grenade_launcher_status"))
+									meetsConditions = false;
+								else if (pSettings->r_u32(section, "grenade_launcher_status") <= 0)
+									meetsConditions = false;
+							}
+
+							// Проверяем прицел (если фильтр активен)
+							if (meetsConditions && imgui_spawn_manager.sort_by_scope_status)
+							{
+								if (!pSettings->line_exist(section, "scope_status"))
+									meetsConditions = false;
+								else if (pSettings->r_u32(section, "scope_status") <= 0)
+									meetsConditions = false;
+							}
+
+							// Проверяем глушитель (если фильтр активен)
+							if (meetsConditions && imgui_spawn_manager.sort_by_silencer_status)
+							{
+								if (!pSettings->line_exist(section, "silencer_status"))
+									meetsConditions = false;
+								else if (pSettings->r_u32(section, "silencer_status") <= 0)
+									meetsConditions = false;
+							}
+
+							return meetsConditions;
+						}
+					);
+
+					filteredWeapons = std::move(tempFiltered); // Заменяем отфильтрованным списком
+				}
+
+
 				size_t number_imgui{};
-				SpawnManager_ProcessSections(imgui_spawn_manager.WeaponsSections.Sorted, number_imgui);
+				SpawnManager_ProcessSections(filteredWeapons, number_imgui);
 
 				if (imgui_spawn_manager.WeaponsSections.Unsorted.size() > 0)
 				{
