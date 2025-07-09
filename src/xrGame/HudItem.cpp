@@ -539,7 +539,7 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, u32 state)
 	return anim_time;
 }
 
-shared_str CHudItem::AddSuffixName(shared_str& anim, LPCSTR suffix, LPCSTR test_suffix)
+bool CHudItem::AddSuffixName(shared_str& anim, LPCSTR suffix, LPCSTR test_suffix)
 {
 	string128 new_name = {};
 	xr_strconcat(new_name, anim.c_str(), suffix, test_suffix);
@@ -547,9 +547,10 @@ shared_str CHudItem::AddSuffixName(shared_str& anim, LPCSTR suffix, LPCSTR test_
 	if (HudAnimationExist(new_name))
 	{
 		anim = new_name;
+		return true;
 	}
 
-	return anim;
+	return false;
 }
 
 u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn)
