@@ -190,6 +190,7 @@ public:
 		af_det_hand_kick = (1 << 11),
 		af_det_hand_lam = (1 << 12),
 		af_bore = (1 << 13),
+		af_firemode = (1 << 14),
 	};
 
 	enum ESoundsFlags

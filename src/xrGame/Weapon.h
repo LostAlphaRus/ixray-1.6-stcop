@@ -326,7 +326,7 @@ protected:
 		m_bHideBonesUpgrade {}, m_bScopeShowBones{}, m_bScopeHideBones{}, m_bShowBonesUpgToHide{}, m_bShowBonesUpgToShow{},
 		m_sCollimatorSightsBones{};
 
-	bool m_bFireModeConditions[2];
+	bool m_bDisableFireModeAim = false;
 	bool m_bBlockEmptyClick = false;
 	bool m_bIsReloaded = false;
 
