@@ -32,6 +32,8 @@ public:
 	virtual void	PlayAnimAddOneCartridgeWeapon();
 	void			PlayAnimCloseWeapon	();
 
+	virtual void	OnMotionMark(u32 state, const motion_marks&);
+
 protected:
 	virtual void	OnAnimationEnd		(u32 state);
 	void			TriStateReload		();

@@ -83,7 +83,7 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 	{
 		case eSubstateReloadBegin:
 		{
-			if (m_bAddCartridgeInOpen)
+			if (m_bAddCartridgeInOpen && !m_bIsReloaded)
 			{
 				AddCartridge(1);
 			}
@@ -100,8 +100,9 @@ void CWeaponAutomaticShotgun::OnAnimationEnd(u32 state)
 		}break;
 		case eSubstateReloadInProcess:
 		{
-			if(0 != AddCartridge(1) || bStopReloadSignal)
+			if (!m_bIsReloaded && 0 != AddCartridge(1) || bStopReloadSignal)
 			{
+				m_bIsReloaded = true;
 				m_sub_state = eSubstateReloadEnd;
 			}
 			SwitchState(eReload);
@@ -139,6 +140,7 @@ void CWeaponAutomaticShotgun::TriStateReload()
 
 	CWeapon::Reload();
 	m_sub_state = eSubstateReloadBegin;
+	m_bIsReloaded = false;
 	SwitchState	(eReload);
 }
 
@@ -201,6 +203,7 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 
 void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 {
+	m_bIsReloaded = false;
 	PlayAnimAddOneCartridgeWeapon();
 	SetPending(TRUE);
 
@@ -388,5 +391,30 @@ void CWeaponAutomaticShotgun::net_Import(NET_Packet& P)
 		Msg("! %s reload to %s", *l_cartridge.m_ammoSect, m_ammoTypes[LocalAmmoType].c_str());
 #endif
 		l_cartridge.Load(m_ammoTypes[LocalAmmoType].c_str(), LocalAmmoType);
+	}
+}
+
+void CWeaponAutomaticShotgun::OnMotionMark(u32 state, const motion_marks& mark)
+{
+	inherited::OnMotionMark(state, mark);
+
+	if (m_bTriStateReload && state == eReload && mark.name == "Right")
+	{
+		if (m_sub_state == EWeaponSubStates::eSubstateReloadBegin)
+		{
+			if (iAmmoElapsed < iMagazineSize)
+			{
+				m_bIsReloaded = true;
+				AddCartridge(1);
+			}
+		}
+		else if (m_sub_state == EWeaponSubStates::eSubstateReloadInProcess)
+		{
+			if (iAmmoElapsed < iMagazineSize)
+			{
+				m_bIsReloaded = true;
+				AddCartridge(1);
+			}
+		}
 	}
 }

@@ -31,6 +31,7 @@ public:
 	void			PlayAnimCloseWeapon		();
 
 	virtual	int		GetCurrentFireMode	() { return m_aFireModes[m_iCurFireMode]; };
+	virtual void	OnMotionMark(u32 state, const motion_marks&);
 
 
 protected:
