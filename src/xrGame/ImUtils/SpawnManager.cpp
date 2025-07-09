@@ -829,8 +829,7 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 	if (imgui_spawn_manager.render_as_table)
 	{
 		constexpr size_t kSpawnManagerTableViewColumnSize = 5;
-		size_t row_max = std::ceil(sections.size() / kSpawnManagerTableViewColumnSize
-		);
+		size_t row_max = (sections.size() + kSpawnManagerTableViewColumnSize - 1) / kSpawnManagerTableViewColumnSize;
 		size_t size_of_sections = sections.size();
 
 		if (ImGui::BeginTable("##SpawnManagerRenderAsTable", kSpawnManagerTableViewColumnSize, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingStretchProp))
