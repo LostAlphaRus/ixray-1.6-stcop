@@ -631,10 +631,6 @@ void CWeapon::Load		(LPCSTR section)
 	m_bRestGlSil = READ_IF_EXISTS(pSettings, r_bool, section, "restricted_gl_and_sil", false);
 
 	m_bAddCartridgeInOpen = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "add_cartridge_in_open", true);
-	m_bIsEmptyPreloadMode = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "empty_preload_mode", true);
-
-	m_bNeedFirstShootAnims = READ_IF_EXISTS(pSettings, r_bool, section, "need_first_shoot_anims", false);
-	m_bNeedFinalCloseAnims = READ_IF_EXISTS(pSettings, r_bool, section, "need_final_close_anims", false);
 
 	m_bBlockUpdateAmmoBonesShooting = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_toggle_shooting", false);
 	m_bUseLastAmmoType = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "ammo_params_use_last_cartridge_type", false);

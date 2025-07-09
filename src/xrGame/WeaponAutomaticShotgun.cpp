@@ -186,7 +186,10 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 	u8 type_to_update = m_bUseLastAmmoType && m_LastShotAmmoType != undefined_ammo_type ? m_LastShotAmmoType : GetTargetAmmoType();
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, type_to_update);
 
-	if (m_sounds.FindSoundItem("sndOpenEmpty", false) && m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	PlayAnimOpenWeapon();
+	SetPending(TRUE);
+
+	if (m_sounds.FindSoundItem("sndOpenEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndOpenEmpty", get_LastFP());
 	}
@@ -194,18 +197,18 @@ void CWeaponAutomaticShotgun::switch2_StartReload()
 	{
 		PlaySound("sndOpen", get_LastFP());
 	}
-
-	PlayAnimOpenWeapon();
-	SetPending(TRUE);
 }
 
 void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 {
-	if (m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && !m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	PlayAnimAddOneCartridgeWeapon();
+	SetPending(TRUE);
+
+	if (m_sounds.FindSoundItem("sndAddCartridgeEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndAddCartridgeEmpty", get_LastFP());
 	}
-	else if (m_sounds.FindSoundItem("sndAddCartridgePreloaded", false) && m_bIsEmptyPreloadMode && m_bIsPreloaded)
+	else if (m_sounds.FindSoundItem("sndAddCartridgePreloaded", false) && m_bIsPreloaded)
 	{
 		PlaySound("sndAddCartridgePreloaded", get_LastFP());
 	}
@@ -213,21 +216,20 @@ void CWeaponAutomaticShotgun::switch2_AddCartgidge()
 	{
 		PlaySound("sndAddCartridge", get_LastFP());
 	}
-
-	PlayAnimAddOneCartridgeWeapon();
-	SetPending(TRUE);
 }
 
 void CWeaponAutomaticShotgun::switch2_EndReload()
 {
 	UpdateAmmoBones(m_ammo_bones_mag, iAmmoElapsed, GetTargetAmmoType());
-	SetPending(FALSE);
+	SetPending(TRUE);
 
-	if (m_sounds.FindSoundItem("sndCloseEmpty", false) && !m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
+	PlayAnimCloseWeapon();
+
+	if (m_sounds.FindSoundItem("sndCloseEmpty", false) && iAmmoElapsed + iAmmoChamberElapsed == 0)
 	{
 		PlaySound("sndCloseEmpty", get_LastFP());
 	}
-	else if (m_sounds.FindSoundItem("sndClosePreloaded", false) && m_bIsEmptyPreloadMode && m_bIsPreloaded)
+	else if (m_sounds.FindSoundItem("sndClosePreloaded", false) && m_bIsPreloaded)
 	{
 		PlaySound("sndClosePreloaded", get_LastFP());
 	}
@@ -235,8 +237,6 @@ void CWeaponAutomaticShotgun::switch2_EndReload()
 	{
 		PlaySound("sndClose", get_LastFP());
 	}
-
-	PlayAnimCloseWeapon();
 }
 
 shared_str CWeaponAutomaticShotgun::SelectOpenWeaponAnimation()
@@ -245,22 +245,19 @@ shared_str CWeaponAutomaticShotgun::SelectOpenWeaponAnimation()
 
 	if (ParentIsActor())
 	{
-		if (m_bIsEmptyPreloadMode && iAmmoElapsed + iAmmoChamberElapsed == 0)
+		if (iAmmoElapsed + iAmmoChamberElapsed == 0)
 		{
 			AddSuffixName(anim, "_empty");
 			m_bIsPreloaded = true;
 			m_bJustAfterReload = true;
 		}
-		else if (m_bNeedFirstShootAnims)
+		else if (m_bJustAfterReload)
 		{
-			if (m_bJustAfterReload)
-			{
-				AddSuffixName(anim, "_first");
-			}
-			else
-			{
-				m_bJustAfterReload = true;
-			}
+			AddSuffixName(anim, "_first");
+		}
+		else
+		{
+			m_bJustAfterReload = true;
 		}
 	}
 
@@ -280,14 +277,13 @@ shared_str CWeaponAutomaticShotgun::SelectAddCartridgeWeaponAnimation()
 
 	if (ParentIsActor())
 	{
-		if (!m_bAddCartridgeInOpen && iAmmoElapsed + iAmmoChamberElapsed == 0)
+		if (iAmmoElapsed + iAmmoChamberElapsed == 0)
 		{
 			AddSuffixName(anim, "_empty");
 		}
 
-		if (m_bIsEmptyPreloadMode && m_bIsPreloaded)
+		if (m_bIsPreloaded && AddSuffixName(anim, "_preloaded"))
 		{
-			AddSuffixName(anim, "_preloaded");
 			m_bIsPreloaded = false;
 		}
 	}
@@ -308,15 +304,13 @@ shared_str CWeaponAutomaticShotgun::SelectCloseWeaponAnimation()
 
 	if (ParentIsActor())
 	{
-		if (m_bIsEmptyPreloadMode && m_bIsPreloaded)
+		if (m_bIsPreloaded && AddSuffixName(anim, "_preloaded"))
 		{
-			AddSuffixName(anim, "_preloaded");
 			m_bIsPreloaded = false;
 		}
 
-		if (m_bNeedFinalCloseAnims && iAmmoElapsed + iAmmoChamberElapsed >= iMagazineSize)
+		if (iAmmoElapsed + iAmmoChamberElapsed >= iMagazineSize && AddSuffixName(anim, "_final"))
 		{
-			AddSuffixName(anim, "_final");
 			m_bJustAfterReload = true;
 		}
 	}
