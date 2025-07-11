@@ -402,17 +402,31 @@ void RenderSpawnManagerWindow() {
 					}
 					};
 
-				if (ImGui::Checkbox("sort by grenade launcher##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_grenade_launcher))
-				{
-				}
+				ImGui::Columns(2, "##filter_columns", true);
 
-				if (ImGui::Checkbox("sort by scope status##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_scope_status))
+				// Left column - FILTERING (modifies data subset)
+				ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Active Filters");
+				ImGui::Separator();
+				if (ImGui::Checkbox("with grenade launcher##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_grenade_launcher))
 				{
 				}
+				ImGui::SetItemTooltip("Show only weapons with underbarrel grenade launcher capability");
 
-				if (ImGui::Checkbox("sort by silencer status##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_silencer_status))
+				if (ImGui::Checkbox("with scope##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_scope_status))
 				{
 				}
+				ImGui::SetItemTooltip("Show only weapons that support optical scopes");
+
+				if (ImGui::Checkbox("with silencer##CheckBox_InGameSpawnManager", &imgui_spawn_manager.sort_by_silencer_status))
+				{
+				}
+				ImGui::SetItemTooltip("Show only weapons that support suppressors");
+
+				ImGui::NextColumn();
+
+				// Right column - SORTING (orders existing subset)
+				ImGui::TextColored(ImVec4(0.8f, 0.9f, 1.0f, 1.0f), "Sorting Methods");
+				ImGui::Separator();
 
 				if (ImGui::Checkbox("sort by max fire distance##CheckBox_InGameSpawnManager", &imgui_spawn_manager.weapon_sort_by_max_fire_distance))
 				{
@@ -445,6 +459,8 @@ void RenderSpawnManagerWindow() {
 					imgui_spawn_manager.weapon_sort_by_min_fire_distance = false;
 				}
 				ImGui::SetItemTooltip("Sorts items by minimal hit_power field for current game difficulty[%s]that defined in weapon section in ltx file", translate_difficulty(g_SingleGameDifficulty));
+				
+				ImGui::Columns(1);
 
 				ImGui::Text("current difficulty: %s", translate_difficulty(g_SingleGameDifficulty));
 				SectionStatistics(imgui_spawn_manager.WeaponsSections);
@@ -666,7 +682,6 @@ void RenderSpawnManagerWindow() {
 					imgui_spawn_manager.sort_by_scope_status ||
 					imgui_spawn_manager.sort_by_silencer_status)
 				{
-					// Создаём временный отфильтрованный список
 					Section tempFiltered;
 
 					std::copy_if(
@@ -680,7 +695,6 @@ void RenderSpawnManagerWindow() {
 							const char* section = pair.first.data();
 							bool meetsConditions = true;
 
-							// Проверяем гранатомёт (если фильтр активен)
 							if (imgui_spawn_manager.sort_by_grenade_launcher)
 							{
 								if (!pSettings->line_exist(section, "grenade_launcher_status"))
@@ -689,7 +703,6 @@ void RenderSpawnManagerWindow() {
 									meetsConditions = false;
 							}
 
-							// Проверяем прицел (если фильтр активен)
 							if (meetsConditions && imgui_spawn_manager.sort_by_scope_status)
 							{
 								if (!pSettings->line_exist(section, "scope_status"))
@@ -698,7 +711,6 @@ void RenderSpawnManagerWindow() {
 									meetsConditions = false;
 							}
 
-							// Проверяем глушитель (если фильтр активен)
 							if (meetsConditions && imgui_spawn_manager.sort_by_silencer_status)
 							{
 								if (!pSettings->line_exist(section, "silencer_status"))
@@ -711,9 +723,8 @@ void RenderSpawnManagerWindow() {
 						}
 					);
 
-					filteredWeapons = std::move(tempFiltered); // Заменяем отфильтрованным списком
+					filteredWeapons = std::move(tempFiltered);
 				}
-
 
 				size_t number_imgui{};
 				SpawnManager_ProcessSections(filteredWeapons, number_imgui);
@@ -929,13 +940,8 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 					}
 				}
 			}
-
-
-
 			ImGui::EndTable();
 		}
-
-
 	}
 	else
 	{
@@ -950,7 +956,6 @@ void SpawnManager_ProcessSections(Section& sections, size_t& number_imgui)
 			}
 		}
 	}
-
 
 	std::sort(sections.begin(), sections.end());
 }
