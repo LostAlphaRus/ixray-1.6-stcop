@@ -539,62 +539,20 @@ void RenderSpawnManagerWindow() {
 					std::sort(imgui_spawn_manager.WeaponsSections.Sorted.begin(), imgui_spawn_manager.WeaponsSections.Sorted.end(), [](const auto& pair_left, const auto& pair_right)->bool {
 						if (pair_left.second && pair_right.second)
 						{
-							const char* pLeftName = pair_left.first.data();
-							const char* pRightName = pair_right.first.data();
-
 							float value_left{};
-							float value_right{};
-
+							const char* pLeftName = pair_left.first.data();
 							if (pSettings->line_exist(pLeftName, "hit_power"))
 							{
 								auto hit_str = pSettings->r_string_wb(pLeftName, "hit_power");
-								string32 buffer{};
-								if (g_SingleGameDifficulty == egdNovice)
-								{
-									_GetItem(*hit_str, 3, buffer);
-									value_left = atof(buffer);
-								}
-								else if (g_SingleGameDifficulty == egdStalker)
-								{
-									_GetItem(*hit_str, 2, buffer);
-									value_left = atof(buffer);
-								}
-								else if (g_SingleGameDifficulty == egdVeteran)
-								{
-									_GetItem(*hit_str, 1, buffer);
-									value_left = atof(buffer);
-								}
-								else if (g_SingleGameDifficulty == egdMaster)
-								{
-									_GetItem(*hit_str, 0, buffer);
-									value_left = atof(buffer);
-								}
+								value_left = SpawnManager_ParseHitPower(hit_str);
 							}
 
+							float value_right{};
+							const char* pRightName = pair_right.first.data();
 							if (pSettings->line_exist(pRightName, "hit_power"))
 							{
 								auto hit_str = pSettings->r_string_wb(pRightName, "hit_power");
-								string32 buffer{};
-								if (g_SingleGameDifficulty == egdNovice)
-								{
-									_GetItem(*hit_str, 3, buffer);
-									value_right = atof(buffer);
-								}
-								else if (g_SingleGameDifficulty == egdStalker)
-								{
-									_GetItem(*hit_str, 2, buffer);
-									value_right = atof(buffer);
-								}
-								else if (g_SingleGameDifficulty == egdVeteran)
-								{
-									_GetItem(*hit_str, 1, buffer);
-									value_right = atof(buffer);
-								}
-								else if (g_SingleGameDifficulty == egdMaster)
-								{
-									_GetItem(*hit_str, 0, buffer);
-									value_right = atof(buffer);
-								}
+								value_right = SpawnManager_ParseHitPower(hit_str);
 							}
 
 							return value_left > value_right;
@@ -611,62 +569,20 @@ void RenderSpawnManagerWindow() {
 						{
 							if (pair_left.second && pair_right.second)
 							{
-								const char* pLeftName = pair_left.first.data();
-								const char* pRightName = pair_right.first.data();
-
 								float value_left{};
-								float value_right{};
-
+								const char* pLeftName = pair_left.first.data();
 								if (pSettings->line_exist(pLeftName, "hit_power"))
 								{
 									auto hit_str = pSettings->r_string_wb(pLeftName, "hit_power");
-									string32 buffer{};
-									if (g_SingleGameDifficulty == egdNovice)
-									{
-										_GetItem(*hit_str, 3, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdStalker)
-									{
-										_GetItem(*hit_str, 2, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdVeteran)
-									{
-										_GetItem(*hit_str, 1, buffer);
-										value_left = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdMaster)
-									{
-										_GetItem(*hit_str, 0, buffer);
-										value_left = atof(buffer);
-									}
+									value_left = SpawnManager_ParseHitPower(hit_str);
 								}
 
+								float value_right{};
+								const char* pRightName = pair_right.first.data();
 								if (pSettings->line_exist(pRightName, "hit_power"))
 								{
 									auto hit_str = pSettings->r_string_wb(pRightName, "hit_power");
-									string32 buffer{};
-									if (g_SingleGameDifficulty == egdNovice)
-									{
-										_GetItem(*hit_str, 3, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdStalker)
-									{
-										_GetItem(*hit_str, 2, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdVeteran)
-									{
-										_GetItem(*hit_str, 1, buffer);
-										value_right = atof(buffer);
-									}
-									else if (g_SingleGameDifficulty == egdMaster)
-									{
-										_GetItem(*hit_str, 0, buffer);
-										value_right = atof(buffer);
-									}
+									value_right = SpawnManager_ParseHitPower(hit_str);
 								}
 
 								return value_left < value_right;
@@ -1096,15 +1012,16 @@ void SpawnManager_RenderTooltip(CInifile::Sect* section)
 
 float SpawnManager_ParseHitPower(const shared_str& hit_str) {
 	string32 buffer{};
-	float result{};
+	float result = atof(_GetItem(*hit_str, 0, buffer));
+	int num_game_diff_param = _GetItemCount(*hit_str);
 
-	if (g_SingleGameDifficulty == egdNovice) {
+	if (g_SingleGameDifficulty == egdNovice && num_game_diff_param > 2) {
 		result = atof(_GetItem(*hit_str, 3, buffer));
 	}
-	else if (g_SingleGameDifficulty == egdStalker) {
+	else if (g_SingleGameDifficulty == egdStalker && num_game_diff_param > 1) {
 		result = atof(_GetItem(*hit_str, 2, buffer));
 	}
-	else if (g_SingleGameDifficulty == egdVeteran) {
+	else if (g_SingleGameDifficulty == egdVeteran && num_game_diff_param > 0) {
 		result = atof(_GetItem(*hit_str, 1, buffer));
 	}
 	else if (g_SingleGameDifficulty == egdMaster) {
