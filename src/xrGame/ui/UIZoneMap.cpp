@@ -16,6 +16,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/UIHelper.h"
 #include "ui/UIInventoryUtilities.h"
+#include "../map_manager.h"
 //////////////////////////////////////////////////////////////////////////
 
 CUIZoneMap::CUIZoneMap()
@@ -126,6 +127,8 @@ void CUIZoneMap::Render			()
 {
 	if ( !visible || disabled )
 		return;
+
+	xrCriticalSectionGuard guard(Level().MapManager().UpdateCS);
 
 	m_clipFrame.Draw	();
 	m_background.Draw	();
