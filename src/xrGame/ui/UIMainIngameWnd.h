@@ -89,10 +89,10 @@ protected:
 	// - голода
 	// - усталости
 	CUIStatic*			UIWeaponJammedIcon;
-//	CUIStatic			UIRadiaitionIcon;
-//	CUIStatic			UIWoundIcon;
-//	CUIStatic			UIStarvationIcon;
-//	CUIStatic			UIPsyHealthIcon;
+	CUIStatic*			UIRadiaitionIcon;
+	CUIStatic*			UIWoundIcon;
+	CUIStatic*			UIStarvationIcon;
+	CUIStatic*			UIPsyHealthIcon;
 	CUIStatic*			UIInvincibleIcon;
 //	CUIStatic			UISleepIcon;
 	CUIStatic*			UIArtefactIcon;
@@ -100,6 +100,7 @@ protected:
 	CUIScrollView*		m_UIIcons;
 	CUIWindow*			m_pMPChatWnd;
 	CUIWindow*			m_pMPLogWnd;
+	bool				useLegacyIndicators;
 
 	// Car
 	CUICarPanel UICarPanel;
@@ -110,10 +111,10 @@ public:
 	{
 		ewiAll				= 0,
 		ewiWeaponJammed,
-//		ewiRadiation,
-//		ewiWound,
-//		ewiStarvation,
-//		ewiPsyHealth,
+		ewiRadiation,
+		ewiWound,
+		ewiStarvation,
+		ewiPsyHealth,
 //		ewiSleep,
 		ewiInvincible,
 		ewiArtefact,

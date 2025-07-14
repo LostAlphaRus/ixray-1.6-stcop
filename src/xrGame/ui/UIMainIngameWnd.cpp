@@ -222,24 +222,39 @@ void CUIMainIngameWnd::Init()
 		m_ind_boost_rad = UIHelper::CreateStatic(uiXml, "indicator_booster_rad", this);
 		m_ind_boost_rad->Show(false);
 	}
-	// Загружаем иконки 
-/*	if ( IsGameTypeSingle() )
-	{
-		xml_init.InitStatic		(uiXml, "starvation_static", 0, &UIStarvationIcon);
-		UIStarvationIcon.Show	(false);
 
-//		xml_init.InitStatic		(uiXml, "psy_health_static", 0, &UIPsyHealthIcon);
-//		UIPsyHealthIcon.Show	(false);
+	useLegacyIndicators = !EngineExternal().ClearSkyMode();
+
+	// Загружаем иконки 
+	if ( IsGameTypeSingle() )
+	{
+		if (uiXml.NavigateToNode("starvation_static"))
+		{
+			UIStarvationIcon = UIHelper::CreateStatic(uiXml, "starvation_static", this);
+			UIStarvationIcon->Show(false);
+		}
+
+		if (uiXml.NavigateToNode("psy_health_static"))
+		{
+			UIPsyHealthIcon = UIHelper::CreateStatic(uiXml, "psy_health_static", this);
+			UIPsyHealthIcon->Show(false);
+		}
 	}
-*/
+
 	UIWeaponJammedIcon			= UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
 	UIWeaponJammedIcon->Show	(false);
 
-//	xml_init.InitStatic			(uiXml, "radiation_static", 0, &UIRadiaitionIcon);
-//	UIRadiaitionIcon.Show		(false);
+	if (uiXml.NavigateToNode("radiation_static"))
+	{
+		UIRadiaitionIcon = UIHelper::CreateStatic(uiXml, "radiation_static", nullptr);
+		UIRadiaitionIcon->Show(false);
+	}
 
-//	xml_init.InitStatic			(uiXml, "wound_static", 0, &UIWoundIcon);
-//	UIWoundIcon.Show			(false);
+	if (uiXml.NavigateToNode("wound_static"))
+	{
+		UIWoundIcon = UIHelper::CreateStatic(uiXml, "wound_static", nullptr);
+		UIWoundIcon->Show(false);
+	}
 
 	UIInvincibleIcon			= UIHelper::CreateStatic(uiXml, "invincible_static", nullptr);
 	UIInvincibleIcon->Show		(false);
@@ -258,7 +273,7 @@ void CUIMainIngameWnd::Init()
 		"wounds",
 		"starvation",
 		"fatigue",
-		"invincible"
+		"invincible",
 		"artefact"
 	};
 
@@ -306,34 +321,7 @@ void CUIMainIngameWnd::Init()
 	m_ui_hud_states->SetAutoDelete			(true);
 	AttachChild								(m_ui_hud_states);
 
-	bool hudStatesExist = false;
-	if (uiXml.NavigateToNode("hud_states"))
-	{
-		m_ui_hud_states->InitFromXml			(uiXml, "hud_states");
-		hudStatesExist = true;
-	}
-
-	// SoC compatibility layer starts here
-	if (!hudStatesExist)
-	{
-		m_ui_hud_states->m_static_health = UIHelper::CreateStatic(uiXml, "static_health", this);
-		m_ui_hud_states->m_ui_health_bar = UIHelper::CreateProgressBar(uiXml, "progress_bar_health", m_ui_hud_states->m_static_health);
-		m_ui_hud_states->m_ui_health_bar->IsExpressionSystem = uiXml.ReadAttrib("progress_bar_health", 0, "expression", nullptr) != nullptr;
-
-		m_ui_hud_states->m_static_armor = UIHelper::CreateStatic(uiXml, "static_armor", this);
-		m_ui_hud_states->m_ui_armor_bar = UIHelper::CreateProgressBar(uiXml, "progress_bar_armor", m_ui_hud_states->m_static_armor);
-		m_ui_hud_states->m_ui_armor_bar->IsExpressionSystem = uiXml.ReadAttrib("progress_bar_armor", 0, "expression", nullptr) != nullptr;
-
-		m_ui_hud_states->m_ui_stamina_bar = nullptr;
-
-		m_ui_hud_states->m_static_weapon = UIHelper::CreateStatic(uiXml, "static_weapon", this);
-		m_ui_hud_states->m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(uiXml, "static_ammo", m_ui_hud_states->m_static_weapon);
-
-		m_ui_hud_states->m_ui_weapon_icon			= UIHelper::CreateStatic( uiXml, "static_wpn_icon", m_ui_hud_states->m_static_weapon);
-		m_ui_hud_states->m_ui_weapon_icon->SetShader( InventoryUtilities::GetEquipmentIconsShader() );
-		m_ui_hud_states->m_ui_weapon_icon_rect		= m_ui_hud_states->m_ui_weapon_icon->GetWndRect();
-
-	}
+	m_ui_hud_states->InitFromXml			(uiXml, "hud_states");
 
 	if (uiXml.NavigateToNode("static_pda_online") && IsGameTypeSingleCompatible())
 	{
@@ -341,7 +329,6 @@ void CUIMainIngameWnd::Init()
 		xml_init.InitStatic(uiXml, "static_pda_online", 0, UIPdaOnline);
 		UIZoneMap->Background().AttachChild(UIPdaOnline);
 	}
-	// ...and ends here
 
 	if (uiXml.NavigateToNode("disk_io"))
 	{
@@ -564,6 +551,67 @@ void CUIMainIngameWnd::Update()
 			SetWarningIconColor(ewiArtefact, 0x00ffffff );
 		}
 	}
+
+	if (!useLegacyIndicators)
+		return;
+
+	EWarningIcons i = ewiWeaponJammed;
+
+	while (i < ewiInvincible)
+	{
+		float value = 0;
+		switch (i)
+		{
+			//radiation
+		case ewiRadiation:
+			value = pActor->conditions().GetRadiation();
+			break;
+		case ewiWound:
+			value = pActor->conditions().BleedingSpeed();
+			break;
+		case ewiWeaponJammed:
+		{
+			u16 slot = pActor->inventory().GetActiveSlot();
+			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
+			if (weapon)
+				value = 1 - weapon->GetConditionToShow();
+			break;
+		}
+		case ewiStarvation:
+			value = 1 - pActor->conditions().GetSatiety();
+			break;
+		case ewiPsyHealth:
+			value = 1 - pActor->conditions().GetPsyHealth();
+			break;
+		default:
+			R_ASSERT(!"Unknown type of warning icon");
+		}
+
+		xr_vector<float>::reverse_iterator	rit;
+
+		// Сначала проверяем на точное соответсвие
+		rit = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
+
+		// Если его нет, то берем последнее меньшее значение ()
+		if (rit == m_Thresholds[i].rend()) {
+			rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(),
+				[value](float threshold) { return threshold < value; });
+		}
+		// Минимальное и максимальное значения границы
+		float min = m_Thresholds[i].front();
+		float max = m_Thresholds[i].back();
+
+		if (rit != m_Thresholds[i].rend()) {
+			float v = *rit;
+			SetWarningIconColor(i, color_argb(0xFF, clampr<u32>(static_cast<u32>(255 * ((v - min) / (max - min) * 2)), 0, 255),
+				clampr<u32>(static_cast<u32>(255 * (2.0f - (v - min) / (max - min) * 2)), 0, 255),
+				0));
+		}
+		else
+			TurnOffWarningIcon(i);
+
+		i = (EWarningIcons)(i + 1);
+	}
 }//update
 
 
@@ -638,21 +686,30 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 	case ewiWeaponJammed:
 		SetWarningIconColorUI	(UIWeaponJammedIcon, cl);
 		if (bMagicFlag) break;
-
-/*	case ewiRadiation:
-		SetWarningIconColorUI	(&UIRadiaitionIcon, cl);
+	case ewiRadiation:
+	{
+		if (UIRadiaitionIcon)
+			SetWarningIconColorUI(UIRadiaitionIcon, cl);
 		if (bMagicFlag) break;
+	}
 	case ewiWound:
-		SetWarningIconColorUI	(&UIWoundIcon, cl);
+	{
+		if (UIWoundIcon)
+			SetWarningIconColorUI(UIWoundIcon, cl);
 		if (bMagicFlag) break;
-
+	}
 	case ewiStarvation:
-		SetWarningIconColorUI	(&UIStarvationIcon, cl);
-		if (bMagicFlag) break;	
-	case ewiPsyHealth:
-		SetWarningIconColorUI	(&UIPsyHealthIcon, cl);
+	{
+		if (UIStarvationIcon)
+			SetWarningIconColorUI(UIStarvationIcon, cl);
 		if (bMagicFlag) break;
-*/
+	}
+	case ewiPsyHealth:
+	{
+		if (UIPsyHealthIcon)
+			SetWarningIconColorUI(UIPsyHealthIcon, cl);
+		if (bMagicFlag) break;
+	}
 	case ewiInvincible:
 		SetWarningIconColorUI	(UIInvincibleIcon, cl);
 		if (bMagicFlag) break;

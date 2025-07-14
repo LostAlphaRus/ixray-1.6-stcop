@@ -23,6 +23,7 @@ private:
 	CUIStatic*					m_Counter;
 	CUITextWnd*					m_Counter_text;
 	u8							m_current_map_idx;
+	bool						legacyMapMode;
 
 public:
 								CUIZoneMap		();

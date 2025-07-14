@@ -95,15 +95,28 @@ ALife::EInfluenceType CUIHudStatesWnd::get_indik_type( ALife::EHitType hit_type 
 
 void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 {
-	CUIXmlInit::InitWindow( xml, path, 0, this );
 	XML_NODE* stored_root = xml.GetLocalRoot();
-	
-	XML_NODE* new_root = xml.NavigateToNode( path, 0 );
-	xml.SetLocalRoot( new_root );
+	if (xml.NavigateToNode(path))
+	{
+		CUIXmlInit::InitWindow(xml, path, 0, this);
+		XML_NODE* new_root = xml.NavigateToNode(path, 0);
+		xml.SetLocalRoot(new_root);
+	}
 
+	if (xml.NavigateToNode("back"))
+		m_back            = UIHelper::CreateStatic( xml, "back", this );
 
-	m_back            = UIHelper::CreateStatic( xml, "back", this );
-	m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", this );
+	if (xml.NavigateToNode("static_weapon"))
+		m_static_weapon = UIHelper::CreateStatic(xml, "static_weapon", this);
+
+	CUIWindow* healthBarParent = this;
+	if (xml.NavigateToNode("static_health"))
+	{
+		m_static_health = UIHelper::CreateStatic(xml, "static_health", this);
+		healthBarParent = m_static_health;
+	}
+
+	m_ui_health_bar   = UIHelper::CreateProgressBar( xml, "progress_bar_health", healthBarParent);
 	m_ui_health_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_health", 0, "expression", nullptr) != nullptr;
 
 	if (xml.NavigateToNode("back_v", 0))
@@ -142,7 +155,11 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	m_lanim_name				= xml.ReadAttrib( "indik_rad", 0, "light_anim", "" );
 	if (xml.NavigateToNode("static_ammo", 0))
 	{
-		m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(xml, "static_ammo", this);
+		CUIWindow* ammoSignParent = this;
+		if (m_static_weapon)
+			ammoSignParent = m_static_weapon;
+
+		m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(xml, "static_ammo", ammoSignParent);
 	}
 
 	if (xml.NavigateToNode("static_cur_ammo", 0))
@@ -175,20 +192,30 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	else
 		m_ui_weapon_ammo_color_inactive = color_rgba(238, 155, 23, 150);
 
-	m_fire_mode					= UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
+	if (xml.NavigateToNode("static_fire_mode"))
+		m_fire_mode					= UIHelper::CreateTextWnd( xml, "static_fire_mode", this );
+
 	if (xml.NavigateToNode("static_grenade", 0))
 	{
 		m_ui_grenade = UIHelper::CreateTextWnd(xml, "static_grenade", this);
 	}
 	
-	m_ui_weapon_icon			= UIHelper::CreateStatic( xml, "static_wpn_icon", this );
+	CUIWindow* wpnIconParent = this;
+	if (m_static_weapon)
+		wpnIconParent = m_static_weapon;
+	
+	m_ui_weapon_icon			= UIHelper::CreateStatic( xml, "static_wpn_icon", wpnIconParent);
 	m_ui_weapon_icon->SetShader( InventoryUtilities::GetEquipmentIconsShader() );
 //	m_ui_weapon_icon->Enable	( false );
 	m_ui_weapon_icon_rect		= m_ui_weapon_icon->GetWndRect();
 
 	if (xml.NavigateToNode("progress_bar_armor", 0))
 	{
-		m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", this);
+		CUIWindow* armorBarParent = this;
+		if (xml.GetLocalRoot() == stored_root)
+			armorBarParent = m_static_armor;
+
+		m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", armorBarParent);
 		m_ui_armor_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_armor", 0, "expression", nullptr) != nullptr;
 	}
 
@@ -216,8 +243,11 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	{
 		m_back_over_arrow = UIHelper::CreateStatic(xml, "back_over_arrow", this);
 	}
-	m_ui_stamina_bar = UIHelper::CreateProgressBar(xml, "progress_bar_stamina", this);
-	m_ui_stamina_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_stamina", 0, "expression", nullptr) != nullptr;
+	if (xml.NavigateToNode("progress_bar_stamina", 0))
+	{
+		m_ui_stamina_bar = UIHelper::CreateProgressBar(xml, "progress_bar_stamina", this);
+		m_ui_stamina_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_stamina", 0, "expression", nullptr) != nullptr;
+	}
 
 	if (xml.NavigateToNode("bleeding", 0))
 	{
@@ -737,7 +767,8 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 		VERIFY2( 0, "Failed EIndicatorType for CStatic!" );
 		return;
 	}
-
+	if (!m_indik[type])
+		return;
 
 	constexpr u32 c_white  = color_rgba( 255, 255, 255, 255 );
 	constexpr u32 c_green  = color_rgba( 0, 255, 0, 255 );
@@ -854,7 +885,7 @@ void CUIHudStatesWnd::UpdateIndicatorType( CActor* actor, ALife::EInfluenceType 
 
 void CUIHudStatesWnd::SwitchLA( bool state, ALife::EInfluenceType type )
 {
-	if ( state == m_cur_state_LA[type] )
+	if ( state == m_cur_state_LA[type] || !m_indik[type])
 	{
 		return;
 	}
