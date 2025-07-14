@@ -253,11 +253,8 @@ void CActor::Load	(LPCSTR section )
 	if (GameID() == GAME_SINGLE)
 		OnDifficultyChanged		();
 	//////////////////////////////////////////////////////////////////////////
-	ISpatial*		self			=	smart_cast<ISpatial*> (this);
-	if (self)	{
-		self->spatial.type	|=	STYPE_VISIBLEFORAI;
-		self->spatial.type	&= ~STYPE_REACTTOSOUND;
-	}
+	SpatialComponent->spatial.type	|=	STYPE_VISIBLEFORAI;
+	SpatialComponent->spatial.type	&= ~STYPE_REACTTOSOUND;
 	//////////////////////////////////////////////////////////////////////////
 
 	// m_PhysicMovementControl: General

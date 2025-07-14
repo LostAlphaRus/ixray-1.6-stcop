@@ -71,12 +71,7 @@ void CGameObject::init			()
 void CGameObject::Load(LPCSTR section)
 {
 	inherited::Load			(section);
-	ISpatial*		self				= smart_cast<ISpatial*> (this);
-	if (self)	{
-		// #pragma todo("to Dima: All objects are visible for AI ???")
-		// self->spatial.type	|=	STYPE_VISIBLEFORAI;	
-		self->spatial.type	&= ~STYPE_REACTTOSOUND;
-	}
+	SpatialComponent->spatial.type	&= ~STYPE_REACTTOSOUND;
 }
 
 void CGameObject::reinit	()

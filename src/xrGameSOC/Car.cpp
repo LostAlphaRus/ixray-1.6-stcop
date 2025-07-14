@@ -144,8 +144,7 @@ void	CCar::Load					( LPCSTR section )
 {
 	inherited::Load					(section);
 	//CPHSkeleton::Load(section);
-	ISpatial*		self				=	smart_cast<ISpatial*> (this);
-	if (self)		self->spatial.type	|=	STYPE_VISIBLEFORAI;	
+	SpatialComponent->spatial.type	|=	STYPE_VISIBLEFORAI;	
 }
 
 BOOL	CCar::net_Spawn				(CSE_Abstract* DC)

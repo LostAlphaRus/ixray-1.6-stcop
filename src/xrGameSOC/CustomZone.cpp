@@ -99,8 +99,7 @@ void CCustomZone::Load(LPCSTR section)
 	m_StateTime[eZoneStateAccumulate]	= pSettings->r_s32(section, "accamulate_time");
 	
 //////////////////////////////////////////////////////////////////////////
-	ISpatial*		self				=	smart_cast<ISpatial*> (this);
-	if (self)		self->spatial.type	|=	(STYPE_COLLIDEABLE|STYPE_SHAPE);
+	SpatialComponent->spatial.type	|=	(STYPE_COLLIDEABLE|STYPE_SHAPE);
 //////////////////////////////////////////////////////////////////////////
 
 	LPCSTR sound_str = NULL;
