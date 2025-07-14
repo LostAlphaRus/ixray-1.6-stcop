@@ -9,9 +9,11 @@
 #pragma once
 
 template <typename _object_type>
-class CQuadTree {
+class CQuadTree 
+{
 public:
-	struct CQuadNode {
+	struct CQuadNode
+	{
 		CQuadNode				*m_neighbours[4];
 
 		IC	CQuadNode	*&next				()
@@ -20,7 +22,8 @@ public:
 		}
 	};
 
-	struct CListItem {
+	struct CListItem
+	{
 		_object_type			*m_object;
 		CListItem				*m_next;
 		
@@ -31,7 +34,8 @@ public:
 	};
 
 	template <typename T>
-	struct CFixedStorage {
+	struct CFixedStorage 
+	{
 		T						*m_objects;
 		T						*m_free;
 		u32						m_max_object_count;
@@ -104,10 +108,11 @@ public:
 	IC		void				clear			();
 	IC		void				insert			(_object_type	*object);
 	IC		_object_type		*remove			(const _object_type *object);
-	IC		_object_type		*find			(const Fvector	&position);
+	IC		_object_type		*find			(const Fvector	&position) const;
 	IC		void				nearest			(const Fvector	&position,	float radius, xr_vector<_object_type*> &objects, bool clear = true) const;
 	IC		void				all				(xr_vector<_object_type*> &objects, bool clear = true) const;
 	IC		size_t				size			() const;
+	IC		bool				empty			() const;
 };
 
 #include "quadtree_inline.h"

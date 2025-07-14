@@ -994,33 +994,33 @@ public:
 
 class CCC_DrawGameGraphAll : public IConsole_Command {
 public:
-				 CCC_DrawGameGraphAll	(LPCSTR N) : IConsole_Command(N)
+	CCC_DrawGameGraphAll(LPCSTR N) : IConsole_Command(N)
 	{
 		bEmptyArgsHandled = true;
 	}
 
-	virtual void Execute				(LPCSTR args)
+	virtual void Execute(LPCSTR args)
 	{
-		if (!ai().get_level_graph())
+		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()))
 			return;
 
-		ai().level_graph().setup_current_level	(-1);
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->setup_current_level(-1);
 	}
 };
 
 class CCC_DrawGameGraphCurrent : public IConsole_Command {
 public:
-				 CCC_DrawGameGraphCurrent	(LPCSTR N) : IConsole_Command(N)
+	CCC_DrawGameGraphCurrent(LPCSTR N) : IConsole_Command(N)
 	{
 		bEmptyArgsHandled = true;
 	}
 
-	virtual void Execute					(LPCSTR args)
+	virtual void Execute(LPCSTR args)
 	{
-		if (!ai().get_level_graph())
+		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()) == nullptr)
 			return;
 
-		ai().level_graph().setup_current_level	(
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->setup_current_level(
 			ai().level_graph().level_id()
 		);
 	}
@@ -1028,31 +1028,27 @@ public:
 
 class CCC_DrawGameGraphLevel : public IConsole_Command {
 public:
-				 CCC_DrawGameGraphLevel	(LPCSTR N) : IConsole_Command(N)
+	CCC_DrawGameGraphLevel(LPCSTR N) : IConsole_Command(N)
 	{
 	}
 
-	virtual void Execute					(LPCSTR args)
+	virtual void Execute(LPCSTR args)
 	{
-		if (!ai().get_level_graph())
+		if (!ai().get_level_graph() || dynamic_cast<CLevelGraph*>(&ai().level_graph()) == nullptr)
 			return;
 
-		string256			S;
-		S[0]				= 0;
-		sscanf				(args,"%s",S);
-
-		if (!*S) {
-			ai().level_graph().setup_current_level	(-1);
+		if (!*args) {
+			dynamic_cast<CLevelGraph*>(&ai().level_graph())->setup_current_level(-1);
 			return;
 		}
 
-		const GameGraph::SLevel	*level = ai().game_graph().header().level(S,true);
+		const GameGraph::SLevel* level = ai().game_graph().header().level(args, true);
 		if (!level) {
-			Msg				("! There is no level %s in the game graph",S);
+			Msg("! There is no level %s in the game graph", args);
 			return;
 		}
 
-		ai().level_graph().setup_current_level	(level->id());
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->setup_current_level(level->id());
 	}
 };
 

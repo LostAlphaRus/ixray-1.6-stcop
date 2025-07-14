@@ -170,7 +170,7 @@ game_GameState::game_GameState()
 
 CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 {
-	if (!g_dedicated_server)
+	/*if (!g_dedicated_server)
 	{
 		string_path		S;
 		FS.update_path	(S,"$game_config$","script.ltx");
@@ -189,7 +189,7 @@ CLASS_ID game_GameState::getCLASS_ID(LPCSTR game_type_name, bool isServer)
 			Debug.fatal		(DEBUG_INFO,"Unknown game type: %s",game_type_name);
 
 		return				(TEXT2CLSID(*clsid));
-	}
+	}*/
 
 	if (isServer) {
 		if (!xr_strcmp(game_type_name,"single"))

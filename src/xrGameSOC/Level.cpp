@@ -607,8 +607,8 @@ void CLevel::OnRender()
 #endif
 
 #ifdef DEBUG
-	if (ai().get_level_graph())
-		ai().level_graph().render();
+	if (ai().get_level_graph() && dynamic_cast<CLevelGraph*>(&ai().level_graph()))
+		dynamic_cast<CLevelGraph*>(&ai().level_graph())->render();
 
 #ifdef DEBUG_PRECISE_PATH
 	test_precise_path		();

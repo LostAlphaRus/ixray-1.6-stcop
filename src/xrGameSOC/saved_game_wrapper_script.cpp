@@ -24,6 +24,10 @@ LPCSTR CSavedGameWrapper__level_name	(const CSavedGameWrapper *self)
 	return			(*ai().game_graph().header().level(self->level_id()).name());
 }
 
+LPCSTR CSavedGameWrapper__save_extension()
+{
+	return IXRAY_DEF_SAVE_EXTENSION;
+}
 #pragma optimize("s",on)
 void CSavedGameWrapper::script_register	(lua_State *L)
 {
@@ -36,6 +40,7 @@ void CSavedGameWrapper::script_register	(lua_State *L)
 			.def("level_id",		&CSavedGameWrapper::level_id)
 			.def("actor_health",	&CSavedGameWrapper::actor_health),
 
-		def("valid_saved_game",		(bool (*)(LPCSTR))(&valid_saved_game))
+		def("valid_saved_game",		(bool (*)(LPCSTR))(&valid_saved_game)),
+		def("save_extension",	&CSavedGameWrapper__save_extension)
 	];
 }

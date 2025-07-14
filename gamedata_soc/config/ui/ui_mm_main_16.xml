@@ -39,18 +39,12 @@
             <right_anim x="268" y="10" width="55" height="55" heading="1">
                 <texture>ui_menu_smallroll_r</texture>
             </right_anim>
-            <left_grating x="0" y="4" width="1" height="1">
-                <texture>ui\ui_menu_grating_fake</texture>
-            </left_grating>
-            <right_grating x="337" y="4" width="1" height="1">
-                <texture>ui\ui_menu_grating_fake</texture>
-            </right_grating>
-			<auto_static x="0" y="4" width="55" height="67">
+			<left_grating x="0" y="4" width="55" height="67" stretch="1">
 				<texture>ui_menu_grating_l</texture>
-			</auto_static>
-			<auto_static x="284" y="4" width="55" height="67">
+			</left_grating>
+			<right_grating x="284" y="4" width="55" height="67" stretch="1">
 				<texture>ui_menu_grating_r</texture>
-			</auto_static>		
+			</right_grating>		
 		</shniaga>
 	</shniaga_wnd>
 	

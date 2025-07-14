@@ -14,7 +14,7 @@
 	typename _index_type\
 >
 
-#define CLevelManagerTemplate CBasePathManager<CLevelGraph,_VertexEvaluator,_vertex_id_type,_index_type>
+#define CLevelManagerTemplate CBasePathManager<ILevelGraph,_VertexEvaluator,_vertex_id_type,_index_type>
 
 TEMPLATE_SPECIALIZATION
 IC	CLevelManagerTemplate::CBasePathManager	(CRestrictedObject *object) :
@@ -23,7 +23,7 @@ IC	CLevelManagerTemplate::CBasePathManager	(CRestrictedObject *object) :
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CLevelManagerTemplate::reinit(const CLevelGraph *graph)
+IC	void CLevelManagerTemplate::reinit(const ILevelGraph *graph)
 {
 	inherited::reinit			(graph);
 }

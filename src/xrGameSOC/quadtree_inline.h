@@ -21,7 +21,7 @@ IC	CSQuadTree::CQuadTree		(const Fbox &box, float min_cell_size, u32 max_node_co
 
 	VERIFY				(!fis_zero(min_cell_size));
 	VERIFY				(m_radius > min_cell_size);
-	m_max_depth			= iFloor(log(2.f*m_radius/min_cell_size)/log(2.f) + .5f);
+	m_max_depth			= std::abs(iFloor(log(2.f * m_radius / min_cell_size) / log(2.f) + .5f));
 
 	m_nodes				= new CQuadNodeStorage(max_node_count);
 	m_list_items		= new CListItemStorage(max_list_item_count);
@@ -50,6 +50,12 @@ TEMPLATE_SPECIALIZATION
 IC	size_t CSQuadTree::size	() const
 {
 	return				(m_leaf_count);
+}
+
+TEMPLATE_SPECIALIZATION
+IC	bool CSQuadTree::empty	() const
+{
+	return				( !size() );
 }
 
 TEMPLATE_SPECIALIZATION
@@ -109,7 +115,7 @@ IC	void CSQuadTree::insert		(_object_type *object)
 }
 
 TEMPLATE_SPECIALIZATION
-IC	_object_type *CSQuadTree::find	(const Fvector &position)
+IC	_object_type *CSQuadTree::find	(const Fvector &position) const
 {
 	Fvector				center = m_center;
 	float				distance = m_radius;
@@ -132,7 +138,6 @@ IC	_object_type *CSQuadTree::find	(const Fvector &position)
 
 		node			= node->m_neighbours[index];
 	}
-	NODEFAULT;
 }
 
 TEMPLATE_SPECIALIZATION
@@ -236,14 +241,15 @@ IC	_object_type *CSQuadTree::remove		(const _object_type *object, CQuadNode *&no
 {
 	VERIFY			(node);
 	if (depth == m_max_depth) {
-		CListItem	*leaf = ((CListItem*)((void*)(node)));
+		CListItem	*&node_leaf = ((CListItem*&)((void*&)(node)));
+		CListItem	*leaf = ((CListItem*)((void*&)(node)));
 		CListItem	*leaf_prev = 0;
 		for ( ; leaf; leaf_prev = leaf, leaf = leaf->m_next)
 			if (leaf->m_object == object) {
 				if (!leaf_prev)
-					node = 0;
+					node_leaf	= leaf->m_next;
 				else
-					leaf_prev->m_next = leaf->m_next;
+					leaf_prev->m_next	= leaf->m_next;
 				_object_type	*_object = leaf->m_object;
 				m_list_items->remove(leaf);
 				--m_leaf_count;

@@ -212,12 +212,8 @@ void ui_core::pp_start()
 {
 	m_bPostprocess		= true;
 
-	m_pp_scale_.set	( float(::Render->getTarget()->get_width())/float(UI_BASE_WIDTH),	float(::Render->getTarget()->get_height())/float(UI_BASE_HEIGHT) );
-	m_2DFrustumPP.CreateFromRect(Frect().set(	0.0f,
-												0.0f,
-												float(::Render->getTarget()->get_width()),
-												float(::Render->getTarget()->get_height())
-												));
+	m_pp_scale_.set(float(Device.TargetWidth) / float(UI_BASE_WIDTH), float(Device.TargetHeight) / float(UI_BASE_HEIGHT));
+	m_2DFrustumPP.CreateFromRect(Frect().set(0.0f, 0.0f, float(Device.TargetWidth), float(Device.TargetHeight)));
 
 	m_current_scale			= &m_pp_scale_;
 

@@ -2,8 +2,8 @@
 #include "uistaticitem.h"
 #include "hudmanager.h"
 
-#include "../Include/xrRender/UIShader.h"
 #include "../Include/xrRender/UIRender.h"
+#include "../Include/xrRender/UIShader.h"
 
 void CreateUIGeom()
 {
@@ -44,6 +44,7 @@ void CUIStaticItem::CreateShader(LPCSTR tex, LPCSTR sh)
 
 void CUIStaticItem::SetShader(const ui_shader& sh)
 {
+	R_ASSERT(sh->inited());
 	hShader = sh;
 }
 
@@ -60,7 +61,6 @@ void CUIStaticItem::Render()
 {
 	VERIFY(g_bRendering);
 	// установить обязательно перед вызовом CustomItem::Render() !!!
-	VERIFY(hShader);
 	UIRender->SetShader(*hShader);
 	if (alpha_ref != -1)
 		UIRender->SetAlphaRef(alpha_ref);
@@ -71,7 +71,6 @@ void CUIStaticItem::Render()
 	bp.y						= (float)iFloor(bp.y);
 
 	// actual rendering
-	u32							vOffset;
 	Fvector2					pos;
 	Fvector2					f_len;
 	UI()->ClientToScreenScaled	(f_len, iVisRect.x2, iVisRect.y2 );
@@ -81,33 +80,31 @@ void CUIStaticItem::Render()
 	int							x,y;
 	if (!(tile_x&&tile_y))		return;
 	// render
-	UIRender->StartPrimitive(8 * tile_x * tile_y, IUIRender::ePrimitiveType::ptTriList, IUIRender::ePointType::pttTL);
-	
-	for (x=0; x<tile_x; ++x){
-		for (y=0; y<tile_y; ++y){
-			pos.set				(bp.x+f_len.x*x,bp.y+f_len.y*y);
-			inherited::Render	(pos,dwColor);
+	UIRender->StartPrimitive(8 * tile_x * tile_y, IUIRender::ptTriList, IUIRender::ePointType::pttTL);
+	for (int x = 0; x < tile_x; ++x)
+	{
+		for (y = 0; y < tile_y; ++y) {
+			pos.set(bp.x + f_len.x * x, bp.y + f_len.y * y);
+			inherited::Render(pos, dwColor);
 		}
 	}
-
-
 	// set scissor
 	Frect clip_rect				= {iPos.x,iPos.y,iPos.x+iVisRect.x2*iTileX+iRemX,iPos.y+iVisRect.y2*iTileY+iRemY};
 	UI()->PushScissor			(clip_rect);
 	// set geom
 	UIRender->FlushPrimitive();
+	UI()->PopScissor			();
+
 	if (alpha_ref != -1)
 		UIRender->SetAlphaRef(0);
-	UI()->PopScissor			();
 }
 
 void CUIStaticItem::Render(float angle)
 {
 	VERIFY						(g_bRendering);
 	// установить обязательно перед вызовом CustomItem::Render() !!!
-	VERIFY						(hShader);
-	VERIFY(hShader);
 	UIRender->SetShader(*hShader);
+
 	if (alpha_ref != -1)
 		UIRender->SetAlphaRef(alpha_ref);
 	// convert&set pos
@@ -116,12 +113,11 @@ void CUIStaticItem::Render(float angle)
 
 
 	// actual rendering
-	u32		vOffset;
-	UIRender->StartPrimitive(64, IUIRender::ePrimitiveType::ptLineList, IUIRender::ePointType::pttTL);
+	UIRender->StartPrimitive(32, IUIRender::ptTriList, IUIRender::ePointType::pttTL);
+	inherited::Render(bp_ns, dwColor, angle);
 
-	inherited::Render			(bp_ns,dwColor,angle);
-	// unlock VB and Render it as triangle LIST
 	UIRender->FlushPrimitive();
+
 	if (alpha_ref != -1)
-		UIRender->SetAlphaRef(0);
+		UIRender->SetAlphaRef(alpha_ref);
 }
