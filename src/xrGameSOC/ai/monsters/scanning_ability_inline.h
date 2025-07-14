@@ -1,6 +1,7 @@
 #pragma once
 #include "ai_monster_effector.h"
 #include "actor.h"
+#include "ActorEffector.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\

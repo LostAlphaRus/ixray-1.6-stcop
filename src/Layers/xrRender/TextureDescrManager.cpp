@@ -251,9 +251,9 @@ void CTextureDescrMngr::Load()
 	TT.Start				();
 #endif // #ifdef DEBUG
 
+	LoadLTX					();
 	LoadTHM					("$game_textures$");
 	LoadTHM					("$level$");
-	LoadLTX					();
 
 #ifdef DEBUG
 	Msg("load time=%d ms",TT.GetElapsed_ms());

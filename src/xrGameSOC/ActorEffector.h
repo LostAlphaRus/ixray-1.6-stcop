@@ -6,6 +6,23 @@ class CObjectAnimator;
 class CEffectorController;
 class CActor;
 
+class CActorCameraManager	:public CCameraManager
+{
+	typedef CCameraManager	inherited;
+
+	SCamEffectorInfo		m_cam_info_hud;
+
+protected:
+	virtual void			UpdateCamEffectors		();
+	virtual bool			ProcessCameraEffector	(CEffectorCam* eff);
+
+public:
+							CActorCameraManager():inherited(false){}
+	virtual					~CActorCameraManager() {}
+
+	IC void					hud_camera_Matrix		(Fmatrix& M){M.set(m_cam_info_hud.r, m_cam_info_hud.n, m_cam_info_hud.d, m_cam_info_hud.p);}
+};
+
 using GET_KOEFF_FUNC = xr_delegate<float()>;
 
 void AddEffector		(CActor* A, int type, const shared_str& sect_name);
@@ -38,14 +55,17 @@ protected:
 	CObjectAnimator*							m_objectAnimator;
 public:
 	bool				m_bAbsolutePositioning;
+	float				m_fov;
 
 						CAnimatorCamEffector	();
 	virtual				~CAnimatorCamEffector	();
 			void		Start					(LPCSTR fn);
-	virtual	BOOL		Process					(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+	virtual BOOL		ProcessCam				(SCamEffectorInfo& info);
 			void		SetCyclic				(bool b)				{m_bCyclic=b;}
 	virtual	BOOL		Valid					();
 			float		GetAnimatorLength		()						{return fLifeTime;};
+
+	virtual bool		AbsolutePositioning		()						{return m_bAbsolutePositioning;}
 };
 
 class CAnimatorCamEffectorScriptCB :public CAnimatorCamEffector 
@@ -56,8 +76,8 @@ class CAnimatorCamEffectorScriptCB :public CAnimatorCamEffector
 public:
 	CAnimatorCamEffectorScriptCB	(LPCSTR _cb){cb_name =_cb;};
 	virtual	BOOL		Valid					();
-	virtual BOOL		AllowProcessingIfInvalid()	{return m_bAbsolutePositioning;}
-	virtual	void		ProcessIfInvalid		(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+	virtual BOOL		AllowProcessingIfInvalid()							{return m_bAbsolutePositioning;}
+	virtual	void		ProcessIfInvalid		(SCamEffectorInfo& info);
 };
 
 class CAnimatorCamLerpEffector :public CAnimatorCamEffector
@@ -67,7 +87,7 @@ protected:
 	GET_KOEFF_FUNC									m_func;
 public:
 			void		SetFactorFunc				(GET_KOEFF_FUNC f)	{m_func=f;}
-	virtual	BOOL		Process						(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+	virtual BOOL		ProcessCam					(SCamEffectorInfo& info);
 };
 
 class CAnimatorCamLerpEffectorConst :public CAnimatorCamLerpEffector
@@ -122,9 +142,12 @@ class CControllerPsyHitCamEffector :public CEffectorCam {
 	Fvector				m_position_source;
 	Fvector				m_direction;
 	float				m_distance;
+	float				m_base_fov;
+	float				m_dest_fov;
 
 public:
-						CControllerPsyHitCamEffector	(ECamEffectorType type, const Fvector &src_pos, const Fvector &target_pos, float time);
-	virtual	BOOL		Process							(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+						CControllerPsyHitCamEffector	(ECamEffectorType type, const Fvector &src_pos, const Fvector &target_pos, 
+														float time, float base_fov, float dest_fov);
+	virtual BOOL		ProcessCam						(SCamEffectorInfo& info);
 };
 //////////////////////////////////////////////////////////////////////////

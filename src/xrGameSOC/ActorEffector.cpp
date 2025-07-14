@@ -1,18 +1,21 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 
 #include "ActorEffector.h"
 #include "PostprocessAnimator.h"
-#include "../xrEngine/effectorPP.h"
+#include "../xrEngine/EffectorPP.h"
 #include "../xrEngine/ObjectAnimator.h"
 #include "../xrCore/object_broker.h"
-#include "actor.h"
+#include "Actor.h"
 
 void AddEffector		(CActor* A, int type, const shared_str& sect_name)
 {
 	if(pSettings->line_exist(sect_name,"pp_eff_name")){
-		bool bCyclic						= !!pSettings->r_bool(sect_name,"pp_eff_cyclic");
 		CPostprocessAnimator* pp_anm		= new CPostprocessAnimator();
-		pp_anm->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, sect_name, "pp_eff_overlap", true);
+
+		bool bCyclic						= !!pSettings->r_bool(sect_name,"pp_eff_cyclic");
+
+		pp_anm->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, sect_name,"pp_eff_overlap", false);
+
 		pp_anm->SetType						((EEffectorPPType)type);
 		pp_anm->SetCyclic					(bCyclic);
 
@@ -25,6 +28,13 @@ void AddEffector		(CActor* A, int type, const shared_str& sect_name)
 		CAnimatorCamEffector* cam_anm		= new CAnimatorCamEffector();
 		cam_anm->SetType					((ECamEffectorType)type);
 		cam_anm->SetCyclic					(bCyclic);
+
+		if(pSettings->line_exist(sect_name, "cam_eff_hud_affect"))
+		{
+			bool b_hud_affect				= !!pSettings->r_bool(sect_name, "cam_eff_hud_affect");
+			cam_anm->SetHudAffect			(b_hud_affect);
+		}
+
 		LPCSTR fn = pSettings->r_string		(sect_name,"cam_eff_name");
 		cam_anm->Start						(fn);
 		A->Cameras().AddCamEffector	(cam_anm);
@@ -38,7 +48,7 @@ void AddEffector		(CActor* A, int type, const shared_str& sect_name, CEffectorCo
 		CPostprocessAnimatorControlled* pp_anm	= new CPostprocessAnimatorControlled(ec);
 		pp_anm->SetType						((EEffectorPPType)type);
 		pp_anm->SetCyclic					(bCyclic);
-		pp_anm->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, sect_name, "pp_eff_overlap", true);
+		pp_anm->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, sect_name,"pp_eff_overlap", false);
 		LPCSTR fn = pSettings->r_string		(sect_name,"pp_eff_name");
 		pp_anm->Load						(fn);
 		A->Cameras().AddPPEffector			(pp_anm);
@@ -48,6 +58,13 @@ void AddEffector		(CActor* A, int type, const shared_str& sect_name, CEffectorCo
 		CCameraEffectorControlled* cam_anm	= new CCameraEffectorControlled(ec);
 		cam_anm->SetType					((ECamEffectorType)type);
 		cam_anm->SetCyclic					(bCyclic);
+
+		if(pSettings->line_exist(sect_name, "cam_eff_hud_affect"))
+		{
+			bool b_hud_affect				= !!pSettings->r_bool(sect_name, "cam_eff_hud_affect");
+			cam_anm->SetHudAffect			(b_hud_affect);
+		}
+
 		LPCSTR fn = pSettings->r_string		(sect_name,"cam_eff_name");
 		cam_anm->Start						(fn);
 		A->Cameras().AddCamEffector			(cam_anm);
@@ -61,7 +78,7 @@ void AddEffector		(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_F
 		CPostprocessAnimatorLerp* pp_anm	= new CPostprocessAnimatorLerp();
 		pp_anm->SetType						((EEffectorPPType)type);
 		pp_anm->SetCyclic					(bCyclic);
-		pp_anm->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, sect_name, "pp_eff_overlap", true);
+		pp_anm->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, sect_name,"pp_eff_overlap", false);
 		LPCSTR fn = pSettings->r_string		(sect_name,"pp_eff_name");
 		pp_anm->SetFactorFunc				(k_func);
 		pp_anm->Load						(fn);
@@ -73,6 +90,13 @@ void AddEffector		(CActor* A, int type, const shared_str& sect_name, GET_KOEFF_F
 		cam_anm->SetFactorFunc				(k_func);
 		cam_anm->SetType					((ECamEffectorType)type);
 		cam_anm->SetCyclic					(bCyclic);
+
+		if(pSettings->line_exist(sect_name, "cam_eff_hud_affect"))
+		{
+			bool b_hud_affect				= !!pSettings->r_bool(sect_name, "cam_eff_hud_affect");
+			cam_anm->SetHudAffect			(b_hud_affect);
+		}
+
 		LPCSTR fn = pSettings->r_string		(sect_name,"cam_eff_name");
 		cam_anm->Start						(fn);
 		A->Cameras().AddCamEffector			(cam_anm);
@@ -87,8 +111,8 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, float factor)
 		CPostprocessAnimatorLerpConst* pp_anm= new CPostprocessAnimatorLerpConst();
 		pp_anm->SetType						((EEffectorPPType)type);
 		pp_anm->SetCyclic					(bCyclic);
-		pp_anm->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, sect_name, "pp_eff_overlap", true);
 		pp_anm->SetPower					(factor);
+		pp_anm->bOverlap					= READ_IF_EXISTS(pSettings, r_bool, sect_name,"pp_eff_overlap", false);
 		LPCSTR fn = pSettings->r_string		(sect_name,"pp_eff_name");
 		pp_anm->Load						(fn);
 		A->Cameras().AddPPEffector			(pp_anm);
@@ -99,6 +123,13 @@ void AddEffector(CActor* A, int type, const shared_str& sect_name, float factor)
 		cam_anm->SetFactor					(factor);
 		cam_anm->SetType					((ECamEffectorType)type);
 		cam_anm->SetCyclic					(bCyclic);
+	
+		if(pSettings->line_exist(sect_name, "cam_eff_hud_affect"))
+		{
+			bool b_hud_affect				= !!pSettings->r_bool(sect_name, "cam_eff_hud_affect");
+			cam_anm->SetHudAffect			(b_hud_affect);
+		}
+
 		LPCSTR fn = pSettings->r_string		(sect_name,"cam_eff_name");
 		cam_anm->Start						(fn);
 		A->Cameras().AddCamEffector			(cam_anm);
@@ -123,6 +154,7 @@ CAnimatorCamEffector::CAnimatorCamEffector()
 	m_bCyclic				= true;
 	m_objectAnimator		= new CObjectAnimator();
 	m_bAbsolutePositioning	= false;
+	m_fov					= -1.0f;
 }
 
 CAnimatorCamEffector::~CAnimatorCamEffector()
@@ -143,16 +175,9 @@ BOOL CAnimatorCamEffector::Valid()
 	return			inherited::Valid();
 }
 
-BOOL CAnimatorCamEffector::Process (Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
+BOOL CAnimatorCamEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	SCamEffectorInfo info;
-	info.p = p;
-	info.d = d;
-	info.n = n;
-	info.fFov = fFov;
-	info.fFar = fFar;
-	info.fAspect = fAspect;
-	if(!inherited::ProcessCam(info))
+	if(!inherited::ProcessCam(info))	
 		return FALSE;
 
 	const Fmatrix& m			= m_objectAnimator->XFORM();
@@ -161,33 +186,29 @@ BOOL CAnimatorCamEffector::Process (Fvector &p, Fvector &d, Fvector &n, float& f
 	if(!m_bAbsolutePositioning){
 		Fmatrix Mdef;
 		Mdef.identity				();
-		Mdef.j						= n;
-		Mdef.k						= d;
-		Mdef.i.crossproduct			(n,d);
-		Mdef.c						= p;
-
+		Mdef.j						= info.n;
+		Mdef.k						= info.d;
+		Mdef.i.crossproduct			(info.n, info.d);
+		Mdef.c						= info.p;
+//		Msg("fr[%d] %2.3f,%2.3f,%2.3f", Device.dwFrame,m.c.x,m.c.y,m.c.z);
 		Fmatrix mr;
 		mr.mul						(Mdef,m);
-		d							= mr.k;
-		n							= mr.j;
-		p							= mr.c;
+		info.d						= mr.k;
+		info.n						= mr.j;
+		info.p						= mr.c;
 	}else{
-		d							= m.k;
-		n							= m.j;
-		p							= m.c;
+		info.d						= m.k;
+		info.n						= m.j;
+		info.p						= m.c;
 	};
+	if(m_fov>0.0f)
+		info.fFov				= m_fov;
+
 	return						TRUE;
 }
 
-BOOL CAnimatorCamLerpEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
+BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 {
-	SCamEffectorInfo info;
-	info.p = p;
-	info.d = d;
-	info.n = n;
-	info.fFov = fFov;
-	info.fFar = fFar;
-	info.fAspect = fAspect;
 	if(!inherited::inherited::ProcessCam(info))	return FALSE;
 
 	const Fmatrix& m			= m_objectAnimator->XFORM();
@@ -195,10 +216,10 @@ BOOL CAnimatorCamLerpEffector::Process(Fvector &p, Fvector &d, Fvector &n, float
 
 	Fmatrix Mdef;
 	Mdef.identity				();
-	Mdef.j						= n;
-	Mdef.k						= d;
-	Mdef.i.crossproduct			(n,d);
-	Mdef.c						= p;
+	Mdef.j						= info.n;
+	Mdef.k						= info.d;
+	Mdef.i.crossproduct			(info.n, info.d);
+	Mdef.c						= info.p;
 
 	Fmatrix mr;
 	mr.mul						(Mdef,m);
@@ -216,11 +237,14 @@ BOOL CAnimatorCamLerpEffector::Process(Fvector &p, Fvector &d, Fvector &n, float
 	
 	Fmatrix						res;
 	res.rotation				(q_res);
-	res.c.lerp					(p, mr.c, t);
+	res.c.lerp					(info.p, mr.c, t);
 
-	d							= res.k;
-	n							= res.j;
-	p							= res.c;
+	info.d						= res.k;
+	info.n						= res.j;
+	info.p						= res.c;
+
+	if(m_fov>0.0f)
+		info.fFov				= m_fov;
 
 	return TRUE;
 }
@@ -242,7 +266,7 @@ CCameraEffectorControlled::CCameraEffectorControlled(CEffectorController* c)
 
 CCameraEffectorControlled::~CCameraEffectorControlled()
 {
-	m_controller->SetCam(NULL);
+	m_controller->SetCam(nullptr);
 }
 
 BOOL CCameraEffectorControlled::Valid()
@@ -257,7 +281,7 @@ SndShockEffector::SndShockEffector	()
 	m_snd_length			= 0.0f;
 	m_cur_length			= 0.0f;
 	m_stored_volume			= -1.0f;
-	m_actor					= NULL;
+	m_actor					= nullptr;
 }
 
 SndShockEffector::~SndShockEffector	()
@@ -326,31 +350,37 @@ void SndShockEffector::Update()
 #define DELTA_ANGLE_Z	0.5f * PI / 180
 #define ANGLE_SPEED		1.5f	
 
-CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(ECamEffectorType type, const Fvector &src_pos, const Fvector &target_pos, float time)
-	:inherited(eCEControllerPsyHit, flt_max)
+const float	_base_fov		= 170.f;
+const float	_max_fov_add	= 30.f;
+
+CControllerPsyHitCamEffector::CControllerPsyHitCamEffector(ECamEffectorType type, const Fvector &src_pos, 
+														   const Fvector &target_pos, float time, 
+														   float base_fov, float dest_fov)
+								: inherited(eCEControllerPsyHit, flt_max)
 {
-	m_time_total			= time;
-	m_time_current			= 0;
-	m_dangle_target.set		(angle_normalize(Random.randFs(DELTA_ANGLE_X)),angle_normalize(Random.randFs(DELTA_ANGLE_Y)),angle_normalize(Random.randFs(DELTA_ANGLE_Z)));
-	m_dangle_current.set	(0.f, 0.f, 0.f);
-	m_position_source		= src_pos;
-	m_direction.sub			(target_pos,src_pos);
-	m_distance				= m_direction.magnitude();
-	m_direction.normalize	();
+	m_base_fov				=	base_fov;
+	m_dest_fov				=	dest_fov;
+	m_time_total			=	time;
+	m_time_current			=	0;
+	m_dangle_target.set			(	angle_normalize(Random.randFs(DELTA_ANGLE_X)),
+									angle_normalize(Random.randFs(DELTA_ANGLE_Y)),
+									angle_normalize(Random.randFs(DELTA_ANGLE_Z))	);
+
+	m_dangle_current.set		(0.f, 0.f, 0.f);
+	m_position_source		=	src_pos;
+	m_direction.sub				(target_pos,src_pos);
+	m_distance				=	m_direction.magnitude();
+	m_direction.normalize		();
 }
 
-const float	_base_fov		= 170.f;
-const float	_max_fov_add	= 160.f;
-
-
-BOOL CControllerPsyHitCamEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
+BOOL CControllerPsyHitCamEffector::ProcessCam(SCamEffectorInfo& info)
 {
 	Fmatrix	Mdef;
 	Mdef.identity		();
-	Mdef.j.set			(n);
+	Mdef.j.set			(info.n);
 	Mdef.k.set			(m_direction);
-	Mdef.i.crossproduct	(n,m_direction);
-	Mdef.c.set			(p);
+	Mdef.i.crossproduct	(info.n,m_direction);
+	Mdef.c.set			(info.p);
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -374,7 +404,8 @@ BOOL CControllerPsyHitCamEffector::Process(Fvector &p, Fvector &d, Fvector &n, f
 	float cur_dist	= m_distance * perc_past;
 
 	Mdef.c.mad	(m_position_source, m_direction, cur_dist);
-	fFov = _base_fov - _max_fov_add*perc_past;
+	info.fFov = m_base_fov + (m_dest_fov-m_base_fov)*perc_past;
+	//info.fFov = _base_fov - _max_fov_add*perc_past;
 
 	m_time_current	+= Device.fTimeDelta;
 	
@@ -390,11 +421,68 @@ BOOL CControllerPsyHitCamEffector::Process(Fvector &p, Fvector &d, Fvector &n, f
 	Fmatrix		mR;
 	mR.mul		(Mdef,R);
 
-	d.set		(mR.k);
-	n.set		(mR.j);
-	p.set		(mR.c);
+	info.d.set		(mR.k);
+	info.n.set		(mR.j);
+	info.p.set		(mR.c);
 
 	return TRUE;
 }
+bool similar_cam_info(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2)
+{
+	return(	c1.p.similar(c2.p, EPS_L) &&
+			c1.d.similar(c2.d, EPS_L) &&
+			c1.n.similar(c2.n, EPS_L)	&&
+			c1.r.similar(c2.r, EPS_L)	);
 
+}
+void CActorCameraManager::UpdateCamEffectors()
+{
+	m_cam_info_hud		= m_cam_info;
+	inherited::UpdateCamEffectors();
+
+	m_cam_info_hud.d.normalize			();
+	m_cam_info_hud.n.normalize			();
+	m_cam_info_hud.r.crossproduct		(m_cam_info_hud.n, m_cam_info_hud.d);
+	m_cam_info_hud.n.crossproduct		(m_cam_info_hud.d, m_cam_info_hud.r);
+}
+
+void cam_effector_sub(const SCamEffectorInfo& c1, const SCamEffectorInfo& c2, SCamEffectorInfo& dest)
+{
+	dest.p.sub	(c1.p, c2.p);
+	dest.d.sub	(c1.d, c2.d);
+	dest.n.sub	(c1.n, c2.n);
+	dest.r.sub	(c1.r, c2.r);
+}
+
+void cam_effector_add(const SCamEffectorInfo& diff, SCamEffectorInfo& dest)
+{
+	dest.p.add	(diff.p);
+	dest.d.add	(diff.d);
+	dest.n.add	(diff.n);
+	dest.r.add	(diff.r);
+}
+
+bool CActorCameraManager::ProcessCameraEffector(CEffectorCam* eff)
+{
+	SCamEffectorInfo	prev			= m_cam_info;
+
+	bool res = inherited::ProcessCameraEffector	(eff);
+	if(res)
+	{
+		if(eff->GetHudAffect())
+		{
+			SCamEffectorInfo affected	= m_cam_info;
+			SCamEffectorInfo diff;
+
+			cam_effector_sub			(affected, prev, diff);
+			
+			cam_effector_add			(diff, m_cam_info_hud); // m_cam_info_hud += difference
+		}
+
+		m_cam_info_hud.fFov		= m_cam_info.fFov;
+		m_cam_info_hud.fFar		= m_cam_info.fFar; 
+		m_cam_info_hud.fAspect	= m_cam_info.fAspect;
+	}
+	return res;
+}
 

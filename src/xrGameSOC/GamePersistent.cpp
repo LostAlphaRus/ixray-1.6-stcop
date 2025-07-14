@@ -10,6 +10,7 @@
 #include "level.h"
 #include "../xrParticles/stdafx.h"
 #include "../xrParticles/ParticlesObject.h"
+#include "ActorEffector.h"
 #include "actor.h"
 #include "game_base_space.h"
 #include "weaponhud.h"
