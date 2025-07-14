@@ -81,6 +81,13 @@ CUIMainIngameWnd::CUIMainIngameWnd()
 {
 	UIStaticDiskIO				= nullptr;
 	UIZoneMap					= new CUIZoneMap();
+	UIWeaponJammedIcon			= nullptr;
+	UIInvincibleIcon			= nullptr;
+	UIArtefactIcon				= nullptr;
+	UIPsyHealthIcon				= nullptr;
+	UIStarvationIcon			= nullptr;
+	UIRadiaitionIcon			= nullptr;
+	UIWoundIcon					= nullptr;
 }
 
 #include "../../xrUI/Widgets/UIProgressShape.h"
@@ -95,6 +102,10 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 	xr_delete					(UIWeaponJammedIcon);
 	xr_delete					(UIInvincibleIcon);
 	xr_delete					(UIArtefactIcon);
+	xr_delete					(UIPsyHealthIcon);
+	xr_delete					(UIStarvationIcon);
+	xr_delete					(UIRadiaitionIcon);
+	xr_delete					(UIWoundIcon);
 }
 
 void CUIMainIngameWnd::Init()
@@ -231,13 +242,13 @@ void CUIMainIngameWnd::Init()
 	{
 		if (uiXml.NavigateToNode("starvation_static"))
 		{
-			UIStarvationIcon = UIHelper::CreateStatic(uiXml, "starvation_static", this);
+			UIStarvationIcon = UIHelper::CreateStatic(uiXml, "starvation_static", nullptr);
 			UIStarvationIcon->Show(false);
 		}
 
 		if (uiXml.NavigateToNode("psy_health_static"))
 		{
-			UIPsyHealthIcon = UIHelper::CreateStatic(uiXml, "psy_health_static", this);
+			UIPsyHealthIcon = UIHelper::CreateStatic(uiXml, "psy_health_static", nullptr);
 			UIPsyHealthIcon->Show(false);
 		}
 	}
@@ -559,67 +570,6 @@ void CUIMainIngameWnd::Update()
 			SetWarningIconColor(ewiArtefact, 0x00ffffff );
 		}
 	}
-
-	if (!useLegacyIndicators)
-		return;
-
-	EWarningIcons i = ewiWeaponJammed;
-
-	while (i < ewiInvincible)
-	{
-		float value = 0;
-		switch (i)
-		{
-			//radiation
-		case ewiRadiation:
-			value = pActor->conditions().GetRadiation();
-			break;
-		case ewiWound:
-			value = pActor->conditions().BleedingSpeed();
-			break;
-		case ewiWeaponJammed:
-		{
-			u16 slot = pActor->inventory().GetActiveSlot();
-			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
-			if (weapon)
-				value = 1 - weapon->GetConditionToShow();
-			break;
-		}
-		case ewiStarvation:
-			value = 1 - pActor->conditions().GetSatiety();
-			break;
-		case ewiPsyHealth:
-			value = 1 - pActor->conditions().GetPsyHealth();
-			break;
-		default:
-			R_ASSERT(!"Unknown type of warning icon");
-		}
-
-		xr_vector<float>::reverse_iterator	rit;
-
-		// Сначала проверяем на точное соответсвие
-		rit = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
-
-		// Если его нет, то берем последнее меньшее значение ()
-		if (rit == m_Thresholds[i].rend()) {
-			rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(),
-				[value](float threshold) { return threshold < value; });
-		}
-		// Минимальное и максимальное значения границы
-		float min = m_Thresholds[i].front();
-		float max = m_Thresholds[i].back();
-
-		if (rit != m_Thresholds[i].rend()) {
-			float v = *rit;
-			SetWarningIconColor(i, color_argb(0xFF, clampr<u32>(static_cast<u32>(255 * ((v - min) / (max - min) * 2)), 0, 255),
-				clampr<u32>(static_cast<u32>(255 * (2.0f - (v - min) / (max - min) * 2)), 0, 255),
-				0));
-		}
-		else
-			TurnOffWarningIcon(i);
-
-		i = (EWarningIcons)(i + 1);
-	}
 }//update
 
 
@@ -696,26 +646,22 @@ void CUIMainIngameWnd::SetWarningIconColor(EWarningIcons icon, const u32 cl)
 		if (bMagicFlag) break;
 	case ewiRadiation:
 	{
-		if (UIRadiaitionIcon)
-			SetWarningIconColorUI(UIRadiaitionIcon, cl);
+		SetWarningIconColorUI(UIRadiaitionIcon, cl);
 		if (bMagicFlag) break;
 	}
 	case ewiWound:
 	{
-		if (UIWoundIcon)
-			SetWarningIconColorUI(UIWoundIcon, cl);
+		SetWarningIconColorUI(UIWoundIcon, cl);
 		if (bMagicFlag) break;
 	}
 	case ewiStarvation:
 	{
-		if (UIStarvationIcon)
-			SetWarningIconColorUI(UIStarvationIcon, cl);
+		SetWarningIconColorUI(UIStarvationIcon, cl);
 		if (bMagicFlag) break;
 	}
 	case ewiPsyHealth:
 	{
-		if (UIPsyHealthIcon)
-			SetWarningIconColorUI(UIPsyHealthIcon, cl);
+		SetWarningIconColorUI(UIPsyHealthIcon, cl);
 		if (bMagicFlag) break;
 	}
 	case ewiInvincible:
@@ -953,6 +899,37 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			}
 		}
 	}
+	// SoC variant
+	if (UIWoundIcon && useLegacyIndicators)
+	{
+		if (fis_zero(bleeding, EPS))
+		{
+			SetWarningIconColor(ewiWound, 0x00ffffff);
+		}
+		else
+		{
+			if (bleeding < 0.2f)
+			{
+				SetWarningIconColor(ewiWound, color_rgba(0, 255, 0, 255));
+			}
+			else if (bleeding < 0.4f)
+			{
+				SetWarningIconColor(ewiWound, color_rgba(127, 255, 0, 255));
+			}
+			else if (bleeding < 0.6f)
+			{
+				SetWarningIconColor(ewiWound, color_rgba(255, 255, 0, 255));
+			}
+			else if (bleeding < 0.8f)
+			{
+				SetWarningIconColor(ewiWound, color_rgba(255, 127, 0, 255));
+			}
+			else
+			{
+				SetWarningIconColor(ewiWound, color_rgba(255, 0, 0, 255));
+			}
+		}
+	}
 // Radiation icon
 	float radiation = pActor->conditions().GetRadiation();
 	if (m_ind_radiation)
@@ -982,6 +959,37 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			}
 		}
 	}
+	// SoC variant
+	if (UIRadiaitionIcon && useLegacyIndicators)
+	{
+		if (fis_zero(radiation, EPS))
+		{
+			SetWarningIconColor(ewiRadiation, 0x00ffffff);
+		}
+		else
+		{
+			if (radiation < 0.25f)
+			{
+				SetWarningIconColor(ewiRadiation, color_rgba(0, 255, 0, 255));
+			}
+			else if (radiation < 0.4f)
+			{
+				SetWarningIconColor(ewiRadiation, color_rgba(127, 255, 0, 255));
+			}
+			else if (radiation < 0.55f)
+			{
+				SetWarningIconColor(ewiRadiation, color_rgba(255, 255, 0, 255));
+			}
+			else if (radiation < 0.7f)
+			{
+				SetWarningIconColor(ewiRadiation, color_rgba(255, 127, 0, 255));
+			}
+			else
+			{
+				SetWarningIconColor(ewiRadiation, color_rgba(255, 0, 0, 255));
+			}
+		}
+	}
 // Satiety icon
 	if (m_ind_starvation)
 	{
@@ -999,6 +1007,40 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 				m_ind_starvation->InitTexture("ui_inGame2_circle_hunger_yellow");
 			else
 				m_ind_starvation->InitTexture("ui_inGame2_circle_hunger_red");
+		}
+	}
+	// SoC variant
+	if (UIStarvationIcon && useLegacyIndicators)
+	{
+		float satiety = pActor->conditions().GetSatiety();
+		float satiety_critical = pActor->conditions().SatietyCritical();
+		float satiety_koef = (satiety - satiety_critical) / (satiety >= satiety_critical ? 1 - satiety_critical : satiety_critical);
+		if (satiety_koef > 0.5)
+		{
+			SetWarningIconColor(ewiStarvation, 0x00ffffff);
+		}
+		else
+		{
+			if (satiety_koef > 0.0f)
+			{
+				SetWarningIconColor(ewiStarvation, color_rgba(0, 255, 0, 255));
+			}
+			else if (satiety_koef > -0.25f)
+			{
+				SetWarningIconColor(ewiStarvation, color_rgba(127, 255, 0, 255));
+			}
+			else if (satiety_koef > -0.5f)
+			{
+				SetWarningIconColor(ewiStarvation, color_rgba(255, 255, 0, 255));
+			}
+			else if (satiety_koef > -0.75f)
+			{
+				SetWarningIconColor(ewiStarvation, color_rgba(255, 127, 0, 255));
+			}
+			else
+			{
+				SetWarningIconColor(ewiStarvation, color_rgba(255, 0, 0, 255));
+			}
 		}
 	}
 
@@ -1113,6 +1155,31 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			}
 		}
 	}
+	// SoC variant
+	if (UIWeaponJammedIcon)
+	{
+		u16 slot = pActor->inventory().GetActiveSlot();
+		SetWarningIconColor(ewiWeaponJammed, 0x00ffffff);
+		if (slot == INV_SLOT_2 || slot == INV_SLOT_3)
+		{
+			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
+			if (weapon)
+			{
+				float condition = weapon->GetCondition();
+				float start_misf_cond = weapon->GetMisfireStartCondition();
+				float end_misf_cond = weapon->GetMisfireEndCondition();
+				if (condition < start_misf_cond)
+				{
+					if (condition > (start_misf_cond + end_misf_cond) / 2)
+						SetWarningIconColor(ewiWeaponJammed, color_rgba(0, 255, 0, 255));
+					else if (condition > end_misf_cond)
+						SetWarningIconColor(ewiWeaponJammed, color_rgba(255, 255, 0, 255));
+					else
+						SetWarningIconColor(ewiWeaponJammed, color_rgba(255, 0, 0, 255));
+				}
+			}
+		}
+	}
 // Overweight icon
 	if (m_ind_overweight)
 	{
@@ -1128,6 +1195,38 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			//	m_ind_overweight->InitTexture("ui_inGame2_circle_Overweight_yellow");
 			else
 				m_ind_overweight->InitTexture("ui_inGame2_circle_Overweight_yellow");
+		}
+	}
+	// Psy health icon (only for SoC)
+	if (UIPsyHealthIcon && useLegacyIndicators)
+	{
+		float psy_health = 1 - pActor->conditions().GetPsyHealth();
+		if (fis_zero(psy_health, EPS))
+		{
+			SetWarningIconColor(ewiPsyHealth, 0x00ffffff);
+		}
+		else
+		{
+			if (psy_health < 0.6f)
+			{
+				SetWarningIconColor(ewiPsyHealth, color_rgba(0, 255, 0, 255));
+			}
+			else if (psy_health < 0.7f)
+			{
+				SetWarningIconColor(ewiPsyHealth, color_rgba(127, 255, 0, 255));
+			}
+			else if (psy_health < 0.8f)
+			{
+				SetWarningIconColor(ewiPsyHealth, color_rgba(255, 255, 0, 255));
+			}
+			else if (psy_health < 0.9f)
+			{
+				SetWarningIconColor(ewiPsyHealth, color_rgba(255, 127, 0, 255));
+			}
+			else
+			{
+				SetWarningIconColor(ewiPsyHealth, color_rgba(255, 0, 0, 255));
+			}
 		}
 	}
 }

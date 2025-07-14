@@ -38,12 +38,12 @@ void CUINewsItemWnd::Init(CUIXml& uiXml, LPCSTR start_from)
 
 void CUINewsItemWnd::Setup			(GAME_NEWS_DATA& news_data)
 {
-	shared_str time_str				= InventoryUtilities::GetTimeAndDateAsString( news_data.receive_time );
+	shared_str time_str				= InventoryUtilities::GetTimeAndDateAsString( news_data.receive_time, m_legacyMode );
 	u32    sz  = (time_str.size() + 5) * sizeof(char);
-	PSTR   str = (PSTR)_alloca( sz );
-	xr_strcpy( str, sz, time_str.c_str() );
-	xr_strcat( str, sz, " -" );
-	m_UIDate->SetText(str);
+	xr_string   str = time_str.c_str();
+	if (!m_legacyMode)
+		str += " -";
+	m_UIDate->SetText(str.c_str());
 	m_UIDate->AdjustWidthToText();
 
 	if (m_UICaption)
@@ -60,6 +60,15 @@ void CUINewsItemWnd::Setup			(GAME_NEWS_DATA& news_data)
 	float h1						= m_UIText->GetWndPos().y + m_UIText->GetHeight() + 6.0f;
 
 	m_UIImage->InitTexture			(news_data.texture_name.c_str());
+	
+	if (news_data.tex_rect.valide())
+	{
+		Frect texture_rect;
+		texture_rect.lt.set(news_data.tex_rect.x1, news_data.tex_rect.y1);
+		texture_rect.rb.set(news_data.tex_rect.x2, news_data.tex_rect.y2);
+		texture_rect.rb.add(texture_rect.lt);
+		m_UIImage->SetTextureRect(texture_rect);
+	}
 	float h3						= m_UIImage->GetWndPos().y + m_UIImage->GetHeight();
 	h1								= _max(h1,h3);
 	SetHeight						(h1);
