@@ -742,7 +742,7 @@ void CWeapon::UpdateCL		()
 	if(!IsGameTypeSingle())
 		make_Interpolation		();
 	
-	VERIFY(smart_cast<CKinematics*>(Visual()));
+	VERIFY(smart_cast<IKinematics*>(Visual()));
 }
 
 

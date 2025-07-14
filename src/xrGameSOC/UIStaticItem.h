@@ -61,5 +61,5 @@ public:
 	IC ui_shader&	GetShader		()							{return hShader;}
 };
 
-extern ENGINE_API BOOL g_bRendering; 
+extern ENGINE_API xr_atomic_bool g_bRendering;
 

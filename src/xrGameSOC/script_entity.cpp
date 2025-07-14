@@ -261,8 +261,7 @@ void CScriptEntity::ProcessScripts()
 		vfFinishAction(l_tpEntityAction);
 
 #ifdef DEBUG
-		if (psAI_Flags.is(aiLua))
-			Msg("Entity Action removed!!!");
+		Msg("Entity Action removed!!!");
 #endif
 
 		xr_delete	(l_tpEntityAction);

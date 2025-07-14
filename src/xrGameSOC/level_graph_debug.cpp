@@ -163,9 +163,9 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 	bool						show_text = true;
 	for (;;) {
 		Fvector4				temp;
-		Device->mFullTransform.transform (temp,position);
+		Device.mFullTransform.transform (temp,position);
 		font.OutSetI			(temp.x,-temp.y);
-		font.SetHeightI			(.05f/_sqrt(temp.w));
+		font.SetHeight			(.05f/_sqrt(temp.w));
 		
 		if (temp.z < 0.f) {
 			show_text			= false;
@@ -267,7 +267,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		render.draw_aabb		(direction,radius,radius,radius,color);
 
 		Fvector4				temp;
-		Device->mFullTransform.transform (temp,direction);
+		Device.mFullTransform.transform (temp,direction);
 		
 		if (temp.z < 0.f)
 			continue;
@@ -287,7 +287,7 @@ void CLevelGraph::draw_stalkers		(const int &vertex_id)
 		if (temp.x > 1.f)
 			continue;
 
-		font.SetHeightI			(.05f/_sqrt(temp.w));
+		font.SetHeight			(.05f/_sqrt(temp.w));
 	}
 }
 
@@ -307,9 +307,9 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 	bool						show_text = true;
 	for (;;) {
 		Fvector4				temp;
-		Device->mFullTransform.transform (temp,position);
+		Device.mFullTransform.transform (temp,position);
 		font.OutSetI			(temp.x,-temp.y);
-		font.SetHeightI			(.05f/_sqrt(temp.w));
+		font.SetHeight			(.05f/_sqrt(temp.w));
 		
 		if (temp.z < 0.f) {
 			show_text			= false;
@@ -411,7 +411,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 		render.draw_aabb		(direction,radius,radius,radius,color);
 
 		Fvector4				temp;
-		Device->mFullTransform.transform (temp,direction);
+		Device.mFullTransform.transform (temp,direction);
 		
 		if (temp.z < 0.f)
 			continue;
@@ -431,7 +431,7 @@ void CLevelGraph::draw_objects		(const int &vertex_id)
 		if (temp.x > 1.f)
 			continue;
 
-		font.SetHeightI			(.05f/_sqrt(temp.w));
+		font.SetHeight			(.05f/_sqrt(temp.w));
 	}
 }
 
@@ -504,7 +504,7 @@ void CLevelGraph::draw_game_graph	()
 		T.set			(t1);
 		//T.y+= 1.5f;
 		T.y+= 1.5f/10.f;
-		Device->mFullTransform.transform (S,T);
+		Device.mFullTransform.transform (S,T);
 		//out of screen
 		if (S.z < 0 || S.w < 0)												continue;
 		if (S.x < -1.f || S.x > 1.f || S.y<-1.f || S.x>1.f)					continue;
@@ -547,7 +547,7 @@ void CLevelGraph::draw_game_graph	()
 				T.set			(t1);
 				//T.y+= 1.5f;
 				T.y+= 1.5f;
-				Device->mFullTransform.transform (S,T);
+				Device.mFullTransform.transform (S,T);
 				//out of screen
 				if (S.z < 0 || S.w < 0)												continue;
 				if (S.x < -1.f || S.x > 1.f || S.y<-1.f || S.x>1.f)					continue;

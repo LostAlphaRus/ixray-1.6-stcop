@@ -200,6 +200,7 @@ ui_core::ui_core()
 	
 	OnDeviceReset				();
 
+	m_current_scale				= &m_scale_;
 }
 
 ui_core::~ui_core()

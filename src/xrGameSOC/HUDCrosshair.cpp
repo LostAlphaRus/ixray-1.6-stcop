@@ -51,7 +51,7 @@ void CHUDCrosshair::SetDispersion	(float disp)
 	target_radius		= radius_pixels; 
 }
 
-extern ENGINE_API BOOL g_bRendering; 
+extern ENGINE_API xr_atomic_bool g_bRendering; 
 void CHUDCrosshair::OnRender ()
 {
 	VERIFY			(g_bRendering);

@@ -74,8 +74,8 @@ const u32	g_clWhite					= 0xffffffff;
 
 #define		SHOW_INFO_SPEED				0.5f
 #define		HIDE_INFO_SPEED				10.f
-#define		C_ON_ENEMY					D3DCOLOR_XRGB(0xff,0,0)
-#define		C_DEFAULT					D3DCOLOR_XRGB(0xff,0xff,0xff)
+#define		C_ON_ENEMY					color_xrgb(0xff,0,0)
+#define		C_DEFAULT					color_xrgb(0xff,0xff,0xff)
 
 #define				MAININGAME_XML				"maingame.xml"
 
@@ -849,12 +849,12 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 				else		CAttachableItem::mov_dz(-rot_d);
 				break;
 
-			case SDL_SCANCODE_SUBTRACT:
+			case SDL_SCANCODE_KP_MINUS:
 				if(shift)	rot_d-=deg2rad(0.01f);
 				else		mov_d-=0.001f;
 				Msg("rotation delta=[%f]; moving delta=[%f]",rot_d,mov_d);
 				break;
-			case SDL_SCANCODE_ADD:
+			case SDL_SCANCODE_KP_PLUS:
 				if(shift)	rot_d+=deg2rad(0.01f);
 				else		mov_d+=0.001f;
 				Msg("rotation delta=[%f]; moving delta=[%f]",rot_d,mov_d);
@@ -1296,7 +1296,7 @@ void test_draw	()
 
 void CUIMainIngameWnd::draw_adjust_mode()
 {
-	if (g_bHudAdjustMode&&m_pWeapon) //draw firePoint,ShellPoint etc
+	/*if (g_bHudAdjustMode && m_pWeapon) //draw firePoint,ShellPoint etc
 	{
 		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 		if(!pActor)
@@ -1351,18 +1351,18 @@ void CUIMainIngameWnd::draw_adjust_mode()
 			parent.transform_tiny	(SP);
 
 
-			RCache.dbg_DrawAABB(FP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(255,0,0));
-			RCache.dbg_DrawAABB(FP2,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,0,255));
-			RCache.dbg_DrawAABB(SP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(0,255,0));
+			DRender.dbg_DrawAABB(FP,0.01f,0.01f,0.01f,color_xrgb(255,0,0));
+			RCache.dbg_DrawAABB(FP2,0.02f,0.02f,0.02f,color_xrgb(0,0,255));
+			RCache.dbg_DrawAABB(SP,0.01f,0.01f,0.01f,color_xrgb(0,255,0));
 		
 		}else{
 			Fvector FP = m_pWeapon->get_CurrentFirePoint();
 			Fvector FP2 = m_pWeapon->get_CurrentFirePoint2();
 			Fvector SP = m_pWeapon->get_LastSP();
-			RCache.dbg_DrawAABB(FP,0.01f,0.01f,0.01f,D3DCOLOR_XRGB(255,0,0));
-			RCache.dbg_DrawAABB(FP2,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,0,255));
-			RCache.dbg_DrawAABB(SP,0.02f,0.02f,0.02f,D3DCOLOR_XRGB(0,255,0));
+			RCache.dbg_DrawAABB(FP,0.01f,0.01f,0.01f,color_xrgb(255,0,0));
+			RCache.dbg_DrawAABB(FP2,0.02f,0.02f,0.02f,color_xrgb(0,0,255));
+			RCache.dbg_DrawAABB(SP,0.02f,0.02f,0.02f,color_xrgb(0,255,0));
 		}
-	}
+	}*/
 }
 #endif

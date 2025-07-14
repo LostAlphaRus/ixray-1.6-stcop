@@ -80,7 +80,7 @@ void CPlanner::update				()
 #endif
 
 #ifdef LOG_ACTION
-	if this->(m_failed) {
+	if (this->m_failed) {
 		// printing current world state
 		show						();
 
@@ -255,14 +255,14 @@ IC	void CPlanner::show				(LPCSTR offset)
 			Msg		("%soperator    [%d][%s]",offset,(*I).m_operator_id,(*I).m_operator->m_action_name);
 
 			{
-				xr_vector<COperatorCondition>::const_iterator	i = (*I).m_operator->conditions().conditions().begin();
-				xr_vector<COperatorCondition>::const_iterator	e = (*I).m_operator->conditions().conditions().end();
+				auto	i = (*I).m_operator->conditions().conditions().begin();
+				auto	e = (*I).m_operator->conditions().conditions().end();
 				for ( ; i != e; ++i)
 					Msg	("%s	condition [%d][%s] = %s",offset,(*i).condition(),property2string((*i).condition()),(*i).value() ? "TRUE" : "FALSE");
 			}
 			{
-				xr_vector<COperatorCondition>::const_iterator	i = (*I).m_operator->effects().conditions().begin();
-				xr_vector<COperatorCondition>::const_iterator	e = (*I).m_operator->effects().conditions().end();
+				auto	i = (*I).m_operator->effects().conditions().begin();
+				auto	e = (*I).m_operator->effects().conditions().end();
 				for ( ; i != e; ++i)
 					Msg	("%s	effect    [%d][%s] = %s",offset,(*i).condition(),property2string((*i).condition()),(*i).value() ? "TRUE" : "FALSE");
 			}

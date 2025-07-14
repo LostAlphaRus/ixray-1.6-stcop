@@ -534,10 +534,6 @@ void CGamePersistent::OnFrame	()
 		}
 	}
 
-#ifdef DEBUG
-	if ((m_last_stats_frame + 1) < m_frame_counter)
-		profiler().clear		();
-#endif
 }
 
 #include "game_sv_single.h"
@@ -577,12 +573,6 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 
 void CGamePersistent::Statistics	(CGameFont* F)
 {
-#ifdef DEBUG
-#	ifndef _EDITOR
-		m_last_stats_frame		= m_frame_counter;
-		profiler().show_stats	(F,!!psAI_Flags.test(aiStats));
-#	endif
-#endif
 }
 
 float CGamePersistent::MtlTransparent(u32 mtl_idx)

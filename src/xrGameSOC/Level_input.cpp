@@ -25,6 +25,7 @@
 
 #ifdef DEBUG
 #	include "ai/monsters/BaseMonster/base_monster.h"
+#   include "debug_renderer.h"
 #endif
 
 #ifdef DEBUG
@@ -167,9 +168,9 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			bDebug	= !bDebug;
 		return;
 
-	case SDL_SCANCODE_BACK:
+	case SDL_SCANCODE_BACKSPACE:
 		if (GameID() == GAME_SINGLE)
-			HW.Caps.SceneMode			= (HW.Caps.SceneMode+1)%3;
+			DRender->NextSceneMode();
 		return;
 
 	case SDL_SCANCODE_F4: {
@@ -253,7 +254,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	/**/
 
 
-	case SDL_SCANCODE_DIVIDE:
+	case SDL_SCANCODE_KP_DIVIDE:
 		if( OnServer() ){
 //			float NewTimeFactor				= pSettings->r_float("alife","time_factor");
 			
@@ -266,7 +267,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			};
 		}
 		break;	
-	case SDL_SCANCODE_MULTIPLY:
+	case SDL_SCANCODE_KP_MULTIPLY:
 		if( OnServer() ){
 			float NewTimeFactor				= 1000.f;
 			if (GameID() == GAME_SINGLE)

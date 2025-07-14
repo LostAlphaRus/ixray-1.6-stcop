@@ -84,7 +84,7 @@ public:
 #ifdef DEBUG
 public:
 	IC		void			set_dbg_info			(LPCSTR object_name, LPCSTR animation_type_name);
-			BLEND_ID		*blend_id				(CKinematicsAnimated *skeleton_animated, BLEND_ID &result) const;
+			BLEND_ID		*blend_id				(IKinematicsAnimated *skeleton_animated, BLEND_ID &result) const;
 #endif // DEBUG
 
 public:

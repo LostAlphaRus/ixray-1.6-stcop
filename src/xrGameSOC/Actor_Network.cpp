@@ -44,6 +44,7 @@
 #include "clsid_game.h"
 
 #ifdef DEBUG
+#	include "../xrEngine/xr_collide_form.h"
 #	include "debug_renderer.h"
 #endif
 
@@ -1399,7 +1400,7 @@ void dbg_draw_piramid (Fvector pos, Fvector dir, float size, float xdir, u32 col
 
 void	CActor::OnRender_Network()
 {
-	RCache.OnFrameEnd();
+	DRender->OnFrameEnd();
 
 	//-----------------------------------------------------------------------------------------------------
 	float size = 0.2f;

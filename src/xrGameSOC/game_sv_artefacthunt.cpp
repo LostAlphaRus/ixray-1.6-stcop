@@ -781,7 +781,7 @@ bool game_sv_ArtefactHunt::ArtefactSpawn_Allowed()
 		else {
 			VERIFY2	(
 				((ps->team-1) < 2) && ((ps->team-1) >= 0),
-				make_string(
+				make_string<const char*>(
 					"cnt=%d,ps->team = %d,it=%d",cnt,ps->team,it
 				)
 			);
@@ -1233,13 +1233,13 @@ void game_sv_ArtefactHunt::OnRender				()
 			V1.y +=1.0f;
 
 			T.identity();
-			Level().debug_renderer().draw_line(Fidentity, V0, V1, D3DCOLOR_XRGB(0, 255, 255));
+			Level().debug_renderer().draw_line(Fidentity, V0, V1, color_xrgb(0, 255, 255));
 
 			float r = .4f;
 			T.identity();
 			T.scale(r, r/2, r);
 			T.translate_add(rp.P);
-			Level().debug_renderer().draw_ellipse(T, D3DCOLOR_XRGB(0, 255, 255));
+			Level().debug_renderer().draw_ellipse(T, color_xrgb(0, 255, 255));
 		}
 	};
 	inherited::OnRender();

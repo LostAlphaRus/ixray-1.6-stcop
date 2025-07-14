@@ -53,10 +53,6 @@
 
 string_path		g_last_saved_game;
 
-extern void show_smart_cast_stats		();
-extern void clear_smart_cast_stats		();
-extern void release_smart_cast_stats	();
-
 extern BOOL g_actor_shadow;
 
 extern	u64		g_qwStartGameTime;
@@ -1060,44 +1056,6 @@ public:
 	}
 };
 
-class CCC_ScriptDbg : public IConsole_Command {
-public:
-	CCC_ScriptDbg(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR args) {
-		
-		if(strstr(cName,"script_debug_break")==cName ){
-		
-		CScriptDebugger* d = ai().script_engine().debugger();
-		if(d){
-			if(d->Active())
-				d->initiateDebugBreak();
-			else
-				Msg("Script debugger not active.");
-		}else
-			Msg("Script debugger not present.");
-		}
-		else if(strstr(cName,"script_debug_stop")==cName ){
-			ai().script_engine().stopDebugger();
-		}
-		else if(strstr(cName,"script_debug_restart")==cName ){
-			ai().script_engine().restartDebugger();
-		};
-	};
-	
-
-	virtual void	Info	(TInfo& I)		
-	{
-		if(strstr(cName,"script_debug_break")==cName )
-			strcpy_s(I,"initiate script debugger [DebugBreak] command"); 
-
-		else if(strstr(cName,"script_debug_stop")==cName )
-			strcpy_s(I,"stop script debugger activity"); 
-
-		else if(strstr(cName,"script_debug_restart")==cName )
-			strcpy_s(I,"restarts script debugger or start if no script debugger presents"); 
-	}
-};
-
 class CCC_DumpInfos : public IConsole_Command {
 public:
 	CCC_DumpInfos	(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -1290,21 +1248,6 @@ struct CCC_LuaHelp : public IConsole_Command {
 	}
 };
 
-struct CCC_ShowSmartCastStats : public IConsole_Command {
-	CCC_ShowSmartCastStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-
-	virtual void Execute(LPCSTR args) {
-		show_smart_cast_stats();
-	}
-};
-
-struct CCC_ClearSmartCastStats : public IConsole_Command {
-	CCC_ClearSmartCastStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-
-	virtual void Execute(LPCSTR args) {
-		clear_smart_cast_stats();
-	}
-};
 #endif
 
 #ifndef MASTER_GOLD
@@ -1760,9 +1703,6 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer,			"ai_dbg_inactive_time",	&g_AI_inactive_time, 0, 1000000);
 	
 	CMD1(CCC_DebugNode,			"ai_dbg_node");
-	CMD1(CCC_ScriptDbg,			"script_debug_break");
-	CMD1(CCC_ScriptDbg,			"script_debug_stop");
-	CMD1(CCC_ScriptDbg,			"script_debug_restart");
 	
 	CMD1(CCC_ShowMonsterInfo,	"ai_monster_info");
 	CMD1(CCC_TuneAttachableItem,"dbg_adjust_attachable_item");
@@ -1806,8 +1746,6 @@ void CCC_RegisterCommands()
 
 #ifdef DEBUG
 	CMD1(CCC_LuaHelp,				"lua_help");
-	CMD1(CCC_ShowSmartCastStats,	"show_smart_cast_stats");
-	CMD1(CCC_ClearSmartCastStats,	"clear_smart_cast_stats");
 
 	CMD3(CCC_Mask,		"dbg_draw_actor_alive",		&dbg_net_Draw_Flags,	(1<<0));
 	CMD3(CCC_Mask,		"dbg_draw_actor_dead",		&dbg_net_Draw_Flags,	(1<<1));

@@ -47,7 +47,7 @@ void animation_movement_controller::OnFrame( )
 void animation_movement_controller::RootBoneCallback( CBoneInstance* B )
 {
 	VERIFY( B );
-	VERIFY( B->Callback_Param );
+	VERIFY( B->callback_param() );
 	
 	animation_movement_controller* O=( animation_movement_controller* )( B->callback_param() );
 
