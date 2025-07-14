@@ -98,7 +98,7 @@ CGamePersistent::~CGamePersistent(void)
 void CGamePersistent::PreStart(LPCSTR op)
 {
 	pApp->SetLoadingScreen(new UILoadingScreen());
-	__super::PreStart(op);
+	inherited::PreStart(op);
 }
 
 void CGamePersistent::RegisterModel(IRenderVisual* V)
@@ -132,7 +132,7 @@ void CGamePersistent::OnAppStart()
 	// load game materials
 	GMLib.Load					();
 	init_game_globals			();
-	__super::OnAppStart			();
+	inherited::OnAppStart			();
 	m_pUI_core					= new ui_core();
 	m_pMainMenu					= new CMainMenu();
 }
@@ -146,7 +146,7 @@ void CGamePersistent::OnAppEnd	()
 	xr_delete					(m_pMainMenu);
 	xr_delete					(m_pUI_core);
 
-	__super::OnAppEnd			();
+	inherited::OnAppEnd			();
 
 	clean_game_globals			();
 
@@ -156,7 +156,7 @@ void CGamePersistent::OnAppEnd	()
 
 void CGamePersistent::Start		(LPCSTR op)
 {
-	__super::Start				(op);
+	inherited::Start				(op);
 	m_intro_event.bind			(this,&CGamePersistent::start_game_intro);
 }
 
@@ -167,7 +167,7 @@ void CGamePersistent::Disconnect()
 	// destroy ambient particles
 	Particles::Details::Destroy(ambient_particles);
 
-	__super::Disconnect			();
+	inherited::Disconnect			();
 	// stop all played emitters
 	::Sound->stop_emitters		();
 	m_game_params.m_e_game_type	= eGameIDNoGame;
@@ -177,7 +177,7 @@ void CGamePersistent::Disconnect()
 
 void CGamePersistent::OnGameStart()
 {
-	__super::OnGameStart		();
+	inherited::OnGameStart		();
 	
 	UpdateGameType				();
 
@@ -185,7 +185,7 @@ void CGamePersistent::OnGameStart()
 
 void CGamePersistent::UpdateGameType			()
 {
-	__super::UpdateGameType		();
+	inherited::UpdateGameType		();
 	//  [7/11/2005]
 	if (!xr_strcmp(m_game_params.m_game_type, "single")) m_game_params.m_e_game_type = eGameIDSingle;
 	else
@@ -208,7 +208,7 @@ void CGamePersistent::UpdateGameType			()
 
 void CGamePersistent::OnGameEnd	()
 {
-	__super::OnGameEnd					();
+	inherited::OnGameEnd					();
 
 	xr_delete							(g_stalker_animation_data_storage);
 	xr_delete							(g_stalker_velocity_holder);
@@ -519,8 +519,7 @@ void CGamePersistent::OnFrame	()
 	}
 	if (!g_pGameLevel->bReady)	return;
 
-	if(!Device.Paused())
-		Engine.Sheduler.Update		();
+	inherited::OnFrame();
 
 	// update weathers ambient
 	if(!Device.Paused())
