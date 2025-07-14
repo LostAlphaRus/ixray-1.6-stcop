@@ -6,9 +6,9 @@
 //	Description : vision client
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#include "StdAfx.h"
 #include "vision_client.h"
-#include "entity.h"
+#include "Entity.h"
 #include "visual_memory_manager.h"
 
 IC	const CEntity &vision_client::object		() const
@@ -76,6 +76,7 @@ float vision_client::shedule_Scale				()
 
 void vision_client::shedule_Update				(u32 dt)
 {
+	PROF_EVENT("vision_client::shedule_Update");
 	inherited::shedule_Update	(dt);
 
 	if (!object().g_Alive())
@@ -101,7 +102,7 @@ void vision_client::shedule_Update				(u32 dt)
 shared_str vision_client::shedule_Name			() const
 {
 	string256					temp;
-	sprintf_s						(temp,"vision_client[%s]",*object().cName());
+	xr_sprintf					(temp,"vision_client[%s]",*object().cName());
 	return						(temp);
 }
 

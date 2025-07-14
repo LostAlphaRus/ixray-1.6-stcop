@@ -2,7 +2,11 @@
 #include "UIMainIngameWnd.h"
 #include "UIMotionIcon.h"
 #include "../../xrUI/UIXmlInit.h"
+#include "../Level.h"
+
 const LPCSTR MOTION_ICON_XML = "motion_icon.xml";
+CUIMotionIcon* g_pMotionIcon = nullptr;
+
 
 CUIMotionIcon::CUIMotionIcon()
 {
@@ -127,6 +131,15 @@ void CUIMotionIcon::Update()
 			m_luminosity_progress.SetProgressPos(cur_pos);
 		}
 	}
+}
+
+void SetActorVisibility		(u16 who_id, float value)
+{
+	if(!IsGameTypeSingle())
+		return;
+
+	if(g_pMotionIcon)
+		g_pMotionIcon->SetActorVisibility(who_id, value);
 }
 
 void CUIMotionIcon::SetActorVisibility		(u16 who_id, float value)

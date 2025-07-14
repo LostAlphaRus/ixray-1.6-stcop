@@ -255,6 +255,7 @@ public:
 
 	bool					hear_dangerous_sound;
 	bool					hear_interesting_sound;
+	virtual bool			is_base_monster_with_enemy	() { return EnemyMan.get_enemy() != NULL; }
 
 	// -----------------------------------------------------------------------------
 	CMonsterEventManager	EventMan;
@@ -454,7 +455,8 @@ public:
 	virtual void			debug_on_key		(int key) {}
 #endif
 //////////////////////////////////////////////////////////////////////////
-
+public:
+	virtual bool					can_be_seen		() const { return true; }
 };
 
 #include "base_monster_inline.h"
