@@ -1732,13 +1732,13 @@ void	CActor::Check_for_AutoPickUp()
 	Fbox APU_Box;
 	APU_Box.set(Fvector().sub(bc, m_AutoPickUp_AABB), Fvector().add(bc, m_AutoPickUp_AABB));
 
-	xr_vector<ISpatial*>	ISpatialResult;
+	xr_vector<ISpatialShared>	ISpatialResult;
 	g_SpatialSpace->q_box   (ISpatialResult,0,STYPE_COLLIDEABLE,bc,m_AutoPickUp_AABB);
 
 	// Determine visibility for dynamic part of scene
 	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
 	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
+		ISpatialShared		spatial	= ISpatialResult[o_it];
 		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial->dcast_CObject        ());
 		if (0 == pIItem)							continue;
 		if (!pIItem->CanTake())						continue;
@@ -1893,9 +1893,7 @@ void CActor::OnPlayHeadShotParticle(NET_Packet P)
 	Fmatrix pos; 	
 	CParticlesPlayer::MakeXFORM(this,element,HitDir,HitPos,pos);
 	// установить particles
-	CParticlesObject* ps = NULL;
-	
-	ps = CParticlesObject::Create(m_sHeadShotParticle.c_str(),TRUE);
+	xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(m_sHeadShotParticle.c_str(), TRUE);
 
 	ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
 	GamePersistent().ps_needtoplay.push_back(ps);

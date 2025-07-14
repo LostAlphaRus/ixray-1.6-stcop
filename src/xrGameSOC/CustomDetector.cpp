@@ -18,7 +18,7 @@ ZONE_INFO::ZONE_INFO	()
 ZONE_INFO::~ZONE_INFO	()
 {
 	if(pParticle)
-		CParticlesObject::Destroy(pParticle);
+		Particles::Details::Destroy(pParticle);
 }
 
 CCustomDetector::CCustomDetector(void) 
@@ -56,7 +56,7 @@ void CCustomDetector::Load(LPCSTR section)
 	u32 i = 1;
 	string256 temp;
 
-	//çàãðóçèòü çâóêè äëÿ îáîçíà÷åíèÿ ðàçëè÷íûõ òèïîâ çîí
+	//Ð·Ð°Ð³Ñ€ÑƒÐ·Ð¸Ñ‚ÑŒ Ð·Ð²ÑƒÐºÐ¸ Ð´Ð»Ñ Ð¾Ð±Ð¾Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Ñ€Ð°Ð·Ð»Ð¸Ñ‡Ð½Ñ‹Ñ… Ñ‚Ð¸Ð¿Ð¾Ð² Ð·Ð¾Ð½
 	do 
 	{
 		sprintf_s			(temp, "zone_class_%d", i);
@@ -135,7 +135,7 @@ void CCustomDetector::UpdateCL()
 		ZONE_INFO& zone_info = it->second;
 
 		
-		//òàêîé òèï çîí íå îáíàðóæèâàåòñÿ
+		//Ñ‚Ð°ÐºÐ¾Ð¹ Ñ‚Ð¸Ð¿ Ð·Ð¾Ð½ Ð½Ðµ Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶Ð¸Ð²Ð°ÐµÑ‚ÑÑ
 		if(m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end() ||
 			!pZone->VisibleByDetector())
 			continue;
@@ -148,7 +148,7 @@ void CCustomDetector::UpdateCL()
 		float fRelPow = 1.f - dist_to_zone / m_fRadius;
 		clamp(fRelPow, 0.f, 1.f);
 
-		//îïðåäåëèòü òåêóùóþ ÷àñòîòó ñðàáàòûâàíèÿ ñèãíàëà
+		//Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑƒÑ‰ÑƒÑŽ Ñ‡Ð°ÑÑ‚Ð¾Ñ‚Ñƒ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ñ ÑÐ¸Ð³Ð½Ð°Ð»Ð°
 		zone_info.cur_freq = zone_type.min_freq + 
 			(zone_type.max_freq - zone_type.min_freq) * fRelPow* fRelPow* fRelPow* fRelPow;
 
@@ -310,15 +310,15 @@ void CCustomDetector::UpdateNightVisionMode()
 			zero_vector.set(0.f,0.f,0.f);
 
 			if(!zone_info.pParticle)
-				zone_info.pParticle = CParticlesObject::Create(*m_nightvision_particle,FALSE);
+				zone_info.pParticle = Particles::Details::Create(*m_nightvision_particle,FALSE).get();
 			
 			zone_info.pParticle->UpdateParent(pZone->XFORM(),zero_vector);
 			if(!zone_info.pParticle->IsPlaying())
-				zone_info.pParticle->Play();
+				zone_info.pParticle->Play(false);
 		}else{
 			if(zone_info.pParticle){
 				zone_info.pParticle->Stop			();
-				CParticlesObject::Destroy(zone_info.pParticle);
+				Particles::Details::Destroy(zone_info.pParticle);
 			}
 		}
 	}

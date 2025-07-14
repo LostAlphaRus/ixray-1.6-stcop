@@ -5,7 +5,8 @@
 #include "stdafx.h"
 
 #include "Weapon.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "HUDManager.h"
 #include "WeaponHUD.h"
 #include "entity_alive.h"

@@ -21,7 +21,6 @@
 #include "memory_space_impl.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
-#include "profiler.h"
 #include "agent_enemy_manager.h"
 
 CMemoryManager::CMemoryManager		(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor)

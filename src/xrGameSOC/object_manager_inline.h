@@ -47,8 +47,8 @@ void CAbstractObjectManager::update					()
 {
 	float					result = flt_max;
 	m_selected				= 0;
-	OBJECTS::const_iterator	I = m_objects.begin();
-	OBJECTS::const_iterator	E = m_objects.end();
+	typename OBJECTS::const_iterator	I = m_objects.begin();
+	typename OBJECTS::const_iterator	E = m_objects.end();
 	for ( ; I != E; ++I) {
 		float				value = do_evaluate(*I);
 		if (result > value) {

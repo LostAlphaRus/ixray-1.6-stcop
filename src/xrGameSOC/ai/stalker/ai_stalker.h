@@ -438,7 +438,7 @@ public:
 	IC		u32							max_queue_interval_close		() const;
 
 public:
-	typedef fastdelegate::FastDelegate<void (const CCoverPoint *, const CCoverPoint *)>	on_best_cover_changed_delegate;
+	typedef xr_delegate<void (const CCoverPoint *, const CCoverPoint *)>	on_best_cover_changed_delegate;
 
 private:
 	typedef xr_vector<on_best_cover_changed_delegate>	cover_delegates;

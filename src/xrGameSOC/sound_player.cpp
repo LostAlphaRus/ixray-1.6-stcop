@@ -13,7 +13,6 @@
 #include "ai_space.h"
 #include "../xrEngine/xr_object.h"
 #include "../include/xrRender/kinematics.h"
-#include "profiler.h"
 #include "sound_collection_storage.h"
 #include "../xrCore/object_broker.h"
 

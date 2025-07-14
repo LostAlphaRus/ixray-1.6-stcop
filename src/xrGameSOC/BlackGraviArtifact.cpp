@@ -8,7 +8,8 @@
 #include "BlackGraviArtifact.h"
 #include "PhysicsShell.h"
 #include "entity_alive.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "phmovementcontrol.h"
 #include "xrmessages.h"
 #include "physicsshellholder.h"
@@ -49,8 +50,7 @@ BOOL CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 
 
 
-	CParticlesObject* pStaticPG;
-	pStaticPG = CParticlesObject::Create("anomaly\\galantine",FALSE);
+	CParticlesObject* pStaticPG = Particles::Details::Create("anomaly\\galantine",FALSE).get();
 	Fmatrix pos;
 	//pos.rotateY(1.57);
 	//pos.mulA(pos);
@@ -60,7 +60,7 @@ BOOL CBlackGraviArtefact::net_Spawn(CSE_Abstract* DC)
 	Fvector vel;
 	vel.set(0,0,0);
 	pStaticPG->UpdateParent(pos, vel); 
-	pStaticPG->Play();
+	pStaticPG->Play(false);
 
 
 
@@ -100,8 +100,7 @@ void CBlackGraviArtefact::UpdateCLChild()
 
 			GraviStrike();
 
-			CParticlesObject* pStaticPG;
-			pStaticPG = CParticlesObject::Create(*m_sParticleName,TRUE);
+			CParticlesObject* pStaticPG = Particles::Details::Create(*m_sParticleName,TRUE).get();
 			Fmatrix pos; 
 			pos.set(XFORM()); 
 			Fvector vel; 
@@ -109,7 +108,7 @@ void CBlackGraviArtefact::UpdateCLChild()
 			//vel.div((Level().timeServer()-ps_Element(0).dwTime)/1000.f);
 			vel.set(0,0,0);
 			pStaticPG->UpdateParent(pos, vel); 
-			pStaticPG->Play();
+			pStaticPG->Play(false);
 
 			m_bStrike = false;
 		}

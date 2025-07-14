@@ -136,7 +136,7 @@ void CBulletManager::PlayExplodePS		(const Fmatrix& xf)
 	if (!m_ExplodeParticles.empty()){
 		const shared_str& ps_name		= m_ExplodeParticles[Random.randI(0, m_ExplodeParticles.size())];
 
-		CParticlesObject* ps = CParticlesObject::Create(*ps_name,TRUE);
+		xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(*ps_name,TRUE);
 		ps->UpdateParent(xf,zero_vel);
 		GamePersistent().ps_needtoplay.push_back(ps);
 	}
@@ -403,7 +403,7 @@ void CBulletManager::CommitRenderSet		()	// @ the end of frame
 {
 	m_BulletsRendered	= m_Bullets			;
 	if (g_mt_config.test(mtBullets))		{
-		Device.seqParallel.push_back		(fastdelegate::FastDelegate0<>(this,&CBulletManager::UpdateWorkload));
+		Device.seqParallel.push_back		(xr_delegate<void()>(this, &CBulletManager::UpdateWorkload));
 	} else {
 		UpdateWorkload						();
 	}

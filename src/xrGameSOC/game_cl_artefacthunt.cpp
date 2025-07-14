@@ -101,9 +101,9 @@ void game_cl_ArtefactHunt::Init ()
 							transform.identity();
 							transform.setXYZ(R.A);
 							transform.translate_over(R.P);
-							CParticlesObject* pStaticParticles			= CParticlesObject::Create(pSettings->r_string("artefacthunt_gamedata", ParticleStr),FALSE,false);
+							CParticlesObject* pStaticParticles			= Particles::Details::Create(pSettings->r_string("artefacthunt_gamedata", ParticleStr),FALSE,false).get();
 							pStaticParticles->UpdateParent	(transform,zero_vel);
-							pStaticParticles->Play			();
+							pStaticParticles->Play			(false);
 							Level().m_StaticParticles.push_back		(pStaticParticles);
 						};
 					}break;
@@ -583,11 +583,11 @@ char*	game_cl_ArtefactHunt::getTeamSection(int Team)
 	{
 	case 1:
 		{
-			return "artefacthunt_team1";
+			return (char*)"artefacthunt_team1";
 		}break;
 	case 2:
 		{
-			return "artefacthunt_team2";
+			return (char*)"artefacthunt_team2";
 		}break;
 	default:
 		NODEFAULT;

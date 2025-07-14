@@ -13,7 +13,8 @@
 #include "../include/xrRender/Kinematics.h"
 #include "script_entity_action.h"
 #include "weapon.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "script_game_object.h"
 #include "../xrScripts/script_engine.h"
 #include "movement_manager_space.h"
@@ -227,7 +228,7 @@ void CScriptEntity::vfFinishAction(CScriptEntityAction *tpEntityAction)
 		xr_delete					(m_current_sound);
 	}
 	if (!tpEntityAction->m_tParticleAction.m_bAutoRemove)
-		CParticlesObject::Destroy(tpEntityAction->m_tParticleAction.m_tpParticleSystem);
+		Particles::Details::Destroy(tpEntityAction->m_tParticleAction.m_tpParticleSystem);
 }
 
 void CScriptEntity::ProcessScripts()

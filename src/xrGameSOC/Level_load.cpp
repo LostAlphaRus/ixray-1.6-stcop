@@ -2,10 +2,11 @@
 #include "HUDmanager.h"
 #include "LevelGameDef.h"
 #include "ai_space.h"
-#include "ParticlesObject.h"
-#include "script_process.h"
-#include "script_engine.h"
-#include "script_engine_space.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
+#include "../xrScripts/script_process.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/script_engine_space.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "../xrEngine/x_ray.h"
@@ -40,7 +41,6 @@ BOOL CLevel::Load_GameSpecific_After()
 	string_path		fn_game;
 	if (FS.exist(fn_game, "$level$", "level.ps_static")) {
 		IReader *F = FS.r_open	(fn_game);
-		CParticlesObject* pStaticParticles;
 		u32				chunk = 0;
 		string256		ref_name;
 		Fmatrix			transform;
@@ -48,9 +48,9 @@ BOOL CLevel::Load_GameSpecific_After()
 		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk,OBJ)) {
 			OBJ->r_stringZ				(ref_name,sizeof(ref_name));
 			OBJ->r						(&transform,sizeof(Fmatrix));transform.c.y+=0.01f;
-			pStaticParticles			= CParticlesObject::Create(ref_name,FALSE,false);
+			auto pStaticParticles			= Particles::Details::Create(ref_name,FALSE,false);
 			pStaticParticles->UpdateParent	(transform,zero_vel);
-			pStaticParticles->Play			();
+			pStaticParticles->Play			(false);
 			m_StaticParticles.push_back		(pStaticParticles);
 		}
 		FS.r_close		(F);

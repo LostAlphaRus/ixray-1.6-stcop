@@ -1,6 +1,6 @@
 #pragma once
 #include "monster_event_manager_defs.h"
-#include "../../fastdelegate.h"
+#include "../../../xrCore/fastdelegate.h"
 
 using typeEvent = xr_delegate<void(IEventData*)>;
 

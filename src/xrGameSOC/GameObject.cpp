@@ -252,13 +252,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	if (O && xr_strlen(O->m_ini_string)) {
 #pragma warning(push)
 #pragma warning(disable:4238)
-		m_ini_file					= new CInifile(
-			&IReader				(
-				(void*)(*(O->m_ini_string)),
-				O->m_ini_string.size()
-			),
-			FS.get_path("$game_config$")->m_Path
-		);
+		IReader MemReader((void*)O->m_ini_string.c_str(), O->m_ini_string.size());
+		m_ini_file = new CInifile(&MemReader, FS.get_path("$game_config$")->m_Path);
 #pragma warning(pop)
 	}
 
@@ -282,7 +277,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		if (O->m_flags.is(CSE_ALifeObject::flVisibleForAI))
 			SpatialComponent->spatial.type				|= STYPE_VISIBLEFORAI;
 		else
-			SpatialComponent->spatial.type				= (spatial.type | STYPE_VISIBLEFORAI) ^ STYPE_VISIBLEFORAI;
+			SpatialComponent->spatial.type				= (SpatialComponent->spatial.type | STYPE_VISIBLEFORAI) ^ STYPE_VISIBLEFORAI;
 	}
 
 	reload						(*cNameSect());
@@ -747,7 +742,7 @@ void CGameObject::SetKinematicsCallback		(bool set)
 
 void VisualCallback	(IKinematics *tpKinematics)
 {
-	CGameObject						*game_object = static_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->Update_Callback_Param));
+	CGameObject						*game_object = static_cast<CGameObject*>(static_cast<CObject*>(tpKinematics->GetUpdateCallbackParam()));
 	VERIFY							(game_object);
 	
 	CGameObject::CALLBACK_VECTOR_IT	I = game_object->visual_callbacks().begin();

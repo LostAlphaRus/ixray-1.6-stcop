@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "weaponpistol.h"
 #include "WeaponHUD.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "actor.h"
 
 CWeaponPistol::CWeaponPistol(LPCSTR name) : CWeaponCustomPistol(name)

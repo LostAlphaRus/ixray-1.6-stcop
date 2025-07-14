@@ -260,7 +260,7 @@ NULL:*mtl_pair->CollideParticles[::Random.randI(0,mtl_pair->CollideParticles.siz
 		pos.c.set(vEnd);
 		if(ps_name && ShowMark){
 			//отыграть партиклы попадания в материал
-			CParticlesObject* ps = CParticlesObject::Create(ps_name,TRUE);
+			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(ps_name,TRUE);
 
 			ps->UpdateParent(pos,zero_vel);
 			GamePersistent().ps_needtoplay.push_back(ps);

@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "Physics.h"
 
 #ifdef DEBUG

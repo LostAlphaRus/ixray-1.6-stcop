@@ -48,7 +48,7 @@ class CPHWorld	: public pureFrame
 	dGeomID						m_motion_ray;
 	CPHCommander				*m_commander;
 public:
-	xr_vector<ISpatial*>		r_spatial;
+	xr_vector<ISpatialShared>	r_spatial;
 public:
 	u64							m_steps_num													;
 	double						m_frame_sum													;

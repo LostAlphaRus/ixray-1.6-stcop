@@ -16,7 +16,7 @@ class ISheduled;
 class IRenderable;
 class ICollidable;
 class CObject;
-class IRender_Visual;
+class IRenderVisual;
 class FHierrarhyVisual;
 class CBlend;
 class IKinematics;
@@ -34,6 +34,6 @@ typedef class_exporter<CObject>		CObjectScript;
 
 typedef class_exporter<CBlend>	CBlendScript;
 
-typedef class_exporter<IRender_Visual>	IRender_VisualScript;
+typedef class_exporter<IRenderVisual>	IRender_VisualScript;
 
 typedef class_exporter<IKinematicsAnimated>	CKinematicsAnimatedScript;

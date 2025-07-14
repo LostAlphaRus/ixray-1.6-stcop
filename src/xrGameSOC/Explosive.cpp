@@ -9,7 +9,8 @@
 #include "PhysicsShell.h"
 #include "entity.h"
 //#include "PSObject.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 
 //для вызова статических функций поражения осколками
 #include "Weapon.h"
@@ -30,7 +31,6 @@
 #include "phvalidevalues.h"
 #include "PHActivationShape.h"
 #include "game_base_space.h"
-#include "profiler.h"
 #define EFFECTOR_RADIUS 30.f
 const u16	TEST_RAYS_PER_OBJECT=5;
 const u16	BLASTED_OBJ_PROCESSED_PER_FRAME=3;
@@ -342,11 +342,10 @@ void CExplosive::Explode()
 	Fvector::generate_orthonormal_basis(explode_matrix.j, explode_matrix.i, explode_matrix.k);
 	explode_matrix.c.set(pos);
 
-	CParticlesObject* pStaticPG; 
-	pStaticPG = CParticlesObject::Create(*m_sExplodeParticles,!m_bDynamicParticles); 
+	CParticlesObject* pStaticPG = Particles::Details::Create(*m_sExplodeParticles,!m_bDynamicParticles).get(); 
 	if (m_bDynamicParticles) m_pExpParticle = pStaticPG;
 	pStaticPG->UpdateParent(explode_matrix,vel);
-	pStaticPG->Play();
+	pStaticPG->Play(false);
 
 	//включаем подсветку от взрыва
 	StartLight();
@@ -388,13 +387,13 @@ void CExplosive::Explode()
 	//взрывная волна
 	////////////////////////////////
 	//---------------------------------------------------------------------
-	xr_vector<ISpatial*>	ISpatialResult;
+	xr_vector<ISpatialShared>	ISpatialResult;
 	g_SpatialSpace->q_sphere(ISpatialResult,0,STYPE_COLLIDEABLE,pos,m_fBlastRadius);
 
 	m_blasted_objects.clear	();
 	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
 	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
+		ISpatialShared		spatial	= ISpatialResult[o_it];
 		//		feel_touch_new(spatial->dcast_CObject());
 
 		CPhysicsShellHolder	*pGameObject = smart_cast<CPhysicsShellHolder*>(spatial->dcast_CObject());
@@ -513,7 +512,7 @@ void CExplosive::OnAfterExplosion()
 {
 	if(m_pExpParticle){
 		m_pExpParticle->Stop();
-		CParticlesObject::Destroy(m_pExpParticle);
+		Particles::Details::Destroy(m_pExpParticle);
 		m_pExpParticle = NULL;
 	}
 	//ликвидировать сам объект 

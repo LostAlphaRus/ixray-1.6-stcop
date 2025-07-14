@@ -5,7 +5,8 @@
 
 #include "stdafx.h"
 #include "customrocket.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "PhysicsShell.h"
 #include "extendedgeom.h"
 #include "level.h"
@@ -567,7 +568,7 @@ void CCustomRocket::StartEngineParticles()
 {
 	VERIFY(m_pEngineParticles == NULL);
 	if(!m_sEngineParticles) return;
-	m_pEngineParticles = CParticlesObject::Create(*m_sEngineParticles,FALSE);
+	m_pEngineParticles = Particles::Details::Create(*m_sEngineParticles,FALSE).get();
 
 	UpdateParticles();
 	m_pEngineParticles->Play();
@@ -590,7 +591,7 @@ void CCustomRocket::StartFlyParticles()
 	VERIFY(m_pFlyParticles == NULL);
 
 	if(!m_sFlyParticles) return;
-	m_pFlyParticles = CParticlesObject::Create(*m_sFlyParticles,FALSE);
+	m_pFlyParticles = Particles::Details::Create(*m_sFlyParticles,FALSE).get();
 	
 	UpdateParticles();
 	m_pFlyParticles->Play();

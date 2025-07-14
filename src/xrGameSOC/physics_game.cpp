@@ -1,5 +1,6 @@
 #include "stdafx.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "level.h"
 #include "gamepersistent.h"
@@ -35,7 +36,7 @@ public:
 	}
 	virtual void 			run								()
 	{
-		CParticlesObject* ps = CParticlesObject::Create(ps_name,TRUE);
+		xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(ps_name,TRUE);
 
 		Fmatrix pos; 
 		Fvector zero_vel = {0.f,0.f,0.f};

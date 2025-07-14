@@ -69,7 +69,9 @@ ENGINE_API _action  actions[]		= {
 	{ "skin_menu",			kSKIN					,_mp},		
 	{ "team_menu",			kTEAM					,_mp},		
 	{ "active_jobs",		kACTIVE_JOBS			,_both},
-																
+	{ "map",				kMAP					,_both},
+	{ "contacts",			kCONTACTS				,_sp},
+
 	{ "vote_begin",			kVOTE_BEGIN				,_mp},		
 	{ "show_admin_menu",	kSHOW_ADMIN_MENU		,_mp},		
 	{ "vote",				kVOTE					,_mp},		

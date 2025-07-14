@@ -8,7 +8,8 @@
 
 #include "stdafx.h"
 #include "script_particle_action.h"
-#include "particlesobject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 
 CScriptParticleAction::~CScriptParticleAction	()
 {
@@ -19,7 +20,7 @@ void CScriptParticleAction::SetParticle			(LPCSTR caParticleToRun, bool bAutoRem
 {
 	m_caParticleToRun	= caParticleToRun;
 	m_tGoalType			= eGoalTypeParticleAttached;
-	m_tpParticleSystem	= CParticlesObject::Create(*m_caParticleToRun,BOOL(m_bAutoRemove = bAutoRemove));
+	m_tpParticleSystem	= Particles::Details::Create(*m_caParticleToRun,BOOL(m_bAutoRemove = bAutoRemove)).get();
 	m_bStartedToPlay	= false;
 	m_bCompleted		= false;
 }

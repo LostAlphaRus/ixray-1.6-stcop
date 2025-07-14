@@ -154,7 +154,7 @@ void IRender_VisualScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
-		class_<IRender_Visual>("IRender_Visual")
+		class_<IRenderVisual>("IRender_Visual")
 			.def(constructor<>())
 			.def("dcast_PKinematicsAnimated",&IRenderVisual::dcast_PKinematicsAnimated)
 	];
@@ -169,7 +169,7 @@ void CKinematicsAnimatedScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
-		class_<CKinematicsAnimated>("CKinematicsAnimated")
+		class_<IKinematicsAnimated>("CKinematicsAnimated")
 			.def("PlayCycle",		&CKinematicsAnimated_PlayCycle)
 	];
 }

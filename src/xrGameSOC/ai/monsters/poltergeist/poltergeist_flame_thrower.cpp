@@ -123,7 +123,7 @@ void CPolterFlame::select_state(SFlameElement *elem, EFlameState state)
 		break;
 	case eStop:		
 		// stop fire particles
-		if (elem->particles_object) CParticlesObject::Destroy(elem->particles_object);
+		if (elem->particles_object) Particles::Details::Destroy(elem->particles_object);
 		
 		// start finish particles
 		m_object->PlayParticles(m_particles_stop,elem->position,elem->target_dir,TRUE);
@@ -268,7 +268,7 @@ void CPolterFlame::on_destroy()
 	// Пройти по всем объектам и проверить на хит врага
 	for ( ;I != E; ++I) {
 		if ((*I)->sound._feedback()) (*I)->sound.stop();
-		if ((*I)->particles_object) CParticlesObject::Destroy((*I)->particles_object);
+		if ((*I)->particles_object) Particles::Details::Destroy((*I)->particles_object);
 
 		xr_delete((*I));
 	}
@@ -318,7 +318,7 @@ bool CPolterFlame::get_valid_flame_position(const CObject *target_object, Fvecto
 	}
 
 
-	float angle = ai().level_graph().vertex_cover_angle(Obj->ai_location().level_vertex_id(),PI_DIV_6,std::less<float>());
+	float angle = ai().level_graph().vertex_high_cover_angle(Obj->ai_location().level_vertex_id(),PI_DIV_6,std::less<float>());
 
 	dir.set(1.f,0.f,0.f);
 	dir.setHP(angle + PI, 0.f);

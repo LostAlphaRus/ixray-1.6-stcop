@@ -7,7 +7,7 @@
 typedef u32	CLClassBits;
 typedef u32	CLBits;
 
-using qResultVec = xr_vector<ISpatial*>;
+using qResultVec = xr_vector<ISpatialShared>;
 using qResultIt = qResultVec::iterator;
 
 class CPHObject;

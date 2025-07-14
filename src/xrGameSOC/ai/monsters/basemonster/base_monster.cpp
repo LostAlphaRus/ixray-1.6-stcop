@@ -16,7 +16,7 @@
 #include "../../../squad_hierarchy_holder.h"
 #include "../../../group_hierarchy_holder.h"
 #include "../../../phdestroyable.h"
-#include "../../../../xrEngine/skeletoncustom.h"
+#include "../../../../include/xrRender/kinematics.h"
 #include "../../../detail_path_manager.h"
 #include "../../../hudmanager.h"
 #include "../../../memory_manager.h"
@@ -41,7 +41,7 @@
 #include "../../../actor.h"
 #include "../../../ai_object_location.h"
 #include "../../../ai_space.h"
-#include "../../../script_engine.h"
+#include "../../../../xrScripts/script_engine.h"
 
 CBaseMonster::CBaseMonster()
 {
@@ -446,8 +446,8 @@ void CBaseMonster::set_action(EAction action)
 
 CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvector &position, const Fvector &dir, BOOL auto_remove, BOOL xformed)
 {
-	CParticlesObject* ps = CParticlesObject::Create(name.c_str(),auto_remove);
-	
+	CParticlesObject* ps = Particles::Details::Create(name.c_str(), auto_remove).get();
+
 	// вычислить позицию и направленность партикла
 	Fmatrix	matrix; 
 
@@ -457,7 +457,7 @@ CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvec
 	matrix.translate_over	(position);
 	
 	(xformed) ?				ps->SetXFORM (matrix) : ps->UpdateParent(matrix,zero_vel); 
-	ps->Play				();
+	ps->Play				(false);
 
 	return ps;
 }

@@ -238,7 +238,7 @@ void CBurer::UpdateGraviObject()
 
 	// ---------------------------------------------------------------------
 	// draw particle
-	CParticlesObject* ps = CParticlesObject::Create(particle_gravi_wave,TRUE);
+	CParticlesObject* ps = Particles::Details::Create(particle_gravi_wave,TRUE).get();
 
 	// вычислить позицию и направленность партикла
 	Fmatrix pos; 
@@ -249,7 +249,7 @@ void CBurer::UpdateGraviObject()
 	pos.translate_over(m_gravi_object.cur_pos);
 
 	ps->UpdateParent(pos, zero_vel);
-	ps->Play();
+	ps->Play(false);
 	
 	// hit objects
 	m_nearest.resize(0);
@@ -329,7 +329,7 @@ void	CBurer::Hit								(SHit* pHDS)
 		CParticlesPlayer::MakeXFORM(this,pHDS->bone(),pHDS->dir,pHDS->p_in_bone_space,pos);
 
 		// установить particles
-		CParticlesObject* ps = CParticlesObject::Create(particle_fire_shield,TRUE);
+		xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(particle_fire_shield,TRUE);
 		
 		ps->UpdateParent(pos,Fvector().set(0.f,0.f,0.f));
 		GamePersistent().ps_needtoplay.push_back(ps);

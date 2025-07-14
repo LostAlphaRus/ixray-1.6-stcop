@@ -5,7 +5,8 @@
 #include "PHDestroyable.h"
 #include "actor.h"
 #include "hudmanager.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "level.h"
@@ -390,7 +391,7 @@ void CCustomZone::net_Destroy()
 	m_pLight.destroy		();
 	m_pIdleLight.destroy	();
 
-	CParticlesObject::Destroy(m_pIdleParticles);
+	Particles::Details::Destroy(m_pIdleParticles);
 
 	if(m_effector)			m_effector->Stop		();
 	//---------------------------------------------
@@ -693,11 +694,11 @@ void CCustomZone::PlayIdleParticles()
 	{
 		if (!m_pIdleParticles)
 		{
-			m_pIdleParticles = CParticlesObject::Create(*m_sIdleParticles,FALSE);
+			m_pIdleParticles = Particles::Details::Create(*m_sIdleParticles, FALSE).get();
 			m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
 		}
 		m_pIdleParticles->UpdateParent(XFORM(),zero_vel);
-		m_pIdleParticles->Play();
+		m_pIdleParticles->Play(false);
 	}
 
 	StartIdleLight	();
@@ -757,10 +758,9 @@ void CCustomZone::PlayBlowoutParticles()
 {
 	if(!m_sBlowoutParticles) return;
 
-	CParticlesObject* pParticles;
-	pParticles	= CParticlesObject::Create(*m_sBlowoutParticles,TRUE);
+	CParticlesObject* pParticles = Particles::Details::Create(*m_sBlowoutParticles, TRUE).get();
 	pParticles->UpdateParent(XFORM(),zero_vel);
-	pParticles->Play();
+	pParticles->Play(false);
 }
 
 void CCustomZone::PlayHitParticles(CGameObject* pObject)
@@ -822,7 +822,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 	if (PP){
 		u16 play_bone = PP->GetRandomBone(); 
 		if (play_bone!=BI_NONE){
-			CParticlesObject* pParticles = CParticlesObject::Create(*particle_str,TRUE);
+			CParticlesObject* pParticles = Particles::Details::Create(*particle_str, TRUE).get();
 			Fmatrix xform;
 
 			Fvector dir;
@@ -837,7 +837,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
 			PP->MakeXFORM			(pObject,play_bone,dir,Fvector().set(0,0,0),xform);
 			pParticles->UpdateParent(xform, vel);
 			{
-				pParticles->Play		();
+				pParticles->Play		(false);
 				//. <-->
 				//. PP->StartParticles (particle_str, play_bone, dir, ID());
 			}
@@ -852,15 +852,14 @@ void CCustomZone::PlayBulletParticles(Fvector& pos)
 
 	if(!m_sEntranceParticlesSmall) return;
 	
-	CParticlesObject* pParticles;
-	pParticles = CParticlesObject::Create(*m_sEntranceParticlesSmall,TRUE);
+	CParticlesObject* pParticles = Particles::Details::Create(*m_sEntranceParticlesSmall,TRUE).get();
 	
 	Fmatrix M;
 	M = XFORM();
 	M.c.set(pos);
 
 	pParticles->UpdateParent(M,zero_vel);
-	pParticles->Play();
+	pParticles->Play(false);
 }
 
 void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
@@ -1235,10 +1234,9 @@ void CCustomZone::ThrowOutArtefact(CArtefact* pArtefact)
 
 	if(*m_sArtefactSpawnParticles)
 	{
-		CParticlesObject* pParticles;
-		pParticles = CParticlesObject::Create(*m_sArtefactSpawnParticles,TRUE);
+		CParticlesObject* pParticles = Particles::Details::Create(*m_sArtefactSpawnParticles,TRUE).get();
 		pParticles->UpdateParent(pArtefact->XFORM(),zero_vel);
-		pParticles->Play();
+		pParticles->Play(false);
 	}
 
 	m_ArtefactBornSound.play_at_pos(0, pArtefact->Position());
@@ -1359,10 +1357,9 @@ void CCustomZone::exit_Zone	(SZoneObjectInfo& io)
 void CCustomZone::PlayAccumParticles()
 {
 	if(m_sAccumParticles.size()){
-		CParticlesObject* pParticles;
-		pParticles	= CParticlesObject::Create(*m_sAccumParticles,TRUE);
+		CParticlesObject* pParticles = Particles::Details::Create(*m_sAccumParticles,TRUE).get();
 		pParticles->UpdateParent(XFORM(),zero_vel);
-		pParticles->Play();
+		pParticles->Play(false);
 	}
 
 	if(m_accum_sound._handle())
@@ -1372,10 +1369,9 @@ void CCustomZone::PlayAccumParticles()
 void CCustomZone::PlayAwakingParticles()
 {
 	if(m_sAwakingParticles.size()){
-		CParticlesObject* pParticles;
-		pParticles	= CParticlesObject::Create(*m_sAwakingParticles,TRUE);
+		CParticlesObject* pParticles = Particles::Details::Create(*m_sAwakingParticles,TRUE).get();
 		pParticles->UpdateParent(XFORM(),zero_vel);
-		pParticles->Play();
+		pParticles->Play(false);
 	}
 
 	if(m_awaking_sound._handle())

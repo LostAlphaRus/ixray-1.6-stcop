@@ -96,7 +96,7 @@ class	ik_anim_state;
 struct SCalculateData {
 
 	float	const		*m_angles			;
-	IKinematis			*m_K				;
+	IKinematics			*m_K				;
 	CIKLimb				&m_limb				;
 	Fmatrix	const		&m_obj				;
 

@@ -36,7 +36,6 @@
 #include "sound_user_data_visitor.h"
 #include "mt_config.h"
 #include "PHMovementControl.h"
-#include "profiler.h"
 #include "date_time.h"
 #include "characterphysicssupport.h"
 #include "ai/monsters/snork/snork.h"
@@ -311,7 +310,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 #else // DEBUG
 		{
 			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
-				Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+				Device.seqParallel.push_back(xr_delegate<void()>(this, &CCustomMonster::Exec_Visibility));
 			else
 				Exec_Visibility				();
 		}

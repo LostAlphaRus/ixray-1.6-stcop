@@ -61,7 +61,9 @@ enum EGameActions
 	kSKIN,
 	kTEAM,
 	kACTIVE_JOBS,
-						
+	kMAP,
+	kCONTACTS,
+
 	kVOTE_BEGIN,
 	kSHOW_ADMIN_MENU,
 	kVOTE,

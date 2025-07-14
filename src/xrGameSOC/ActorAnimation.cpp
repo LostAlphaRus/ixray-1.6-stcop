@@ -286,7 +286,7 @@ void CActor::g_SetSprintAnimation( u32 mstate_rl,MotionID &head,MotionID &torso,
 	else if (mstate_rl & mcRStrafe)	legs = sprint.legs_rs;	
 }
 
-CMotion*        FindMotionKeys(MotionID motion_ID,IRender_Visual* V)
+CMotion*        FindMotionKeys(MotionID motion_ID,IRenderVisual* V)
 {
 	IKinematicsAnimated* VA = smart_cast<IKinematicsAnimated*>(V);
 	return (VA && motion_ID.valid())?VA->LL_GetRootMotion(motion_ID):0;

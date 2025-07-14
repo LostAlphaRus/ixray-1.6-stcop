@@ -7,7 +7,8 @@
 #include "../xrEngine/fdemoplay.h"
 #include "../xrEngine/environment.h"
 #include "../xrEngine/igame_persistent.h"
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "Level.h"
 #include "xrServer.h"
 #include "net_queue.h"
@@ -214,8 +215,8 @@ CLevel::~CLevel()
 	}
 
 	// destroy PSs
-	for (POIt p_it=m_StaticParticles.begin(); m_StaticParticles.end()!=p_it; ++p_it)
-		CParticlesObject::Destroy(*p_it);
+	for (POIt p_it = m_StaticParticles.begin(); m_StaticParticles.end() != p_it; ++p_it)
+		Particles::Details::Destroy(*p_it);
 	m_StaticParticles.clear		();
 
 	// Unload sounds

@@ -7,7 +7,8 @@
 
 #include "ShootingObject.h"
 
-#include "ParticlesObject.h"
+#include "../xrParticles/stdafx.h"
+#include "../xrParticles/ParticlesObject.h"
 #include "WeaponAmmo.h"
 
 #include "actor.h"
@@ -193,17 +194,17 @@ void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR part
 		return;
 	}
 
-	pParticles = CParticlesObject::Create(particles_name,(BOOL)auto_remove_flag);
+	pParticles = Particles::Details::Create(particles_name,(BOOL)auto_remove_flag).get();
 	
 	UpdateParticles(pParticles, pos, vel);
-	pParticles->Play();
+	pParticles->Play(false);
 }
 void CShootingObject::StopParticles (CParticlesObject*&	pParticles)
 {
 	if(pParticles == NULL) return;
 
 	pParticles->Stop		();
-	CParticlesObject::Destroy(pParticles);
+	Particles::Details::Destroy(pParticles);
 }
 
 void CShootingObject::UpdateParticles (CParticlesObject*& pParticles, 
@@ -221,7 +222,7 @@ void CShootingObject::UpdateParticles (CParticlesObject*& pParticles,
 		&& !pParticles->PSI_alive())
 	{
 		pParticles->Stop		();
-		CParticlesObject::Destroy(pParticles);
+		Particles::Details::Destroy(pParticles);
 	}
 }
 
@@ -268,14 +269,14 @@ void CShootingObject::OnShellDrop	(const Fvector& play_pos,
 	if(!m_sShellParticles) return;
 	if( Device.vCameraPosition.distance_to_sqr(play_pos)>2*2 ) return;
 
-	CParticlesObject* pShellParticles	= CParticlesObject::Create(*m_sShellParticles,TRUE);
+	CParticlesObject* pShellParticles	= Particles::Details::Create(*m_sShellParticles,TRUE).get();
 
 	Fmatrix particles_pos; 
 	particles_pos.set		(get_ParticlesXFORM());
 	particles_pos.c.set		(play_pos);
 
 	pShellParticles->UpdateParent		(particles_pos, parent_vel); 
-	pShellParticles->Play				();
+	pShellParticles->Play				(false);
 }
 
 
@@ -301,9 +302,9 @@ void CShootingObject::StartFlameParticles	()
 	}
 
 	StopFlameParticles();
-	m_pFlameParticles = CParticlesObject::Create(*m_sFlameParticlesCurrent,FALSE);
+	m_pFlameParticles = Particles::Details::Create(*m_sFlameParticlesCurrent,FALSE).get();
 	UpdateFlameParticles();
-	m_pFlameParticles->Play();
+	m_pFlameParticles->Play(false);
 
 }
 void CShootingObject::StopFlameParticles	()
@@ -332,7 +333,7 @@ void CShootingObject::UpdateFlameParticles	()
 		!m_pFlameParticles->PSI_alive())
 	{
 		m_pFlameParticles->Stop();
-		CParticlesObject::Destroy(m_pFlameParticles);
+		Particles::Details::Destroy(m_pFlameParticles);
 	}
 }
 

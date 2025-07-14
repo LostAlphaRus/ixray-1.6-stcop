@@ -245,8 +245,8 @@ void CActor::cam_Update(float dt, float fFOV)
 		}
 		else
 		{
-			xr_vector<ISpatial*> ISpatialResult;
-			g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(Device.fViewportNear, Device.fViewportNear, Device.fViewportNear));
+			xr_vector<ISpatialShared> ISpatialResult;
+			g_SpatialSpace->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(Device.fViewportNear, Device.fViewportNear, Device.fViewportNear));
 			for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
 			{
 				CPHShell*		pCPHS= smart_cast<CPHShell*>(ISpatialResult[o_it]);

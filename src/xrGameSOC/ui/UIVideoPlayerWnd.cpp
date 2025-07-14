@@ -7,6 +7,8 @@
 #include "../hudmanager.h"
 #include <dinput.h>
 #include "../Include/xrRender/UIShader.h"
+#include "../Include/xrRender/DebugRender.h"
+#include "../Include/xrRender/UISequenceVideoItem.h"
 
 void CUIVideoPlayerWnd::SendMessage	(CUIWindow* pWnd, s16 msg, void* pData)
 {
@@ -71,7 +73,7 @@ void CUIVideoPlayerWnd::Draw()
 	if (!m_texture && m_surface->GetShader()->inited())
 	{
 		UIRender->SetShader(*m_surface->GetShader());
-		m_texture = RCache.get_ActiveTexture(0);
+		m_texture->CaptureTexture();
 		m_texture->video_Stop();
 	}
 }
