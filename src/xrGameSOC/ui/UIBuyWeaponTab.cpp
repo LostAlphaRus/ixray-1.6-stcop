@@ -36,13 +36,13 @@ void CUIBuyWeaponTab::Init(CUIXml* xml, char* path)
 
 	for (int i = 0; i < tabsCount; ++i)
 	{
-		CUITabButtonMP *newButton	= xr_new<CUITabButtonMP>();
+		CUITabButtonMP *newButton	= new CUITabButtonMP();
 		CUIXmlInit::Init3tButton	(*xml, "button", i, newButton);
 		AddItem						(newButton);
 	}
 
 	m_iStubIndex					= tabsCount;	
-	CUITabButtonMP *stubButton		= xr_new<CUITabButtonMP>();
+	CUITabButtonMP *stubButton		= new CUITabButtonMP();
 	AddItem							(stubButton);
 
 	SetNewActiveTab					(m_iStubIndex);

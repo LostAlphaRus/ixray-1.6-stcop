@@ -6,7 +6,7 @@
 #include "../../xrEngine/string_table.h"
 
 CUIMapInfo::CUIMapInfo(){
-	m_view = xr_new<CUIScrollView>();	
+	m_view = new CUIScrollView();	
 	AttachChild(m_view);
 }
 
@@ -29,7 +29,7 @@ void CUIMapInfo::Init(float x, float y, float width, float height){
 						else																\
 							text += *str_tbl.translate(z);									\
 						text += "%c[default]\\n";											\
-						st = xr_new<CUIStatic>();											\
+						st = new CUIStatic();											\
 						st->SetTextComplexMode(true);										\
 						st->SetFont(txt_font);												\
 						st->SetTextColor(header_color);										\
@@ -64,7 +64,7 @@ void CUIMapInfo::InitMap(const char* map_name){
 
 
 		//map name
-		st						= xr_new<CUIStatic>(); 
+		st						= new CUIStatic(); 
 		CUIXmlInit::InitStatic	(xml_doc,"map_name",0,st); 
 
 		st->SetTextST			(map_name);
@@ -113,7 +113,7 @@ void CUIMapInfo::InitMap(const char* map_name){
 
 			text += "%c[default]\\n";
 
-			st						= xr_new<CUIStatic>();
+			st						= new CUIStatic();
 			st->SetTextComplexMode	(true);
 			st->SetFont				(txt_font);
 			st->SetTextColor		(header_color);
@@ -130,7 +130,7 @@ void CUIMapInfo::InitMap(const char* map_name){
 	}
 	else
 	{
-		st = xr_new<CUIStatic>(); 
+		st = new CUIStatic(); 
 		CUIXmlInit::InitStatic(xml_doc,"map_name",0,st); 
 		st->SetTextST(map_name);
 		st->SetWidth(m_view->GetDesiredChildWidth());

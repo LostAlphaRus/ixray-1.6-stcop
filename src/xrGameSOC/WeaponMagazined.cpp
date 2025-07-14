@@ -25,7 +25,7 @@ void createWpnScopeXML()
 {
 	if (!pWpnScopeXml)
 	{
-		pWpnScopeXml = xr_new<CUIXml>();
+		pWpnScopeXml = new CUIXml();
 		pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
 	}
 }
@@ -894,7 +894,7 @@ void CWeaponMagazined::InitAddons()
 				if (m_UIScopeNew)
 					xr_delete(m_UIScopeNew);
 
-				m_UIScopeNew = xr_new<CUIWindow>();
+				m_UIScopeNew = new CUIWindow();
 				createWpnScopeXML();
 				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScopeNew);
 			}
@@ -902,7 +902,7 @@ void CWeaponMagazined::InitAddons()
 			{
 				if (m_UIScope)
 					xr_delete(m_UIScope);
-				m_UIScope = xr_new<CUIStaticItem>();
+				m_UIScope = new CUIStaticItem();
 
 				m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0, alNone);
 			}
@@ -915,10 +915,10 @@ void CWeaponMagazined::InitAddons()
 
 			if (EngineExternal()[EEngineExternalGame::UseNewScopeSystem])
 			{
-				m_UIScopeNew = xr_new<CUIWindow>();
+				m_UIScopeNew = new CUIWindow();
 				if (!pWpnScopeXml)
 				{
-					pWpnScopeXml = xr_new<CUIXml>();
+					pWpnScopeXml = new CUIXml();
 					pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
 				}
 				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScopeNew);
@@ -927,7 +927,7 @@ void CWeaponMagazined::InitAddons()
 			{
 				if (m_UIScope)
 					xr_delete(m_UIScope);
-				m_UIScope = xr_new<CUIStaticItem>();
+				m_UIScope = new CUIStaticItem();
 				m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0, alNone);
 			}
 
@@ -1091,7 +1091,7 @@ void CWeaponMagazined::OnZoomIn			()
 		CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>	(pActor->Cameras().GetCamEffector(eCEZoom));
 		if (!S)	
 		{
-			S = (CEffectorZoomInertion*)pActor->Cameras().AddCamEffector(xr_new<CEffectorZoomInertion> ());
+			S = (CEffectorZoomInertion*)pActor->Cameras().AddCamEffector(new CEffectorZoomInertion ());
 			S->Init(this);
 		};
 		S->SetRndSeed(pActor->GetZoomRndSeed());

@@ -614,7 +614,7 @@ public:
 		string_path		fn;
 		FS.update_path	(fn, "$game_saves$", fn_);
 
-		g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord> (fn));
+		g_pGameLevel->Cameras().AddCamEffector(new CDemoRecord (fn));
 	}
 };
 class CCC_DemoPlay : public IConsole_Command
@@ -645,7 +645,7 @@ public:
 			  }
 			  strconcat			(sizeof(fn),fn, args, ".xrdemo");
 			  FS.update_path	(fn, "$game_saves$", fn);
-			  g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoPlay> (fn, 1.0f, loops));
+			  g_pGameLevel->Cameras().AddCamEffector(new CDemoPlay (fn, 1.0f, loops));
 		  }
 	  }
 };
@@ -1347,7 +1347,7 @@ public:
 	CCC_UI_Reload(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
 		if (g_pGamePersistent && g_pGameLevel && Level().game)
-			HUD().OnScreenResolutionChanged(); // перезагружаем UI через эту команду
+			HUD().OnScreenResolutionChanged(); // РїРµСЂРµР·Р°РіСЂСѓР¶Р°РµРј UI С‡РµСЂРµР· СЌС‚Сѓ РєРѕРјР°РЅРґСѓ
 	}
 };
 
@@ -1700,7 +1700,7 @@ void CCC_RegisterCommands()
 
 	CMD1(CCC_FlushLog,			"flush"					);		// flush log
 	CMD1(CCC_ClearLog,			"clear_log"				);
-	CMD1(CCC_UI_Reload,			"ui_reload"				); // перезагрузка UI
+	CMD1(CCC_UI_Reload,			"ui_reload"				); // РїРµСЂРµР·Р°РіСЂСѓР·РєР° UI
 
 #ifndef MASTER_GOLD
 	CMD1(CCC_ALifeTimeFactor,		"al_time_factor"		);		// set time factor

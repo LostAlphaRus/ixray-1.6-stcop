@@ -42,7 +42,7 @@ CUIStatic* CUIGameLog::AddLogMessage(LPCSTR msg)
 // warning: initialization of item is incomplete!
 // initialization of item's height, text static and icon still necessary
 CUIPdaMsgListItem* CUIGameLog::AddPdaMessage(LPCSTR msg, float delay){
-	CUIPdaMsgListItem* pItem				= xr_new<CUIPdaMsgListItem>();
+	CUIPdaMsgListItem* pItem				= new CUIPdaMsgListItem();
 	pItem->Init								(0,0, GetDesiredChildWidth(), 10);	//fake height
 	pItem->UIMsgText.SetTextST				(msg);
 	pItem->SetClrAnimDelay					(delay);
@@ -57,7 +57,7 @@ u32 CUIGameLog::GetTextColor(){
 }
 
 CUIPdaKillMessage* CUIGameLog::AddLogMessage(KillMessageStruct& msg){
-	CUIPdaKillMessage* pItem = pItem = xr_new<CUIPdaKillMessage>();	
+	CUIPdaKillMessage* pItem = pItem = new CUIPdaKillMessage();	
 	pItem->SetFont(GetFont());
 	pItem->SetWidth(GetDesiredChildWidth());
 	pItem->SetHeight(kill_msg_height);
@@ -75,7 +75,7 @@ void CUIGameLog::AddChatMessage(LPCSTR msg, LPCSTR author){
     
 	CUIStatic* pItem = NULL;
 
-	pItem = xr_new<CUIStatic>();
+	pItem = new CUIStatic();
 	pItem->SetTextComplexMode		(true);
 	pItem->SetText(fullLine);
     pItem->m_pLines->SetCutWordsMode(true);

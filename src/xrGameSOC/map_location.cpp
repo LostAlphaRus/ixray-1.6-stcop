@@ -66,7 +66,7 @@ CUIXml*	g_uiSpotXml=NULL;
 void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 {
 	if(!g_uiSpotXml){
-		g_uiSpotXml				= xr_new<CUIXml>();
+		g_uiSpotXml				= new CUIXml();
 		g_uiSpotXml->Load(CONFIG_PATH, UI_PATH, "map_spots.xml");
 	}
 
@@ -103,7 +103,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
 		if( xr_strlen(str) ){
 			if(!bReload)
-				m_level_spot = xr_new<CMapSpot>(this);
+				m_level_spot = new CMapSpot(this);
 			m_level_spot->Load(g_uiSpotXml,str);
 		}else{
 			VERIFY( !(bReload&&m_level_spot) );
@@ -112,7 +112,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		str = g_uiSpotXml->ReadAttrib(path, 0, "pointer", "");
 		if( xr_strlen(str) ){
 			if(!bReload)
-				m_level_spot_pointer = xr_new<CMapSpotPointer>(this);
+				m_level_spot_pointer = new CMapSpotPointer(this);
 			m_level_spot_pointer->Load(g_uiSpotXml,str);
 		}else{
 			VERIFY( !(bReload&&m_level_spot_pointer) );
@@ -125,7 +125,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
 		if( xr_strlen(str) ){
 			if(!bReload)
-				m_minimap_spot = xr_new<CMiniMapSpot>(this);
+				m_minimap_spot = new CMiniMapSpot(this);
 			m_minimap_spot->Load(g_uiSpotXml,str);
 		}else{
 			VERIFY( !(bReload&&m_minimap_spot) );
@@ -134,7 +134,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 		str = g_uiSpotXml->ReadAttrib(path, 0, "pointer", "");
 		if( xr_strlen(str) ){
 			if(!bReload)
-				m_minimap_spot_pointer = xr_new<CMapSpotPointer>(this);
+				m_minimap_spot_pointer = new CMapSpotPointer(this);
 			m_minimap_spot_pointer->Load(g_uiSpotXml,str);
 		}else{
 			VERIFY( !(bReload&&m_minimap_spot_pointer) );
@@ -529,13 +529,13 @@ CMapSpot* CMapLocation::GetSpotBorder(CMapSpot* sp)
 	if(!PointerEnabled()) return NULL;
 	if(sp==m_level_spot){
 		if(NULL==m_level_map_spot_border){
-			m_level_map_spot_border	= xr_new<CMapSpot>(this);
+			m_level_map_spot_border	= new CMapSpot(this);
 			m_level_map_spot_border->Load(g_uiSpotXml,"level_map_spot_border");
 		}return m_level_map_spot_border;
 	}else
 		if(sp==m_minimap_spot){
 		if(NULL==m_mini_map_spot_border){
-			m_mini_map_spot_border	= xr_new<CMapSpot>(this);
+			m_mini_map_spot_border	= new CMapSpot(this);
 			m_mini_map_spot_border->Load(g_uiSpotXml,"mini_map_spot_border");
 		}return m_mini_map_spot_border;
 	}

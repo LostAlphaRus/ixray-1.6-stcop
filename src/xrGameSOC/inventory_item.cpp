@@ -70,7 +70,7 @@ struct net_updateData{
 net_updateData* CInventoryItem::NetSync()			
 {
 	if(!m_net_updateData) 
-		m_net_updateData = xr_new<net_updateData>();
+		m_net_updateData = new net_updateData();
 	return m_net_updateData;
 }
 
@@ -149,7 +149,7 @@ void CInventoryItem::Load(LPCSTR section)
 
 
 
-	//время убирания объекта с уровня
+	//РІСЂРµРјСЏ СѓР±РёСЂР°РЅРёСЏ РѕР±СЉРµРєС‚Р° СЃ СѓСЂРѕРІРЅСЏ
 	m_dwItemRemoveTime			= READ_IF_EXISTS(pSettings, r_u32, section,"item_remove_time",			ITEM_REMOVE_TIME);
 
 	m_flags.set					(FAllowSprint,READ_IF_EXISTS	(pSettings, r_bool, section,"sprint_allowed",			TRUE));
@@ -291,9 +291,9 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 	}
 }
 
-//процесс отсоединения вещи заключается в спауне новой вещи 
-//в инвентаре и установке соответствующих флагов в родительском
-//объекте, поэтому функция должна быть переопределена
+//РїСЂРѕС†РµСЃСЃ РѕС‚СЃРѕРµРґРёРЅРµРЅРёСЏ РІРµС‰Рё Р·Р°РєР»СЋС‡Р°РµС‚СЃСЏ РІ СЃРїР°СѓРЅРµ РЅРѕРІРѕР№ РІРµС‰Рё 
+//РІ РёРЅРІРµРЅС‚Р°СЂРµ Рё СѓСЃС‚Р°РЅРѕРІРєРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС… С„Р»Р°РіРѕРІ РІ СЂРѕРґРёС‚РµР»СЊСЃРєРѕРј
+//РѕР±СЉРµРєС‚Рµ, РїРѕСЌС‚РѕРјСѓ С„СѓРЅРєС†РёСЏ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅР°
 bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item) 
 {
 	if (OnClient()) return true;
@@ -368,7 +368,7 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 
 void CInventoryItem::net_Destroy		()
 {
-	//инвентарь которому мы принадлежали
+	//РёРЅРІРµРЅС‚Р°СЂСЊ РєРѕС‚РѕСЂРѕРјСѓ РјС‹ РїСЂРёРЅР°РґР»РµР¶Р°Р»Рё
 //.	m_pCurrentInventory = NULL;
 }
 
@@ -691,7 +691,7 @@ void CInventoryItem::CalculateInterpolationParams()
 		for (u32 k=0; k<3; k++)
 		{
 			P0[k] = c*(c*(c*p->SCoeff[k][0]+p->SCoeff[k][1])+p->SCoeff[k][2])+p->SCoeff[k][3];
-			P1[k] = (c*c*p->SCoeff[k][0]*3+c*p->SCoeff[k][1]*2+p->SCoeff[k][2])/3; // сокрость из формулы в 3 раза превышает скорость при расчете коэффициентов !!!!
+			P1[k] = (c*c*p->SCoeff[k][0]*3+c*p->SCoeff[k][1]*2+p->SCoeff[k][2])/3; // СЃРѕРєСЂРѕСЃС‚СЊ РёР· С„РѕСЂРјСѓР»С‹ РІ 3 СЂР°Р·Р° РїСЂРµРІС‹С€Р°РµС‚ СЃРєРѕСЂРѕСЃС‚СЊ РїСЂРё СЂР°СЃС‡РµС‚Рµ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ !!!!
 		};
 		P0.set(p->IStartPos);
 		P1.add(p->IStartPos);

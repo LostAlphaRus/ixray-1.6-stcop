@@ -367,7 +367,7 @@ void CActor::LoadShootingEffector (LPCSTR section)
 {
 
 	if(!m_pShootingEffector) 
-		m_pShootingEffector = xr_new<SShootingEffector>();
+		m_pShootingEffector = new SShootingEffector();
 
 
 	m_pShootingEffector->ppi.duality.h		= pSettings->r_float(section,"duality_h");
@@ -392,7 +392,7 @@ void CActor::LoadShootingEffector (LPCSTR section)
 void CActor::LoadSleepEffector	(LPCSTR section)
 {
 	if(!m_pSleepEffector) 
-		m_pSleepEffector = xr_new<SSleepEffector>();
+		m_pSleepEffector = new SSleepEffector();
 
 	m_pSleepEffector->ppi.duality.h			= pSettings->r_float(section,"duality_h");
 	m_pSleepEffector->ppi.duality.v			= pSettings->r_float(section,"duality_v");

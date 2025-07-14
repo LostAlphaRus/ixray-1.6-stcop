@@ -38,7 +38,7 @@ CEntity::~CEntity()
 CEntityConditionSimple *CEntity::create_entity_condition(CEntityConditionSimple* ec)
 {
 	if(!ec)
-		m_entity_condition		= xr_new<CEntityConditionSimple>();
+		m_entity_condition		= new CEntityConditionSimple();
 	else
 		m_entity_condition		= smart_cast<CEntityCondition*>(ec);
 	
@@ -84,7 +84,7 @@ void CEntity::Die(CObject* who)
 		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
 }
 
-//обновление состояния
+//РѕР±РЅРѕРІР»РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ
 float CEntity::CalcCondition(float hit)
 {
 
@@ -148,7 +148,7 @@ void CEntity::Load		(LPCSTR section)
 #pragma todo("Jim to Dima: no specific figures or comments needed")	
 	m_fMorale			= 66.f;
 
-	//время убирания тела с уровня
+	//РІСЂРµРјСЏ СѓР±РёСЂР°РЅРёСЏ С‚РµР»Р° СЃ СѓСЂРѕРІРЅСЏ
 	m_dwBodyRemoveTime	= READ_IF_EXISTS(pSettings,r_u32,section,"body_remove_time",BODY_REMOVE_TIME);
 	//////////////////////////////////////
 }

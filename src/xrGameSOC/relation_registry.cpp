@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////
-// relation_registry.cpp:	реестр для хранения данных об отношении персонажа к 
-//							другим персонажам
+// relation_registry.cpp:	СЂРµРµСЃС‚СЂ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РґР°РЅРЅС‹С… РѕР± РѕС‚РЅРѕС€РµРЅРёРё РїРµСЂСЃРѕРЅР°Р¶Р° Рє 
+//							РґСЂСѓРіРёРј РїРµСЂСЃРѕРЅР°Р¶Р°Рј
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -81,7 +81,7 @@ CRelationRegistryWrapper& RELATION_REGISTRY::relation_registry()
 	if(!m_relation_registry){
 		VERIFY(IsGameTypeSingle());
 
-		m_relation_registry = xr_new<CRelationRegistryWrapper>();
+		m_relation_registry = new CRelationRegistryWrapper();
 		load_attack_goodwill();
 	}
 
@@ -92,7 +92,7 @@ CRelationRegistryWrapper& RELATION_REGISTRY::relation_registry()
 RELATION_REGISTRY::FIGHT_VECTOR& RELATION_REGISTRY::fight_registry()
 {
 	if(!m_fight_registry)
-		m_fight_registry = xr_new<FIGHT_VECTOR>();
+		m_fight_registry = new FIGHT_VECTOR();
 
 	return *m_fight_registry;
 }
@@ -107,7 +107,7 @@ void RELATION_REGISTRY::clear_relation_registry()
 const shared_str& RELATION_REGISTRY::GetSpotName(ALife::ERelationType& type)
 {
 	if(!m_spot_names)
-		m_spot_names = xr_new<RELATION_MAP_SPOTS>();
+		m_spot_names = new RELATION_MAP_SPOTS();
 	return m_spot_names->GetSpotName(type);
 }
 
@@ -138,7 +138,7 @@ CHARACTER_GOODWILL	 RELATION_REGISTRY::GetGoodwill			(u16 from, u16 to) const
 			return relation.Goodwill();
 		}
 	}
-	//если отношение еще не задано, то возвращаем нейтральное
+	//РµСЃР»Рё РѕС‚РЅРѕС€РµРЅРёРµ РµС‰Рµ РЅРµ Р·Р°РґР°РЅРѕ, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµРј РЅРµР№С‚СЂР°Р»СЊРЅРѕРµ
 	return NEUTRAL_GOODWILL;
 }
 
@@ -173,7 +173,7 @@ CHARACTER_GOODWILL	 RELATION_REGISTRY::GetCommunityGoodwill (CHARACTER_COMMUNITY
 			return relation.Goodwill();
 		}
 	}
-	//если отношение еще не задано, то возвращаем нейтральное
+	//РµСЃР»Рё РѕС‚РЅРѕС€РµРЅРёРµ РµС‰Рµ РЅРµ Р·Р°РґР°РЅРѕ, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµРј РЅРµР№С‚СЂР°Р»СЊРЅРѕРµ
 	return NEUTRAL_GOODWILL;
 }
 

@@ -36,7 +36,7 @@ bool task_prio_pred(const SGameTaskKey& k1, const SGameTaskKey& k2)
 
 CGameTaskManager::CGameTaskManager()
 {
-	m_gametasks					= xr_new<CGameTaskWrapper>();
+	m_gametasks					= new CGameTaskWrapper();
 	m_flags.zero				();
 	m_flags.set					(eChanged, TRUE);
 	if(g_active_task_id.size())	SetActiveTask(g_active_task_id, g_active_task_objective_id);
@@ -70,7 +70,7 @@ CGameTask* CGameTaskManager::HasGameTask(const TASK_ID& id)
 CGameTask* CGameTaskManager::GiveGameTaskToActor(const TASK_ID& id, u32 timeToComplete, bool bCheckExisting)
 {
 	if(bCheckExisting && HasGameTask(id)) return NULL;
-	CGameTask* t					= xr_new<CGameTask>(id);
+	CGameTask* t					= new CGameTask(id);
 
 	return GiveGameTaskToActor		(t, timeToComplete, bCheckExisting);
 }
@@ -117,7 +117,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	}
 
 
-	//установить флажок необходимости прочтения тасков в PDA
+	//СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С„Р»Р°Р¶РѕРє РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РїСЂРѕС‡С‚РµРЅРёСЏ С‚Р°СЃРєРѕРІ РІ PDA
 	if(HUD().GetUI()){
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 		if(pGameSP) 

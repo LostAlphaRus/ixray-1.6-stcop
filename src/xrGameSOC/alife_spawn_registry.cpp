@@ -160,7 +160,7 @@ void CALifeSpawnRegistry::load				(IReader &file_stream, xrGUID *save_guid)
 	R_ASSERT2					(m_chunk,"Spawn version mismatch - REBUILD SPAWN!");
 
 	VERIFY						(!m_game_graph);
-	m_game_graph				= xr_new<CGameGraph>(*m_chunk);
+	m_game_graph				= new CGameGraph(*m_chunk);
 	ai().game_graph				(m_game_graph);
 #endif // PRIQUEL
 

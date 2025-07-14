@@ -36,7 +36,7 @@ struct CLoader {
 		{
 			CHelper1<T>::load_data<
 				object_type_traits::is_base_and_derived_or_same_from_template<
-					IPureLîadableObject,
+					IPureLĞ¾adableObject,
 					T
 				>::value
 			>(data,stream,p);
@@ -45,7 +45,7 @@ struct CLoader {
 		template <>
 		IC	static void load_data<true>(T &data, M &stream, const P &p)
 		{
-			CLoader<M,P>::load_data	(*(data = xr_new<std::remove_pointer<T>::type>()),stream,p);
+			CLoader<M,P>::load_data	(*(data = new std::remove_pointer<T>::type()),stream,p);
 		}
 	};
 

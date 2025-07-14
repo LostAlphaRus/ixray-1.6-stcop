@@ -43,9 +43,9 @@
 CUIGameDM::CUIGameDM()
 {
 	m_game			= NULL; 
-	m_pFragLists					= xr_new<CUIWindow>();
-	m_pPlayerLists					= xr_new<CUIWindow>();
-	m_pStatisticWnds					= xr_new<CUIWindow>();
+	m_pFragLists					= new CUIWindow();
+	m_pPlayerLists					= new CUIWindow();
+	m_pStatisticWnds					= new CUIWindow();
 
 	m_time_caption = "timelimit";
 	GameCaptions()->addCustomMessage(m_time_caption, DI2PX(0.0f), DI2PY(-0.8f), SZ(0.03f), HUD().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, TIME_MSG_COLOR, "");
@@ -69,21 +69,21 @@ CUIGameDM::CUIGameDM()
 
 	CUIXml							uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH, "ui_game_dm.xml");
-	m_pMoneyIndicator				= xr_new<CUIMoneyIndicator>();
+	m_pMoneyIndicator				= new CUIMoneyIndicator();
 	m_pMoneyIndicator->InitFromXML	(uiXml);
-	m_pRankIndicator				= xr_new<CUIRankIndicator>();
+	m_pRankIndicator				= new CUIRankIndicator();
 	m_pRankIndicator->InitFromXml	(uiXml);
-	m_pFragLimitIndicator			= xr_new<CUIStatic>();
+	m_pFragLimitIndicator			= new CUIStatic();
 	CUIXmlInit::InitStatic			(uiXml,"fraglimit",0,m_pFragLimitIndicator);
 
-//.	m_voteStatusWnd					= xr_new<UIVoteStatusWnd>();
+//.	m_voteStatusWnd					= new UIVoteStatusWnd();
 //.	m_voteStatusWnd->InitFromXML	(uiXml);
 //.	m_voteStatusWnd->Show			(false);
 	m_voteStatusWnd					= NULL;
 
-	m_pInventoryMenu	= xr_new<CUIInventoryWnd>	();
-	m_pPdaMenu			= xr_new<CUIPdaWnd>			();
-	m_pMapDesc			= NULL;//xr_new<CUIMapDesc>		();
+	m_pInventoryMenu	= new CUIInventoryWnd	();
+	m_pPdaMenu			= new CUIPdaWnd			();
+	m_pMapDesc			= NULL;//new CUIMapDesc		();
 
 }
 //--------------------------------------------------------------------
@@ -98,7 +98,7 @@ void CUIGameDM::SetClGame (game_cl_GameState* g)
 		HUD().GetUI()->StartStopMenu(m_pMapDesc, true);
 	}
 	delete_data(m_pMapDesc);
-	m_pMapDesc			= xr_new<CUIMapDesc>		();
+	m_pMapDesc			= new CUIMapDesc		();
 }
 
 void	CUIGameDM::Init				()
@@ -106,9 +106,9 @@ void	CUIGameDM::Init				()
 	CUIXml xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "stats.xml");
 
-	CUIFrags* pFragList		= xr_new<CUIFrags>();
-	CUIFrags* pPlayerList	= xr_new<CUIFrags>();
-	CUIDMStatisticWnd* pStatisticWnd = xr_new<CUIDMStatisticWnd>();
+	CUIFrags* pFragList		= new CUIFrags();
+	CUIFrags* pPlayerList	= new CUIFrags();
+	CUIDMStatisticWnd* pStatisticWnd = new CUIDMStatisticWnd();
 	pFragList->SetAutoDelete(true);
 	pPlayerList->SetAutoDelete(true);
 	pStatisticWnd->SetAutoDelete(true);
@@ -256,7 +256,7 @@ void CUIGameDM::SetVoteMessage					(LPCSTR str)
 		{
 			CUIXml							uiXml;
 			uiXml.Load(CONFIG_PATH, UI_PATH, "ui_game_dm.xml");
-			m_voteStatusWnd					= xr_new<UIVoteStatusWnd>();
+			m_voteStatusWnd					= new UIVoteStatusWnd();
 			m_voteStatusWnd->InitFromXML	(uiXml);
 		}
 		m_voteStatusWnd->Show				(true);

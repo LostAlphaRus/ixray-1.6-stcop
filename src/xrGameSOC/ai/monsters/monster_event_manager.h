@@ -2,7 +2,7 @@
 #include "monster_event_manager_defs.h"
 #include "../../fastdelegate.h"
 
-typedef fastdelegate::FastDelegate1<IEventData*> typeEvent;
+using typeEvent = xr_delegate<void(IEventData*)>;
 
 class CMonsterEventManager {
 	

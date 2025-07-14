@@ -122,7 +122,7 @@ CAlienEffector::CAlienEffector(ECamEffectorType type, CAI_Bloodsucker *obj) :
 
 BOOL CAlienEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
 {
-	// Инициализация
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 	Fmatrix	Mdef;
 	Mdef.identity		();
 	Mdef.j.set			(n);
@@ -172,7 +172,7 @@ BOOL CAlienEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, fl
 	fFov = m_current_fov;
 	//////////////////////////////////////////////////////////////////////////
 
-	// Установить углы смещения
+	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ СѓРіР»С‹ СЃРјРµС‰РµРЅРёСЏ
 	Fmatrix		R;
 	R.setHPB	(dangle_current.x,dangle_current.y,dangle_current.z);
 
@@ -229,10 +229,10 @@ void CBloodsuckerAlien::activate()
 	if (m_crosshair_show)		psHUD_Flags.set(HUD_CROSSHAIR_RT,FALSE);
 
 	// Start effector
-	m_effector_pp				= xr_new<CAlienEffectorPP>	(m_object->pp_vampire_effector, EFFECTOR_ID_GEN(EEffectorPPType));
+	m_effector_pp				= new CAlienEffectorPP	(m_object->pp_vampire_effector, EFFECTOR_ID_GEN(EEffectorPPType));
 	Actor()->Cameras().AddPPEffector	(m_effector_pp);
 	
-	m_effector					= xr_new<CAlienEffector>	(EFFECTOR_ID_GEN(ECamEffectorType),m_object);
+	m_effector					= new CAlienEffector	(EFFECTOR_ID_GEN(ECamEffectorType),m_object);
 	Actor()->Cameras().AddCamEffector	(m_effector);
 
 	// make invisible

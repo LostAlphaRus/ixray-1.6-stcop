@@ -30,14 +30,14 @@ CLevelDebug::CObjectInfo &CLevelDebug::object_info(CObject *obj, LPCSTR class_na
 		if (class_it != obj_it->second.end()) {
 			return (*(class_it->second));
 		} else {
-			CObjectInfo *new_info = xr_new<CObjectInfo>();
+			CObjectInfo *new_info = new CObjectInfo();
 			obj_it->second.insert(std::make_pair(class_name, new_info));
 			return (*(new_info));
 		}
 	} else {
 		CLASS_INFO_MAP	temp_map;
 
-		CObjectInfo *new_info = xr_new<CObjectInfo>();
+		CObjectInfo *new_info = new CObjectInfo();
 		temp_map.insert			(std::make_pair(class_name, new_info));
 		m_objects_info.insert	(std::make_pair(obj, temp_map));
 
@@ -53,7 +53,7 @@ CLevelDebug::CTextInfo &CLevelDebug::text(void *class_ptr, LPCSTR class_name)
 	if (it != m_text_info.end()) {
 		return (*it->second);
 	} else {
-		CTextInfo *new_info = xr_new<CTextInfo>();
+		CTextInfo *new_info = new CTextInfo();
 		m_text_info.insert(std::make_pair(key, new_info));
 		return (*(new_info));
 	}
@@ -67,7 +67,7 @@ CLevelDebug::CLevelInfo &CLevelDebug::level_info(void *class_ptr, LPCSTR class_n
 	if (it != m_level_info.end()) {
 		return (*it->second);
 	} else {
-		CLevelInfo *new_info = xr_new<CLevelInfo>();
+		CLevelInfo *new_info = new CLevelInfo();
 		m_level_info.insert(std::make_pair(key, new_info));
 		return (*(new_info));
 	}
@@ -100,7 +100,7 @@ void CLevelDebug::draw_object_info()
 	// handle all of the objects
 	for (OBJECT_INFO_MAP_IT it = m_objects_info.begin(); it != m_objects_info.end(); ++it) {
 
-		// åñëè îáúåêò íåâàëèäíûé - óäàëèòü èíôîðìàöèþ
+		// ÐµÑÐ»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð½ÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ - ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ
 		if (!it->first || it->first->getDestroy()) {
 			for (CLASS_INFO_MAP_IT it_class = it->second.begin(); it_class != it->second.end(); ++it_class){
 				xr_delete(it_class->second);
@@ -267,7 +267,7 @@ void CLevelDebug::on_destroy_object(CObject *obj)
 {
 	// handle all of the objects
 	for (OBJECT_INFO_MAP_IT it = m_objects_info.begin(); it != m_objects_info.end(); ++it) {
-		// åñëè îáúåêò íåâàëèäíûé - óäàëèòü èíôîðìàöèþ
+		// ÐµÑÐ»Ð¸ Ð¾Ð±ÑŠÐµÐºÑ‚ Ð½ÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ - ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ
 		if (it->first == obj) {
 			for (CLASS_INFO_MAP_IT it_class = it->second.begin(); it_class != it->second.end(); ++it_class){
 				xr_delete(it_class->second);

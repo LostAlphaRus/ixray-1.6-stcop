@@ -17,7 +17,7 @@ CUIStatsPlayerList::CUIStatsPlayerList()
 	m_bSpectator		= false;
 	m_bStatus_mode		= false;
 
-	m_header			= xr_new<CUIStatic>();
+	m_header			= new CUIStatic();
 	m_header_team		= NULL;
 	m_header_text		= NULL;
 	m_i.c				= 0xff000000;	
@@ -130,7 +130,7 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 	{
 		for (u32 i = 0; i<m_field_info.size(); i++)
 		{
-			CUIStatic* st = xr_new<CUIStatic>();
+			CUIStatic* st = new CUIStatic();
 			st->SetAutoDelete(true);
 			//#pragma todo("Satan->Satan: remove stub for height")
 			st->Init(indent,10,m_field_info[i].width, m_header->GetHeight());
@@ -157,7 +157,7 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 	}
 	else
 	{
-		CUIStatic* st = xr_new<CUIStatic>();
+		CUIStatic* st = new CUIStatic();
 		st->SetAutoDelete(true);
 		st->Init(10,0,this->GetDesiredChildWidth(),m_h.h);		
 		if (m_h.f)
@@ -172,12 +172,12 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 
 void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path){
 	string256 _path;
-	m_header_team = xr_new<CUIWindow>();
+	m_header_team = new CUIWindow();
 	m_header_team->SetAutoDelete(true);
 	CUIXmlInit::InitWindow(xml_doc, strconcat(sizeof(_path),_path, path, ":team_header"), 0, m_header_team);
 	m_header_team->SetWidth(this->GetDesiredChildWidth());
 
-	CUIStatic* logo = xr_new<CUIStatic>();
+	CUIStatic* logo = new CUIStatic();
 	logo->SetAutoDelete(true);
 	CUIXmlInit::InitStatic(xml_doc, strconcat(sizeof(_path),_path, path, ":team_header:logo"), 0, logo);
 	m_header_team->AttachChild(logo);
@@ -193,7 +193,7 @@ void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path){
 	CUIXmlInit::InitFont(xml_doc, strconcat(sizeof(_path),_path, path, ":team_header:text_format"), 0, t.c, t.f);
 	t.h = m_header_team->GetHeight();
 
-	m_header_text = xr_new<CUIStatic>();
+	m_header_text = new CUIStatic();
 	m_header_text->SetAutoDelete(true);
 	CUIXmlInit::InitStatic(xml_doc, strconcat(sizeof(_path),_path, path, ":team_header:header"), 0, m_header_text);
 	m_header_text->SetWidth(GetDesiredChildWidth());
@@ -284,7 +284,7 @@ void CUIStatsPlayerList::Update()
 	{		
 		for (int i = 0; i<n; i++)
 		{
-            CUIStatsPlayerInfo* pi = xr_new<CUIStatsPlayerInfo>(&m_field_info, m_i.f, m_i.c);
+            CUIStatsPlayerInfo* pi = new CUIStatsPlayerInfo(&m_field_info, m_i.f, m_i.c);
 			pi->Init(0,0,this->GetDesiredChildWidth(),m_i.h);
 			CUIScrollView::AddWindow(pi, true);
 			m_flags.set			(eNeedRecalc,TRUE);

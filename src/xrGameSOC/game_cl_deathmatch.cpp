@@ -154,7 +154,7 @@ IBuyWnd* game_cl_Deathmatch::InitBuyMenu			(const shared_str& BasePriceSection, 
 
 	cl_TeamStruct *pTeamSect		= &TeamList[ModifyTeam(Team)];
 	
-	IBuyWnd* pMenu					= xr_new<BUY_WND_TYPE>();
+	IBuyWnd* pMenu					= new BUY_WND_TYPE();
 	pMenu->Init						(pTeamSect->caSection, BasePriceSection);
 	pMenu->SetSkin					(0);
 	return							pMenu;
@@ -169,7 +169,7 @@ CUISkinSelectorWnd* game_cl_Deathmatch::InitSkinMenu			(s16 Team)
 
 	cl_TeamStruct *pTeamSect		= &TeamList[ModifyTeam(Team)];	
 
-	CUISkinSelectorWnd* pMenu		= xr_new<CUISkinSelectorWnd>	((char*)pTeamSect->caSection.c_str(), Team);
+	CUISkinSelectorWnd* pMenu		= new CUISkinSelectorWnd	((char*)pTeamSect->caSection.c_str(), Team);
 	return							pMenu;
 };
 
@@ -830,7 +830,7 @@ void game_cl_Deathmatch::OnVoteStart(NET_Packet& P)
 		m_game_ui->SetVoteMessage(VoteStr);
 		m_game_ui->SetVoteTimeResultMsg("");
 		if (!m_pVoteRespondWindow)
-            m_pVoteRespondWindow = xr_new<CUIVote>();
+            m_pVoteRespondWindow = new CUIVote();
 		m_pVoteRespondWindow->SetVoting(VoteStr);
 	};
 };
@@ -929,13 +929,13 @@ IC bool	DM_Compare_Players(game_PlayerState* p1, game_PlayerState* p2)
 void game_cl_Deathmatch::PlayParticleEffect(LPCSTR EffName, Fvector& pos)
 {
 	if (!EffName) return;
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fmatrix M; 
 	M.translate(pos);
 
 //	CParticlesPlayer::MakeXFORM(pObj,0,Fvector().set(0.f,1.f,0.f),Fvector().set(0.f,0.f,0.f),pos);
 
-	// установить particles
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ particles
 	CParticlesObject* ps = NULL;
 
 	ps = CParticlesObject::Create(EffName,TRUE);

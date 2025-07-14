@@ -169,36 +169,36 @@ void CStalkerCombatPlanner::finalize			()
 
 void CStalkerCombatPlanner::add_evaluators		()
 {
-	add_evaluator			(eWorldPropertyPureEnemy		,xr_new<CStalkerPropertyEvaluatorEnemies>			(m_object,"is_there_enemies",0));
-	add_evaluator			(eWorldPropertyEnemy			,xr_new<CStalkerPropertyEvaluatorEnemies>			(m_object,"is_there_enemies_delayed",POST_COMBAT_WAIT_INTERVAL,&m_last_wounded));
-	add_evaluator			(eWorldPropertySeeEnemy			,xr_new<CStalkerPropertyEvaluatorSeeEnemy>			(m_object,"see enemy"));
-	add_evaluator			(eWorldPropertyEnemySeeMe		,xr_new<CStalkerPropertyEvaluatorEnemySeeMe>		(m_object,"enemy see me"));
-	add_evaluator			(eWorldPropertyItemToKill		,xr_new<CStalkerPropertyEvaluatorItemToKill>		(m_object,"item to kill"));
-	add_evaluator			(eWorldPropertyItemCanKill		,xr_new<CStalkerPropertyEvaluatorItemCanKill>		(m_object,"item can kill"));
-	add_evaluator			(eWorldPropertyFoundItemToKill	,xr_new<CStalkerPropertyEvaluatorFoundItemToKill>	(m_object,"found item to kill"));
-	add_evaluator			(eWorldPropertyFoundAmmo		,xr_new<CStalkerPropertyEvaluatorFoundAmmo>			(m_object,"found ammo"));
-	add_evaluator			(eWorldPropertyReadyToKill		,xr_new<CStalkerPropertyEvaluatorReadyToKill>		(m_object,"ready to kill"));
-	add_evaluator			(eWorldPropertyReadyToDetour	,xr_new<CStalkerPropertyEvaluatorReadyToDetour>		(m_object,"ready to detour"));
-	add_evaluator			(eWorldPropertyPanic			,xr_new<CStalkerPropertyEvaluatorPanic>				(m_object,"panic"));
-	add_evaluator			(eWorldPropertyDangerGrenade	,xr_new<CStalkerPropertyEvaluatorGrenadeToExplode>	(m_object,"is there grenade to explode"));
-	add_evaluator			(eWorldPropertyEnemyWounded		,xr_new<CStalkerPropertyEvaluatorEnemyWounded>		(m_object,"is enemy wounded"));
-	add_evaluator			(eWorldPropertyPlayerOnThePath	,xr_new<CStalkerPropertyEvaluatorPlayerOnThePath>	(m_object,"player on the path"));
-	add_evaluator			(eWorldPropertyEnemyCriticallyWounded	,xr_new<CStalkerPropertyEvaluatorEnemyCriticallyWounded>	(m_object,"enemy_critically_wounded"));
+	add_evaluator			(eWorldPropertyPureEnemy		,new CStalkerPropertyEvaluatorEnemies			(m_object,"is_there_enemies",0));
+	add_evaluator			(eWorldPropertyEnemy			,new CStalkerPropertyEvaluatorEnemies			(m_object,"is_there_enemies_delayed",POST_COMBAT_WAIT_INTERVAL,&m_last_wounded));
+	add_evaluator			(eWorldPropertySeeEnemy			,new CStalkerPropertyEvaluatorSeeEnemy			(m_object,"see enemy"));
+	add_evaluator			(eWorldPropertyEnemySeeMe		,new CStalkerPropertyEvaluatorEnemySeeMe		(m_object,"enemy see me"));
+	add_evaluator			(eWorldPropertyItemToKill		,new CStalkerPropertyEvaluatorItemToKill		(m_object,"item to kill"));
+	add_evaluator			(eWorldPropertyItemCanKill		,new CStalkerPropertyEvaluatorItemCanKill		(m_object,"item can kill"));
+	add_evaluator			(eWorldPropertyFoundItemToKill	,new CStalkerPropertyEvaluatorFoundItemToKill	(m_object,"found item to kill"));
+	add_evaluator			(eWorldPropertyFoundAmmo		,new CStalkerPropertyEvaluatorFoundAmmo			(m_object,"found ammo"));
+	add_evaluator			(eWorldPropertyReadyToKill		,new CStalkerPropertyEvaluatorReadyToKill		(m_object,"ready to kill"));
+	add_evaluator			(eWorldPropertyReadyToDetour	,new CStalkerPropertyEvaluatorReadyToDetour		(m_object,"ready to detour"));
+	add_evaluator			(eWorldPropertyPanic			,new CStalkerPropertyEvaluatorPanic				(m_object,"panic"));
+	add_evaluator			(eWorldPropertyDangerGrenade	,new CStalkerPropertyEvaluatorGrenadeToExplode	(m_object,"is there grenade to explode"));
+	add_evaluator			(eWorldPropertyEnemyWounded		,new CStalkerPropertyEvaluatorEnemyWounded		(m_object,"is enemy wounded"));
+	add_evaluator			(eWorldPropertyPlayerOnThePath	,new CStalkerPropertyEvaluatorPlayerOnThePath	(m_object,"player on the path"));
+	add_evaluator			(eWorldPropertyEnemyCriticallyWounded	,new CStalkerPropertyEvaluatorEnemyCriticallyWounded	(m_object,"enemy_critically_wounded"));
 	
-	add_evaluator			(eWorldPropertyInCover			,xr_new<CStalkerPropertyEvaluatorMember>			((CPropertyStorage*)0,eWorldPropertyInCover,true,true,"in cover"));
-	add_evaluator			(eWorldPropertyLookedOut		,xr_new<CStalkerPropertyEvaluatorMember>			((CPropertyStorage*)0,eWorldPropertyLookedOut,true,true,"looked out"));
-	add_evaluator			(eWorldPropertyPositionHolded	,xr_new<CStalkerPropertyEvaluatorMember>			((CPropertyStorage*)0,eWorldPropertyPositionHolded,true,true,"position holded"));
-	add_evaluator			(eWorldPropertyEnemyDetoured	,xr_new<CStalkerPropertyEvaluatorMember>			((CPropertyStorage*)0,eWorldPropertyEnemyDetoured,true,true,"enemy detoured"));
-	add_evaluator			(eWorldPropertyUseSuddenness	,xr_new<CStalkerPropertyEvaluatorMember>			((CPropertyStorage*)0,eWorldPropertyUseSuddenness,true,true,"use suddenness"));
-	add_evaluator			(eWorldPropertyCriticallyWounded,xr_new<CStalkerPropertyEvaluatorMember>			(&object().brain().CStalkerPlanner::m_storage,eWorldPropertyCriticallyWounded,true,true,"critically wounded"));
-	add_evaluator			(eWorldPropertyKilledWounded	,xr_new<CStalkerPropertyEvaluatorMember>			(&object().brain().CStalkerPlanner::m_storage,eWorldPropertyKilledWounded,true,true,"killed critically wounded"));
+	add_evaluator			(eWorldPropertyInCover			,new CStalkerPropertyEvaluatorMember			((CPropertyStorage*)0,eWorldPropertyInCover,true,true,"in cover"));
+	add_evaluator			(eWorldPropertyLookedOut		,new CStalkerPropertyEvaluatorMember			((CPropertyStorage*)0,eWorldPropertyLookedOut,true,true,"looked out"));
+	add_evaluator			(eWorldPropertyPositionHolded	,new CStalkerPropertyEvaluatorMember			((CPropertyStorage*)0,eWorldPropertyPositionHolded,true,true,"position holded"));
+	add_evaluator			(eWorldPropertyEnemyDetoured	,new CStalkerPropertyEvaluatorMember			((CPropertyStorage*)0,eWorldPropertyEnemyDetoured,true,true,"enemy detoured"));
+	add_evaluator			(eWorldPropertyUseSuddenness	,new CStalkerPropertyEvaluatorMember			((CPropertyStorage*)0,eWorldPropertyUseSuddenness,true,true,"use suddenness"));
+	add_evaluator			(eWorldPropertyCriticallyWounded,new CStalkerPropertyEvaluatorMember			(&object().brain().CStalkerPlanner::m_storage,eWorldPropertyCriticallyWounded,true,true,"critically wounded"));
+	add_evaluator			(eWorldPropertyKilledWounded	,new CStalkerPropertyEvaluatorMember			(&object().brain().CStalkerPlanner::m_storage,eWorldPropertyKilledWounded,true,true,"killed critically wounded"));
 }
 
 void CStalkerCombatPlanner::add_actions			()
 {
 	CStalkerActionBase		*action;
 
-	action					= xr_new<CStalkerActionGetItemToKill>	(m_object,"get_item_to_kill");
+	action					= new CStalkerActionGetItemToKill	(m_object,"get_item_to_kill");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyFoundItemToKill,	true);
 	add_condition			(action,eWorldPropertyItemToKill,		false);
@@ -206,18 +206,18 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyItemCanKill,		true);
 	add_operator			(eWorldOperatorGetItemToKill,			action);
 
-	action					= xr_new<CStalkerActionMakeItemKilling>	(m_object,"make_item_killing");
+	action					= new CStalkerActionMakeItemKilling	(m_object,"make_item_killing");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyFoundAmmo,		true);
 	add_condition			(action,eWorldPropertyItemCanKill,		false);
 	add_effect				(action,eWorldPropertyItemCanKill,		true);
 	add_operator			(eWorldOperatorMakeItemKilling,			action);
 
-	action					= xr_new<CStalkerActionRetreatFromEnemy>(m_object,"retreat_from_enemy");
+	action					= new CStalkerActionRetreatFromEnemy(m_object,"retreat_from_enemy");
 	add_effect				(action,eWorldPropertyPureEnemy,		false);
 	add_operator			(eWorldOperatorRetreatFromEnemy,		action);
 	
-	action					= xr_new<CStalkerActionGetReadyToKill>	(true,m_object,"get_ready_to_kill");
+	action					= new CStalkerActionGetReadyToKill	(true,m_object,"get_ready_to_kill");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -235,7 +235,7 @@ void CStalkerCombatPlanner::add_actions			()
 
 	add_operator			(eWorldOperatorGetReadyToKill,			action);
 
-	action					= xr_new<CStalkerActionGetReadyToKill>	(false,m_object,"get_ready_to_detour");
+	action					= new CStalkerActionGetReadyToKill	(false,m_object,"get_ready_to_detour");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -247,7 +247,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyReadyToDetour,	true);
 	add_operator			(eWorldOperatorGetReadyToDetour,		action);
 
-	action					= xr_new<CStalkerActionKillEnemy>		(m_object,"kill_enemy");
+	action					= new CStalkerActionKillEnemy		(m_object,"kill_enemy");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -264,7 +264,7 @@ void CStalkerCombatPlanner::add_actions			()
 
 	add_operator			(eWorldOperatorKillEnemy,				action);
 
-	action					= xr_new<CStalkerActionTakeCover>		(m_object,"take_cover");
+	action					= new CStalkerActionTakeCover		(m_object,"take_cover");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -282,7 +282,7 @@ void CStalkerCombatPlanner::add_actions			()
 
 	add_operator			(eWorldOperatorTakeCover,				action);
 
-	action					= xr_new<CStalkerActionLookOut>			(m_object,"look_out");
+	action					= new CStalkerActionLookOut			(m_object,"look_out");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -295,7 +295,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyLookedOut,		true);
 	add_operator			(eWorldOperatorLookOut,					action);
 
-	action					= xr_new<CStalkerActionHoldPosition>	(m_object,"hold_position");
+	action					= new CStalkerActionHoldPosition	(m_object,"hold_position");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -310,7 +310,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyPositionHolded,	true);
 	add_operator			(eWorldOperatorHoldPosition,			action);
 
-	action					= xr_new<CStalkerActionDetourEnemy>		(m_object,"detour_enemy");
+	action					= new CStalkerActionDetourEnemy		(m_object,"detour_enemy");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -327,7 +327,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyEnemyDetoured,	true);
 	add_operator			(eWorldOperatorDetourEnemy,				action);
 
-	action					= xr_new<CStalkerActionSearchEnemy>		(m_object,"search_enemy");
+	action					= new CStalkerActionSearchEnemy		(m_object,"search_enemy");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -344,7 +344,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_operator			(eWorldOperatorSearchEnemy,				action);
 	action->set_inertia_time(120000);
 
-	action					= xr_new<CStalkerActionKillEnemy>(m_object,"kill_if_not_visible");
+	action					= new CStalkerActionKillEnemy(m_object,"kill_if_not_visible");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -362,7 +362,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyPureEnemy,		false);
 	add_operator			(eWorldOperatorKillEnemyIfNotVisible,	action);
 
-	action					= xr_new<CStalkerActionKillEnemy>(m_object,"kill_if_critically_wounded");
+	action					= new CStalkerActionKillEnemy(m_object,"kill_if_critically_wounded");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
@@ -380,7 +380,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyPureEnemy,		false);
 	add_operator			(eWorldOperatorKillEnemyIfCriticallyWounded,action);
 
-	action					= xr_new<CStalkerActionPostCombatWait>	(m_object,"post_combat_wait");
+	action					= new CStalkerActionPostCombatWait	(m_object,"post_combat_wait");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyPureEnemy,		false);
@@ -388,7 +388,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyEnemy,			false);
 	add_operator			(eWorldOperatorPostCombatWait,			action);
 
-	action					= xr_new<CStalkerActionHideFromGrenade>	(m_object,"hide from grenade");
+	action					= new CStalkerActionHideFromGrenade	(m_object,"hide from grenade");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	true);
 	add_effect				(action,eWorldPropertyEnemy,			false);
@@ -400,7 +400,7 @@ void CStalkerCombatPlanner::add_actions			()
 
 	add_operator			(eWorldOperatorHideFromGrenade,			action);
 
-	action					= xr_new<CStalkerActionSuddenAttack>	(m_object,"sudden attack");
+	action					= new CStalkerActionSuddenAttack	(m_object,"sudden attack");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyDangerGrenade,	false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	true);
@@ -408,7 +408,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(action,eWorldPropertyEnemy,			false);
 	add_operator			(eWorldOperatorSuddenAttack,			action);
 
-	action					= xr_new<CStalkerActionKillEnemyIfPlayerOnThePath>	(m_object,"kill enemy, if player is on my path");
+	action					= new CStalkerActionKillEnemyIfPlayerOnThePath	(m_object,"kill enemy, if player is on my path");
 	add_condition			(action,eWorldPropertyCriticallyWounded,false);
 	add_condition			(action,eWorldPropertyUseSuddenness,	false);
 	add_condition			(action,eWorldPropertySeeEnemy,			true);
@@ -424,7 +424,7 @@ void CStalkerCombatPlanner::add_actions			()
 
 	add_operator			(eWorldOperatorKillEnemyIfPlayerOnThePath,	action);
 
-	CStalkerKillWoundedPlanner	*planner = xr_new<CStalkerKillWoundedPlanner>	(m_object,"kill wounded enemy");
+	CStalkerKillWoundedPlanner	*planner = new CStalkerKillWoundedPlanner	(m_object,"kill wounded enemy");
 	add_condition			(planner,eWorldPropertyCriticallyWounded,false);
 	add_condition			(planner,eWorldPropertyDangerGrenade,	false);
 	add_condition			(planner,eWorldPropertyEnemyWounded,	true);
@@ -432,7 +432,7 @@ void CStalkerCombatPlanner::add_actions			()
 	add_effect				(planner,eWorldPropertyEnemy,			false);
 	add_operator			(eWorldOperatorKillWoundedEnemy,		planner);
 
-	action					= xr_new<CStalkerActionCriticalHit>	(m_object,"critical hit");
+	action					= new CStalkerActionCriticalHit	(m_object,"critical hit");
 	add_condition			(action,eWorldPropertyCriticallyWounded,true);
 	add_condition			(action,eWorldPropertyPanic,			false);
 	add_effect				(action,eWorldPropertyCriticallyWounded,false);

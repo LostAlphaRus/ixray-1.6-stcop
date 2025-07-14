@@ -26,7 +26,7 @@
 
 CAI_Trader::CAI_Trader()
 {
-	AnimMan			= xr_new<CTraderAnimation>(this);
+	AnimMan			= new CTraderAnimation(this);
 } 
 
 CAI_Trader::~CAI_Trader()
@@ -120,7 +120,7 @@ BOOL CAI_Trader::net_Spawn			(CSE_Abstract* DC)
 	CSE_ALifeTrader			*l_tpTrader = smart_cast<CSE_ALifeTrader*>(e);
 	R_ASSERT				(l_tpTrader);
 
-	//проспавнить PDA у InventoryOwner
+	//РїСЂРѕСЃРїР°РІРЅРёС‚СЊ PDA Сѓ InventoryOwner
 	if (!CInventoryOwner::net_Spawn(DC))
 		return				(FALSE);
 
@@ -132,7 +132,7 @@ BOOL CAI_Trader::net_Spawn			(CSE_Abstract* DC)
 
 	set_money				( l_tpTrader->m_dwMoney, false );
 
-	// Установка callback на кости
+	// РЈСЃС‚Р°РЅРѕРІРєР° callback РЅР° РєРѕСЃС‚Рё
 	CBoneInstance			*bone_head =	&smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head"));
 	bone_head->set_callback	(bctCustom,BoneCallback,this);
 
@@ -332,13 +332,13 @@ void CAI_Trader::load (IReader &input_packet)
 }
 
 
-//проверяет список артефактов в заказах
+//РїСЂРѕРІРµСЂСЏРµС‚ СЃРїРёСЃРѕРє Р°СЂС‚РµС„Р°РєС‚РѕРІ РІ Р·Р°РєР°Р·Р°С…
 u32 CAI_Trader::ArtefactPrice (CArtefact* pArtefact)
 {
 	return pArtefact->Cost();
 }
 
-//продажа артефакта, с последуещим изменением списка заказов (true - если артефакт был в списке)
+//РїСЂРѕРґР°Р¶Р° Р°СЂС‚РµС„Р°РєС‚Р°, СЃ РїРѕСЃР»РµРґСѓРµС‰РёРј РёР·РјРµРЅРµРЅРёРµРј СЃРїРёСЃРєР° Р·Р°РєР°Р·РѕРІ (true - РµСЃР»Рё Р°СЂС‚РµС„Р°РєС‚ Р±С‹Р» РІ СЃРїРёСЃРєРµ)
 bool CAI_Trader::BuyArtefact (CArtefact* pArtefact)
 {
 	VERIFY(pArtefact);
@@ -362,7 +362,7 @@ ALife::ERelationType  CAI_Trader::tfGetRelationType	(const CEntityAlive *tpEntit
 
 DLL_Pure *CAI_Trader::_construct	()
 {
-	m_sound_player				= xr_new<CSoundPlayer>(this);
+	m_sound_player				= new CSoundPlayer(this);
 	
 	CEntityAlive::_construct	(); 
 	CInventoryOwner::_construct	();

@@ -46,13 +46,13 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	CUIXml								xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "mp_buy_menu.xml");
 
-	m_store_hierarchy					= xr_new<CStoreHierarchy>();
+	m_store_hierarchy					= new CStoreHierarchy();
  	m_store_hierarchy->Init				(xml_doc, "items_hierarchy");
 	m_store_hierarchy->InitItemsInGroup	(m_sectionName);
 
 	CUIXmlInit::InitWindow				(xml_doc, "main",						0, this);
 
-	m_root_tab_control					= xr_new<CUITabControl>(); AttachChild(m_root_tab_control); m_root_tab_control->SetAutoDelete(true);
+	m_root_tab_control					= new CUITabControl(); AttachChild(m_root_tab_control); m_root_tab_control->SetAutoDelete(true);
 	CUIXmlInit::InitTabControl			(xml_doc, "tab_control",				0, m_root_tab_control);
 	Register							(m_root_tab_control);
 	AddCallback							("tab_control",	TAB_CHANGED,		CUIWndCallback::void_function	(this, &CUIMpTradeWnd::OnRootTabChanged));
@@ -68,30 +68,30 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	}
 	m_root_tab_control->ResetTab		();
 
-	m_shop_wnd							= xr_new<CUIWindow>();	AttachChild(m_shop_wnd);		m_shop_wnd->SetAutoDelete(true);
+	m_shop_wnd							= new CUIWindow();	AttachChild(m_shop_wnd);		m_shop_wnd->SetAutoDelete(true);
 	CUIXmlInit::InitWindow				(xml_doc, "shop_wnd",	0, m_shop_wnd);
 
-	m_btn_ok							= xr_new<CUI3tButton>();AttachChild(m_btn_ok);					m_btn_ok->SetAutoDelete			(true);
-	m_btn_cancel						= xr_new<CUI3tButton>();AttachChild(m_btn_cancel);				m_btn_cancel->SetAutoDelete		(true);
-	m_btn_shop_back						= xr_new<CUI3tButton>();AttachChild(m_btn_shop_back);			m_btn_shop_back->SetAutoDelete	(true);
-	m_btns_preset[0]					= xr_new<CUI3tButton>();AttachChild(m_btns_preset[0]	);		m_btns_preset[0]->SetAutoDelete	(true);
-	m_btns_preset[1]					= xr_new<CUI3tButton>();AttachChild(m_btns_preset[1]	);		m_btns_preset[1]->SetAutoDelete	(true);
-	m_btns_preset[2]					= xr_new<CUI3tButton>();AttachChild(m_btns_preset[2]	);		m_btns_preset[2]->SetAutoDelete	(true);
-	m_btns_preset[3]					= xr_new<CUI3tButton>();AttachChild(m_btns_preset[3]	);		m_btns_preset[3]->SetAutoDelete	(true);
-	m_btns_preset[4]					= xr_new<CUI3tButton>();AttachChild(m_btns_preset[4]	);		m_btns_preset[4]->SetAutoDelete	(true);
-	m_btns_save_preset[0]				= xr_new<CUI3tButton>();AttachChild(m_btns_save_preset[0]);		m_btns_save_preset[0]->SetAutoDelete(true);
-	m_btns_save_preset[1]				= xr_new<CUI3tButton>();AttachChild(m_btns_save_preset[1]);		m_btns_save_preset[1]->SetAutoDelete(true);
-	m_btns_save_preset[2]				= xr_new<CUI3tButton>();AttachChild(m_btns_save_preset[2]);		m_btns_save_preset[2]->SetAutoDelete(true);
-	m_btn_reset							= xr_new<CUI3tButton>();AttachChild(m_btn_reset		);			m_btn_reset->SetAutoDelete		(true);
-	m_btn_sell							= xr_new<CUI3tButton>();AttachChild(m_btn_sell		);			m_btn_sell->SetAutoDelete		(true);
+	m_btn_ok							= new CUI3tButton();AttachChild(m_btn_ok);					m_btn_ok->SetAutoDelete			(true);
+	m_btn_cancel						= new CUI3tButton();AttachChild(m_btn_cancel);				m_btn_cancel->SetAutoDelete		(true);
+	m_btn_shop_back						= new CUI3tButton();AttachChild(m_btn_shop_back);			m_btn_shop_back->SetAutoDelete	(true);
+	m_btns_preset[0]					= new CUI3tButton();AttachChild(m_btns_preset[0]	);		m_btns_preset[0]->SetAutoDelete	(true);
+	m_btns_preset[1]					= new CUI3tButton();AttachChild(m_btns_preset[1]	);		m_btns_preset[1]->SetAutoDelete	(true);
+	m_btns_preset[2]					= new CUI3tButton();AttachChild(m_btns_preset[2]	);		m_btns_preset[2]->SetAutoDelete	(true);
+	m_btns_preset[3]					= new CUI3tButton();AttachChild(m_btns_preset[3]	);		m_btns_preset[3]->SetAutoDelete	(true);
+	m_btns_preset[4]					= new CUI3tButton();AttachChild(m_btns_preset[4]	);		m_btns_preset[4]->SetAutoDelete	(true);
+	m_btns_save_preset[0]				= new CUI3tButton();AttachChild(m_btns_save_preset[0]);		m_btns_save_preset[0]->SetAutoDelete(true);
+	m_btns_save_preset[1]				= new CUI3tButton();AttachChild(m_btns_save_preset[1]);		m_btns_save_preset[1]->SetAutoDelete(true);
+	m_btns_save_preset[2]				= new CUI3tButton();AttachChild(m_btns_save_preset[2]);		m_btns_save_preset[2]->SetAutoDelete(true);
+	m_btn_reset							= new CUI3tButton();AttachChild(m_btn_reset		);			m_btn_reset->SetAutoDelete		(true);
+	m_btn_sell							= new CUI3tButton();AttachChild(m_btn_sell		);			m_btn_sell->SetAutoDelete		(true);
 
-	m_btn_pistol_ammo					= xr_new<CUI3tButton>();AttachChild(m_btn_pistol_ammo	);		m_btn_pistol_ammo->SetAutoDelete		(true);
-	m_btn_pistol_silencer				= xr_new<CUI3tButton>();AttachChild(m_btn_pistol_silencer);		m_btn_pistol_silencer->SetAutoDelete	(true);
-	m_btn_rifle_ammo					= xr_new<CUI3tButton>();AttachChild(m_btn_rifle_ammo	);		m_btn_rifle_ammo->SetAutoDelete			(true);
-	m_btn_rifle_silencer				= xr_new<CUI3tButton>();AttachChild(m_btn_rifle_silencer);		m_btn_rifle_silencer->SetAutoDelete		(true);
-	m_btn_rifle_scope					= xr_new<CUI3tButton>();AttachChild(m_btn_rifle_scope	);		m_btn_rifle_scope->SetAutoDelete		(true);
-	m_btn_rifle_glauncher				= xr_new<CUI3tButton>();AttachChild(m_btn_rifle_glauncher);		m_btn_rifle_glauncher->SetAutoDelete	(true);
-	m_btn_rifle_ammo2					= xr_new<CUI3tButton>();AttachChild(m_btn_rifle_ammo2	);		m_btn_rifle_ammo2->SetAutoDelete		(true);
+	m_btn_pistol_ammo					= new CUI3tButton();AttachChild(m_btn_pistol_ammo	);		m_btn_pistol_ammo->SetAutoDelete		(true);
+	m_btn_pistol_silencer				= new CUI3tButton();AttachChild(m_btn_pistol_silencer);		m_btn_pistol_silencer->SetAutoDelete	(true);
+	m_btn_rifle_ammo					= new CUI3tButton();AttachChild(m_btn_rifle_ammo	);		m_btn_rifle_ammo->SetAutoDelete			(true);
+	m_btn_rifle_silencer				= new CUI3tButton();AttachChild(m_btn_rifle_silencer);		m_btn_rifle_silencer->SetAutoDelete		(true);
+	m_btn_rifle_scope					= new CUI3tButton();AttachChild(m_btn_rifle_scope	);		m_btn_rifle_scope->SetAutoDelete		(true);
+	m_btn_rifle_glauncher				= new CUI3tButton();AttachChild(m_btn_rifle_glauncher);		m_btn_rifle_glauncher->SetAutoDelete	(true);
+	m_btn_rifle_ammo2					= new CUI3tButton();AttachChild(m_btn_rifle_ammo2	);		m_btn_rifle_ammo2->SetAutoDelete		(true);
 
 
 	CUIXmlInit::Init3tButton			(xml_doc, "btn_ok",				0, m_btn_ok				);
@@ -165,7 +165,7 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 
 	for(int idx = e_first; idx<e_total_lists; ++idx)
 	{
-		CUIDragDropListEx* lst			= xr_new<CUIDragDropListEx>();
+		CUIDragDropListEx* lst			= new CUIDragDropListEx();
 		m_list[idx]						= lst;
 		if(idx!=e_shop)
 		{
@@ -176,22 +176,22 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 		BindDragDropListEvents			(lst, true);
 	}
 
-	m_static_player_money				= xr_new<CUIStatic>(); AttachChild(m_static_player_money); m_static_player_money->SetAutoDelete(true);
+	m_static_player_money				= new CUIStatic(); AttachChild(m_static_player_money); m_static_player_money->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_player_money",					0, m_static_player_money);
 
-	m_static_curr_items_money			= xr_new<CUIStatic>(); AttachChild(m_static_curr_items_money); m_static_curr_items_money->SetAutoDelete(true);
+	m_static_curr_items_money			= new CUIStatic(); AttachChild(m_static_curr_items_money); m_static_curr_items_money->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_curr_items_money",					0, m_static_curr_items_money);
 	
 // preset money indicators
-	m_static_preset_money[0]			= xr_new<CUIStatic>(); AttachChild(m_static_preset_money[0]); m_static_preset_money[0]->SetAutoDelete(true);
+	m_static_preset_money[0]			= new CUIStatic(); AttachChild(m_static_preset_money[0]); m_static_preset_money[0]->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_preset_money_last",					0, m_static_preset_money[0]);
-	m_static_preset_money[1]			= xr_new<CUIStatic>(); AttachChild(m_static_preset_money[1]); m_static_preset_money[1]->SetAutoDelete(true);
+	m_static_preset_money[1]			= new CUIStatic(); AttachChild(m_static_preset_money[1]); m_static_preset_money[1]->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_preset_money_1",					0, m_static_preset_money[1]);
-	m_static_preset_money[2]				= xr_new<CUIStatic>(); AttachChild(m_static_preset_money[2]); m_static_preset_money[2]->SetAutoDelete(true);
+	m_static_preset_money[2]				= new CUIStatic(); AttachChild(m_static_preset_money[2]); m_static_preset_money[2]->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_preset_money_2",					0, m_static_preset_money[2]);
-	m_static_preset_money[3]			= xr_new<CUIStatic>(); AttachChild(m_static_preset_money[3]); m_static_preset_money[3]->SetAutoDelete(true);
+	m_static_preset_money[3]			= new CUIStatic(); AttachChild(m_static_preset_money[3]); m_static_preset_money[3]->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_preset_money_3",					0, m_static_preset_money[3]);
-	m_static_preset_money[4]			= xr_new<CUIStatic>(); AttachChild(m_static_preset_money[4]); m_static_preset_money[4]->SetAutoDelete(true);
+	m_static_preset_money[4]			= new CUIStatic(); AttachChild(m_static_preset_money[4]); m_static_preset_money[4]->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_preset_money_def",					0, m_static_preset_money[4]);
 // preset money indicators
 
@@ -202,23 +202,23 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	m_text_color_money_positive				= CUIXmlInit::GetColor	(xml_doc, "money_color_positive",	0, color_rgba(255,255,255,255));
 	m_text_color_money_negative				= CUIXmlInit::GetColor	(xml_doc, "money_color_negative",	0, color_rgba(255,255,255,255));
 
-	m_static_player_rank				= xr_new<CUIStatic>(); AttachChild(m_static_player_rank); m_static_player_rank->SetAutoDelete(true);
+	m_static_player_rank				= new CUIStatic(); AttachChild(m_static_player_rank); m_static_player_rank->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_player_rank",					0, m_static_player_rank);
 
-	m_static_item_rank					= xr_new<CUIStatic>(); AttachChild(m_static_item_rank); m_static_item_rank->SetAutoDelete(true);
+	m_static_item_rank					= new CUIStatic(); AttachChild(m_static_item_rank); m_static_item_rank->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_item_rank",					0, m_static_item_rank);
 
-	m_static_information				= xr_new<CUIStatic>(); AttachChild(m_static_information); m_static_information->SetAutoDelete(true);
+	m_static_information				= new CUIStatic(); AttachChild(m_static_information); m_static_information->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_info",					0, m_static_information);
 
-	m_static_money_change				= xr_new<CUIStatic>(); AttachChild(m_static_money_change); m_static_money_change->SetAutoDelete(true);
+	m_static_money_change				= new CUIStatic(); AttachChild(m_static_money_change); m_static_money_change->SetAutoDelete(true);
 	CUIXmlInit::InitStatic				(xml_doc, "static_money_change",					0, m_static_money_change);
 	
-	m_item_info							= xr_new<CUIItemInfo>();
+	m_item_info							= new CUIItemInfo();
 	AttachChild							(m_item_info); m_item_info->SetAutoDelete(true);
 	m_item_info->Init					(0, 0, 100, 100, "buy_menu_item.xml");
 
-	m_item_mngr							= xr_new<CItemMgr>();
+	m_item_mngr							= new CItemMgr();
 	m_item_mngr->Load					(sectionPrice);
 	m_item_mngr->Dump					();
 	SetRank								(0);

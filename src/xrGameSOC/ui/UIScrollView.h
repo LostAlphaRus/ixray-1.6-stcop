@@ -68,7 +68,7 @@ IC			bool	NeedShowScrollBar	();		// no comment
 	CUIScrollBar*	ScrollBar			() {return m_VScrollBar;}
 };
 
-#define ADD_TEXT_TO_VIEW3(txt,st,view)		st = xr_new<CUIStatic>();						\
+#define ADD_TEXT_TO_VIEW3(txt,st,view)		st = new CUIStatic();						\
 											st->SetText(txt);								\
 											st->SetTextComplexMode(true);					\
 											st->SetWidth(view->GetDesiredChildWidth());		\

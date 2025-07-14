@@ -150,8 +150,8 @@ bool CScriptEntity::CheckObjectVisibility(const CGameObject *tpObject)
 	return				(m_monster->memory().visual().visible_now(tpObject));
 }
 
-//определяет видимость определенного типа объектов, 
-//заданного через section_name
+//РѕРїСЂРµРґРµР»СЏРµС‚ РІРёРґРёРјРѕСЃС‚СЊ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ С‚РёРїР° РѕР±СЉРµРєС‚РѕРІ, 
+//Р·Р°РґР°РЅРЅРѕРіРѕ С‡РµСЂРµР· section_name
 bool CScriptEntity::CheckTypeVisibility(const char* section_name)
 {
 	if (!m_monster)
@@ -171,14 +171,14 @@ void CScriptEntity::AddAction(const CScriptEntityAction *tpEntityAction, bool bH
 {
 	bool				empty = m_tpActionQueue.empty();
 	if (!bHighPriority || m_tpActionQueue.empty())
-		m_tpActionQueue.push_back(xr_new<CScriptEntityAction>(*tpEntityAction));
+		m_tpActionQueue.push_back(new CScriptEntityAction(*tpEntityAction));
 	else {
 		VERIFY			(m_tpActionQueue.front());
-		CScriptEntityAction	*l_tpEntityAction = xr_new<CScriptEntityAction>(*m_tpActionQueue.front());
+		CScriptEntityAction	*l_tpEntityAction = new CScriptEntityAction(*m_tpActionQueue.front());
 		vfFinishAction	(m_tpActionQueue.front());
 		xr_delete		(m_tpActionQueue.front());
 		m_tpActionQueue.front() = l_tpEntityAction;
-		m_tpActionQueue.insert(m_tpActionQueue.begin(),xr_new<CScriptEntityAction>(*tpEntityAction));
+		m_tpActionQueue.insert(m_tpActionQueue.begin(),new CScriptEntityAction(*tpEntityAction));
 	}
 
 	if (empty && m_initialized)
@@ -307,7 +307,7 @@ void CScriptEntity::ProcessScripts()
 		if (l_tpEntityAction->m_tMovementAction.m_bCompleted && !l_bCompleted)
 			object().callback(GameObject::eActionTypeMovement)(object().lua_game_object(),u32(eActionTypeMovement), -1);
 
-		// Установить выбранную анимацию
+		// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ Р°РЅРёРјР°С†РёСЋ
 		if (!l_tpEntityAction->m_tAnimationAction.m_bCompleted)
 			bfScriptAnimation	();
 
@@ -385,7 +385,7 @@ bool CScriptEntity::bfAssignSound(CScriptEntityAction *tpEntityAction)
 	}
 	else {
 		if (xr_strlen(l_tSoundAction.m_caSoundToPlay)) {
-			m_current_sound						= xr_new<ref_sound>();
+			m_current_sound						= new ref_sound();
 			m_current_sound->create				(*l_tSoundAction.m_caSoundToPlay,st_Effect,l_tSoundAction.m_sound_type);
 		}
 		else

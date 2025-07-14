@@ -10,7 +10,7 @@
 
 CAI_Boar::CAI_Boar()
 {
-	StateMan = xr_new<CStateManagerBoar>	(this);
+	StateMan = new CStateManagerBoar	(this);
 
 	CControlled::init_external(this);
 	com_man().add_ability(ControlCom::eControlRotationJump);
@@ -130,7 +130,7 @@ BOOL CAI_Boar::net_Spawn (CSE_Abstract* DC)
 	if (!inherited::net_Spawn(DC))
 		return(FALSE);
 	
-	if(!PPhysicsShell())//нельзя ставить колбеки, если создан физ шел - у него стоят свои колбеки!!!
+	if(!PPhysicsShell())//РЅРµР»СЊР·СЏ СЃС‚Р°РІРёС‚СЊ РєРѕР»Р±РµРєРё, РµСЃР»Рё СЃРѕР·РґР°РЅ С„РёР· С€РµР» - Сѓ РЅРµРіРѕ СЃС‚РѕСЏС‚ СЃРІРѕРё РєРѕР»Р±РµРєРё!!!
 	{
 		CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head"));
 		BI.set_callback(bctCustom,BoneCallback,this);

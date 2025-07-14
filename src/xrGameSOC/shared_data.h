@@ -23,7 +23,7 @@ public:
 	};
 public:
 	static	T*		Instance	() {
-		if(!_self) _self=xr_new<T>(); 
+		if(!_self) _self=new T(); 
 		++_refcount;
 		return _self;
 	}
@@ -63,7 +63,7 @@ public:
 
 		// if not found - create appropriate shared data object
 		if (_shared_tab.end() == shared_it) {
-			_data		= xr_new<SHARED_TYPE>();
+			_data		= new SHARED_TYPE();
 			_shared_tab.insert(std::make_pair(id, _data));
 		} else _data = shared_it->second;
 
@@ -108,7 +108,7 @@ public:
 	const SHARED_TYPE		*get_sd			() const	{return _sd;}
 	
 	
-	// управление загрузкой данных при компонентном подходе (загрузка данных вручную)
+	// СѓРїСЂР°РІР»РµРЅРёРµ Р·Р°РіСЂСѓР·РєРѕР№ РґР°РЅРЅС‹С… РїСЂРё РєРѕРјРїРѕРЅРµРЅС‚РЅРѕРј РїРѕРґС…РѕРґРµ (Р·Р°РіСЂСѓР·РєР° РґР°РЅРЅС‹С… РІСЂСѓС‡РЅСѓСЋ)
 	bool start_load_shared	 (KEY_TYPE key){ 
 		_sd = pSharedObj->get_shared(key);
 		if (get_sd()->IsLoaded()) return false;

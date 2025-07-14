@@ -54,7 +54,7 @@ void CHitMarker::Hit(int id, const Fvector& dir){
 
 	Fvector hit_dir = dir;
 	hit_dir.mul(-1.0f);
-	m_HitMarks.push_back	(xr_new<SHitMark>(hShader2,hit_dir));
+	m_HitMarks.push_back	(new SHitMark(hShader2,hit_dir));
 }
 //--------------------------------------------------------------------
 
@@ -65,7 +65,7 @@ SHitMark::SHitMark		(const ui_shader& sh, const Fvector& dir)
 	m_StartTime							= Device.fTimeGlobal;
 	m_lanim								= LALib.FindItem("hud_hit_mark");
 	m_HitDirection						= dir.getH();
-	m_UIStaticItem						= xr_new<CUIStaticItem>();
+	m_UIStaticItem						= new CUIStaticItem();
 	m_UIStaticItem->SetShader			(sh);
 	m_UIStaticItem->SetPos				(256.0f, 128.0f);
 	m_UIStaticItem->SetRect				(.0f, .0f, 512.0f, 512.0f);

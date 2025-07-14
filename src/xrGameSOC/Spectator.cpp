@@ -32,16 +32,16 @@
 CSpectator::CSpectator() : CGameObject()
 {
 	// Cameras
-	cameras[eacFirstEye]	= xr_new<CCameraFirstEye>	(this);
+	cameras[eacFirstEye]	= new CCameraFirstEye	(this);
 	cameras[eacFirstEye]->Load("actor_firsteye_cam");
 
-	cameras[eacLookAt]		= xr_new<CCameraLook>		(this);
+	cameras[eacLookAt]		= new CCameraLook		(this);
 	cameras[eacLookAt]->Load("actor_look_cam");
 
-	cameras[eacFreeLook]	= xr_new<CCameraLook>		(this);
+	cameras[eacFreeLook]	= new CCameraLook		(this);
 	cameras[eacFreeLook]->Load("actor_free_cam");
 
-	cameras[eacFreeFly]		= xr_new<CCameraFirstEye>	(this);
+	cameras[eacFreeFly]		= new CCameraFirstEye	(this);
 	cameras[eacFreeFly]->Load("actor_firsteye_cam");
 
 //	cam_active				= eacFreeFly;
@@ -106,12 +106,12 @@ void CSpectator::UpdateCL()
 					}
 				}
 			}
-			// не найден объект с таким индексом - сбросим на первый объект
+			// РЅРµ РЅР°Р№РґРµРЅ РѕР±СЉРµРєС‚ СЃ С‚Р°РєРёРј РёРЅРґРµРєСЃРѕРј - СЃР±СЂРѕСЃРёРј РЅР° РїРµСЂРІС‹Р№ РѕР±СЉРµРєС‚
 			look_idx = 0;
-			// никого нет за кем смотреть - переключимся на 
+			// РЅРёРєРѕРіРѕ РЅРµС‚ Р·Р° РєРµРј СЃРјРѕС‚СЂРµС‚СЊ - РїРµСЂРµРєР»СЋС‡РёРјСЃСЏ РЅР° 
 			if (0==idx) cam_Set(eacFreeFly);
 		}
-		// по умолчанию eacFreeFly
+		// РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ eacFreeFly
 		cam_Update		(0);
 	}
 }

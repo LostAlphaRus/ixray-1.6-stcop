@@ -63,7 +63,7 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 	m_delay					= _max(xml->ReadFlt		("delay",0,0.f),0.f);
 
 	//ui-components
-	m_wnd											= xr_new<CUIStatic>();
+	m_wnd											= new CUIStatic();
 	m_wnd->SetAutoDelete							(false);
 	CUIXmlInit::InitStatic							(*xml, "video_wnd", 0, m_wnd);
 	bool bFullScreen								= (1==xml->ReadAttribInt("video_wnd", 0, "fullscreen", 0));

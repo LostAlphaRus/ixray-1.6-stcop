@@ -21,7 +21,7 @@
 
 CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
-	CUIStatic* ui			= xr_new<CUIStatic>();
+	CUIStatic* ui			= new CUIStatic();
 	parent->AttachChild		( ui );
 	ui->SetAutoDelete		( true );
 	CUIXmlInit::InitStatic	( xml, ui_path, 0, ui );
@@ -30,7 +30,7 @@ CUIStatic* UIHelper::CreateStatic( CUIXml& xml, LPCSTR ui_path, CUIWindow* paren
 
 CUIProgressBar* UIHelper::CreateProgressBar( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
-	CUIProgressBar* ui			= xr_new<CUIProgressBar>();
+	CUIProgressBar* ui			= new CUIProgressBar();
 	parent->AttachChild			( ui );
 	ui->SetAutoDelete			( true );
 	CUIXmlInit::InitProgressBar ( xml, ui_path, 0, ui );
@@ -39,7 +39,7 @@ CUIProgressBar* UIHelper::CreateProgressBar( CUIXml& xml, LPCSTR ui_path, CUIWin
 
 CUIFrameLineWnd* UIHelper::CreateFrameLine( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
-	CUIFrameLineWnd* ui			= xr_new<CUIFrameLineWnd>();
+	CUIFrameLineWnd* ui			= new CUIFrameLineWnd();
 	parent->AttachChild			( ui );
 	ui->SetAutoDelete			( true );
 	CUIXmlInit::InitFrameLine	( xml, ui_path, 0, ui );
@@ -48,7 +48,7 @@ CUIFrameLineWnd* UIHelper::CreateFrameLine( CUIXml& xml, LPCSTR ui_path, CUIWind
 
 CUIFrameWindow* UIHelper::CreateFrameWindow( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
-	CUIFrameWindow* ui			= xr_new<CUIFrameWindow>();
+	CUIFrameWindow* ui			= new CUIFrameWindow();
 	parent->AttachChild			( ui );
 	ui->SetAutoDelete			( true );
 	CUIXmlInit::InitFrameWindow	( xml, ui_path, 0, ui );
@@ -57,7 +57,7 @@ CUIFrameWindow* UIHelper::CreateFrameWindow( CUIXml& xml, LPCSTR ui_path, CUIWin
 
 CUI3tButton* UIHelper::Create3tButton( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
-	CUI3tButton* ui			= xr_new<CUI3tButton>();
+	CUI3tButton* ui			= new CUI3tButton();
 	parent->AttachChild		( ui );
 	ui->SetAutoDelete		( true );
 	CUIXmlInit::Init3tButton( xml, ui_path, 0, ui );
@@ -67,7 +67,7 @@ CUI3tButton* UIHelper::Create3tButton( CUIXml& xml, LPCSTR ui_path, CUIWindow* p
 
 CUICheckButton* UIHelper::CreateCheck( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
-	CUICheckButton* ui		= xr_new<CUICheckButton>();
+	CUICheckButton* ui		= new CUICheckButton();
 	parent->AttachChild		( ui );
 	ui->SetAutoDelete		( true );
 	CUIXmlInit::InitCheck	( xml, ui_path, 0, ui );
@@ -76,7 +76,7 @@ CUICheckButton* UIHelper::CreateCheck( CUIXml& xml, LPCSTR ui_path, CUIWindow* p
 
 CUIDragDropListEx* UIHelper::CreateDragDropListEx( CUIXml& xml, LPCSTR ui_path, CUIWindow* parent )
 {
-	CUIDragDropListEx* ui			= xr_new<CUIDragDropListEx>();
+	CUIDragDropListEx* ui			= new CUIDragDropListEx();
 	parent->AttachChild				( ui );
 	ui->SetAutoDelete				( true );
 	CUIXmlInit::InitDragDropListEx	( xml, ui_path, 0, ui );

@@ -83,7 +83,7 @@ void CGameTask::Load(const TASK_ID& id)
 	m_ID							= id;
 
 	if(!g_gameTaskXml){
-		g_gameTaskXml				= xr_new<CUIXml>();
+		g_gameTaskXml				= new CUIXml();
 		g_gameTaskXml->Load(CONFIG_PATH, "gameplay", "game_tasks.xml");
 	}
 	XML_NODE* task_node				= g_gameTaskXml->NavigateToNodeWithAttribute("game_task","id",*id);
@@ -589,7 +589,7 @@ void SGameTaskKey::save(IWriter &stream)
 void SGameTaskKey::load(IReader &stream)
 {
 	load_data(task_id,						stream);
-	game_task = xr_new<CGameTask>			(task_id);
+	game_task = new CGameTask			(task_id);
 	load_data(game_task->m_ReceiveTime,		stream);
 	load_data(game_task->m_FinishTime,		stream);
 	load_data(game_task->m_TimeToComplete,	stream);

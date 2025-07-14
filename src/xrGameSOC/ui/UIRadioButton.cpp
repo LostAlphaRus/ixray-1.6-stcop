@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// UIRadioButton.cpp: класс кнопки, имеющей 2 состояния
-// и работающей в группе с такими же кнопками
+// UIRadioButton.cpp: РєР»Р°СЃСЃ РєРЅРѕРїРєРё, РёРјРµСЋС‰РµР№ 2 СЃРѕСЃС‚РѕСЏРЅРёСЏ
+// Рё СЂР°Р±РѕС‚Р°СЋС‰РµР№ РІ РіСЂСѓРїРїРµ СЃ С‚Р°РєРёРјРё Р¶Рµ РєРЅРѕРїРєР°РјРё
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@
 
 void CUIRadioButton::Init(float x, float y, float width, float height){
 	if (!m_pLines)
-		m_pLines = xr_new<CUILines>();
+		m_pLines = new CUILines();
 	m_pLines->SetTextAlignment(CGameFont::alLeft);
     CUI3tButton::InitTexture("ui_radio");
 	Frect r = m_background.GetE()->GetStaticItem()->GetRect(); 

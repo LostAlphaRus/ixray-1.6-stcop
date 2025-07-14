@@ -45,13 +45,13 @@
 
 CBaseMonster::CBaseMonster()
 {
-	m_pPhysics_support=xr_new<CCharacterPhysicsSupport>(CCharacterPhysicsSupport::etBitting,this);
+	m_pPhysics_support=new CCharacterPhysicsSupport(CCharacterPhysicsSupport::etBitting,this);
 	
 	m_pPhysics_support				->in_Init();
 
 	// Components external init 
 	
-	m_control_manager				= xr_new<CControl_Manager>(this);
+	m_control_manager				= new CControl_Manager(this);
 
 
 	EnemyMemory.init_external		(this, 20000);
@@ -62,7 +62,7 @@ CBaseMonster::CBaseMonster()
 	EnemyMan.init_external			(this);
 	CorpseMan.init_external			(this);
 
-	// Инициализация параметров анимации	
+	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ Р°РЅРёРјР°С†РёРё	
 
 	StateMan						= 0;
 
@@ -78,10 +78,10 @@ CBaseMonster::CBaseMonster()
 	m_com_manager.add_ability		(ControlCom::eControlTripleAnimation);
 
 
-	m_anomaly_detector				= xr_new<CAnomalyDetector>(this);
-	CoverMan						= xr_new<CMonsterCoverManager>(this);
+	m_anomaly_detector				= new CAnomalyDetector(this);
+	CoverMan						= new CMonsterCoverManager(this);
 
-	Home							= xr_new<CMonsterHome>(this);
+	Home							= new CMonsterHome(this);
 
 	com_man().add_ability			(ControlCom::eComCriticalWound);
 }
@@ -370,19 +370,19 @@ void CBaseMonster::on_kill_enemy(const CEntity *obj)
 {
 	const CEntityAlive *entity	= smart_cast<const CEntityAlive *>(obj);
 	
-	// добавить в список трупов	
+	// РґРѕР±Р°РІРёС‚СЊ РІ СЃРїРёСЃРѕРє С‚СЂСѓРїРѕРІ	
 	CorpseMemory.add_corpse		(entity);
 	
-	// удалить всю информацию о хитах
+	// СѓРґР°Р»РёС‚СЊ РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С…РёС‚Р°С…
 	HitMemory.remove_hit_info	(entity);
 
-	// удалить всю информацию о звуках
+	// СѓРґР°Р»РёС‚СЊ РІСЃСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ Р·РІСѓРєР°С…
 	SoundMemory.clear			();
 }
 
 CMovementManager *CBaseMonster::create_movement_manager	()
 {
-	m_movement_manager = xr_new<CControlPathBuilder>(this);
+	m_movement_manager = new CControlPathBuilder(this);
 
 	control().add					(m_movement_manager, ControlCom::eControlPath);
 	control().install_path_manager	(m_movement_manager);
@@ -433,10 +433,10 @@ void CBaseMonster::net_Relcase(CObject *O)
 	
 void CBaseMonster::create_base_controls()
 {
-	m_anim_base		= xr_new<CControlAnimationBase>		();
-	m_move_base		= xr_new<CControlMovementBase>		();
-	m_path_base		= xr_new<CControlPathBuilderBase>	();
-	m_dir_base		= xr_new<CControlDirectionBase>		();
+	m_anim_base		= new CControlAnimationBase		();
+	m_move_base		= new CControlMovementBase		();
+	m_path_base		= new CControlPathBuilderBase	();
+	m_dir_base		= new CControlDirectionBase		();
 }
 
 void CBaseMonster::set_action(EAction action)
@@ -448,7 +448,7 @@ CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvec
 {
 	CParticlesObject* ps = CParticlesObject::Create(name.c_str(),auto_remove);
 	
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fmatrix	matrix; 
 
 	matrix.identity			();

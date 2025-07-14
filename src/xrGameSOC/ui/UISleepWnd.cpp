@@ -1,4 +1,4 @@
-// UISleepWnd.cpp:  окошко для выбора того, сколько спать
+// UISleepWnd.cpp:  РѕРєРѕС€РєРѕ РґР»СЏ РІС‹Р±РѕСЂР° С‚РѕРіРѕ, СЃРєРѕР»СЊРєРѕ СЃРїР°С‚СЊ
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -27,21 +27,21 @@ void CUISleepWnd::Init()
 	CUIXmlInit	xml_init;
 
 	// Statics
-	UIStaticRestAmount		= xr_new<CUIStatic>();UIStaticRestAmount->SetAutoDelete(true);
+	UIStaticRestAmount		= new CUIStatic();UIStaticRestAmount->SetAutoDelete(true);
 	AttachChild				(UIStaticRestAmount);
 	xml_init.InitStatic		(uiXml, "rest_amount_static", 0, UIStaticRestAmount);
 
 	// Plus, minus time
-	UIPlusBtn				= xr_new<CUIButton>();UIPlusBtn->SetAutoDelete(true);
+	UIPlusBtn				= new CUIButton();UIPlusBtn->SetAutoDelete(true);
 	AttachChild				(UIPlusBtn);
 	xml_init.InitButton		(uiXml, "plus_button", 0, UIPlusBtn);
 
-	UIMinusBtn				= xr_new<CUIButton>();UIMinusBtn->SetAutoDelete(true);
+	UIMinusBtn				= new CUIButton();UIMinusBtn->SetAutoDelete(true);
 	AttachChild(UIMinusBtn);
 	xml_init.InitButton(uiXml, "minus_button", 0, UIMinusBtn);
 
 	// Perform sleep
-	UIRestBtn				= xr_new<CUIButton>();UIRestBtn->SetAutoDelete(true);
+	UIRestBtn				= new CUIButton();UIRestBtn->SetAutoDelete(true);
 	AttachChild(UIRestBtn);
 	xml_init.InitButton(uiXml, "rest_button", 0, UIRestBtn);
 
@@ -93,15 +93,15 @@ void CUISleepWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 void CUISleepWnd::ModifyRestTime(s8 dHours, s8 dMinutes)
 {
 
-	// Проверка на влидный интервал
+	// РџСЂРѕРІРµСЂРєР° РЅР° РІР»РёРґРЅС‹Р№ РёРЅС‚РµСЂРІР°Р»
 	R_ASSERT(dMinutes < 61);
 
 	s8 oldMin = m_Minutes;
 
-	// Увеличиваем минуты
+	// РЈРІРµР»РёС‡РёРІР°РµРј РјРёРЅСѓС‚С‹
 	m_Minutes = m_Minutes + dMinutes;
 
-	// Проверяем выходы за пределы допуска
+	// РџСЂРѕРІРµСЂСЏРµРј РІС‹С…РѕРґС‹ Р·Р° РїСЂРµРґРµР»С‹ РґРѕРїСѓСЃРєР°
 	if (m_Minutes > 59)
 	{
 		++m_Hours;
@@ -113,7 +113,7 @@ void CUISleepWnd::ModifyRestTime(s8 dHours, s8 dMinutes)
 		m_Minutes = m_Minutes + 60;
 	}
 
-	// Тоже самое и для часов
+	// РўРѕР¶Рµ СЃР°РјРѕРµ Рё РґР»СЏ С‡Р°СЃРѕРІ
 	m_Hours = m_Hours + dHours;
 	if (m_Hours > 99)
 	{

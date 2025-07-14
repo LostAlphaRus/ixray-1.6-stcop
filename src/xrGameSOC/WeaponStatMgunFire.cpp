@@ -83,7 +83,7 @@ void CWeaponStatMgun::AddShotEffector				()
 	if(OwnerActor())
 	{
 		CCameraShotEffector* S	= smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot)); 
-		if (!S)	S				= (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(xr_new<CCameraShotEffector> (camMaxAngle,camRelaxSpeed, 0.25f, 0.01f, 0.7f));
+		if (!S)	S				= (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(new CCameraShotEffector (camMaxAngle,camRelaxSpeed, 0.25f, 0.01f, 0.7f));
 		R_ASSERT				(S);
 		S->Shot					(0.01f);
 	}

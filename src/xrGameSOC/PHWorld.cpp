@@ -93,7 +93,7 @@ void CPHWorld::Create()
 	if (psDeviceFlags.test(mtPhysics))	Device.seqFrameMT.Add	(this,REG_PRIORITY_HIGH);
 	else								Device.seqFrame.Add		(this,REG_PRIORITY_LOW);
 	
-	m_commander							=xr_new<CPHCommander>();
+	m_commander							=new CPHCommander();
 	//dVector3 extensions={2048,256,2048};
 	/*
 	Fbox	level_box		=	Level().ObjectSpace.GetBoundingVolume();
@@ -169,7 +169,7 @@ void CPHWorld::SetGravity(float g)
 void CPHWorld::OnFrame()
 {
 	// Msg									("------------- physics: %d / %d",u32(Device.dwFrame),u32(m_steps_num));
-	//просчитать полет пуль
+	//РїСЂРѕСЃС‡РёС‚Р°С‚СЊ РїРѕР»РµС‚ РїСѓР»СЊ
 	/*
 	Device.Statistic->TEST0.Begin		();
 	Level().BulletManager().Update		();

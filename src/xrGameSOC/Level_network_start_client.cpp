@@ -87,7 +87,7 @@ bool	CLevel::net_start_client4				()
 
 		// Send physics to single or multithreaded mode
 		LoadPhysicsGameParams				();
-		ph_world							= xr_new<CPHWorld>();
+		ph_world							= new CPHWorld();
 		ph_world->Create					();
 
 		// Send network to single or multithreaded mode

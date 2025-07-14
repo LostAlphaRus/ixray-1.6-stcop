@@ -846,8 +846,8 @@ void	CPHMovementControl::AllocateCharacterObject(CharacterType type)
 {
 	switch(type)
 	{
-	case actor:			m_character = xr_new<CPHActorCharacter>	()							;	break;
-	case ai:			m_character = xr_new<CPHAICharacter>	()							;	break;
+	case actor:			m_character = new CPHActorCharacter	()							;	break;
+	case ai:			m_character = new CPHAICharacter	()							;	break;
 	}
 	eCharacterType=type;
 	m_character->SetMas(fMass);
@@ -866,7 +866,7 @@ void	CPHMovementControl::PHCaptureObject(CPhysicsShellHolder* object)
 if(m_capture) return;
 
 if(!object||!object->PPhysicsShell()||!object->m_pPhysicsShell->isActive()) return;
-m_capture=xr_new<CPHCapture>(m_character,
+m_capture=new CPHCapture(m_character,
 							 object
 							 );
 }
@@ -876,7 +876,7 @@ void	CPHMovementControl::PHCaptureObject(CPhysicsShellHolder* object,u16 element
 	if(m_capture) return;
 
 	if(!object||!object->PPhysicsShell()||!object->PPhysicsShell()->isActive()) return;
-	m_capture=xr_new<CPHCapture>(m_character,
+	m_capture=new CPHCapture(m_character,
 		object,
 		element
 		);
@@ -1100,7 +1100,7 @@ BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID 
 	if(result.O){
 		return true;
 	}else{
-		//ïîëó÷èòü òðåóãîëüíèê è óçíàòü åãî ìàòåðèàë
+		//Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚Ñ€ÐµÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸Ðº Ð¸ ÑƒÐ·Ð½Ð°Ñ‚ÑŒ ÐµÐ³Ð¾ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»
 		T				= Level().ObjectSpace.GetStaticTris()+result.element;
 		mtl_idx			= T->material;
 	}

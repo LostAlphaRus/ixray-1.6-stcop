@@ -65,7 +65,7 @@ float CAI_Stalker::GetWeaponAccuracy	() const
 {
 	float				base = PI/180.f;
 	
-	//âëèÿíèå ðàíãà íà ìåòêîñòü
+	//Ð²Ð»Ð¸ÑÐ½Ð¸Ðµ Ñ€Ð°Ð½Ð³Ð° Ð½Ð° Ð¼ÐµÑ‚ÐºÐ¾ÑÑ‚ÑŒ
 	base				*= m_fRankDisperison;
 
 	if (!movement().path_completed()) {
@@ -190,7 +190,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 
 //	pHDS->power						*= .1f;
 
-	//õèò ìîæåò ìåíÿòüñÿ â çàâèñèìîñòè îò ðàíãà (íîâè÷êè ïîëó÷àþò áîëüøå õèòà, ÷åì âåòåðàíû)
+	//Ñ…Ð¸Ñ‚ Ð¼Ð¾Ð¶ÐµÑ‚ Ð¼ÐµÐ½ÑÑ‚ÑŒÑÑ Ð² Ð·Ð°Ð²Ð¸ÑÐ¸Ð¼Ð¾ÑÑ‚Ð¸ Ð¾Ñ‚ Ñ€Ð°Ð½Ð³Ð° (Ð½Ð¾Ð²Ð¸Ñ‡ÐºÐ¸ Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÑŽÑ‚ Ð±Ð¾Ð»ÑŒÑˆÐµ Ñ…Ð¸Ñ‚Ð°, Ñ‡ÐµÐ¼ Ð²ÐµÑ‚ÐµÑ€Ð°Ð½Ñ‹)
 	SHit							HDS = *pHDS;
 	HDS.power						*= m_fRankImmunity;
 	if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound){
@@ -210,7 +210,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 		if (!already_critically_wounded) {
 			const CCoverPoint		*cover = agent_manager().member().member(this).cover();
 			if (cover && pHDS->initiator() && (pHDS->initiator()->ID() != ID()) && !fis_zero(pHDS->damage()) && brain().affect_cover())
-				agent_manager().location().add	(xr_new<CDangerCoverLocation>(cover,Device.dwTimeGlobal,DANGER_INTERVAL,DANGER_DISTANCE));
+				agent_manager().location().add	(new CDangerCoverLocation(cover,Device.dwTimeGlobal,DANGER_INTERVAL,DANGER_DISTANCE));
 		}
 
 		const CEntityAlive	*entity_alive = smart_cast<const CEntityAlive*>(pHDS->initiator());

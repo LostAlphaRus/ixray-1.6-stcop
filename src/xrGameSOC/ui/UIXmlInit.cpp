@@ -606,7 +606,7 @@ CUIXmlInit::StaticsVec CUIXmlInit::InitAutoStaticGroup(CUIXml& xml_doc, LPCSTR p
 	string64							sname;
 	for(int i=0; i<items_num; i++)
 	{
-		pUIStatic						= xr_new<CUIStatic>();
+		pUIStatic						= new CUIStatic();
 		InitStatic						(xml_doc, "auto_static", i, pUIStatic);
 		sprintf_s							(sname,"auto_static_%d", i);
 		pUIStatic->SetWindowName		(sname);
@@ -629,7 +629,7 @@ CUIXmlInit::StaticsVec CUIXmlInit::InitAutoStatic(CUIXml& xml_doc, LPCSTR tag_na
 	CUIStatic* pUIStatic = NULL;
 	for(int i=0; i<items_num; i++)
 	{
-		pUIStatic = xr_new<CUIStatic>();
+		pUIStatic = new CUIStatic();
 		InitStatic(xml_doc, tag_name, i, pUIStatic);
 		pUIStatic->SetAutoDelete(true);
 		pParentWnd->AttachChild(pUIStatic);
@@ -729,7 +729,7 @@ bool CUIXmlInit::InitTabControl(CUIXml &xml_doc, LPCSTR path, int index, CUITabC
 
 	for (int i = 0; i < tabsCount; ++i)
 	{
-		newButton = radio ? xr_new<CUIRadioButton>() : xr_new<CUITabButton>();
+		newButton = radio ? new CUIRadioButton() : new CUITabButton();
 		status &= Init3tButton(xml_doc, "button", i, newButton);
 		pWnd->AddItem(newButton);
 	}
@@ -1184,7 +1184,7 @@ void CUIXmlInit::InitColorDefs()
 {
 	if (NULL != m_pColorDefs) return;
 
-	m_pColorDefs = xr_new<ColorDefs>();
+	m_pColorDefs = new ColorDefs();
 
 	CUIXml uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH, COLOR_DEFINITIONS);
@@ -1247,7 +1247,7 @@ bool CUIXmlInit::InitScrollView	(CUIXml& xml_doc, const char* path, int index, C
 
 	for (int i = 0; i < tabsCount; ++i)
 	{
-		newStatic						= xr_new<CUIStatic>();
+		newStatic						= new CUIStatic();
 		InitText						(xml_doc, "text", i, newStatic);
 		newStatic->SetTextComplexMode	(true);
 		newStatic->SetWidth				(pWnd->GetDesiredChildWidth());

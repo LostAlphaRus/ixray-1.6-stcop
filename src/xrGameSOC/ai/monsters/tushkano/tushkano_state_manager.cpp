@@ -21,14 +21,14 @@
 
 CStateManagerTushkano::CStateManagerTushkano(CTushkano *obj) : inherited(obj)
 {
-	add_state(eStateRest,				xr_new<CStateMonsterRest<CTushkano> >				(obj));
-	add_state(eStateAttack,				xr_new<CStateMonsterAttack<CTushkano> >				(obj));
-	add_state(eStateEat,				xr_new<CStateMonsterEat<CTushkano> >				(obj));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CTushkano> >	(obj));
-	add_state(eStatePanic,				xr_new<CStateMonsterPanic<CTushkano> >				(obj));
-	add_state(eStateHitted,				xr_new<CStateMonsterHitted<CTushkano> >				(obj));
-	add_state(eStateControlled,			xr_new<CStateMonsterControlled<CTushkano> >			(obj));
-	add_state(eStateHearHelpSound,		xr_new<CStateMonsterHearHelpSound<CTushkano> >		(obj));
+	add_state(eStateRest,				new CStateMonsterRest<CTushkano> 				(obj));
+	add_state(eStateAttack,				new CStateMonsterAttack<CTushkano> 				(obj));
+	add_state(eStateEat,				new CStateMonsterEat<CTushkano> 				(obj));
+	add_state(eStateHearDangerousSound,		new CStateMonsterHearDangerousSound<CTushkano> 	(obj));
+	add_state(eStatePanic,				new CStateMonsterPanic<CTushkano> 				(obj));
+	add_state(eStateHitted,				new CStateMonsterHitted<CTushkano> 				(obj));
+	add_state(eStateControlled,			new CStateMonsterControlled<CTushkano> 			(obj));
+	add_state(eStateHearHelpSound,		new CStateMonsterHearHelpSound<CTushkano> 		(obj));
 }
 
 CStateManagerTushkano::~CStateManagerTushkano()
@@ -61,10 +61,10 @@ void CStateManagerTushkano::execute()
 		}
 	} else state_id = eStateControlled;
 
-	// установить текущее состояние
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

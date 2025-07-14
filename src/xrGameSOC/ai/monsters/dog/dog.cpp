@@ -11,7 +11,7 @@
 
 CAI_Dog::CAI_Dog()
 {
-	StateMan = xr_new<CStateManagerDog>(this);
+	StateMan = new CStateManagerDog(this);
 	
 	CControlled::init_external	(this);
 

@@ -49,7 +49,7 @@ void CScriptParticlesCustom::shedule_Update(u32 _dt)
 }
 void CScriptParticlesCustom::LoadPath(LPCSTR caPathName)
 {
-	if (!m_animator) m_animator	= xr_new<CObjectAnimator>();
+	if (!m_animator) m_animator	= new CObjectAnimator();
 	if ((0==m_animator->Name())||(0!=xr_strcmp(m_animator->Name(),caPathName))){
 		m_animator->Clear		();
 		m_animator->Load		(caPathName);
@@ -73,7 +73,7 @@ void CScriptParticlesCustom::StopPath()
 
 CScriptParticles::CScriptParticles(LPCSTR caParticlesName)
 {
-	m_particles					= xr_new<CScriptParticlesCustom>(this, caParticlesName);
+	m_particles					= new CScriptParticlesCustom(this, caParticlesName);
 }
 
 CScriptParticles::~CScriptParticles()

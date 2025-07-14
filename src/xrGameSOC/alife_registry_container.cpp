@@ -10,7 +10,7 @@
 #include "alife_registry_container.h"
 #include "object_interfaces.h"
 #include "alife_space.h"
-#include "object_type_traits.h"
+#include "../xrCore/object_type_traits.h"
 
 template <typename T1, typename _T2, typename Head>
 struct CRegistryHelperLoad {
@@ -29,7 +29,7 @@ struct CRegistryHelperLoad {
 
 	IC	static void process(T1 *self, T2 &p1)
 	{
-		do_load<std::is_base_of<IPureLîadableObject<T2>,Head>::value>(self,p1);
+		do_load<std::is_base_of<IPureLÐ¾adableObject<T2>,Head>::value>(self,p1);
 	}
 };
 

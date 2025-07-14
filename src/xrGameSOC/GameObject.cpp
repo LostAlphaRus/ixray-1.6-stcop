@@ -43,10 +43,10 @@ CGameObject::CGameObject		()
 	m_bCrPr_Activated			= false;
 	m_dwCrPr_ActivationStep		= 0;
 	m_spawn_time				= 0;
-	m_ai_location				= !g_dedicated_server ? xr_new<CAI_ObjectLocation>() : 0;
+	m_ai_location				= !g_dedicated_server ? new CAI_ObjectLocation() : 0;
 	m_server_flags.one			();
 
-	m_callbacks					= xr_new<CALLBACK_MAP>();
+	m_callbacks					= new CALLBACK_MAP();
 	m_anim_mov_ctrl				= 0;
 }
 
@@ -252,7 +252,7 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	if (O && xr_strlen(O->m_ini_string)) {
 #pragma warning(push)
 #pragma warning(disable:4238)
-		m_ini_file					= xr_new<CInifile>(
+		m_ini_file					= new CInifile(
 			&IReader				(
 				(void*)(*(O->m_ini_string)),
 				O->m_ini_string.size()
@@ -764,7 +764,7 @@ CScriptGameObject *CGameObject::lua_game_object		() const
 #endif
 	THROW							(m_spawned);
 	if (!m_lua_game_object)
-		m_lua_game_object			= xr_new<CScriptGameObject>(const_cast<CGameObject*>(this));
+		m_lua_game_object			= new CScriptGameObject(const_cast<CGameObject*>(this));
 	return							(m_lua_game_object);
 }
 
@@ -790,7 +790,7 @@ void CGameObject::DestroyObject()
 
 void CGameObject::shedule_Update	(u32 dt)
 {
-	//óíè÷òîæèòü
+	//ÑƒÐ½Ð¸Ñ‡Ñ‚Ð¾Ð¶Ð¸Ñ‚ÑŒ
 	if(!IsGameTypeSingle() && OnServer() && NeedToDestroyObject())
 	{
 #ifdef DEBUG
@@ -812,7 +812,7 @@ BOOL CGameObject::net_SaveRelevant	()
 	return	(CScriptBinder::net_SaveRelevant());
 }
 
-//èãðîâîå èìÿ îáúåêòà
+//Ð¸Ð³Ñ€Ð¾Ð²Ð¾Ðµ Ð¸Ð¼Ñ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°
 LPCSTR CGameObject::Name () const
 {
 	return	(*cName());
@@ -922,7 +922,7 @@ void	CGameObject::		create_anim_mov_ctrl( CBlend* b )
 	VERIFY(Visual());
 	CKinematics *K = Visual( )->dcast_PKinematics( );
 	VERIFY( K );
-	m_anim_mov_ctrl = xr_new<animation_movement_controller>( &XFORM(), K, b ); 
+	m_anim_mov_ctrl = new animation_movement_controller( &XFORM(), K, b ); 
 }
 void	CGameObject::		destroy_anim_mov_ctrl()
 {

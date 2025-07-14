@@ -26,10 +26,10 @@ CUIGameTDM::CUIGameTDM()
 	CUIXml							uiXml;
 	CUIXmlInit						xml_init;
 	uiXml.Load						(CONFIG_PATH, UI_PATH, "ui_game_tdm.xml");
-	m_team1_icon					= xr_new<CUIStatic>();
-	m_team2_icon					= xr_new<CUIStatic>();
-	m_team1_score					= xr_new<CUIStatic>();
-	m_team2_score					= xr_new<CUIStatic>();
+	m_team1_icon					= new CUIStatic();
+	m_team2_icon					= new CUIStatic();
+	m_team1_score					= new CUIStatic();
+	m_team2_score					= new CUIStatic();
 	xml_init.InitStatic				(uiXml, "team1_icon", 0,	m_team1_icon);
 //.	xml_init.InitAutoStaticGroup	(uiXml, "team1_icon",		m_team1_icon);
 	xml_init.InitStatic				(uiXml, "team2_icon", 0,	m_team2_icon);
@@ -46,7 +46,7 @@ CUIGameTDM::CUIGameTDM()
 //.	(*gr.back()).SetText				(*CTeamInfo::GetTeam2_name());
 //.	(*gr.back()).SetTextColor			(CTeamInfo::GetTeam2_color());
 
-	m_pUITeamSelectWnd	= xr_new<CUISpawnWnd>	();
+	m_pUITeamSelectWnd	= new CUISpawnWnd	();
 }
 //--------------------------------------------------------------------
 void CUIGameTDM::SetClGame (game_cl_GameState* g)
@@ -61,9 +61,9 @@ void CUIGameTDM::Init ()
 	CUIXml xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "stats.xml");
 
-	CUIFrags2* pFragList		= xr_new<CUIFrags2>();			pFragList->SetAutoDelete(true);
+	CUIFrags2* pFragList		= new CUIFrags2();			pFragList->SetAutoDelete(true);
 	//-----------------------------------------------------------
-	CUIDMStatisticWnd* pStatisticWnd = xr_new<CUIDMStatisticWnd>(); pStatisticWnd->SetAutoDelete(true);
+	CUIDMStatisticWnd* pStatisticWnd = new CUIDMStatisticWnd(); pStatisticWnd->SetAutoDelete(true);
 
 	pFragList->Init(xml_doc,"stats_wnd","frag_wnd_tdm");
 
@@ -78,8 +78,8 @@ void CUIGameTDM::Init ()
 	//-----------------------------------------------------------
 	m_pFragLists->AttachChild(pFragList);
 	//-----------------------------------------------------------
-	CUIFrags2* pPlayerListT1	= xr_new<CUIFrags2>	();pPlayerListT1->SetAutoDelete(true);
-//	CUIFrags2* pPlayerListT2	= xr_new<CUIFrags2>	();pPlayerListT2->SetAutoDelete(true);
+	CUIFrags2* pPlayerListT1	= new CUIFrags2	();pPlayerListT1->SetAutoDelete(true);
+//	CUIFrags2* pPlayerListT2	= new CUIFrags2	();pPlayerListT2->SetAutoDelete(true);
 
 	pPlayerListT1->Init(xml_doc, "players_wnd", "frag_wnd_tdm");
 //	pPlayerListT2->Init(xml_doc, "players_wnd", "frag_wnd_tdm");

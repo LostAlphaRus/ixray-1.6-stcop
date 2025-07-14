@@ -23,18 +23,18 @@ xr_token	game_types		[];
 CUIMapList::CUIMapList(){
 	m_item2del = -1;
 
-	m_pList1		= xr_new<CUIListBox>();
-	m_pList2		= xr_new<CUIListBox>();
-	m_pFrame1		= xr_new<CUIFrameWindow>();
-	m_pFrame2		= xr_new<CUIFrameWindow>();
-	m_pLbl1			= xr_new<CUILabel>();
-	m_pLbl2			= xr_new<CUILabel>();
-	m_pBtnLeft		= xr_new<CUI3tButton>();
-	m_pBtnRight		= xr_new<CUI3tButton>();
-	m_pBtnUp		= xr_new<CUI3tButton>();
-	m_pBtnDown		= xr_new<CUI3tButton>();
+	m_pList1		= new CUIListBox();
+	m_pList2		= new CUIListBox();
+	m_pFrame1		= new CUIFrameWindow();
+	m_pFrame2		= new CUIFrameWindow();
+	m_pLbl1			= new CUILabel();
+	m_pLbl2			= new CUILabel();
+	m_pBtnLeft		= new CUI3tButton();
+	m_pBtnRight		= new CUI3tButton();
+	m_pBtnUp		= new CUI3tButton();
+	m_pBtnDown		= new CUI3tButton();
 
-	m_pExtraContentFilter = xr_new<CExtraContentFilter>();
+	m_pExtraContentFilter = new CExtraContentFilter();
 
 	m_pList1->SetAutoDelete(true);
 	m_pList2->SetAutoDelete(true);

@@ -74,7 +74,7 @@ void CCoverManager::compute_static_cover	()
 {
 	clear					();
 	xr_delete				(m_covers);
-	m_covers				= xr_new<CPointQuadTree>(ai().level_graph().header().box(),ai().level_graph().header().cell_size()*.5f,4*65536,2*65536);
+	m_covers				= new CPointQuadTree(ai().level_graph().header().box(),ai().level_graph().header().cell_size()*.5f,4*65536,2*65536);
 	m_temp.resize			(ai().level_graph().header().vertex_count());
 
 	u32 n = ai().level_graph().header().vertex_count();
@@ -86,7 +86,7 @@ void CCoverManager::compute_static_cover	()
 
 	for (u32 i=0; i<n; ++i)
 		if (m_temp[i] && critical_cover(i))
-			m_covers->insert(xr_new<CCoverPoint>(ai().level_graph().vertex_position(ai().level_graph().vertex(i)),i));
+			m_covers->insert(new CCoverPoint(ai().level_graph().vertex_position(ai().level_graph().vertex(i)),i));
 }
 
 void CCoverManager::clear					()

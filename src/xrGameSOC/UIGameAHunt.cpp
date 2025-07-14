@@ -34,10 +34,10 @@ CUIGameAHunt::CUIGameAHunt()
 	if(m_pFragLimitIndicator)
 		xr_delete(m_pFragLimitIndicator);
 
-	m_pFragLimitIndicator			= xr_new<CUIStatic>();
+	m_pFragLimitIndicator			= new CUIStatic();
 	CUIXmlInit::InitStatic			(uiXml, "fraglimit",0,		m_pFragLimitIndicator);
 
-    m_pReinforcementInidcator = xr_new<CUIProgressShape>();
+    m_pReinforcementInidcator = new CUIProgressShape();
 
 	CUIXmlInit::InitProgressShape	(uiXml, "reinforcement", 0, m_pReinforcementInidcator);			
 	//-------------------------------------------------------------
@@ -51,7 +51,7 @@ void CUIGameAHunt::SetClGame (game_cl_GameState* g)
 	R_ASSERT(m_game);
 	//-----------------------------------------------------------------------
 	delete_data(m_pBuySpawnMsgBox);
-	m_pBuySpawnMsgBox	= xr_new<CUIMessageBoxEx>();	
+	m_pBuySpawnMsgBox	= new CUIMessageBoxEx();	
 	m_pBuySpawnMsgBox->Init("message_box_buy_spawn");
 	m_pBuySpawnMsgBox->SetText("");
 
@@ -64,9 +64,9 @@ void CUIGameAHunt::Init	()
 	CUIXml xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "stats.xml");
 
-	CUIFrags2* pFragList		= xr_new<CUIFrags2>();			pFragList->SetAutoDelete(true);
+	CUIFrags2* pFragList		= new CUIFrags2();			pFragList->SetAutoDelete(true);
 	//-----------------------------------------------------------
-	CUIDMStatisticWnd* pStatisticWnd = xr_new<CUIDMStatisticWnd>(); pStatisticWnd->SetAutoDelete(true);
+	CUIDMStatisticWnd* pStatisticWnd = new CUIDMStatisticWnd(); pStatisticWnd->SetAutoDelete(true);
 
 	pFragList->Init(xml_doc, "stats_wnd", "frag_wnd_tdm");
 
@@ -83,7 +83,7 @@ void CUIGameAHunt::Init	()
 	m_pFragLists->AttachChild(pFragList);
 	//-----------------------------------------------------------
 
-	CUIFrags2* pPlayerListT1	= xr_new<CUIFrags2>	();pPlayerListT1->SetAutoDelete(true);
+	CUIFrags2* pPlayerListT1	= new CUIFrags2	();pPlayerListT1->SetAutoDelete(true);
 
 	pPlayerListT1->Init(xml_doc, "players_wnd", "frag_wnd_tdm");
 	//-----------------------------------------------------------

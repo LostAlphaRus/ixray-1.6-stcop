@@ -23,11 +23,11 @@ CUIGameSP::CUIGameSP()
 {
 	m_game			= NULL;
 	
-	InventoryMenu	= xr_new<CUIInventoryWnd>	();
-	PdaMenu			= xr_new<CUIPdaWnd>			();
-	TalkMenu		= xr_new<CUITalkWnd>		();
-	UICarBodyMenu	= xr_new<CUICarBodyWnd>		();
-	UIChangeLevelWnd= xr_new<CChangeLevelWnd>		();
+	InventoryMenu	= new CUIInventoryWnd	();
+	PdaMenu			= new CUIPdaWnd			();
+	TalkMenu		= new CUITalkWnd		();
+	UICarBodyMenu	= new CUICarBodyWnd		();
+	UIChangeLevelWnd= new CChangeLevelWnd		();
 }
 
 CUIGameSP::~CUIGameSP() 
@@ -191,7 +191,7 @@ void CUIGameSP::reset_ui()
 
 CChangeLevelWnd::CChangeLevelWnd		()
 {
-	m_messageBox			= xr_new<CUIMessageBox>();	m_messageBox->SetAutoDelete(true);
+	m_messageBox			= new CUIMessageBox();	m_messageBox->SetAutoDelete(true);
 	AttachChild				(m_messageBox);
 	m_messageBox->Init		("message_box_change_level");
 	SetWndPos				(m_messageBox->GetWndPos());

@@ -47,7 +47,7 @@ void CLevelChanger::net_Destroy	()
 BOOL CLevelChanger::net_Spawn	(CSE_Abstract* DC) 
 {
 	m_entrance_time				= 0;
-	CCF_Shape *l_pShape			= xr_new<CCF_Shape>(this);
+	CCF_Shape *l_pShape			= new CCF_Shape(this);
 	collidable.model			= l_pShape;
 	
 	CSE_Abstract				*l_tpAbstract = (CSE_Abstract*)(DC);

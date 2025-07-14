@@ -73,7 +73,7 @@ void CUIPdaWnd::Init()
 
 	xml_init.InitWindow		(uiXml, "main", 0, this);
 
-	UIMainPdaFrame			= xr_new<CUIStatic>(); UIMainPdaFrame->SetAutoDelete(true);
+	UIMainPdaFrame			= new CUIStatic(); UIMainPdaFrame->SetAutoDelete(true);
 	AttachChild				(UIMainPdaFrame);
 	xml_init.InitStatic		(uiXml, "background_static", 0, UIMainPdaFrame);
 
@@ -81,47 +81,47 @@ void CUIPdaWnd::Init()
 	xml_init.InitAutoStatic	(uiXml, "auto_static", this);
 
 	// Main buttons background
-	UIMainButtonsBackground = xr_new<CUIFrameLineWnd>(); UIMainButtonsBackground->SetAutoDelete(true);
+	UIMainButtonsBackground = new CUIFrameLineWnd(); UIMainButtonsBackground->SetAutoDelete(true);
 	UIMainPdaFrame->AttachChild(UIMainButtonsBackground);
 	xml_init.InitFrameLine	(uiXml, "mbbackground_frame_line", 0, UIMainButtonsBackground);
 
 	// Timer background
-	UITimerBackground		= xr_new<CUIFrameLineWnd>(); UITimerBackground->SetAutoDelete(true);
+	UITimerBackground		= new CUIFrameLineWnd(); UITimerBackground->SetAutoDelete(true);
 	UIMainPdaFrame->AttachChild(UITimerBackground);
 	xml_init.InitFrameLine	(uiXml, "timer_frame_line", 0, UITimerBackground);
 
 	// Oкно карты
-	UIMapWnd				= xr_new<CUIMapWnd>();
+	UIMapWnd				= new CUIMapWnd();
 	UIMapWnd->Init			("pda_map.xml","map_wnd");
 
 	if( IsGameTypeSingle() )
 	{
 		// Oкно коммуникaции
-		UIPdaContactsWnd		= xr_new<CUIPdaContactsWnd>();
+		UIPdaContactsWnd		= new CUIPdaContactsWnd();
 		UIPdaContactsWnd->Init	();
 
 
 		// Oкно новостей
-		UIDiaryWnd				= xr_new<CUIDiaryWnd>();
+		UIDiaryWnd				= new CUIDiaryWnd();
 		UIDiaryWnd->Init		();
 
 		// Окно энциклопедии
-		UIEncyclopediaWnd		= xr_new<CUIEncyclopediaWnd>();
+		UIEncyclopediaWnd		= new CUIEncyclopediaWnd();
 		UIEncyclopediaWnd->Init	();
 
 		// Окно статистики о актере
-		UIActorInfo				= xr_new<CUIActorInfoWnd>();
+		UIActorInfo				= new CUIActorInfoWnd();
 		UIActorInfo->Init		();
 
 		// Окно рейтинга сталкеров
-		UIStalkersRanking		= xr_new<CUIStalkersRankingWnd>();
+		UIStalkersRanking		= new CUIStalkersRankingWnd();
 		UIStalkersRanking->Init	();
 
-		UIEventsWnd				= xr_new<CUIEventsWnd>();
+		UIEventsWnd				= new CUIEventsWnd();
 		UIEventsWnd->Init		();
 	}
 	// Tab control
-	UITabControl				= xr_new<CUITabControl>(); UITabControl->SetAutoDelete(true);
+	UITabControl				= new CUITabControl(); UITabControl->SetAutoDelete(true);
 	UIMainPdaFrame->AttachChild	(UITabControl);
 	xml_init.InitTabControl		(uiXml, "tab", 0, UITabControl);
 	UITabControl->SetMessageTarget(this);
@@ -135,10 +135,10 @@ void CUIPdaWnd::Init()
 		UITabControl->GetButtonsVector()->at(6)->Enable(false);
 	}
 	
-	m_updatedSectionImage			= xr_new<CUIStatic>();
+	m_updatedSectionImage			= new CUIStatic();
 	xml_init.InitStatic				(uiXml, "updated_section_static", 0, m_updatedSectionImage);
 
-	m_oldSectionImage				= xr_new<CUIStatic>();
+	m_oldSectionImage				= new CUIStatic();
 	xml_init.InitStatic				(uiXml, "old_section_static", 0, m_oldSectionImage);
 
 	m_pActiveSection				= eptNoActiveTab;
@@ -382,7 +382,7 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 	{
 		if(idx!=0)
 		{
-			st = xr_new<CUIStatic>(); st->SetAutoDelete(true);pTab->AttachChild(st);
+			st = new CUIStatic(); st->SetAutoDelete(true);pTab->AttachChild(st);
 			st->SetFont((*it)->GetFont());
 			st->SetTextColor	(color_rgba(90,90,90,255));
 			st->SetText("//");

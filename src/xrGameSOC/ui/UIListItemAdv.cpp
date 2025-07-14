@@ -14,7 +14,7 @@ void CUIListItemAdv::SetTextColor(u32 color){
 void CUIListItemAdv::AddField(LPCSTR val, float width){
 	float height = GetHeight();
 
-	CUIStatic* st = xr_new<CUIStatic>();
+	CUIStatic* st = new CUIStatic();
 	st->Init(GetNextLeftPos(), 0, width, height);
 	st->SetTextComplexMode(false);
 	st->SetText(val);

@@ -73,7 +73,7 @@ CUITradeWnd::CUITradeWnd()
 		m_pOthersTrade(NULL),
 		bStarted(false)
 {
-	m_uidata = xr_new<CUITradeInternal>();
+	m_uidata = new CUITradeInternal();
 	Init();
 	Hide();
 	SetCurrentItem			(NULL);

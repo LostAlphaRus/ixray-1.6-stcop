@@ -1,6 +1,6 @@
-// WeaponHUD.cpp:	HUD для оружия и прочих предметов, которые
-//					могут держать в руках персонажи, также используется
-//					для синхронизации анимаций с видом от 3-го лица
+// WeaponHUD.cpp:	HUD РґР»СЏ РѕСЂСѓР¶РёСЏ Рё РїСЂРѕС‡РёС… РїСЂРµРґРјРµС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+//					РјРѕРіСѓС‚ РґРµСЂР¶Р°С‚СЊ РІ СЂСѓРєР°С… РїРµСЂСЃРѕРЅР°Р¶Рё, С‚Р°РєР¶Рµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
+//					РґР»СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё Р°РЅРёРјР°С†РёР№ СЃ РІРёРґРѕРј РѕС‚ 3-РіРѕ Р»РёС†Р°
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "WeaponHUD.h"
@@ -173,7 +173,7 @@ void CWeaponHUD::StopCurrentAnimWithoutCallback		()
 void CWeaponHUD::CreateSharedContainer	()
 {
 	VERIFY(0==g_pWeaponHUDContainer);
-	g_pWeaponHUDContainer	= xr_new<weapon_hud_container>();
+	g_pWeaponHUDContainer	= new weapon_hud_container();
 }
 void CWeaponHUD::DestroySharedContainer	()
 {

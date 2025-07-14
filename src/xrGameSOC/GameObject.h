@@ -12,6 +12,7 @@
 #include "UsableScriptObject.h"
 #include "script_binder.h"
 #include "Hit.h"
+#include "../xrNetServer/NET_DeprecatedConstants.h"
 
 class CPhysicsShell;
 class CSE_Abstract;
@@ -59,7 +60,7 @@ class CGameObject :
 	ALife::_STORY_ID				m_story_id;
 	animation_movement_controller	*m_anim_mov_ctrl;
 protected:
-	//время удаления объекта
+	//РІСЂРµРјСЏ СѓРґР°Р»РµРЅРёСЏ РѕР±СЉРµРєС‚Р°
 	bool					m_bObjectRemoved;
 public:
 	CGameObject();
@@ -128,7 +129,7 @@ public:
 	virtual	BOOL			BonePassBullet		(int boneID) { return FALSE; }
 
 
-	//игровое имя объекта
+	//РёРіСЂРѕРІРѕРµ РёРјСЏ РѕР±СЉРµРєС‚Р°
 	virtual LPCSTR			Name                () const;
 	
 	//virtual void			OnH_A_Independent	();

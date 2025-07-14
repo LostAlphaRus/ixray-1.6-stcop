@@ -58,10 +58,10 @@ void SLocationKey::load(IReader &stream)
 	u8	bUserDefined = stream.r_u8	();
 	if(bUserDefined){
 		Level().Server->PerformIDgen(object_id);
-		location  = xr_new<CUserDefinedMapLocation>(*spot_type, object_id);
+		location  = new CUserDefinedMapLocation(*spot_type, object_id);
 	}else
 */
-	location  = xr_new<CMapLocation>(*spot_type, object_id);
+	location  = new CMapLocation(*spot_type, object_id);
 
 	location->load	(stream);
 }
@@ -97,7 +97,7 @@ void CMapLocationRegistry::save(IWriter &stream)
 
 CMapManager::CMapManager()
 {
-	m_locations = xr_new<CMapLocationWrapper>();
+	m_locations = new CMapLocationWrapper();
 	m_locations->registry().init(1);
 }
 
@@ -116,7 +116,7 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 	FindLocationBySpotID key(spot_type, id);
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it == Locations().end() ){
-		CMapLocation* l = xr_new<CMapLocation>(*key.spot_id, key.object_id);
+		CMapLocation* l = new CMapLocation(*key.spot_id, key.object_id);
 		Locations().push_back( SLocationKey(key.spot_id, key.object_id) );
 		Locations().back().location = l;
 		if (IsGameTypeSingle()&& g_actor)
@@ -144,7 +144,7 @@ CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 	FindLocationBySpotID key(sname, pInvOwner->object_id());
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it == Locations().end() ){
-		CMapLocation* l = xr_new<CRelationMapLocation>(*key.spot_id, key.object_id, pActor->object_id(), pInvOwner->object_id());
+		CMapLocation* l = new CRelationMapLocation(*key.spot_id, key.object_id, pActor->object_id(), pInvOwner->object_id());
 		Locations().push_back( SLocationKey(key.spot_id, key.object_id) );
 		Locations().back().location = l;
 		return l;
@@ -158,7 +158,7 @@ CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const shared_str& level_name, Fvector position)
 {
 	u16 _id	= Level().Server->PerformIDgen(0xffff);
-	CUserDefinedMapLocation* l = xr_new<CUserDefinedMapLocation>(*spot_type, _id);
+	CUserDefinedMapLocation* l = new CUserDefinedMapLocation(*spot_type, _id);
 	l->InitExternal	(level_name, position);
 	Locations().push_back( SLocationKey(spot_type, _id) );
 	Locations().back().location = l;

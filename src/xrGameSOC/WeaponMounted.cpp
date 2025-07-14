@@ -41,7 +41,7 @@ void CWeaponMounted::BoneCallbackY(CBoneInstance *B)
 
 CWeaponMounted::CWeaponMounted()
 {
-	camera		= xr_new<CCameraFirstEye>	(this, CCameraBase::flRelativeLink|CCameraBase::flPositionRigid|CCameraBase::flDirectionRigid); 
+	camera		= new CCameraFirstEye	(this, CCameraBase::flRelativeLink|CCameraBase::flPositionRigid|CCameraBase::flDirectionRigid); 
 	camera->Load	("mounted_weapon_cam");
 }
 
@@ -57,11 +57,11 @@ void	CWeaponMounted::Load(LPCSTR section)
 
 	HUD_SOUND::LoadSound(section,"snd_shoot", sndShot, SOUND_TYPE_WEAPON_SHOOTING);
 
-	//тип используемых патронов
+	//С‚РёРї РёСЃРїРѕР»СЊР·СѓРµРјС‹С… РїР°С‚СЂРѕРЅРѕРІ
 	m_sAmmoType = pSettings->r_string(section, "ammo_class");
 	m_CurrentAmmo.Load(*m_sAmmoType, 0);
 
-	//подбрасывание камеры во время отдачи
+	//РїРѕРґР±СЂР°СЃС‹РІР°РЅРёРµ РєР°РјРµСЂС‹ РІРѕ РІСЂРµРјСЏ РѕС‚РґР°С‡Рё
 	camMaxAngle			= pSettings->r_float		(section,"cam_max_angle"	); 
 	camMaxAngle			= deg2rad					(camMaxAngle);
 	camRelaxSpeed		= pSettings->r_float		(section,"cam_relax_speed"	); 
@@ -162,7 +162,7 @@ void	CWeaponMounted::shedule_Update(u32 dt)
 
 void	CWeaponMounted::renderable_Render()
 {
-	//нарисовать подсветку
+	//РЅР°СЂРёСЃРѕРІР°С‚СЊ РїРѕРґСЃРІРµС‚РєСѓ
 	RenderLight();
 
 	inherited::renderable_Render	();
@@ -243,7 +243,7 @@ bool	CWeaponMounted::attach_Actor		(CGameObject* actor)
 	m_dAngle.set(0.0f,0.0f);
 	CHolderCustom::attach_Actor(actor);
 	CKinematics* K		= smart_cast<CKinematics*>(Visual());
-	// убрать оружие из рук	
+	// СѓР±СЂР°С‚СЊ РѕСЂСѓР¶РёРµ РёР· СЂСѓРє	
 	// disable shell callback
 	m_pPhysicsShell->EnabledCallbacks(FALSE);
 	// enable actor rotate callback
@@ -271,7 +271,7 @@ void	CWeaponMounted::detach_Actor		()
 	// enable shell callback
 	m_pPhysicsShell->EnabledCallbacks(TRUE);
 	
-	//закончить стрельбу
+	//Р·Р°РєРѕРЅС‡РёС‚СЊ СЃС‚СЂРµР»СЊР±Сѓ
 	FireEnd();
 
 	processing_deactivate		();
@@ -322,7 +322,7 @@ void CWeaponMounted::OnShot		()
 	bool b_hud_mode = (Level().CurrentEntity() == smart_cast<CObject*>(Owner()));
 	HUD_SOUND::PlaySound(sndShot, fire_pos, Owner(), b_hud_mode);
 
-	//добавить эффектор стрельбы
+	//РґРѕР±Р°РІРёС‚СЊ СЌС„С„РµРєС‚РѕСЂ СЃС‚СЂРµР»СЊР±С‹
 	AddShotEffector		();
 	m_dAngle.set(	::Random.randF(-fireDispersionBase,fireDispersionBase),
 					::Random.randF(-fireDispersionBase,fireDispersionBase));
@@ -360,7 +360,7 @@ void CWeaponMounted::AddShotEffector				()
 	if(OwnerActor())
 	{
 		CCameraShotEffector* S	= smart_cast<CCameraShotEffector*>(OwnerActor()->Cameras().GetCamEffector(eCEShot)); 
-		if (!S)	S				= (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(xr_new<CCameraShotEffector> (camMaxAngle,camRelaxSpeed, 0.25f, 0.01f, 0.7f));
+		if (!S)	S				= (CCameraShotEffector*)OwnerActor()->Cameras().AddCamEffector(new CCameraShotEffector (camMaxAngle,camRelaxSpeed, 0.25f, 0.01f, 0.7f));
 		R_ASSERT				(S);
 		S->Shot					(0.01f);
 	}

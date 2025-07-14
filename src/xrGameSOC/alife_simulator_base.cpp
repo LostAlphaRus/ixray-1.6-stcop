@@ -73,16 +73,16 @@ void CALifeSimulatorBase::unload			()
 
 void CALifeSimulatorBase::reload			(LPCSTR section)
 {
-	m_header					= xr_new<CALifeSimulatorHeader>		(section);
-	m_time_manager				= xr_new<CALifeTimeManager>			(section);
-	m_spawns					= xr_new<CALifeSpawnRegistry>		(section);
-	m_objects					= xr_new<CALifeObjectRegistry>		(section);
-	m_graph_objects				= xr_new<CALifeGraphRegistry>		();
-	m_scheduled					= xr_new<CALifeScheduleRegistry>	();
-	m_story_objects				= xr_new<CALifeStoryRegistry>		();
-	m_smart_terrains			= xr_new<CALifeSmartTerrainRegistry>();
-	m_groups					= xr_new<CALifeGroupRegistry>		();
-	m_registry_container		= xr_new<CALifeRegistryContainer>	();
+	m_header					= new CALifeSimulatorHeader		(section);
+	m_time_manager				= new CALifeTimeManager			(section);
+	m_spawns					= new CALifeSpawnRegistry		(section);
+	m_objects					= new CALifeObjectRegistry		(section);
+	m_graph_objects				= new CALifeGraphRegistry		();
+	m_scheduled					= new CALifeScheduleRegistry	();
+	m_story_objects				= new CALifeStoryRegistry		();
+	m_smart_terrains			= new CALifeSmartTerrainRegistry();
+	m_groups					= new CALifeGroupRegistry		();
+	m_registry_container		= new CALifeRegistryContainer	();
 	m_initialized				= true;
 }
 
@@ -115,7 +115,7 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(LPCSTR section, const Fvector &po
 	CSE_ALifeDynamicObject		*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(abstract);
 	VERIFY						(dynamic_object);
 
-	//оружие спавним с полным магазинои
+	//РѕСЂСѓР¶РёРµ СЃРїР°РІРЅРёРј СЃ РїРѕР»РЅС‹Рј РјР°РіР°Р·РёРЅРѕРё
 	CSE_ALifeItemWeapon* weapon = smart_cast<CSE_ALifeItemWeapon*>(dynamic_object);
 	if(weapon)
 		weapon->a_elapsed		= weapon->get_ammo_magsize();

@@ -191,7 +191,7 @@ ui_core::ui_core()
 {
 	if(!g_dedicated_server)
 	{
-		m_pUICursor					= xr_new<CUICursor>();
+		m_pUICursor					= new CUICursor();
 	}else
 	{
 		m_pUICursor					= NULL;

@@ -105,7 +105,7 @@ CGameFont* CUIListBoxItem::GetFont()
 
 CUIStatic* CUIListBoxItem::AddField(LPCSTR txt, float len, LPCSTR key)
 {
-	fields.push_back		(xr_new<CUIStatic>());
+	fields.push_back		(new CUIStatic());
 	CUIStatic* st			= fields.back();
 	AttachChild				(st);
 	st->Init				(FieldsLength(),0, GetWidth(), len);

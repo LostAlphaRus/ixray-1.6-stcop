@@ -21,16 +21,16 @@
 
 CStateManagerCat::CStateManagerCat(CCat *obj) : inherited(obj)
 {
-	add_state(eStateRest,				xr_new<CStateMonsterRest<CCat> >					(obj));
-	add_state(eStatePanic,				xr_new<CStateMonsterPanic<CCat> >					(obj));
-	add_state(eStateAttack,				xr_new<CStateMonsterAttack<CCat> >					(obj));
-	add_state(eStateEat,				xr_new<CStateMonsterEat<CCat> >						(obj));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CCat> >	(obj));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CCat> >		(obj));
-	add_state(eStateHitted,				xr_new<CStateMonsterHitted<CCat> >					(obj));
+	add_state(eStateRest,				new CStateMonsterRest<CCat> 					(obj));
+	add_state(eStatePanic,				new CStateMonsterPanic<CCat> 					(obj));
+	add_state(eStateAttack,				new CStateMonsterAttack<CCat> 					(obj));
+	add_state(eStateEat,				new CStateMonsterEat<CCat> 						(obj));
+	add_state(eStateHearInterestingSound,	new CStateMonsterHearInterestingSound<CCat> 	(obj));
+	add_state(eStateHearDangerousSound,		new CStateMonsterHearDangerousSound<CCat> 		(obj));
+	add_state(eStateHitted,				new CStateMonsterHitted<CCat> 					(obj));
 
-	add_state(eStateThreaten,			xr_new<CStateMonsterLookActor<CCat> >				(obj));
-	add_state(eStateHearHelpSound,		xr_new<CStateMonsterHearHelpSound<CCat> >		(obj));
+	add_state(eStateThreaten,			new CStateMonsterLookActor<CCat> 				(obj));
+	add_state(eStateHearHelpSound,		new CStateMonsterHearHelpSound<CCat> 		(obj));
 
 	m_rot_jump_last_time = 0;
 }
@@ -69,7 +69,7 @@ void CStateManagerCat::execute()
 
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

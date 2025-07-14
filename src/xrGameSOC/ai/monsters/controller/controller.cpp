@@ -52,14 +52,14 @@ const float	_pmt_psy_attack_min_angle	= deg(5);
 
 CController::CController()
 {
-	StateMan = xr_new<CStateManagerController>(this);
+	StateMan = new CStateManagerController(this);
 	time_control_hit_started = 0;
 
-	m_psy_hit			= xr_new<CControllerPsyHit>();
+	m_psy_hit			= new CControllerPsyHit();
 
 	control().add		(m_psy_hit,  ControlCom::eComCustom1);
 
-	m_aura				= xr_new<CControllerAura>(this);
+	m_aura				= new CControllerAura(this);
 
 
 #ifdef _DEBUG	
@@ -282,12 +282,12 @@ BOOL CController::net_Spawn(CSE_Abstract *DC)
 
 void CController::UpdateControlled()
 {
-	// если есть враг, проверить может ли быть враг взят под контроль
+	// РµСЃР»Рё РµСЃС‚СЊ РІСЂР°Рі, РїСЂРѕРІРµСЂРёС‚СЊ РјРѕР¶РµС‚ Р»Рё Р±С‹С‚СЊ РІСЂР°Рі РІР·СЏС‚ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ
 	if (EnemyMan.get_enemy()) {
 		CControlledEntityBase *entity = smart_cast<CControlledEntityBase *>(const_cast<CEntityAlive *>(EnemyMan.get_enemy()));
 		if (entity) {
 			if (!entity->is_under_control() && (m_controlled_objects.size() < m_max_controlled_number)) {
-				// взять под контроль
+				// РІР·СЏС‚СЊ РїРѕРґ РєРѕРЅС‚СЂРѕР»СЊ
 				entity->set_under_control	(this);
 				entity->set_task_follow		(this);
 				m_controlled_objects.push_back(const_cast<CEntityAlive *>(EnemyMan.get_enemy()));
@@ -381,8 +381,8 @@ void CController::control_hit()
 	CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
 	if (!pA) return;
 	
-	Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(m_control_effector.ce_time,m_control_effector.ce_amplitude,m_control_effector.ce_period_number,m_control_effector.ce_power));
-	Actor()->Cameras().AddPPEffector(xr_new<CMonsterEffector>(m_control_effector.ppi, m_control_effector.time, m_control_effector.time_attack, m_control_effector.time_release));
+	Actor()->Cameras().AddCamEffector(new CMonsterEffectorHit(m_control_effector.ce_time,m_control_effector.ce_amplitude,m_control_effector.ce_period_number,m_control_effector.ce_power));
+	Actor()->Cameras().AddPPEffector(new CMonsterEffector(m_control_effector.ppi, m_control_effector.time, m_control_effector.time_attack, m_control_effector.time_release));
 
 	play_control_sound_hit		();
 /*
@@ -502,7 +502,7 @@ void CController::draw_fire_particles()
 	CEntityAlive *enemy	= const_cast<CEntityAlive*>(EnemyMan.get_enemy());
 	if (!EnemyMan.see_enemy_now()) return;
 
-	// вычислить позицию и направленность партикла
+	// РІС‹С‡РёСЃР»РёС‚СЊ РїРѕР·РёС†РёСЋ Рё РЅР°РїСЂР°РІР»РµРЅРЅРѕСЃС‚СЊ РїР°СЂС‚РёРєР»Р°
 	Fvector my_head_pos;
 	my_head_pos.set	(get_head_position(this));
 	
@@ -525,7 +525,7 @@ void CController::draw_fire_particles()
 
 	//m_sound_hit_fx.set_volume(10.0f);
 	//if(!m_sndShockEffector)
-	//	m_sndShockEffector = xr_new<SndShockEffector>();
+	//	m_sndShockEffector = new SndShockEffector();
 
 	//m_sndShockEffector->Start(m_sound_hit_fx._handle()->length_ms(), 10.f );
 	//m_sound_hit_fx.play_at_pos(this, Level().CurrentEntity()->Position());
@@ -622,14 +622,14 @@ void CController::test_covers()
 
 void CController::create_base_controls()
 {
-	m_custom_anim_base	= xr_new<CControllerAnimation>		(); 
-	m_custom_dir_base	= xr_new<CControllerDirection>		(); 
+	m_custom_anim_base	= new CControllerAnimation		(); 
+	m_custom_dir_base	= new CControllerDirection		(); 
 	
 	m_anim_base			= m_custom_anim_base;
 	m_dir_base			= m_custom_dir_base;
 
-	m_move_base			= xr_new<CControlMovementBase>		();
-	m_path_base			= xr_new<CControlPathBuilderBase>	();
+	m_move_base			= new CControlMovementBase		();
+	m_path_base			= new CControlPathBuilderBase	();
 }
 
 void CController::TranslateActionToPathParams()

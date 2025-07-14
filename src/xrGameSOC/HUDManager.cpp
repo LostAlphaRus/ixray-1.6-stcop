@@ -12,7 +12,7 @@
 CHUDManager::CHUDManager()
 { 
 	pUI						= 0;
-	m_pHUDTarget			= xr_new<CHUDTarget>();
+	m_pHUDTarget			= new CHUDTarget();
 	OnDisconnected			();
 }
 //--------------------------------------------------------------------
@@ -31,7 +31,7 @@ void CHUDManager::Load()
 		pUI->Load			( pUI->UIGame() );
 		return;
 	}
-	pUI					= xr_new<CUI> (this);
+	pUI					= new CUI (this);
 	pUI->Load			(NULL);
 	OnDisconnected		();
 }
@@ -161,7 +161,7 @@ void CHUDManager::OnScreenResolutionChanged()
 	if (EngineExternal()[EEngineExternalGame::UseNewScopeSystem])
 		xr_delete							(pWpnScopeXml);
 
-	pUI->UIMainIngameWnd				= xr_new<CUIMainIngameWnd>	();
+	pUI->UIMainIngameWnd				= new CUIMainIngameWnd	();
 	pUI->UIMainIngameWnd->Init			();
 	pUI->UnLoad							();
 	pUI->Load							(pUI->UIGame());

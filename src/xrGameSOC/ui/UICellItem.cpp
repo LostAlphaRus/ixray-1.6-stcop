@@ -71,7 +71,7 @@ bool CUICellItem::OnKeyboard(int dik, EUIMessages keyboard_action)
 CUIDragItem* CUICellItem::CreateDragItem()
 {
 	CUIDragItem* tmp;
-	tmp = xr_new<CUIDragItem>(this);
+	tmp = new CUIDragItem(this);
 	Frect r;
 	GetAbsoluteRect(r);
 	tmp->Init(GetShader(),r,GetUIStaticItem().GetOriginalRect());

@@ -351,7 +351,7 @@ IC	void CGameGraph::set_current_level								(const u32 &level_id)
 			continue;
 		}
 
-		m_current_level_cross_table	= xr_new<CGameLevelCrossTable>(current_cross_table + 1,*current_cross_table);
+		m_current_level_cross_table	= new CGameLevelCrossTable(current_cross_table + 1,*current_cross_table);
 		break;
 	}
 

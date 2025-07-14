@@ -353,7 +353,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 			//////////////////////////////////////
 			//Fvector C; float R;
 			//////////////////////////////////////
-			// С Олеся - ПИВО!!!! (Диме :-))))
+			// РЎ РћР»РµСЃСЏ - РџРР’Рћ!!!! (Р”РёРјРµ :-))))
 			// m_PhysicMovementControl->GetBoundingSphere	(C,R);
 			//////////////////////////////////////
 			//Center(C);
@@ -785,12 +785,12 @@ void CCustomMonster::PitchCorrection()
 	Fvector position_on_plane;
 	P.project(position_on_plane,Position());
 
-	// находим проекцию точки, лежащей на векторе текущего направления
+	// РЅР°С…РѕРґРёРј РїСЂРѕРµРєС†РёСЋ С‚РѕС‡РєРё, Р»РµР¶Р°С‰РµР№ РЅР° РІРµРєС‚РѕСЂРµ С‚РµРєСѓС‰РµРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	Fvector dir_point, proj_point;
 	dir_point.mad(position_on_plane, Direction(), 1.f);
 	P.project(proj_point,dir_point);
 	
-	// получаем искомый вектор направления
+	// РїРѕР»СѓС‡Р°РµРј РёСЃРєРѕРјС‹Р№ РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	Fvector target_dir;
 	target_dir.sub(proj_point,position_on_plane);
 
@@ -895,17 +895,17 @@ float CCustomMonster::evaluate		(const CDangerManager *manager, const CDangerObj
 
 CMovementManager *CCustomMonster::create_movement_manager	()
 {
-	return	(xr_new<CMovementManager>(this));
+	return	(new CMovementManager(this));
 }
 
 CSound_UserDataVisitor *CCustomMonster::create_sound_visitor		()
 {
-	return	(m_sound_user_data_visitor	= xr_new<CSound_UserDataVisitor>());
+	return	(m_sound_user_data_visitor	= new CSound_UserDataVisitor());
 }
 
 CMemoryManager *CCustomMonster::create_memory_manager		()
 {
-	return	(xr_new<CMemoryManager>(this,create_sound_visitor()));
+	return	(new CMemoryManager(this,create_sound_visitor()));
 }
 
 const SRotation CCustomMonster::Orientation	() const
@@ -922,7 +922,7 @@ DLL_Pure *CCustomMonster::_construct()
 {
 	m_memory_manager			= create_memory_manager();
 	m_movement_manager			= create_movement_manager();
-	m_sound_player				= xr_new<CSoundPlayer>(this);
+	m_sound_player				= new CSoundPlayer(this);
 
 	inherited::_construct		();
 	CScriptEntity::_construct	();
@@ -1078,7 +1078,7 @@ void CCustomMonster::OnRender()
 				const DetailPathManager::STravelPathPoint&	N2 = path[I];	Fvector	P2; P2.set(N2.position); P2.y+=0.1f;
 				if (!fis_zero(P1.distance_to_sqr(P2),EPS_L))
 					Level().debug_renderer().draw_line			(Fidentity,P1,P2,color0);
-				if ((path.size() - 1) == I) // песледний box?
+				if ((path.size() - 1) == I) // РїРµСЃР»РµРґРЅРёР№ box?
 					Level().debug_renderer().draw_aabb			(P1,radius0,radius0,radius0,color1);
 				else 
 					Level().debug_renderer().draw_aabb			(P1,radius0,radius0,radius0,color2);

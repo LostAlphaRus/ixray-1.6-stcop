@@ -19,15 +19,15 @@
 
 CStateManagerFlesh::CStateManagerFlesh(CAI_Flesh *monster) : inherited(monster)
 {
-	add_state(eStateRest,					xr_new<CStateMonsterRest<CAI_Flesh> >				(monster));
-	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CAI_Flesh> >				(monster));
-	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CAI_Flesh> >				(monster));
-	add_state(eStateEat,					xr_new<CStateMonsterEat<CAI_Flesh> >				(monster));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CAI_Flesh> >(monster));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CAI_Flesh> >	(monster));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CAI_Flesh> >				(monster));
-	add_state(eStateControlled,				xr_new<CStateMonsterControlled<CAI_Flesh> >			(monster));
-	add_state(eStateHearHelpSound,			xr_new<CStateMonsterHearHelpSound<CAI_Flesh> >		(monster));
+	add_state(eStateRest,					new CStateMonsterRest<CAI_Flesh> 				(monster));
+	add_state(eStatePanic,					new CStateMonsterPanic<CAI_Flesh> 				(monster));
+	add_state(eStateAttack,					new CStateMonsterAttack<CAI_Flesh> 				(monster));
+	add_state(eStateEat,					new CStateMonsterEat<CAI_Flesh> 				(monster));
+	add_state(eStateHearInterestingSound,	new CStateMonsterHearInterestingSound<CAI_Flesh> (monster));
+	add_state(eStateHearDangerousSound,		new CStateMonsterHearDangerousSound<CAI_Flesh> 	(monster));
+	add_state(eStateHitted,					new CStateMonsterHitted<CAI_Flesh> 				(monster));
+	add_state(eStateControlled,				new CStateMonsterControlled<CAI_Flesh> 			(monster));
+	add_state(eStateHearHelpSound,			new CStateMonsterHearHelpSound<CAI_Flesh> 		(monster));
 
 }
 
@@ -62,7 +62,7 @@ void CStateManagerFlesh::execute()
 
 	select_state(state_id); 
 
-	// выполнить текущее состояние
+	// РІС‹РїРѕР»РЅРёС‚СЊ С‚РµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 	get_state_current()->execute();
 
 	prev_substate = current_substate;

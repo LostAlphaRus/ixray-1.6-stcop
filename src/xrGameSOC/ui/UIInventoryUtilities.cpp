@@ -44,7 +44,7 @@ CharInfoStrings		*charInfoGoodwillStrings	= NULL;
 
 void InventoryUtilities::CreateShaders()
 {
-	g_tmpWMShader = xr_new<ui_shader>();
+	g_tmpWMShader = new ui_shader();
 	(*g_tmpWMShader)->create("effects\\wallmark", "wm\\wm_grenade");
 }
 
@@ -115,8 +115,8 @@ bool InventoryUtilities::FreeRoom_inBelt	(TIItemContainer& item_list, PIItem _it
 		PIItem pItem = *it;
 		int iWidth	= pItem->GetGridWidth(); 
 		int iHeight = pItem->GetGridHeight();
-		//проверить можно ли разместить элемент,
-		//проверяем последовательно каждую клеточку
+		//РїСЂРѕРІРµСЂРёС‚СЊ РјРѕР¶РЅРѕ Р»Рё СЂР°Р·РјРµСЃС‚РёС‚СЊ СЌР»РµРјРµРЅС‚,
+		//РїСЂРѕРІРµСЂСЏРµРј РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РєР°Р¶РґСѓСЋ РєР»РµС‚РѕС‡РєСѓ
 		found_place = false;
 	
 		for(i=0; (i<height - iHeight +1) && !found_place; ++i)
@@ -144,7 +144,7 @@ bool InventoryUtilities::FreeRoom_inBelt	(TIItemContainer& item_list, PIItem _it
 			}
 		}
 
-		//разместить элемент на найденном месте
+		//СЂР°Р·РјРµСЃС‚РёС‚СЊ СЌР»РµРјРµРЅС‚ РЅР° РЅР°Р№РґРµРЅРЅРѕРј РјРµСЃС‚Рµ
 		if(found_place)
 		{
 			for(k=0; k<iHeight; ++k)
@@ -160,7 +160,7 @@ bool InventoryUtilities::FreeRoom_inBelt	(TIItemContainer& item_list, PIItem _it
 	// remove
 	item_list.erase	(std::remove(item_list.begin(),item_list.end(),_item),item_list.end());
 
-	//для какого-то элемента места не нашлось
+	//РґР»СЏ РєР°РєРѕРіРѕ-С‚Рѕ СЌР»РµРјРµРЅС‚Р° РјРµСЃС‚Р° РЅРµ РЅР°С€Р»РѕСЃСЊ
 	if(!found_place) return false;
 
 	return true;
@@ -170,7 +170,7 @@ const ui_shader& InventoryUtilities::GetBuyMenuShader()
 {
 	if (!g_BuyMenuShader)
 	{
-		g_BuyMenuShader = xr_new<ui_shader>();
+		g_BuyMenuShader = new ui_shader();
 		(*g_BuyMenuShader)->create("hud\\default", BUY_MENU_TEXTURE);
 	}
 
@@ -181,7 +181,7 @@ const ui_shader& InventoryUtilities::GetEquipmentIconsShader()
 {
 	if (!g_EquipmentIconsShader)
 	{
-		g_EquipmentIconsShader = xr_new<ui_shader>();
+		g_EquipmentIconsShader = new ui_shader();
 		(*g_EquipmentIconsShader)->create("hud\\default", EQUIPMENT_ICONS);
 	}
 
@@ -192,7 +192,7 @@ const ui_shader& InventoryUtilities::GetMPCharIconsShader()
 {
 	if (!g_MPCharIconsShader)
 	{
-		g_MPCharIconsShader = xr_new<ui_shader>();
+		g_MPCharIconsShader = new ui_shader();
 		(*g_MPCharIconsShader)->create("hud\\default", MP_CHAR_ICONS);
 	}
 
@@ -393,7 +393,7 @@ void InitCharacterInfoStrings()
 	if (!charInfoReputationStrings)
 	{
 		// Create string->Id DB
-		charInfoReputationStrings	= xr_new<CharInfoStrings>();
+		charInfoReputationStrings	= new CharInfoStrings();
 		// Reputation
 		LoadStrings(charInfoReputationStrings, relationsLtxSection, reputationgField);
 	}
@@ -401,7 +401,7 @@ void InitCharacterInfoStrings()
 	if (!charInfoRankStrings)
 	{
 		// Create string->Id DB
-		charInfoRankStrings			= xr_new<CharInfoStrings>();
+		charInfoRankStrings			= new CharInfoStrings();
 		// Ranks
 		LoadStrings(charInfoRankStrings, relationsLtxSection, ratingField);
 	}
@@ -409,7 +409,7 @@ void InitCharacterInfoStrings()
 	if (!charInfoGoodwillStrings)
 	{
 		// Create string->Id DB
-		charInfoGoodwillStrings			= xr_new<CharInfoStrings>();
+		charInfoGoodwillStrings			= new CharInfoStrings();
 		// Goodwills
 		LoadStrings(charInfoGoodwillStrings, relationsLtxSection, goodwillField);
 	}
@@ -464,8 +464,8 @@ LPCSTR InventoryUtilities::GetGoodwillAsText(CHARACTER_GOODWILL goodwill)
 
 
 //////////////////////////////////////////////////////////////////////////
-// специальная функция для передачи info_portions при нажатии кнопок UI 
-// (для tutorial)
+// СЃРїРµС†РёР°Р»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ РїРµСЂРµРґР°С‡Рё info_portions РїСЂРё РЅР°Р¶Р°С‚РёРё РєРЅРѕРїРѕРє UI 
+// (РґР»СЏ tutorial)
 void InventoryUtilities::SendInfoToActor(LPCSTR info_id)
 {
 	if (GameID() != GAME_SINGLE) return;

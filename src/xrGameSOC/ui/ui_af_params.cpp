@@ -71,7 +71,7 @@ void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 
 	for(u32 i=_item_start; i<_max_item_index; ++i)
 	{
-		m_info_items[i]			= xr_new<CUIStatic>();
+		m_info_items[i]			= new CUIStatic();
 		CUIStatic* _s			= m_info_items[i];
 		_s->SetAutoDelete		(false);
 		strconcat				(sizeof(_buff),_buff, _base, ":static_", af_item_sect_names[i]);

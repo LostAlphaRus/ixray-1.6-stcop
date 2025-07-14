@@ -117,7 +117,7 @@ bool CUIWeaponCellItem::is_launcher()
 
 void CUIWeaponCellItem::CreateIcon(eAddonType t)
 {
-	m_addons[t]					= xr_new<CUIStatic>();	
+	m_addons[t]					= new CUIStatic();	
 	m_addons[t]->SetAutoDelete	(true);
 	AttachChild					(m_addons[t]);
 	m_addons[t]->SetShader		(InventoryUtilities::GetEquipmentIconsShader());
@@ -233,7 +233,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 
 	if(GetIcon(eSilencer))
 	{
-		s				= xr_new<CUIStatic>(); s->SetAutoDelete(true);
+		s				= new CUIStatic(); s->SetAutoDelete(true);
 		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
 		InitAddon		(s, *object()->GetSilencerName(), m_addon_offset[eSilencer]);
 		s->SetColor		(i->wnd()->GetColor());
@@ -242,7 +242,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 	
 	if(GetIcon(eScope))
 	{
-		s				= xr_new<CUIStatic>(); s->SetAutoDelete(true);
+		s				= new CUIStatic(); s->SetAutoDelete(true);
 		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
 		InitAddon		(s,	*object()->GetScopeName(),		m_addon_offset[eScope]);
 		s->SetColor		(i->wnd()->GetColor());
@@ -251,7 +251,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 
 	if(GetIcon(eLauncher))
 	{
-		s				= xr_new<CUIStatic>(); s->SetAutoDelete(true);
+		s				= new CUIStatic(); s->SetAutoDelete(true);
 		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
 		InitAddon		(s, *object()->GetGrenadeLauncherName(),m_addon_offset[eLauncher]);
 		s->SetColor		(i->wnd()->GetColor());

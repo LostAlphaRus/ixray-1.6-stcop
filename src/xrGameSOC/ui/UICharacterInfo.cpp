@@ -53,7 +53,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 
 	if(xml_doc->NavigateToNode("icon_static",0))	
 	{
-		pItem = m_icons[eUIIcon] = xr_new<CUIStatic>();
+		pItem = m_icons[eUIIcon] = new CUIStatic();
 		xml_init.InitStatic	(*xml_doc, "icon_static", 0, pItem);
 		pItem->ClipperOn	();
 		pItem->Show			(true);
@@ -63,7 +63,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	}
 
 	if(xml_doc->NavigateToNode("name_static", 0)){
-		pItem = m_icons[eUIName] = xr_new<CUIStatic>();
+		pItem = m_icons[eUIName] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "name_static", 0, pItem);
 		pItem->SetElipsis(CUIStatic::eepEnd, 0);
 		AttachChild(pItem);
@@ -73,7 +73,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	// rank
 	if(xml_doc->NavigateToNode("rank_static", 0))
 	{
-		pItem = m_icons[eUIRank] = xr_new<CUIStatic>();
+		pItem = m_icons[eUIRank] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "rank_static", 0, pItem);
 		pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
@@ -82,7 +82,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 
 	if(xml_doc->NavigateToNode("rank_caption", 0))
 	{
-		pItem = m_icons[eUIRankCaption] = xr_new<CUIStatic>();
+		pItem = m_icons[eUIRankCaption] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "rank_caption", 0, pItem);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
@@ -91,7 +91,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	//community
 	if(xml_doc->NavigateToNode("community_static", 0))
 	{
-		pItem = m_icons[eUICommunity] = xr_new<CUIStatic>();
+		pItem = m_icons[eUICommunity] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "community_static", 0, pItem);
 		pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
@@ -100,7 +100,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 
 	if(xml_doc->NavigateToNode("community_caption", 0))
 	{
-		pItem = m_icons[eUICommunityCaption] = xr_new<CUIStatic>();
+		pItem = m_icons[eUICommunityCaption] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "community_caption", 0, pItem);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
@@ -109,7 +109,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	//reputation
 	if(xml_doc->NavigateToNode("reputation_static", 0))
 	{
-		pItem = m_icons[eUIReputation] = xr_new<CUIStatic>();
+		pItem = m_icons[eUIReputation] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "reputation_static", 0, pItem);
 		pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
@@ -118,7 +118,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 
 	if(xml_doc->NavigateToNode("reputation_caption", 0))
 	{
-		pItem = m_icons[eUIReputationCaption] = xr_new<CUIStatic>();
+		pItem = m_icons[eUIReputationCaption] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "reputation_caption", 0, pItem);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
@@ -127,7 +127,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	// relation
 	if(xml_doc->NavigateToNode("relation_static", 0))
 	{
-		pItem = m_icons[eUIRelation] = xr_new<CUIStatic>();
+		pItem = m_icons[eUIRelation] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "relation_static", 0, pItem);
 		pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
@@ -136,7 +136,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 
 	if(xml_doc->NavigateToNode("relation_caption", 0))
 	{
-		pItem = m_icons[eUIRelationCaption] = xr_new<CUIStatic>();
+		pItem = m_icons[eUIRelationCaption] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "relation_caption", 0, pItem);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
@@ -144,7 +144,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 
 	if (xml_doc->NavigateToNode("biography_list", 0))
 	{
-		pUIBio = xr_new<CUIScrollView>();pUIBio->SetAutoDelete(true);
+		pUIBio = new CUIScrollView();pUIBio->SetAutoDelete(true);
 		xml_init.InitScrollView(*xml_doc, "biography_list", 0, pUIBio);
 		AttachChild(pUIBio);
 	}
@@ -198,7 +198,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
 		pUIBio->Clear();
 		if (chInfo.Bio().size())
 		{
-			CUIStatic* pItem				= xr_new<CUIStatic>();
+			CUIStatic* pItem				= new CUIStatic();
 			pItem->SetWidth					(pUIBio->GetDesiredChildWidth());
 			pItem->SetText					(*(chInfo.Bio()));
 			pItem->AdjustHeightToText		();

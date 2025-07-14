@@ -75,8 +75,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	Server						= NULL;
 
 	game						= NULL;
-//	game						= xr_new<game_cl_GameState>();
-	game_events					= xr_new<NET_Queue_Event>();
+//	game						= new game_cl_GameState();
+	game_events					= new NET_Queue_Event();
 
 	game_configured				= FALSE;
 	m_bGameConfigStarted		= FALSE;
@@ -88,14 +88,14 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 
 	eEntitySpawn				= Engine.Event.Handler_Attach	("LEVEL:spawn",this);
 
-	m_pBulletManager			= xr_new<CBulletManager>();
+	m_pBulletManager			= new CBulletManager();
 
 	if(!g_dedicated_server)
-		m_map_manager				= xr_new<CMapManager>();
+		m_map_manager				= new CMapManager();
 	else
 		m_map_manager				= NULL;
 
-//	m_pFogOfWarMngr				= xr_new<CFogOfWarMngr>();
+//	m_pFogOfWarMngr				= new CFogOfWarMngr();
 //----------------------------------------------------
 	m_bNeed_CrPr				= false;
 	m_bIn_CrPr					= false;
@@ -104,18 +104,18 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_dwLastNetUpdateTime		= 0;
 
 	physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
-	m_seniority_hierarchy_holder= xr_new<CSeniorityHierarchyHolder>();
+	m_seniority_hierarchy_holder= new CSeniorityHierarchyHolder();
 
 	if(!g_dedicated_server)
 	{
-		m_level_sound_manager		= xr_new<CLevelSoundManager>();
-		m_space_restriction_manager = xr_new<CSpaceRestrictionManager>();
-		m_client_spawn_manager		= xr_new<CClientSpawnManager>();
-		m_autosave_manager			= xr_new<CAutosaveManager>();
+		m_level_sound_manager		= new CLevelSoundManager();
+		m_space_restriction_manager = new CSpaceRestrictionManager();
+		m_client_spawn_manager		= new CClientSpawnManager();
+		m_autosave_manager			= new CAutosaveManager();
 
 	#ifdef DEBUG
-		m_debug_renderer			= xr_new<CDebugRenderer>();
-		m_level_debug				= xr_new<CLevelDebug>();
+		m_debug_renderer			= new CDebugRenderer();
+		m_level_debug				= new CLevelDebug();
 	#endif
 
 	}else
@@ -132,8 +132,8 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 
 
 	
-	m_ph_commander				= xr_new<CPHCommander>();
-	m_ph_commander_scripts		= xr_new<CPHCommander>();
+	m_ph_commander				= new CPHCommander();
+	m_ph_commander_scripts		= new CPHCommander();
 
 #ifdef DEBUG
 	m_bSynchronization			= false;
@@ -716,7 +716,7 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 		string_path RealName;
 		strcpy_s		(RealName,name);
 		strcat			(RealName,".xrdemo");
-		Cameras().AddCamEffector(xr_new<CDemoPlay> (RealName,1.3f,0));
+		Cameras().AddCamEffector(new CDemoPlay (RealName,1.3f,0));
 	} else if (E==eChangeTrack && P1) {
 		// int id = atoi((char*)P1);
 		// Environment->Music_Play(id);

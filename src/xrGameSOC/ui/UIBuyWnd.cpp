@@ -51,9 +51,9 @@ CUIBuyWnd::CUIBuyWnd()
 	for (int i = 0; i < MP_SLOT_NUM; i++)
 	{
 		if (MP_SLOT_OUTFIT == i)
-			m_list[i]		= xr_new<CUIOutfitDragDropList>();
+			m_list[i]		= new CUIOutfitDragDropList();
 		else
-			m_list[i]		= xr_new<CUIDragDropListEx>();
+			m_list[i]		= new CUIDragDropListEx();
 		
 		m_list[i]->SetAutoDelete(true);
 		AttachChild			(m_list[i]);

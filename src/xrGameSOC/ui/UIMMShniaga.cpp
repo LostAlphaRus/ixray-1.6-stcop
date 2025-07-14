@@ -16,15 +16,15 @@
 extern string_path g_last_saved_game;
 
 CUIMMShniaga::CUIMMShniaga(){
-	m_sound			= xr_new<CMMSound>();
+	m_sound			= new CMMSound();
 
-	m_view			= xr_new<CUIScrollView>();	AttachChild(m_view);
-	m_shniaga		= xr_new<CUIStatic>();	AttachChild(m_shniaga);
-	m_magnifier		= xr_new<CUIStatic>();	m_shniaga->AttachChild(m_magnifier);	m_magnifier->SetPPMode();
-	m_gratings[0]	= xr_new<CUIStatic>();	m_shniaga->AttachChild(m_gratings[0]);
-	m_gratings[1]	= xr_new<CUIStatic>();	m_shniaga->AttachChild(m_gratings[1]);
-	m_anims[0]		= xr_new<CUIStatic>();	m_shniaga->AttachChild(m_anims[0]);
-	m_anims[1]		= xr_new<CUIStatic>();	m_shniaga->AttachChild(m_anims[1]);
+	m_view			= new CUIScrollView();	AttachChild(m_view);
+	m_shniaga		= new CUIStatic();	AttachChild(m_shniaga);
+	m_magnifier		= new CUIStatic();	m_shniaga->AttachChild(m_magnifier);	m_magnifier->SetPPMode();
+	m_gratings[0]	= new CUIStatic();	m_shniaga->AttachChild(m_gratings[0]);
+	m_gratings[1]	= new CUIStatic();	m_shniaga->AttachChild(m_gratings[1]);
+	m_anims[0]		= new CUIStatic();	m_shniaga->AttachChild(m_anims[0]);
+	m_anims[1]		= new CUIStatic();	m_shniaga->AttachChild(m_anims[1]);
 
 	m_mag_pos = 0;
 
@@ -149,7 +149,7 @@ void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCST
 //			if (g_actor && Actor()->g_Alive())
 //				continue;
 //		}
-		st = xr_new<CUIStatic>();
+		st = new CUIStatic();
 		st->Init(0,0,m_view->GetDesiredChildWidth(), height);
 		st->SetTextComplexMode		(false);
 		st->SetTextST(xml_doc.ReadAttrib	("btn", i, "caption"));

@@ -58,14 +58,14 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 	if(uiXml.NavigateToNode("static_name",0))
 	{
-		UIName						= xr_new<CUIStatic>();	 
+		UIName						= new CUIStatic();	 
 		AttachChild					(UIName);		
 		UIName->SetAutoDelete		(true);
 		xml_init.InitStatic			(uiXml, "static_name", 0,	UIName);
 	}
 	if(uiXml.NavigateToNode("static_weight",0))
 	{
-		UIWeight				= xr_new<CUIStatic>();	 
+		UIWeight				= new CUIStatic();	 
 		AttachChild				(UIWeight);		
 		UIWeight->SetAutoDelete(true);
 		xml_init.InitStatic		(uiXml, "static_weight", 0,			UIWeight);
@@ -73,7 +73,7 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 	if(uiXml.NavigateToNode("static_cost",0))
 	{
-		UICost					= xr_new<CUIStatic>();	 
+		UICost					= new CUIStatic();	 
 		AttachChild				(UICost);
 		UICost->SetAutoDelete	(true);
 		xml_init.InitStatic		(uiXml, "static_cost", 0,			UICost);
@@ -81,7 +81,7 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 	if(uiXml.NavigateToNode("static_condition",0))
 	{
-		UICondition					= xr_new<CUIStatic>();	 
+		UICondition					= new CUIStatic();	 
 		AttachChild					(UICondition);
 		UICondition->SetAutoDelete	(true);
 		xml_init.InitStatic			(uiXml, "static_condition", 0,		UICondition);
@@ -89,17 +89,17 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 	if(uiXml.NavigateToNode("condition_progress",0))
 	{
-		UICondProgresBar			= xr_new<CUIProgressBar>(); AttachChild(UICondProgresBar);UICondProgresBar->SetAutoDelete(true);
+		UICondProgresBar			= new CUIProgressBar(); AttachChild(UICondProgresBar);UICondProgresBar->SetAutoDelete(true);
 		xml_init.InitProgressBar	(uiXml, "condition_progress", 0, UICondProgresBar);
 	}
 
 	if(uiXml.NavigateToNode("descr_list",0))
 	{
-		UIWpnParams						= xr_new<CUIWpnParams>();
-		UIArtefactParams				= xr_new<CUIArtefactParams>();
+		UIWpnParams						= new CUIWpnParams();
+		UIArtefactParams				= new CUIArtefactParams();
 		UIWpnParams->InitFromXml		(uiXml);
 		UIArtefactParams->InitFromXml	(uiXml);
-		UIDesc							= xr_new<CUIScrollView>(); 
+		UIDesc							= new CUIScrollView(); 
 		AttachChild						(UIDesc);		
 		UIDesc->SetAutoDelete			(true);
 		m_desc_info.bShowDescrText		= !!uiXml.ReadAttribInt("descr_list",0,"only_text_info", 1);
@@ -109,7 +109,7 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 	if (uiXml.NavigateToNode("image_static", 0))
 	{	
-		UIItemImage					= xr_new<CUIStatic>();	 
+		UIItemImage					= new CUIStatic();	 
 		AttachChild					(UIItemImage);	
 		UIItemImage->SetAutoDelete	(true);
 		xml_init.InitStatic			(uiXml, "image_static", 0, UIItemImage);
@@ -167,7 +167,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		TryAddArtefactInfo					(pInvItem->object().cNameSect());
 		if(m_desc_info.bShowDescrText)
 		{
-			CUIStatic* pItem					= xr_new<CUIStatic>();
+			CUIStatic* pItem					= new CUIStatic();
 			pItem->SetTextColor					(m_desc_info.uDescClr);
 			pItem->SetFont						(m_desc_info.pDescFont);
 			pItem->SetWidth						(UIDesc->GetDesiredChildWidth());
