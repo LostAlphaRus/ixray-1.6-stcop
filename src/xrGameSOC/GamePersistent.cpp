@@ -19,7 +19,8 @@
 #include "ai_space.h"
 #include "../xrEngine/x_ray.h"
 #include "ui/UILoadingScreen.h"
-
+#include "../xrCore/discord/discord.h"
+#include "../xrEngine/string_table.h"
 #include "../xrEngine/CameraManager.h"
 #include "actor.h"
 
@@ -75,6 +76,7 @@ CGamePersistent::CGamePersistent(void)
 
 	eQuickLoad					= g_pEventManager->Event.Handler_Attach("Game:QuickLoad",this);
 
+	g_Discord.SetStatus(g_pStringTable->translate(EngineExternal().GetTitle().c_str()).c_str());
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -418,8 +420,13 @@ void CGamePersistent::update_game_intro			()
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
+bool NeedUpdateLevel_ = true;
+
 void CGamePersistent::OnFrame	()
 {
+	if (Device.dwPrecacheFrame)
+		NeedUpdateLevel_ = true;
+
 	if(g_tutorial2){ 
 		g_tutorial2->Destroy	();
 		xr_delete				(g_tutorial2);
@@ -435,7 +442,14 @@ void CGamePersistent::OnFrame	()
 	if (!g_dedicated_server && !m_intro_event.empty())	m_intro_event();
 
 	if (!g_dedicated_server && Device.dwPrecacheFrame == 0/* && !m_intro && m_intro_event.empty()*/) // return these checks after implementing "Press any key..." prompt
+	{
 		load_screen_renderer.stop();
+		if (NeedUpdateLevel_)
+		{
+			SetDiscordStatus();
+			NeedUpdateLevel_ = false;
+		}
+	}
 
 	if( !m_pMainMenu->IsActive() )
 		m_pMainMenu->DestroyInternal(false);
@@ -674,4 +688,17 @@ void CGamePersistent::SetLoadStageTitle(pcstr ls_title)
 bool CGamePersistent::CanBePaused()
 {
 	return IsGameTypeSingle	();
+}
+
+void CGamePersistent::SetDiscordStatus() const {
+	if (g_pGameLevel != nullptr)
+	{
+		// Get level name
+		xr_string levelName = g_pStringTable->translate("st_discord_level").c_str();
+
+		levelName += '\t';
+		levelName += g_pStringTable->translate(Level().name()).c_str();
+
+		g_Discord.SetPhase(levelName);
+	}
 }

@@ -79,6 +79,7 @@ public:
     void				SetLoadStageTitle		(pcstr ls_title = nullptr) override;
 
 	virtual bool		CanBePaused				();
+	void				SetDiscordStatus() const;
 };
 
 IC CGamePersistent&		GamePersistent()		{ return *((CGamePersistent*) g_pGamePersistent);			}
