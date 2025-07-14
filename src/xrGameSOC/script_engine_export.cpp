@@ -132,7 +132,7 @@ void export_classes	(lua_State *L)
 	CExplosive::script_register(L);
 	CF1::script_register(L);
 	CBlendScript::script_register(L);
-	IRender_VisualScript::script_register(L);
+	//IRender_VisualScript::script_register(L);
 	CScriptGameDifficulty::script_register(L);
 	CHairsZone::script_register(L);
 	CHangingLamp::script_register(L);

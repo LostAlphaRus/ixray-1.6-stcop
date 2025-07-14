@@ -163,13 +163,13 @@ bool game_cl_mp::OnKeyboardPress(int key)
 
 				if (kCHAT_TEAM == key)
 				{
-					prefix.sprintf("%s> ", *st.translate("st_mp_say_to_team"));
+					prefix.printf("%s> ", *st.translate("st_mp_say_to_team"));
 					
 					pChatWnd->TeamChat();
 				}
 				else
 				{
-					prefix.sprintf("%s> ", *st.translate("st_mp_say_to_all"));					
+					prefix.printf("%s> ", *st.translate("st_mp_say_to_all"));					
 					pChatWnd->AllChat();
 				}
 
@@ -221,14 +221,6 @@ bool game_cl_mp::OnKeyboardPress(int key)
 			}break;
 		case kSPEECH_MENU_0:
 		case kSPEECH_MENU_1:
-		case kSPEECH_MENU_2:
-		case kSPEECH_MENU_3:
-		case kSPEECH_MENU_4:
-		case kSPEECH_MENU_5:
-		case kSPEECH_MENU_6:
-		case kSPEECH_MENU_7:
-		case kSPEECH_MENU_8:
-		case kSPEECH_MENU_9:
 			{
 				if (!local_player || local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) break;
 
@@ -278,7 +270,7 @@ bool	game_cl_mp::OnKeyboardRelease		(int key)
 
 char	Color_Weapon[]	= "%c[255,255,1,1]";
 u32		Color_Teams_u32[3]	= {color_rgba(255,240,190,255), color_rgba(64,255,64,255), color_rgba(64,64,255,255)};
-LPSTR	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
+LPCSTR	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
 char	Color_Main[]	= "%c[255,192,192,192]";
 char	Color_Radiation[]	= "%c[255,0,255,255]";
 char	Color_Neutral[]	= "%c[255,255,0,255]";
@@ -614,7 +606,7 @@ void game_cl_mp::OnSwitchPhase			(u32 old_phase, u32 new_phase)
 		{
 			m_bSpectatorSelected = FALSE;
 
-			if (Level().pHUD && HUD().GetUI())
+			if (HUD().GetUI())
 			{
 				HUD().GetUI()->ShowGameIndicators();
 			};
@@ -636,7 +628,7 @@ void game_cl_mp::OnSwitchPhase			(u32 old_phase, u32 new_phase)
 
 	default:
 		{
-			if (Level().pHUD && HUD().GetUI())
+			if (HUD().GetUI())
 			{
 				HUD().GetUI()->HideGameIndicators();
 			};
@@ -1054,7 +1046,7 @@ void	game_cl_mp::OnEventMoneyChanged			(NET_Packet& P)
 			}break;
 		case SKT_KIR: 
 			{				
-				BName.sprintf("%d_kill_in_row", BonusKills);
+				BName.printf("%d_kill_in_row", BonusKills);
 				
 				sprintf_s		(MoneyStr, sizeof(MoneyStr), "%d", BonusKills);
 				BMS.m_killer.m_name = MoneyStr;

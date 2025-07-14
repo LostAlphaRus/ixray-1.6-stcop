@@ -150,7 +150,7 @@ void CObjectScript::script_register		(lua_State *L)
 	];
 }
 
-void IRender_VisualScript::script_register		(lua_State *L)
+/*void IRender_VisualScript::script_register(lua_State* L)
 {
 	module(L)
 	[
@@ -158,7 +158,7 @@ void IRender_VisualScript::script_register		(lua_State *L)
 			.def(constructor<>())
 			.def("dcast_PKinematicsAnimated",&IRenderVisual::dcast_PKinematicsAnimated)
 	];
-}
+}*/
 
 void CKinematicsAnimated_PlayCycle(IKinematicsAnimated* sa, LPCSTR anim)
 {

@@ -2,6 +2,7 @@
 
 #include "control_combase.h"
 #include "../../../include/xrRender/Kinematics.h"
+#include "../../../include/xrRender/animation_motion.h"
 
 struct SAnimationSequencerData : public ControlCom::IComData {
 	xr_vector<MotionID>	motions;

@@ -5,6 +5,7 @@
 #include "../xrScripts/script_export_space.h"
 #include "../xrCore/client_id.h"
 #include "game_sv_base_console_vars.h"
+#include "../xrNetServer/NET_DeprecatedConstants.h"
 
 enum ERoundEnd_Result
 {

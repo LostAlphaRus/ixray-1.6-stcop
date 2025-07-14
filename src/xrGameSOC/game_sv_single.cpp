@@ -333,6 +333,6 @@ void game_sv_Single::restart_simulator			(LPCSTR saved_game_name)
 	m_alife_simulator		= new CALifeSimulator(&server(),&options);
 	pApp->LoadForceFinish();
 	g_pGamePersistent->LoadTitle		("st_client_synchronising");
-	Device.PreCache			(30);
+	Device.PreCache			(30, true, true);
 	pApp->LoadEnd			();
 }

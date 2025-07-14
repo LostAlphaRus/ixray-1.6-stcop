@@ -1,7 +1,7 @@
 #pragma once
 
-//#include "../../../PHCharacter.h"
-#include "../../../../xrphysics/IPHCapture.h"
+#include "../../../PHCharacter.h"
+#include "../../../PHCapture.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\
@@ -28,7 +28,7 @@ void CStateMonsterDragAbstract::initialize()
 	
 	m_failed = false;
 	
-	IPHCapture *capture = this->object->character_physics_support()->movement()->PHCapture();
+	CPHCapture *capture = this->object->character_physics_support()->movement()->PHCapture();
 	if (capture && !capture->Failed()) {
 		
 		const CCoverPoint *point = this->object->CoverMan->find_cover(this->object->Position(), 10.f, 30.f);

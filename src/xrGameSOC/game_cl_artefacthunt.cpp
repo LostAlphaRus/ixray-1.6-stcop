@@ -101,7 +101,7 @@ void game_cl_ArtefactHunt::Init ()
 							transform.identity();
 							transform.setXYZ(R.A);
 							transform.translate_over(R.P);
-							CParticlesObject* pStaticParticles			= Particles::Details::Create(pSettings->r_string("artefacthunt_gamedata", ParticleStr),FALSE,false).get();
+							xr_shared_ptr<CParticlesObject> pStaticParticles			= Particles::Details::Create(pSettings->r_string("artefacthunt_gamedata", ParticleStr),FALSE,false);
 							pStaticParticles->UpdateParent	(transform,zero_vel);
 							pStaticParticles->Play			(false);
 							Level().m_StaticParticles.push_back		(pStaticParticles);

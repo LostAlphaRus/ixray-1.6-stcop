@@ -456,7 +456,7 @@ BOOL	game_sv_ArtefactHunt::OnTouch				(u16 eid_who, u16 eid_what, BOOL bForced)
 						for		(u32 it=0; it<cnt; ++it)	
 						{
 							// init
-							xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+							xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 							game_PlayerState* pstate	= l_pC->ps;
 							if (!l_pC->net_Ready || pstate->IsSkip() || pstate->team != ps_who->team) continue;
 
@@ -592,7 +592,7 @@ void game_sv_ArtefactHunt::OnArtefactOnBase(ClientID id_who)
 		for		(u32 it=0; it<cnt; ++it)	
 		{
 			// init
-			xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+			xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 			game_PlayerState* pstate	= l_pC->ps;
 			if (!l_pC->net_Ready || pstate->IsSkip() || pstate == ps) continue;
 			if (pstate->team == ps->team)
@@ -772,7 +772,7 @@ bool game_sv_ArtefactHunt::ArtefactSpawn_Allowed()
 	u32		TeamAlived[2] = {0, 0};
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if (!ps->team)
 			continue;
@@ -948,7 +948,7 @@ void game_sv_ArtefactHunt::RespawnAllNotAlivePlayers()
 	u32		cnt		= get_players_count	();
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 
 		if (!l_pC->net_Ready || ps->IsSkip()) continue;
@@ -970,7 +970,7 @@ void game_sv_ArtefactHunt::CheckForAnyAlivePlayer()
 	u32		cnt		= get_players_count	();
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 
 		if (!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())	continue;
@@ -989,7 +989,7 @@ bool game_sv_ArtefactHunt::CheckAlivePlayersInTeam(s16 Team)
 	u32		cnt_exist = 0;
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		if (!l_pC->net_Ready) continue;
 		game_PlayerState* ps	= l_pC->ps;
 		if (ps->IsSkip() || ps->testFlag(GAME_PLAYER_FLAG_SPECTATOR)) continue;
@@ -1010,7 +1010,7 @@ void	game_sv_ArtefactHunt::MoveAllAlivePlayers			()
 	
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if (!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())	continue;
 		CSE_ALifeCreatureActor	*pA	=	smart_cast<CSE_ALifeCreatureActor*>(l_pC->owner);
@@ -1056,7 +1056,7 @@ void	game_sv_ArtefactHunt::UpdatePlayersNotSendedMoveRespond()
 	u32		cnt		= get_players_count	();
 	for (u32 it=0; it<cnt; it++)
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		if (!l_pC) continue;
 		game_PlayerState* ps	= l_pC->ps;
 		if (!l_pC->net_Ready || ps->IsSkip())	continue;
@@ -1076,7 +1076,7 @@ void	game_sv_ArtefactHunt::ReplicatePlayersStateToPlayer(ClientID CID)
 
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if (!l_pC->net_Ready || ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) || ps->IsSkip())	continue;		
 		CSE_ALifeCreatureActor	*pA	=	smart_cast<CSE_ALifeCreatureActor*>(l_pC->owner);
@@ -1115,7 +1115,7 @@ void	game_sv_ArtefactHunt::CheckForTeamElimination()
 		for		(u32 it=0; it<cnt; ++it)	
 		{
 			// init
-			xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+			xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 			game_PlayerState* pstate	= l_pC->ps;
 			if (!l_pC->net_Ready || pstate->IsSkip() || pstate->team != WinTeam) continue;
 			Player_AddMoney(pstate, pWTeam->m_iM_RivalsWipedOut);

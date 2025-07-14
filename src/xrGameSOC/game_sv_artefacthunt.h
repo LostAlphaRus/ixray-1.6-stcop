@@ -74,7 +74,7 @@ public:
 	virtual		LPCSTR				type_name			() const { return "artefacthunt";};
 	// Events	
 	virtual		void				OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender );
-	virtual		void				OnRoundStart			();							// старт раунда
+	virtual		void				OnRoundStart			();							// СЃС‚Р°СЂС‚ СЂР°СѓРЅРґР°
 	virtual		KILL_RES			GetKillResult			(game_PlayerState* pKiller, game_PlayerState* pVictim);
 	virtual		bool				OnKillResult			(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim);
 	virtual		void				OnGiveBonus				(KILL_RES KillResult, game_PlayerState* pKiller, game_PlayerState* pVictim, KILL_TYPE KillType, SPECIAL_KILL_TYPE SpecialKillType, CSE_Abstract* pWeaponA);
@@ -96,7 +96,7 @@ public:
 
 	virtual		void				LoadTeams				();
 
-	virtual		char*				GetAnomalySetBaseName	() {return "artefacthunt_game_anomaly_sets";};
+	virtual		char*				GetAnomalySetBaseName	() {return (char*)"artefacthunt_game_anomaly_sets";};
 
 	virtual		void				OnObjectEnterTeamBase	(u16 id, u16 zone_team);
 	virtual		void				OnObjectLeaveTeamBase	(u16 id, u16 zone_team);

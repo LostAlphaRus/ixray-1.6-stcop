@@ -34,6 +34,6 @@ typedef class_exporter<CObject>		CObjectScript;
 
 typedef class_exporter<CBlend>	CBlendScript;
 
-typedef class_exporter<IRenderVisual>	IRender_VisualScript;
+//typedef class_exporter<IRenderVisual>	IRender_VisualScript;
 
 typedef class_exporter<IKinematicsAnimated>	CKinematicsAnimatedScript;

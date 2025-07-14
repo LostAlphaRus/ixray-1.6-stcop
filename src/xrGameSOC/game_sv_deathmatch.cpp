@@ -16,6 +16,7 @@
 #include "eatable_item_object.h" 
 #include "Missile.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "uigamedm.h"
 
 //#define DELAYED_ROUND_TIME	7000
 #include "ui\UIBuyWndShared.h"
@@ -148,7 +149,7 @@ void game_sv_Deathmatch::OnRoundStart()
 	for		(u32 it=0; it<cnt; ++it)	
 	{
 		// init
-		xrClientData *l_pC		= (xrClientData*)m_server->client_Get(it);
+		xrClientData *l_pC		= (xrClientData*)m_server->GetClientByID(it);
 
 		if (!l_pC || !l_pC->net_Ready || !l_pC->ps) continue;
 		game_PlayerState* ps	= l_pC->ps;
@@ -161,7 +162,7 @@ void game_sv_Deathmatch::OnRoundStart()
 		SpawnPlayer				(get_it_2_id(it), "spectator");
 	}
 	//Clear disconnected players
-	cnt							= m_server->disconnected_client_Count();
+	/*cnt = m_server->disconnected_client_Count();
 	for		(u32 it=0; it<cnt; ++it)	
 	{
 		// init
@@ -172,7 +173,7 @@ void game_sv_Deathmatch::OnRoundStart()
 		ps->clear				();		
 		SetPlayersDefItems		(ps);
 		Money_SetStart			(l_pC->ID);
-	}
+	}*/
 }
 
 void game_sv_Deathmatch::OnRoundEnd()
@@ -184,7 +185,7 @@ void game_sv_Deathmatch::OnRoundEnd()
 			u32		cnt = get_players_count();
 			for		(u32 it=0; it<cnt; ++it)	
 			{
-				xrClientData *l_pC		= (xrClientData*)	m_server->client_Get	(it);
+				xrClientData *l_pC		= (xrClientData*)	m_server->GetClientByID	(it);
 				game_PlayerState* ps	= l_pC->ps;
 				if (!ps)				continue;
 				if (ps->IsSkip())			continue;
@@ -355,7 +356,7 @@ game_PlayerState*	game_sv_Deathmatch::GetWinningPlayer		()
 	u32		cnt		= get_players_count	();
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if (!ps) continue;
 		if (ps->frags() > MaxFrags)
@@ -529,7 +530,7 @@ void	game_sv_Deathmatch::SM_SwitchOnNextActivePlayer()
 	u32 it = 0;
 	for(; it<cnt; ++it)	
 	{
-		xrClientData *l_pC			= (xrClientData*)	m_server->client_Get(it);
+		xrClientData *l_pC			= (xrClientData*)	m_server->GetClientByID(it);
 		game_PlayerState* ps		= l_pC->ps;
 		if (!l_pC->net_Ready)		continue;
 		if (ps->IsSkip())				continue;
@@ -549,7 +550,7 @@ void	game_sv_Deathmatch::SM_SwitchOnNextActivePlayer()
 	{
 		it							= PossiblePlayers[::Random.randI((int)PPlayersCount)];
 		xrClientData*	C			= NULL;
-		C							= (xrClientData*)m_server->client_Get(it);
+		C							= (xrClientData*)m_server->GetClientByID(it);
 		pNewObject					=  Level().Objects.net_Find(C->ps->GameID);
 		CActor* pActor				= smart_cast<CActor*>(pNewObject);
 
@@ -608,7 +609,7 @@ BOOL	game_sv_Deathmatch::AllPlayers_Ready ()
 	u32		ready	= 0;
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if (!l_pC->net_Ready)
 		{
@@ -864,7 +865,7 @@ void	game_sv_Deathmatch::OnPlayerBuyFinished		(ClientID id_who, NET_Packet& P)
 		xr_vector<u16>				ItemsToDelete;
 
 		bool ExactMatch	= true;
-		//проверяем пояс
+		//РїСЂРѕРІРµСЂСЏРµРј РїРѕСЏСЃ
 		TIItemContainer::const_iterator	IBelt = pActor->inventory().m_belt.begin();
 		TIItemContainer::const_iterator	EBelt = pActor->inventory().m_belt.end();
 
@@ -874,7 +875,7 @@ void	game_sv_Deathmatch::OnPlayerBuyFinished		(ClientID id_who, NET_Packet& P)
 			CheckItem(ps, pItem, &ItemsDesired, &ItemsToDelete, ExactMatch);
 		};
 
-		//проверяем ruck
+		//РїСЂРѕРІРµСЂСЏРµРј ruck
 		TIItemContainer::const_iterator	IRuck = pActor->inventory().m_ruck.begin();
 		TIItemContainer::const_iterator	ERuck = pActor->inventory().m_ruck.end();
 
@@ -885,7 +886,7 @@ void	game_sv_Deathmatch::OnPlayerBuyFinished		(ClientID id_who, NET_Packet& P)
 			CheckItem(ps, pItem, &ItemsDesired, &ItemsToDelete, ExactMatch);
 		};
 
-		//проверяем слоты
+		//РїСЂРѕРІРµСЂСЏРµРј СЃР»РѕС‚С‹
 		TISlotArr::const_iterator	ISlot = pActor->inventory().m_slots.begin();
 		TISlotArr::const_iterator	ESlot = pActor->inventory().m_slots.end();
 
@@ -941,18 +942,18 @@ void game_sv_Deathmatch::LoadSkinsForTeam(const shared_str& caSection, TEAM_SKIN
 	string256			SkinSingleName;
 	string4096			Skins;
 
-	// Поле strSectionName должно содержать имя секции
+	// РџРѕР»Рµ strSectionName РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ РёРјСЏ СЃРµРєС†РёРё
 	R_ASSERT(xr_strcmp(caSection,""));
 
 	pTeamSkins->clear();
 
-	// Имя поля
+	// РРјСЏ РїРѕР»СЏ
 	if (!pSettings->line_exist(caSection, "skins")) return;
 
-	// Читаем данные этого поля
+	// Р§РёС‚Р°РµРј РґР°РЅРЅС‹Рµ СЌС‚РѕРіРѕ РїРѕР»СЏ
 	std::strcpy(Skins, pSettings->r_string(caSection, "skins"));
 	u32 count	= _GetItemCount(Skins);
-	// теперь для каждое имя оружия, разделенные запятыми, заносим в массив
+	// С‚РµРїРµСЂСЊ РґР»СЏ РєР°Р¶РґРѕРµ РёРјСЏ РѕСЂСѓР¶РёСЏ, СЂР°Р·РґРµР»РµРЅРЅС‹Рµ Р·Р°РїСЏС‚С‹РјРё, Р·Р°РЅРѕСЃРёРј РІ РјР°СЃСЃРёРІ
 	for (u32 i = 0; i < count; ++i)
 	{
 		_GetItem(Skins, i, SkinSingleName);
@@ -965,18 +966,18 @@ void game_sv_Deathmatch::LoadDefItemsForTeam(const shared_str& caSection, DEF_IT
 	string256			ItemName;
 	string4096			DefItems;
 
-	// Поле strSectionName должно содержать имя секции
+	// РџРѕР»Рµ strSectionName РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ РёРјСЏ СЃРµРєС†РёРё
 	R_ASSERT(xr_strcmp(caSection,""));
 
 	pDefItems->clear();
 
-	// Имя поля
+	// РРјСЏ РїРѕР»СЏ
 	if (!pSettings->line_exist(caSection, "default_items")) return;
 
-	// Читаем данные этого поля
+	// Р§РёС‚Р°РµРј РґР°РЅРЅС‹Рµ СЌС‚РѕРіРѕ РїРѕР»СЏ
 	std::strcpy(DefItems, pSettings->r_string(caSection, "default_items"));
 	u32 count	= _GetItemCount(DefItems);
-	// теперь для каждое имя оружия, разделенные запятыми, заносим в массив
+	// С‚РµРїРµСЂСЊ РґР»СЏ РєР°Р¶РґРѕРµ РёРјСЏ РѕСЂСѓР¶РёСЏ, СЂР°Р·РґРµР»РµРЅРЅС‹Рµ Р·Р°РїСЏС‚С‹РјРё, Р·Р°РЅРѕСЃРёРј РІ РјР°СЃСЃРёРІ
 	for (u32 i = 0; i < count; ++i)
 	{
 		_GetItem(DefItems, i, ItemName);
@@ -993,14 +994,14 @@ void game_sv_Deathmatch::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 	//-------------------------------------------
 	string256 SkinName;
 	std::strcpy(SkinName, pSettings->r_string("mp_skins_path", "skin_path"));
-	//загружены ли скины для этой комманды
+	//Р·Р°РіСЂСѓР¶РµРЅС‹ Р»Рё СЃРєРёРЅС‹ РґР»СЏ СЌС‚РѕР№ РєРѕРјРјР°РЅРґС‹
 //	if (SkinID != -1) ID = u16(SkinID);
 
 	if (!TeamList.empty()	&&
 		TeamList.size() > Team	&&
 		!TeamList[Team].aSkins.empty())
 	{
-		//загружено ли достаточно скинов для этой комманды
+		//Р·Р°РіСЂСѓР¶РµРЅРѕ Р»Рё РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ СЃРєРёРЅРѕРІ РґР»СЏ СЌС‚РѕР№ РєРѕРјРјР°РЅРґС‹
 		if (TeamList[Team].aSkins.size() > ID)
 		{
 			std::strcat(SkinName, TeamList[Team].aSkins[ID].c_str());
@@ -1010,7 +1011,7 @@ void game_sv_Deathmatch::SetSkin(CSE_Abstract* E, u16 Team, u16 ID)
 	}
 	else
 	{
-		//скины для такой комманды не загружены
+		//СЃРєРёРЅС‹ РґР»СЏ С‚Р°РєРѕР№ РєРѕРјРјР°РЅРґС‹ РЅРµ Р·Р°РіСЂСѓР¶РµРЅС‹
 		switch (Team)
 		{
 		case 0:
@@ -1113,30 +1114,30 @@ void	game_sv_Deathmatch::LoadTeamData			(const shared_str& caSection)
 	//-------------------------------------------------------------
 	if( pSettings->section_exist(caSection) )//money
 	{
-		NewTeam.m_iM_Start				= GetMoneyAmount(caSection, "money_start");
-		NewTeam.m_iM_OnRespawn			= GetMoneyAmount(caSection, "money_respawn");
-		NewTeam.m_iM_Min				= GetMoneyAmount(caSection, "money_min");
+		NewTeam.m_iM_Start				= GetMoneyAmount(caSection, (char*)"money_start");
+		NewTeam.m_iM_OnRespawn			= GetMoneyAmount(caSection, (char*)"money_respawn");
+		NewTeam.m_iM_Min				= GetMoneyAmount(caSection, (char*)"money_min");
 
-		NewTeam.m_iM_KillRival			= GetMoneyAmount(caSection, "kill_rival");
-		NewTeam.m_iM_KillSelf			= GetMoneyAmount(caSection, "kill_self");
-		NewTeam.m_iM_KillTeam			= GetMoneyAmount(caSection, "kill_team");
+		NewTeam.m_iM_KillRival			= GetMoneyAmount(caSection, (char*)"kill_rival");
+		NewTeam.m_iM_KillSelf			= GetMoneyAmount(caSection, (char*)"kill_self");
+		NewTeam.m_iM_KillTeam			= GetMoneyAmount(caSection, (char*)"kill_team");
 
-		NewTeam.m_iM_TargetRival		= GetMoneyAmount(caSection, "target_rival");
-		NewTeam.m_iM_TargetTeam			= GetMoneyAmount(caSection, "target_team");
-		NewTeam.m_iM_TargetSucceed		= GetMoneyAmount(caSection, "target_succeed");
-		NewTeam.m_iM_TargetSucceedAll	= GetMoneyAmount(caSection, "target_succeed_all");
-		NewTeam.m_iM_TargetFailed		= GetMoneyAmount(caSection, "target_failed");
+		NewTeam.m_iM_TargetRival		= GetMoneyAmount(caSection, (char*)"target_rival");
+		NewTeam.m_iM_TargetTeam			= GetMoneyAmount(caSection, (char*)"target_team");
+		NewTeam.m_iM_TargetSucceed		= GetMoneyAmount(caSection, (char*)"target_succeed");
+		NewTeam.m_iM_TargetSucceedAll	= GetMoneyAmount(caSection, (char*)"target_succeed_all");
+		NewTeam.m_iM_TargetFailed		= GetMoneyAmount(caSection, (char*)"target_failed");
 
-		NewTeam.m_iM_RoundWin			= GetMoneyAmount(caSection, "round_win");
-		NewTeam.m_iM_RoundLoose			= GetMoneyAmount(caSection, "round_loose");
-		NewTeam.m_iM_RoundDraw			= GetMoneyAmount(caSection, "round_draw");
+		NewTeam.m_iM_RoundWin			= GetMoneyAmount(caSection, (char*)"round_win");
+		NewTeam.m_iM_RoundLoose			= GetMoneyAmount(caSection, (char*)"round_loose");
+		NewTeam.m_iM_RoundDraw			= GetMoneyAmount(caSection, (char*)"round_draw");
 
-		NewTeam.m_iM_RoundWin_Minor		= GetMoneyAmount(caSection, "round_win_minor");
-		NewTeam.m_iM_RoundLoose_Minor	= GetMoneyAmount(caSection, "round_loose_minor");
+		NewTeam.m_iM_RoundWin_Minor		= GetMoneyAmount(caSection, (char*)"round_win_minor");
+		NewTeam.m_iM_RoundLoose_Minor	= GetMoneyAmount(caSection, (char*)"round_loose_minor");
 
-		NewTeam.m_iM_RivalsWipedOut		= GetMoneyAmount(caSection, "rivals_wiped_out");
+		NewTeam.m_iM_RivalsWipedOut		= GetMoneyAmount(caSection, (char*)"rivals_wiped_out");
 
-		NewTeam.m_iM_ClearRunBonus		= GetMoneyAmount(caSection, "clear_run_bonus");
+		NewTeam.m_iM_ClearRunBonus		= GetMoneyAmount(caSection, (char*)"clear_run_bonus");
 		//---------------------------------------------------------------------------
 		if (pSettings->line_exist(caSection, "kill_while_invincible"))
 			NewTeam.m_fInvinsibleKillModifier = pSettings->r_float(caSection, "kill_while_invincible");
@@ -1203,7 +1204,7 @@ void	game_sv_Deathmatch::OnTeamScore	(u32 Team, bool Minor)
 	for		(u32 it=0; it<cnt; ++it)	
 	{
 		// init
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if (!l_pC->net_Ready) continue;
 		if (ps->IsSkip()) continue;		
@@ -1697,7 +1698,7 @@ void game_sv_Deathmatch::check_InvinciblePlayers()
 	u32		cnt						= get_players_count	();
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if (ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
 		u16 OldFlags = ps->flags__;
@@ -1748,7 +1749,7 @@ void	game_sv_Deathmatch::check_ForceRespawn		()
 	u32		cnt		= get_players_count	();
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if (!l_pC->net_Ready || ps->IsSkip()) continue;
 		if (!ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) continue;
@@ -1774,7 +1775,7 @@ bool	game_sv_Deathmatch::HasChampion()
 	u32		cnt		= get_players_count	();
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if(!ps) continue;
 		if(ps->frags() > MaxFragsCurr)
@@ -1786,7 +1787,7 @@ bool	game_sv_Deathmatch::HasChampion()
 
 	for		(u32 it=0; it<cnt; ++it)	
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->client_Get	(it);
+		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
 		game_PlayerState* ps	= l_pC->ps;
 		if(!ps) continue;
 		if( (ps->frags() == MaxFragsCurr) && (ps != res) )

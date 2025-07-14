@@ -29,7 +29,7 @@ struct CRegistryHelperLoad {
 
 	IC	static void process(T1 *self, T2 &p1)
 	{
-		do_load<std::is_base_of<IPureLоadableObject<T2>,Head>::value>(self,p1);
+		do_load<std::is_base_of<IPureLoadableObject<T2>,Head>::value>(self,p1);
 	}
 };
 

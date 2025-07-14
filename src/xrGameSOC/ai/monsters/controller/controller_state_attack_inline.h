@@ -20,13 +20,13 @@
 TEMPLATE_SPECIALIZATION
 CStateControllerAttackAbstract::CStateControllerAttack(_Object *obj, state_ptr state_run, state_ptr state_melee) : inherited(obj)
 {
-	add_state	(eStateAttack_HideInCover,		new CStateControlHide<_Object> 	(obj));
-	add_state	(eStateAttack_HideInCoverLite,	new CStateControlHideLite<_Object> 	(obj));
-	add_state	(eStateAttack_MoveOut,			new CStateControlMoveOut<_Object> 	(obj));
-	add_state	(eStateAttack_CampInCover,		new CStateControlCamp<_Object> 		(obj));
-	add_state	(eStateAttack_ControlFire,		new CStateControlFire<_Object> 		(obj));
+	this->add_state	(eStateAttack_HideInCover,		new CStateControlHide<_Object> 	(obj));
+	this->add_state	(eStateAttack_HideInCoverLite,	new CStateControlHideLite<_Object> 	(obj));
+	this->add_state	(eStateAttack_MoveOut,			new CStateControlMoveOut<_Object> 	(obj));
+	this->add_state	(eStateAttack_CampInCover,		new CStateControlCamp<_Object> 		(obj));
+	this->add_state	(eStateAttack_ControlFire,		new CStateControlFire<_Object> 		(obj));
 
-	add_state	(eStateAttack_ControlTube,		new CStateControllerTube<_Object> 	(obj));
+	this->add_state	(eStateAttack_ControlTube,		new CStateControllerTube<_Object> 	(obj));
 	
 }
 
@@ -36,34 +36,34 @@ void CStateControllerAttackAbstract::execute()
 	EMonsterState state_id = eStateUnknown;
 
 	// Prev == None
-	if (prev_substate == u32(-1))
+	if (this->prev_substate == u32(-1))
 		state_id = eStateAttack_HideInCoverLite;
 
 	// Prev == Hide Cover Lite
 	if (state_id == eStateUnknown) {
-		if (prev_substate == eStateAttack_HideInCoverLite) {
-			if (!get_state_current()->check_completion())
+		if (this->prev_substate == eStateAttack_HideInCoverLite) {
+			if (!this->get_state_current()->check_completion())
 				state_id = eStateAttack_HideInCoverLite;
-			else if (get_state(eStateAttack_MoveOut)->check_start_conditions())
+			else if (this->get_state(eStateAttack_MoveOut)->check_start_conditions())
 				state_id =eStateAttack_MoveOut;
 		}
 	}
 
 	// Prev == Move Out
 	if (state_id == eStateUnknown) {
-		if (prev_substate == eStateAttack_MoveOut) {
-			if (get_state(eStateAttack_ControlFire)->check_start_conditions())
+		if (this->prev_substate == eStateAttack_MoveOut) {
+			if (this->get_state(eStateAttack_ControlFire)->check_start_conditions())
 				state_id =eStateAttack_ControlFire;
 			else {
-				if (!get_state_current()->check_completion())
+				if (!this->get_state_current()->check_completion())
 					state_id = eStateAttack_MoveOut;
 				else 
 					state_id = eStateAttack_HideInCover;
 			}
 			
 			//// eStateAttack_ControlTube
-			//bool control_fire_can = get_state(eStateAttack_ControlFire)->check_start_conditions();
-			//bool control_tube_can = get_state(eStateAttack_ControlTube)->check_start_conditions();
+			//bool control_fire_can = this->get_state(eStateAttack_ControlFire)->check_start_conditions();
+			//bool control_tube_can = this->get_state(eStateAttack_ControlTube)->check_start_conditions();
 
 			//if (control_fire_can && !control_tube_can) {
 			//	state_id = eStateAttack_ControlFire;
@@ -77,7 +77,7 @@ void CStateControllerAttackAbstract::execute()
 			//	else 
 			//		state_id = eStateAttack_ControlTube;
 			//} else {
-			//	if (!get_state_current()->check_completion())
+			//	if (!this->get_state_current()->check_completion())
 			//		state_id = eStateAttack_MoveOut;
 			//	else 
 			//		state_id = eStateAttack_HideInCover;
@@ -87,8 +87,8 @@ void CStateControllerAttackAbstract::execute()
 
 	// Prev == Control Fire
 	if (state_id == eStateUnknown) {
-		if (prev_substate == eStateAttack_ControlFire) {
-			if (!get_state_current()->check_completion())
+		if (this->prev_substate == eStateAttack_ControlFire) {
+			if (!this->get_state_current()->check_completion())
 				state_id = eStateAttack_ControlFire;
 			else 
 				state_id = eStateAttack_HideInCover;
@@ -98,8 +98,8 @@ void CStateControllerAttackAbstract::execute()
 
 	// Prev == Hide Cover
 	if (state_id == eStateUnknown) {
-		if (prev_substate == eStateAttack_HideInCover) {
-			if (!get_state_current()->check_completion())
+		if (this->prev_substate == eStateAttack_HideInCover) {
+			if (!this->get_state_current()->check_completion())
 				state_id = eStateAttack_HideInCover;
 			else 
 				state_id = eStateAttack_CampInCover;
@@ -109,11 +109,11 @@ void CStateControllerAttackAbstract::execute()
 
 	// Prev == Camp In Cover
 	if (state_id == eStateUnknown) {
-		if (prev_substate == eStateAttack_CampInCover) {
-			if (!get_state_current()->check_completion())
+		if (this->prev_substate == eStateAttack_CampInCover) {
+			if (!this->get_state_current()->check_completion())
 				state_id = eStateAttack_CampInCover;
 			else {
-				if (get_state(eStateAttack_MoveOut)->check_start_conditions())
+				if (this->get_state(eStateAttack_MoveOut)->check_start_conditions())
 					state_id = eStateAttack_MoveOut;	
 				else 
 					state_id = eStateAttack_HideInCoverLite;
@@ -127,25 +127,25 @@ void CStateControllerAttackAbstract::execute()
 		state_id = eStateAttack_HideInCover;
 	}
 
-	select_state		(state_id);
-	get_state_current()->execute();
-	prev_substate		= current_substate;
+	this->select_state		(state_id);
+	this->get_state_current()->execute();
+	this->prev_substate		= this->current_substate;
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::setup_substates()
 {
-	//state_ptr state = get_state_current();
+	//state_ptr state = this->get_state_current();
 
 	//if (current_substate == eStateFaceEnemy) {
 	//	SStateDataLookToPoint data;
 
-	//	data.point				= object->EnemyMan.get_enemy_position();
+	//	data.point				= this->object->EnemyMan.get_enemy_position();
 	//	data.action.action		= ACT_STAND_IDLE;
 
 	//	state->fill_data_with(&data, sizeof(SStateDataLookToPoint));
 	//
-	//	object->sound().play(MonsterSound::eMonsterSoundAggressive, 0,0,object->db().m_dwAttackSndDelay);
+	//	this->object->sound().play(MonsterSound::eMonsterSoundAggressive, 0,0,this->object->db().m_dwAttackSndDelay);
 	//	return;
 	//}
 }
@@ -154,9 +154,9 @@ TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::check_force_state() 
 {
 	//if (current_substate == eStateRun) {
-	//	float dist_to_enemy = object->Position().distance_to(object->EnemyMan.get_enemy_position());
+	//	float dist_to_enemy = this->object->Position().distance_to(this->object->EnemyMan.get_enemy_position());
 	//	if (dist_to_enemy > 10.f) {
-	//		get_state_current()->critical_finalize();
+	//		this->get_state_current()->critical_finalize();
 	//		current_substate = u32(-1);
 	//	}
 	//}
@@ -166,21 +166,21 @@ TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::initialize()
 {
 	inherited::initialize();
-	object->set_mental_state(CController::eStateDanger);
+	this->object->set_mental_state(CController::eStateDanger);
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::finalize()
 {
 	inherited::finalize();
-	object->set_mental_state(CController::eStateIdle);
+	this->object->set_mental_state(CController::eStateIdle);
 }
 
 TEMPLATE_SPECIALIZATION
 void CStateControllerAttackAbstract::critical_finalize()
 {
 	inherited::critical_finalize();
-	object->set_mental_state(CController::eStateIdle);
+	this->object->set_mental_state(CController::eStateIdle);
 }
 
 #undef TEMPLATE_SPECIALIZATION

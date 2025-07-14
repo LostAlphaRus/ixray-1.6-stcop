@@ -2,7 +2,7 @@
 
 #include "game_sv_mp.h"
 #include "inventory_space.h"
-#include "../xrNetServer/client_id.h"
+#include "../xrCore/client_id.h"
 #include "Hit.h"
 #include "../xrEngine/pure_relcase.h"
 
@@ -174,7 +174,7 @@ public:
 	virtual		void				LoadSkinsForTeam		(const shared_str& caSection, TEAM_SKINS_NAMES* pTeamSkins);
 	virtual		void				LoadDefItemsForTeam		(const shared_str& caSection, /*TEAM_WPN_LIST *pWpnList,*/ DEF_ITEMS_LIST* pDefItems);
 
-	virtual		char*				GetAnomalySetBaseName	() {return "deathmatch_game_anomaly_sets";};
+	virtual		char*				GetAnomalySetBaseName	() {return (char*)"deathmatch_game_anomaly_sets";};
 	virtual		void				LoadAnomalySets			();
 	virtual		void				StartAnomalies			(int AnomalySet = -1);
 

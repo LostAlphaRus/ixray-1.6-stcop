@@ -9,7 +9,7 @@
 #include "GameSpy_Available.h"
 #include "GameSpy_QR2.h"
 
-#include "../object_broker.h"
+#include "../../xrCore/object_broker.h"
 #include "../../xrEngine/string_table.h"
 
 void __cdecl SBCallback(void* sb, SBCallbackReason reason, void* server, void *instance);
@@ -27,8 +27,8 @@ CGameSpy_Browser::CGameSpy_Browser()
 	m_pServerList = NULL;
 	//-------------------------
 	LPCSTR			g_name	= "xrGameSpy.dll";
-	Log				("Loading DLL:",g_name);
-	m_hGameSpyDLL			= LoadLibrary	(g_name);
+	Msg				("Loading DLL: %s",g_name);
+	m_hGameSpyDLL			= LoadLibraryA	(g_name);
 	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
 	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
 	//-------------------------

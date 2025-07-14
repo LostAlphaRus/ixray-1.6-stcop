@@ -44,7 +44,7 @@ public:
 	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P);
 	virtual		void				OnPlayerHitPlayer_Case	(game_PlayerState* ps_hitter, game_PlayerState* ps_hitted, SHit* pHitS);
 
-	virtual		void				OnRoundStart			();												// старт раунда
+	virtual		void				OnRoundStart			();												// СЃС‚Р°СЂС‚ СЂР°СѓРЅРґР°
 	virtual		void				AutoBalanceTeams		();
 	virtual		void				AutoSwapTeams			();
 
@@ -55,7 +55,7 @@ public:
 
 	virtual		void				LoadTeams				();
 
-	virtual		char*				GetAnomalySetBaseName	()	{return "teamdeathmatch_game_anomaly_sets";};	
+	virtual		char*				GetAnomalySetBaseName	()	{return (char*)"teamdeathmatch_game_anomaly_sets";};	
 	virtual		BOOL				CanHaveFriendlyFire		()	{return TRUE;}
 	virtual		void				OnFraglimitExceed		();
 	virtual		void				OnTimelimitExceed		();
