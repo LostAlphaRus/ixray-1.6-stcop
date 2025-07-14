@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "MainMenu.h"
-#include "UI/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
 #include "ui/UIMessageBoxEx.h"
 #include "../xrEngine/xr_IOConsole.h"
 #include "../xrEngine/IGame_Level.h"
 #include "../xrEngine/CameraManager.h"
 #include "../xrEngine/xr_level_controller.h"
-#include "ui\UITextureMaster.h"
-#include "ui\UIXmlInit.h"
-#include "ui\UIBtnHint.h"
-#include "UICursor.h"
+#include "../xrUI/UITextureMaster.h"
+#include "../xrUI/UIXmlInit.h"
+#include "../xrUI/Widgets/UIBtnHint.h"
+#include "../xrUI/UICursor.h"
 #include "gamespy/GameSpy_Full.h"
 #include "gamespy/GameSpy_HTTP.h"
 #include "gamespy/GameSpy_Available.h"
@@ -60,6 +60,7 @@ CMainMenu::CMainMenu	()
 	ReadTextureInfo					();
 	CUIXmlInit::InitColorDefs		();
 	g_btnHint						= NULL;
+	g_statHint						= NULL;
 	m_deactivated_frame				= 0;	
 	
 	m_sPatchURL						= "";
@@ -74,6 +75,7 @@ CMainMenu::CMainMenu	()
 	if(!g_dedicated_server)
 	{
 		g_btnHint						= new CUIButtonHint();
+		g_statHint						= new CUIButtonHint();
 		m_pGameSpyFull					= new CGameSpy_Full();
 		
 		for (u32 i=0; i<u32(ErrMax); i++)
@@ -83,20 +85,18 @@ CMainMenu::CMainMenu	()
 			m_pMB_ErrDlgs.push_back		(pNewErrDlg);
 		}
 
-		Register						(m_pMB_ErrDlgs[PatchDownloadSuccess]);
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->SetWindowName	("msg_box");
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallback	("msg_box", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnRunDownloadedPatch));
-
-		Register						(m_pMB_ErrDlgs[ConnectToMasterServer]);
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->SetWindowName	("msg_box_connecting");
-		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallback	("msg_box_connecting", MESSAGE_BOX_OK_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnConnectToMasterServerOkClicked));
+		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallbackStr("button_yes", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnRunDownloadedPatch));
+		m_pMB_ErrDlgs[PatchDownloadSuccess]->AddCallbackStr("button_yes", MESSAGE_BOX_OK_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnConnectToMasterServerOkClicked));
 
 	}
+	Device.seqFrame.Add(this, REG_PRIORITY_LOW - 1000);
 }
 
 CMainMenu::~CMainMenu	()
 {
+	Device.seqFrame.Remove			(this);
 	xr_delete						(g_btnHint);
+	xr_delete						(g_statHint);
 	xr_delete						(m_startDialog);
 	g_pGamePersistent->m_pMainMenu	= NULL;
 	xr_delete						(m_pGameSpyFull);
@@ -116,7 +116,7 @@ void CMainMenu::ReadTextureInfo()
 		_splitpath((*fit).name.c_str(), fn1, fn2, fn3, 0);
 		strcat(fn3, ".xml");
 
-		CUITextureMaster::ParseShTexInfoNew(fn3);
+		CUITextureMaster::ParseShTexInfo(fn3);
 	}
 	if (pSettings->section_exist("texture_desc"))
 	{
@@ -130,7 +130,7 @@ void CMainMenu::ReadTextureInfo()
 		{
 			_GetItem(itemsList.c_str(), i, single_item);
 			strcat(single_item,".xml");
-			CUITextureMaster::ParseShTexInfo(single_item);
+			CUITextureMaster::ParseShTexInfoLegacy(single_item);
 		}		
 	}
 }
@@ -156,7 +156,7 @@ void CMainMenu::Activate	(bool bActivate)
 		Device.Pause				(TRUE, FALSE, TRUE, "mm_activate1");
 			m_Flags.set				(flActive|flNeedChangeCapture,TRUE);
 
-		m_Flags.set					(flRestoreCursor,GetUICursor()->IsVisible());
+		m_Flags.set					(flRestoreCursor,GetUICursor().IsVisible());
 
 		if(!ReloadUI())				return;
 
@@ -226,7 +226,7 @@ void CMainMenu::Activate	(bool bActivate)
 		}	
 	
 		if(m_Flags.test(flRestoreCursor))
-			GetUICursor()->Show			();
+			GetUICursor().Show			();
 
 		Device.Pause					(FALSE, TRUE, TRUE, "mm_deactivate2");
 
@@ -299,9 +299,7 @@ void	CMainMenu::IR_OnMouseMove(int x, int y)
 {
 	if(!IsActive()) return;
 
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnMouseMove(x, y);
-
+	CDialogHolder::IR_UIOnMouseMove(x, y);
 };
 
 void	CMainMenu::IR_OnMouseStop(int x, int y)
@@ -322,34 +320,28 @@ void	CMainMenu::IR_OnKeyboardPress(int dik)
 		return;
 	}
 
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnKeyboardPress( dik);
-
+	CDialogHolder::IR_UIOnKeyboardPress( dik);
 };
 
 void	CMainMenu::IR_OnKeyboardRelease			(int dik)
 {
 	if(!IsActive()) return;
 	
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnKeyboardRelease(dik);
-
+	CDialogHolder::IR_UIOnKeyboardRelease(dik);
 };
 
 void	CMainMenu::IR_OnKeyboardHold(int dik)	
 {
 	if(!IsActive()) return;
 	
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnKeyboardHold(dik);
+	CDialogHolder::IR_UIOnKeyboardHold(dik);
 };
 
 void CMainMenu::IR_OnMouseWheel(int direction)
 {
 	if(!IsActive()) return;
 	
-	if(MainInputReceiver())
-		MainInputReceiver()->IR_OnMouseWheel(direction);
+	CDialogHolder::IR_UIOnMouseWheel(direction);
 }
 
 
@@ -372,7 +364,7 @@ void CMainMenu::OnRender	()
 	if(!OnRenderPPUI_query())
 	{
 		DoRenderDialogs();
-		UI()->RenderFont();
+		UI().RenderFont();
 		draw_wnds_rects();
 	}
 }
@@ -384,15 +376,15 @@ void CMainMenu::OnRenderPPUI_main	()
 	if(m_Flags.test(flGameSaveScreenshot))
 		return;
 
-	UI()->pp_start();
+	UI().pp_start();
 
 	if(OnRenderPPUI_query())
 	{
 		DoRenderDialogs();
-		UI()->RenderFont();
+		UI().RenderFont();
 	}
 
-	UI()->pp_stop();
+	UI().pp_stop();
 
 	pCGameFont->SetAligment(CGameFont::alRight);
 	pCGameFont->SetHeight(0.022f);
@@ -408,14 +400,14 @@ void CMainMenu::OnRenderPPUI_PP	()
 
 	if(m_Flags.test(flGameSaveScreenshot))	return;
 
-	UI()->pp_start();
+	UI().pp_start();
 	
 	xr_vector<CUIWindow*>::iterator it = m_pp_draw_wnds.begin();
 	for(; it!=m_pp_draw_wnds.end();++it)
 	{
 		(*it)->Draw();
 	}
-	UI()->pp_stop();
+	UI().pp_stop();
 }
 
 void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
@@ -549,9 +541,8 @@ void CMainMenu::OnNewPatchFound(LPCSTR VersionName, LPCSTR URL)
 	}
 	m_sPatchURL = URL;
 	
-	Register						(m_pMB_ErrDlgs[NewPatchFound]);
-	m_pMB_ErrDlgs[NewPatchFound]->SetWindowName	("msg_box");
-	m_pMB_ErrDlgs[NewPatchFound]->AddCallback	("msg_box", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadPatch));
+	Register(m_pMB_ErrDlgs[NewPatchFound]);
+	m_pMB_ErrDlgs[NewPatchFound]->AddCallbackStr("button_yes", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(this, &CMainMenu::OnDownloadPatch));
 	StartStopMenu					(m_pMB_ErrDlgs[NewPatchFound], false);
 };
 

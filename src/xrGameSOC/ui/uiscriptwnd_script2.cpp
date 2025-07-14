@@ -1,19 +1,19 @@
 #include "pch_script.h"
 
 //UI-controls
-#include "UIListWnd.h"
+#include "../../xrUI/Widgets/UIListWnd.h"
 #include "UIScriptWnd.h"
-#include "UIButton.h"
+#include "../../xrUI/Widgets/UIButton.h"
 #include "UIMessageBox.h"
-#include "UIPropertiesBox.h"
-#include "UICheckButton.h"
-#include "UIRadioButton.h"
-#include "UIStatic.h"
-#include "UIEditBox.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UIProgressBar.h"
-#include "UITabControl.h"
+#include "../../xrUI/Widgets/UIPropertiesBox.h"
+#include "../../xrUI/Widgets/UICheckButton.h"
+#include "../../xrUI/Widgets/UIRadioButton.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 
 #include "uiscriptwnd_script.h"
 
@@ -32,7 +32,7 @@ export_class script_register_ui_window2(export_class&& instance)
 		.def("GetTabControl",	(CUITabControl* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUITabControl>)
 		.def("GetListWnd",		(CUIListWnd* (BaseType::*)(LPCSTR)) &BaseType::GetControl<CUIListWnd>)
 
-		.def("OnKeyboardAction",		&BaseType::OnKeyboardAction, &WrapType::OnKeyboard_static)
+		.def("OnKeyboard",		&BaseType::OnKeyboardAction, &WrapType::OnKeyboard_static)
 		.def("Update",			&BaseType::Update, &WrapType::Update_static)
 		.def("Dispatch",		&BaseType::Dispatch, &WrapType::Dispatch_static)
 

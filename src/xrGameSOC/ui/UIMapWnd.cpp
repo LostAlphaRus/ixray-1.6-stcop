@@ -1,17 +1,18 @@
 #include "stdafx.h"
 #include "UIMapWnd.h"
 #include "UIMap.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UICursor.h"
 
 #include "../map_manager.h"
 #include "UIInventoryUtilities.h"
 #include "../map_location.h"
 
-#include "UIScrollBar.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UITabControl.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UIScrollBar.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIMapWndActions.h"
 #include "UIMapWndActionsSpace.h"
 #include "map_hint.h"
@@ -73,22 +74,22 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	Frect r							= m_UILevelFrame->GetWndRect();
 
 	m_UIMainScrollH					= new CUIScrollBar(); m_UIMainScrollH->SetAutoDelete(true);
-	m_UIMainScrollH->Init			(r.left, r.bottom + SCROLLBARS_SHIFT, r.right - r.left, true, "pda");
+	m_UIMainScrollH->InitScrollBar	(Fvector2().set(r.left, r.bottom + SCROLLBARS_SHIFT), r.right - r.left, true, "pda");
 	m_UIMainScrollH->SetWindowName	("scroll_h");
 	m_UIMainScrollH->SetStepSize	(_max(1,iFloor(m_UILevelFrame->GetWidth()/10)));
 	m_UIMainScrollH->SetPageSize	(iFloor(m_UILevelFrame->GetWidth()));
 	m_UIMainFrame->AttachChild		(m_UIMainScrollH);
 	Register						(m_UIMainScrollH);
-	AddCallback						("scroll_h",SCROLLBAR_HSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollH));
+	AddCallbackStr					("scroll_h",SCROLLBAR_HSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollH));
 
 	m_UIMainScrollV					= new CUIScrollBar(); m_UIMainScrollV->SetAutoDelete(true);
-	m_UIMainScrollV->Init			(r.right + SCROLLBARS_SHIFT, r.top, m_UIMainScrollH->GetWndRect().bottom - r.top , false, "pda");
+	m_UIMainScrollV->InitScrollBar	(Fvector2().set(r.right + SCROLLBARS_SHIFT, r.top), m_UIMainScrollH->GetWndRect().bottom - r.top , false, "pda");
 	m_UIMainScrollV->SetWindowName	("scroll_v");
 	m_UIMainScrollV->SetStepSize	(_max(1,iFloor(m_UILevelFrame->GetHeight()/10)));
 	m_UIMainScrollV->SetPageSize	(iFloor(m_UILevelFrame->GetHeight()));
 	m_UIMainFrame->AttachChild		(m_UIMainScrollV);
 	Register						(m_UIMainScrollV);
-	AddCallback						("scroll_v",SCROLLBAR_VSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollV));
+	AddCallbackStr					("scroll_v",SCROLLBAR_VSCROLL,CUIWndCallback::void_function(this,&CUIMapWnd::OnScrollV));
 
 	UIMainMapHeader					= new CUIFrameLineWnd(); UIMainMapHeader->SetAutoDelete(true);
 	m_UIMainFrame->AttachChild		(UIMainMapHeader);
@@ -107,7 +108,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
 		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
 		Register						(m_ToolBar[btnIndex]);
-		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUIMapWnd::OnToolGlobalMapClicked));
+		AddCallbackStr					(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUIMapWnd::OnToolGlobalMapClicked));
 	}
 
 	btnIndex		= eActor;
@@ -117,7 +118,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
 		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
 		Register						(m_ToolBar[btnIndex]);
-		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUIMapWnd::OnToolActorClicked));
+		AddCallbackStr					(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUIMapWnd::OnToolActorClicked));
 	}
 
 
@@ -128,7 +129,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
 		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
 		Register						(m_ToolBar[btnIndex]);
-		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomInClicked));
+		AddCallbackStr					(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomInClicked));
 	}
 	btnIndex		= eZoomOut;
 	xr_strconcat(pth, sToolbar.c_str(), ":zoom_out_btn");
@@ -137,7 +138,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
 		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
 		Register						(m_ToolBar[btnIndex]);
-		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomOutClicked));
+		AddCallbackStr					(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomOutClicked));
 	}
 /*
 	btnIndex		= eAddSpot;
@@ -245,12 +246,12 @@ void CUIMapWnd::Show(bool status)
 	if (status)
 	{
 		m_GlobalMap->Show			(true);
-		m_GlobalMap->SetClipRect	(ActiveMapRect());
+		m_GlobalMap->WorkingArea().set	(ActiveMapRect());
 		GameMaps::iterator	it		= m_GameMaps.begin();
 		for(;it!=m_GameMaps.end();++it){
 			m_GlobalMap->AttachChild(it->second);
 			it->second->Show		(true);
-			it->second->SetClipRect	(ActiveMapRect());
+			it->second->WorkingArea().set	(ActiveMapRect());
 		}
 
 		if(	m_flags.test(lmFirst)){
@@ -278,8 +279,7 @@ void CUIMapWnd::AddMapToRender			(CUICustomMap* m)
 	Register							( m );
 	m_UILevelFrame->AttachChild			( m );
 	m->Show								( true );
-	m_UILevelFrame->BringToTop			( m );
-	m->SetClipRect						( ActiveMapRect() );
+	m->WorkingArea().set				( ActiveMapRect() );
 }
 
 void CUIMapWnd::RemoveMapToRender		(CUICustomMap* m)
@@ -392,14 +392,14 @@ bool CUIMapWnd::OnKeyboardAction				(int dik, EUIMessages keyboard_action)
 bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	if(inherited::OnMouseAction(x,y,mouse_action)) return true;
-	Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
+	Fvector2 cursor_pos = GetUICursor().GetCursorPosition();
 
 	if(GlobalMap() && !GlobalMap()->Locked() && ActiveMapRect().in( cursor_pos ) ){
 		switch (mouse_action)
 		{
 		case WINDOW_MOUSE_MOVE:
 			if( pInput->iGetAsyncBtnState(0) ){
-				GlobalMap()->MoveWndDelta	(GetUICursor()->GetCursorPositionDelta());
+				GlobalMap()->MoveWndDelta	(GetUICursor().GetCursorPositionDelta());
 				UpdateScroll					();
 				m_hint->SetOwner				(NULL);
 				return							true;
@@ -516,7 +516,7 @@ void CUIMapWnd::OnScrollV(CUIWindow*, void*)
 	if (GlobalMap()){
 		int s_pos					= m_UIMainScrollV->GetScrollPos();
 		Fvector2 w_pos				= GlobalMap()->GetWndPos();
-		GlobalMap()->SetWndPos	(w_pos.x,float(-s_pos));
+		GlobalMap()->SetWndPos	(Fvector2().set(w_pos.x,float(-s_pos)));
 	}
 }
 
@@ -525,14 +525,14 @@ void CUIMapWnd::OnScrollH(CUIWindow*, void*)
 	if (GlobalMap()){
 		int s_pos					= m_UIMainScrollH->GetScrollPos();
 		Fvector2 w_pos				= GlobalMap()->GetWndPos();
-		GlobalMap()->SetWndPos	(float(-s_pos),w_pos.y);
+		GlobalMap()->SetWndPos	(Fvector2().set(float(-s_pos),w_pos.y));
 	}
 }
 
 
 void CUIMapWnd::Update()
 {
-	if(m_GlobalMap)m_GlobalMap->SetClipRect(ActiveMapRect());
+	if(m_GlobalMap)m_GlobalMap->WorkingArea().set(ActiveMapRect());
 	inherited::Update			();
 	m_ActionPlanner->update		();
 }
@@ -574,7 +574,7 @@ void CUIMapWnd::OnToolZoomInClicked	(CUIWindow* w, void*)
 	m_flags.zero					();
 
 	CUI3tButton* btn				= smart_cast<CUI3tButton*>(w);
-	bool bPushed					= btn->GetCheck		();
+	bool bPushed					= btn->GetButtonState		();
 	m_flags.set						(lmZoomIn,bPushed);
 	ValidateToolBar					();
 }
@@ -586,7 +586,7 @@ void CUIMapWnd::OnToolZoomOutClicked(CUIWindow* w, void*)
 	m_flags.zero					();
 
 	CUI3tButton* btn				= smart_cast<CUI3tButton*>(w);
-	bool bPushed					= btn->GetCheck		();
+	bool bPushed					= btn->GetButtonState		();
 	m_flags.set						(lmZoomOut,bPushed);
 	ValidateToolBar					();
 }
@@ -649,13 +649,23 @@ void CUIMapWnd::HighlightSpot			()
 void CUIMapWnd::ValidateToolBar			()
 {
 	CUI3tButton* btn	= NULL;
-	btn					= m_ToolBar[eZoomIn];
-	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmZoomIn));
+	btn					= m_ToolBar[eZoomIn]; // костыли?
+	if (btn)
+	{
+		if (!!m_flags.test(lmZoomIn))
+			btn->SetButtonState(CUIButton::BUTTON_PUSHED);
+		else
+			btn->SetButtonState(CUIButton::BUTTON_NORMAL);
+	}
 
 	btn					= m_ToolBar[eZoomOut];
-	if(btn)
-		btn->SetCheck	(!!m_flags.test(lmZoomOut));
+	if (btn)
+	{
+		if (!!m_flags.test(lmZoomOut))
+			btn->SetButtonState(CUIButton::BUTTON_PUSHED);
+		else
+			btn->SetButtonState(CUIButton::BUTTON_NORMAL);
+	}
 /*
 	btn					= m_ToolBar[eAddSpot];
 	if(btn)
@@ -720,7 +730,7 @@ void CUIMapWnd::ShowHint					(CUIWindow* parent, LPCSTR text)
 {
 	if(m_hint->GetOwner())	return;
 	if(!text)				return;
-	Fvector2 c_pos			= GetUICursor()->GetCursorPosition();
+	Fvector2 c_pos			= GetUICursor().GetCursorPosition();
 	Frect vis_rect			= ActiveMapRect				();
 	if(FALSE==vis_rect.in(c_pos)) return;
 

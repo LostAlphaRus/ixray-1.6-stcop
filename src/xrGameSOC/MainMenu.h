@@ -8,9 +8,9 @@ class CGameSpy_HTTP;
 class CGameSpy_Full;
 #include "../xrEngine/IInputReceiver.h"
 #include "../xrEngine/IGame_Persistent.h"
-#include "UIDialogHolder.h"
-#include "ui/UIWndCallback.h"
-#include "ui_base.h"
+#include "../xrUI/Widgets/UIDialogHolder.h"
+#include "../xrUI/Widgets//UIWndCallback.h"
+#include "../xrUI/ui_base.h"
 
 struct  Patch_Dawnload_Progress{
 	bool		IsInProgress;
@@ -110,6 +110,7 @@ public:
 	virtual void	Activate						(bool bActive); 
 	virtual	bool	IsActive						(); 
 	virtual	bool	CanSkipSceneRendering			(); 
+	virtual bool	IgnorePause						()	{return true;}
 
 	virtual void	IR_OnMousePress					(int btn);
 	virtual void	IR_OnMouseRelease				(int btn);

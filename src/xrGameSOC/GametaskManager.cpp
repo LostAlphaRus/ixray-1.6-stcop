@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "GameTaskManager.h"
 #include "alife_registry_wrappers.h"
-#include "ui/xrUIXmlParser.h"
+#include "../xrUI/xrUIXmlParser.h"
 #include "GameTask.h"
 #include "Level.h"
 #include "map_manager.h"
@@ -118,8 +118,8 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 
 
 	//установить флажок необходимости прочтения тасков в PDA
-	if(HUD().GetUI()){
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	if(CurrentGameUI()){
+		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 		if(pGameSP) 
 			pGameSP->PdaMenu->PdaContentsChanged	(pda_section::quests);
 	}
@@ -167,7 +167,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
 		t->m_FinishTime = Level().GetGameTime();
 
 
-	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 	if(pGameSP) {
 		pGameSP->PdaMenu->PdaContentsChanged	(pda_section::quests);
 	}

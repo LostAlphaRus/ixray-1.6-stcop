@@ -38,7 +38,7 @@
 #include "level_graph.h"
 #include "doug_lea_memory_allocator.h"
 #include "cameralook.h"
-
+#include "../xrUI/Widgets/UIStatic.h"
 #include "GameSpy/GameSpy_Full.h"
 
 #ifndef MASTER_GOLD
@@ -721,7 +721,7 @@ public:
 #ifdef DEBUG
 		Msg						("Game save overhead  : %f milliseconds",timer.GetElapsed_sec()*1000.f);
 #endif
-		SDrawStaticStruct* _s		= HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
+		SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("game_saved", true);
 		_s->m_endTime				= Device.fTimeGlobal+3.0f;// 3sec
 		string_path					save_name;
 		xr_strconcat				(save_name,*g_pStringTable->translate("st_game_saved"),": ", S);

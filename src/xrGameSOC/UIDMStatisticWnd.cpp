@@ -14,7 +14,7 @@ CUIDMStatisticWnd::CUIDMStatisticWnd					() :
 	SetHeaderColumnText(2, "Hits/Shots");
 	SetHeaderColumnText(3, "Kills");
 
-	Show();
+	Show(true);
 };
 
 CUIDMStatisticWnd::~CUIDMStatisticWnd					()

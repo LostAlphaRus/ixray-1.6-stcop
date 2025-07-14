@@ -35,6 +35,7 @@ class UI_API CUITextureMaster{
 public:
 
 	static void ParseShTexInfo			(LPCSTR xml_file);
+	static void ParseShTexInfoLegacy	(LPCSTR xml_file); // for SoC
 	static void FreeTexInfo				();
 	static void FreeCachedShaders		();
 

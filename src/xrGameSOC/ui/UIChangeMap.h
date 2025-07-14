@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIStatic;
 class CUI3tButton;
@@ -12,8 +12,6 @@ class CExtraContentFilter;
 class CUIChangeMap : public CUIDialogWnd 
 {
 public:
-	using CUIDialogWnd::Init;
-
 					CUIChangeMap			();
 					~CUIChangeMap			();
 			void	Init					(CUIXml& xml_doc);

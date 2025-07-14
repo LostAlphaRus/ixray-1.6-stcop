@@ -1,17 +1,18 @@
 #include "StdAfx.h"
 #include "UIMapList.h"
-#include "UIListBox.h"
+#include "../../xrUI/Widgets/UIListBox.h"
 #include "UILabel.h"
-#include "UIFrameWindow.h"
-#include "UI3tButton.h"
-#include "UISpinText.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UISpinText.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIMapInfo.h"
-#include "UIComboBox.h"
-#include "UIListBoxItem.h"
+#include "../../xrUI/Widgets/UIComboBox.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
 #include "../../xrEngine/xr_ioconsole.h"
 #include "../../xrEngine/string_table.h"
 #include "CExtraContentFilter.h"
+#include "../UIHelperGame.h"
 
 #include "../../xrCore/object_broker.h"
 
@@ -73,8 +74,8 @@ void CUIMapList::StartDedicatedServer(){
 	Console->Execute		("quit");
 }
 
-void CUIMapList::Init(float x, float y, float width, float height){
-	CUIWindow::Init(x,y,width,height);	
+void CUIMapList::Init(float x, float y, float width, float height)
+{
 }
 
 void CUIMapList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData ){
@@ -173,7 +174,7 @@ const char* CUIMapList::GetCommandLine(LPCSTR player_name){
 	m_command += m_srv_params;
 	m_command += "/estime=";
 	
-	u32 id		= m_pWeatherSelector->GetListWnd()->GetSelectedItem()->GetTAG();
+	u32 id		= m_pWeatherSelector->m_list_box.GetSelectedItem()->GetTAG();
 
 	int estime  = m_mapWeather[id].weather_time;
 	m_command	+= _itoa(estime/60,buf,10);
@@ -205,7 +206,7 @@ void CUIMapList::LoadMapList()
 		AddWeather			( (*it).m_weather_name, (*it).m_start_time, cnt);
 	}
 	if( game_weathers.size() )
-		m_pWeatherSelector->SetItem(0);
+		m_pWeatherSelector->SetItemIDX(0);
 }
 
 void	CUIMapList::SaveMapList()
@@ -259,7 +260,7 @@ void CUIMapList::SetServerParams(LPCSTR params){
 	m_srv_params = params;
 }
 
-#include "uilistboxitem.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
 void CUIMapList::AddWeather(const shared_str& WeatherType, const shared_str& WeatherTime, u32 _id)
 {
 	R_ASSERT2					(m_pWeatherSelector, "m_pWeatherSelector == NULL");
@@ -279,8 +280,8 @@ void CUIMapList::AddWeather(const shared_str& WeatherType, const shared_str& Wea
 void CUIMapList::InitFromXml(CUIXml& xml_doc, const char* path){
 	CUIXmlInit::InitWindow(xml_doc, path, 0, this);
 	string256 buf;
-	CUIXmlInit::InitLabel		(xml_doc, xr_strconcat(buf, path, ":header_1"),	0, m_pLbl1);
-	CUIXmlInit::InitLabel		(xml_doc, xr_strconcat(buf, path, ":header_2"),	0, m_pLbl2);
+	CUIXmlInitGame::InitLabel		(xml_doc, xr_strconcat(buf, path, ":header_1"),	0, m_pLbl1);
+	CUIXmlInitGame::InitLabel		(xml_doc, xr_strconcat(buf, path, ":header_2"),	0, m_pLbl2);
 	CUIXmlInit::InitFrameWindow	(xml_doc, xr_strconcat(buf, path, ":frame_1"),		0, m_pFrame1);
 	CUIXmlInit::InitFrameWindow	(xml_doc, xr_strconcat(buf, path, ":frame_2"),		0, m_pFrame2);
 	CUIXmlInit::InitListBox		(xml_doc, xr_strconcat(buf, path, ":list_1"),		0, m_pList1);
@@ -300,7 +301,7 @@ void CUIMapList::UpdateMapList(EGameTypes GameType)
 	u32 cnt						= M.m_map_names.size();
 	for (u32 i=0; i<cnt; ++i)
 	{
-		CUIListBoxItem* itm		= m_pList1->AddItem( g_pStringTable->translate(M.m_map_names[i]).c_str() );
+		CUIListBoxItem* itm		= m_pList1->AddTextItem( g_pStringTable->translate(M.m_map_names[i]).c_str() );
 		itm->SetData			( (void*)(__int64)i );
 		itm->Enable(m_pExtraContentFilter->IsDataEnabled(M.m_map_names[i].c_str()));
 	}
@@ -318,7 +319,7 @@ void CUIMapList::OnBtnRightClick()
 {
 	CUIListBoxItem* itm1			= m_pList1->GetSelectedItem();
 	if (!itm1) return;
-	CUIListBoxItem* itm2			= m_pList2->AddItem( itm1->GetText() );
+	CUIListBoxItem* itm2			= m_pList2->AddTextItem( itm1->GetText() );
 	itm2->SetData					(itm1->GetData());
 }
 
@@ -339,4 +340,59 @@ const shared_str& CUIMapList::GetMapNameInt(EGameTypes _type, u32 idx)
 	const SGameTypeMaps& M		= gMapListHelper.GetMapListFor(_type);
 	R_ASSERT					(M.m_map_names.size()>idx);
 	return						M.m_map_names[idx];
+}
+
+#include "pch_script.h"
+using namespace luabind;
+#include <ServerList.h>
+void CUIMapList::script_register(lua_State* L)
+{
+
+	module(L)
+	[
+		class_<SServerFilters>("SServerFilters")
+		.def(							constructor<>())
+		.def_readwrite("empty",				&SServerFilters::empty)
+		.def_readwrite("full",				&SServerFilters::full)
+		.def_readwrite("with_pass",			&SServerFilters::with_pass)
+		.def_readwrite("without_pass",		&SServerFilters::without_pass)
+		.def_readwrite("without_ff",		&SServerFilters::without_ff)
+		.def_readwrite("listen_servers",	&SServerFilters::listen_servers),
+
+		class_<CServerList, CUIWindow>("CServerList")
+		.def(							constructor<>())
+		.def("ConnectToSelected",		&CServerList::ConnectToSelected)
+		.def("SetFilters",				&CServerList::SetFilters)
+		.def("SetPlayerName",			&CServerList::SetPlayerName)
+		.def("RefreshList",				&CServerList::RefreshGameSpyList)
+		.def("RefreshQuick",			&CServerList::RefreshQuick)
+		.def("ShowServerInfo",			&CServerList::ShowServerInfo)
+		.def("NetRadioChanged",			&CServerList::NetRadioChanged)
+		.def("SetSortFunc",				&CServerList::SetSortFunc),
+		
+
+		class_<CUIMapList, CUIWindow>("CUIMapList")
+		.def(							constructor<>())
+		.def("SetWeatherSelector",		&CUIMapList::SetWeatherSelector)
+		.def("SetModeSelector",			&CUIMapList::SetModeSelector)
+		.def("OnModeChange",			&CUIMapList::OnModeChange)
+		.def("LoadMapList",				&CUIMapList::LoadMapList)
+		.def("SaveMapList",				&CUIMapList::SaveMapList)
+		.def("GetCommandLine",			&CUIMapList::GetCommandLine)
+		.def("SetServerParams",			&CUIMapList::SetServerParams)
+		.def("GetCurGameType",			&CUIMapList::GetCurGameType)
+		.def("StartDedicatedServer",	&CUIMapList::StartDedicatedServer)
+		.def("SetMapPic",				&CUIMapList::SetMapPic)
+		.def("SetMapInfo",				&CUIMapList::SetMapInfo)
+		.def("IsEmpty",					&CUIMapList::IsEmpty),
+		
+		class_<enum_exporter<EGameTypes> >("GAME_TYPE")
+		.enum_("gametype")
+		[
+			value("GAME_UNKNOWN",				int(GAME_ANY)),
+			value("GAME_DEATHMATCH",			int(GAME_DEATHMATCH)),
+			value("GAME_TEAMDEATHMATCH",		int(GAME_TEAMDEATHMATCH)),
+			value("GAME_ARTEFACTHUNT",			int(GAME_ARTEFACTHUNT))
+		]
+	];
 }

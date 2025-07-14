@@ -1,6 +1,6 @@
 #pragma once
-#include "UIDialogWnd.h"
-#include "UIWndCallback.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
 //#include "UIMessageBox.h"
 
 class CUIMessageBox;
@@ -18,4 +18,5 @@ public:
 	LPCSTR		 GetPassword		();
 
     CUIMessageBox*	m_pMessageBox;
+	virtual bool	NeedCenterCursor	()const	 {return false;}
 };

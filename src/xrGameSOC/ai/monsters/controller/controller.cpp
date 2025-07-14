@@ -6,14 +6,13 @@
 #include "../../../ActorEffector.h"
 #include "../ai_monster_effector.h"
 #include "../../../hudmanager.h"
-#include "../../../ui.h"
 #include "../../../../include/xrRender/Kinematics.h"
 #include "../../../level.h"
 #include "../../../sound_player.h"
 #include "../../../ai_monster_space.h"
 //#include "../../../ui/UIMainIngameWnd.h"
 #include "../../../UIGameCustom.h"
-#include "../../../ui/UIStatic.h"
+#include "../../../../xrUI/Widgets/UIStatic.h"
 
 #include "../monster_velocity_space.h"
 #include "../../../level_debug.h"
@@ -407,29 +406,29 @@ void CController::UpdateCL()
 
 		
 		if (percent < TEXTURE_SIZE_PERCENT ) {
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx2");
-			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("controller_fx", true);
+			CurrentGameUI()->RemoveCustomStatic("controller_fx2");
+			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("controller_fx", true);
 			
 			float x1 = Device.TargetWidth  / 2 - ((Device.TargetWidth	/ 2) * percent);
 			float y1 = Device.TargetHeight / 2 - ((Device.TargetHeight	/ 2) * percent);
 			float x2 = Device.TargetWidth  / 2 + ((Device.TargetWidth	/ 2) * percent);
 			float y2 = Device.TargetHeight / 2 + ((Device.TargetHeight	/ 2) * percent);
 
-			s->wnd()->SetWndRect				(x1,y1,x2-x1,y2-y1);
+			s->wnd()->SetWndRect				(Frect().set(x1,y1,x2-x1,y2-y1));
 		} else if (percent2 > 0){
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx");
-			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("controller_fx2", true);
+			CurrentGameUI()->RemoveCustomStatic("controller_fx");
+			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("controller_fx2", true);
 			
 			float x1 = Device.TargetWidth  / 2 - ((Device.TargetWidth	/ 2) * percent2);
 			float y1 = Device.TargetHeight / 2 - ((Device.TargetHeight	/ 2) * percent2);
 			float x2 = Device.TargetWidth  / 2 + ((Device.TargetWidth	/ 2) * percent2);
 			float y2 = Device.TargetHeight / 2 + ((Device.TargetHeight	/ 2) * percent2);
 
-			s->wnd()->SetWndRect				(x1,y1,x2-x1,y2-y1);
+			s->wnd()->SetWndRect				(Frect().set(x1,y1,x2-x1,y2-y1));
 		} else {
 			active_control_fx = false;
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx");
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx2");
+			CurrentGameUI()->RemoveCustomStatic("controller_fx");
+			CurrentGameUI()->RemoveCustomStatic("controller_fx2");
 		}
 	}
 

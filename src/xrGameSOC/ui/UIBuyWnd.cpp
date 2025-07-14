@@ -1,19 +1,20 @@
 #include "stdafx.h"
 #include "UIBuyWnd.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UICellCustomItems.h"
 #include "UIDragDropListEx.h"
-#include "../ui_base.h"
-#include "../UICursor.h"
+#include "../../xrUI/ui_base.h"
+#include "../../xrUI/UICursor.h"
 #include "../customoutfit.h"
 #include "../scope.h"
 #include "../silencer.h"
 #include "../grenadelauncher.h"
 #include "../game_cl_Deathmatch.h"
 #include "UIOutfitSlot.h"
-#include "UIListBoxItem.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
 #include "../actor.h"
 #include "restrictions.h"
+#include "../UIHelperGame.h"
 
 #define 	BELT_SLOT			5
 
@@ -59,7 +60,7 @@ CUIBuyWnd::CUIBuyWnd()
 	}
 
 	AttachChild				(&m_propertiesBox);
-	m_propertiesBox.Init	(0,0,300,300);
+	m_propertiesBox.InitPropertiesBox	(Fvector2().set(0,0),Fvector2().set(300,300));
 	m_propertiesBox.Hide	();
 
 	m_pCurrentCellItem		= NULL;
@@ -83,7 +84,7 @@ void CUIBuyWnd::ResetItems()
 void CUIBuyWnd::Show()
 {
 	m_pMouseCapturer		= NULL;
-	inherited::Show			();
+	inherited::Show			(true);
 
 	
 	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
@@ -98,7 +99,7 @@ void CUIBuyWnd::Show()
 
 void CUIBuyWnd::Hide()
 {
-	inherited::Hide			();
+	inherited::Show			(false);
 
 	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
 	if(pActor)
@@ -163,10 +164,10 @@ void CUIBuyWnd::Init(const shared_str& sectionName, const shared_str& sectionPri
 	// controls
 	m_tab.Init							(&xml_doc, (char*)"tab");
 	m_bag.Init							(xml_doc, "bag_background_static",		m_sectionName, sectionPrice);
-	CUIXmlInit::InitDragDropListEx		(xml_doc, "pistol_list",				0, m_list[MP_SLOT_PISTOL]);
-	CUIXmlInit::InitDragDropListEx		(xml_doc, "rifle_list",					0, m_list[MP_SLOT_RIFLE]);
-	CUIXmlInit::InitDragDropListEx		(xml_doc, "belt_list",					0, m_list[MP_SLOT_BELT]);
-	CUIXmlInit::InitDragDropListEx		(xml_doc, "outfit_list",				0, m_list[MP_SLOT_OUTFIT]);
+	CUIXmlInitGame::InitDragDropListEx		(xml_doc, "pistol_list",				0, m_list[MP_SLOT_PISTOL]);
+	CUIXmlInitGame::InitDragDropListEx		(xml_doc, "rifle_list",					0, m_list[MP_SLOT_RIFLE]);
+	CUIXmlInitGame::InitDragDropListEx		(xml_doc, "belt_list",					0, m_list[MP_SLOT_BELT]);
+	CUIXmlInitGame::InitDragDropListEx		(xml_doc, "outfit_list",				0, m_list[MP_SLOT_OUTFIT]);
 
 	BindDragDropListEvents				(m_list[MP_SLOT_PISTOL],	false);
 	BindDragDropListEvents				(m_list[MP_SLOT_RIFLE],		false);
@@ -493,7 +494,7 @@ bool CUIBuyWnd::ClearTooExpensiveItems()
 	{
 		CUICellItem* itm		= m_list[MP_SLOT_BELT]->GetItemIdx(i);
 
-		if (itm->GetColor() == PRICE_RESTR_COLOR)
+		if (itm->GetTextureColor() == PRICE_RESTR_COLOR)
 		{
 			itm->GetMessageTarget()->SendMessage(itm, DRAG_DROP_ITEM_DB_CLICK, NULL);
 			f					= true;
@@ -514,7 +515,7 @@ bool CUIBuyWnd::ClearSlot_ifTooExpensive(int slot)
 	{
 		CUICellItem *itm		= m_list[slot]->GetItemIdx(0);
 
-		if (itm->GetColor() == PRICE_RESTR_COLOR)
+		if (itm->GetTextureColor() == PRICE_RESTR_COLOR)
 		{
 			ToBag				(itm, false);
 			return				true;
@@ -527,7 +528,7 @@ bool CUIBuyWnd::ClearSlot_ifTooExpensive(int slot)
 		{
 			if (witm->get_addon_static(CUIWeaponCellItem::eScope) )
 			{
-				if (witm->get_addon_static(CUIWeaponCellItem::eScope)->GetColor() == PRICE_RESTR_COLOR)
+				if (witm->get_addon_static(CUIWeaponCellItem::eScope)->GetTextureColor() == PRICE_RESTR_COLOR)
 				{
 					wpn->Detach		(*wpn->GetScopeName(), true);
 					add_on			= true;
@@ -535,7 +536,7 @@ bool CUIBuyWnd::ClearSlot_ifTooExpensive(int slot)
 			}
 			if (witm->get_addon_static(CUIWeaponCellItem::eSilencer) )
 			{
-				if (witm->get_addon_static(CUIWeaponCellItem::eSilencer)->GetColor() == PRICE_RESTR_COLOR)
+				if (witm->get_addon_static(CUIWeaponCellItem::eSilencer)->GetTextureColor() == PRICE_RESTR_COLOR)
 				{
 					wpn->Detach		(*wpn->GetSilencerName(), true);
 					add_on			= true;
@@ -543,7 +544,7 @@ bool CUIBuyWnd::ClearSlot_ifTooExpensive(int slot)
 			}
 			if (witm->get_addon_static(CUIWeaponCellItem::eLauncher) )
 			{
-				if (witm->get_addon_static(CUIWeaponCellItem::eLauncher)->GetColor() == PRICE_RESTR_COLOR)
+				if (witm->get_addon_static(CUIWeaponCellItem::eLauncher)->GetTextureColor() == PRICE_RESTR_COLOR)
 				{
 					wpn->Detach		(*wpn->GetGrenadeLauncherName(), true);
 					add_on			= true;
@@ -927,13 +928,12 @@ void CUIBuyWnd::ActivatePropertiesBox()
 
 	if (m_propertiesBox.GetItemsCount() == 0) return;
 	m_propertiesBox.AutoUpdateSize	();
-	m_propertiesBox.BringAllToTop	();
 
 	Fvector2						cursor_pos;
 	Frect							vis_rect;
 
 	GetAbsoluteRect					(vis_rect);
-	cursor_pos						= GetUICursor()->GetCursorPosition();
+	cursor_pos						= GetUICursor().GetCursorPosition();
 	cursor_pos.sub					(vis_rect.lt);
 	m_propertiesBox.Show			(vis_rect, cursor_pos);
 
@@ -1387,7 +1387,7 @@ bool CUIBuyWnd::CanBuyAllItems()
 		{
 			CUICellItem* itm		= m_list[slot]->GetItemIdx(i);
 
-			if (itm->GetColor() == PRICE_RESTR_COLOR)
+			if (itm->GetTextureColor() == PRICE_RESTR_COLOR)
 				return				false;
 
 			CUIWeaponCellItem*	witm = smart_cast<CUIWeaponCellItem*>(itm);
@@ -1396,17 +1396,17 @@ bool CUIBuyWnd::CanBuyAllItems()
 			{
 				if (witm->get_addon_static(CUIWeaponCellItem::eScope) )
 				{
-					if (witm->get_addon_static(CUIWeaponCellItem::eScope)->GetColor() == PRICE_RESTR_COLOR)
+					if (witm->get_addon_static(CUIWeaponCellItem::eScope)->GetTextureColor() == PRICE_RESTR_COLOR)
 						return false;
 				}
 				if (witm->get_addon_static(CUIWeaponCellItem::eSilencer) )
 				{
-					if (witm->get_addon_static(CUIWeaponCellItem::eSilencer)->GetColor() == PRICE_RESTR_COLOR)
+					if (witm->get_addon_static(CUIWeaponCellItem::eSilencer)->GetTextureColor() == PRICE_RESTR_COLOR)
 						return false;
 				}
 				if (witm->get_addon_static(CUIWeaponCellItem::eLauncher) )
 				{
-					if (witm->get_addon_static(CUIWeaponCellItem::eLauncher)->GetColor() == PRICE_RESTR_COLOR)
+					if (witm->get_addon_static(CUIWeaponCellItem::eLauncher)->GetTextureColor() == PRICE_RESTR_COLOR)
 						return false;
 				}
 			}

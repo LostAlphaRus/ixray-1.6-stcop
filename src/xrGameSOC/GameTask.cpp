@@ -1,6 +1,6 @@
 #include "pch_script.h"
 #include "GameTask.h"
-#include "ui/xrUIXmlParser.h"
+#include "../xrUI/xrUIXmlParser.h"
 #include "encyclopedia_article.h"
 #include "map_location.h"
 #include "map_manager.h"
@@ -16,7 +16,7 @@
 #include "alife_story_registry.h"
 #include "game_object_space.h"
 #include "../xrCore/object_broker.h"
-#include "ui/uitexturemaster.h"
+#include "../xrUI/uitexturemaster.h"
 
 ALife::_STORY_ID	story_id		(LPCSTR story_id);
 u16					storyId2GameId	(ALife::_STORY_ID);
@@ -131,7 +131,6 @@ void CGameTask::Load(const TASK_ID& id)
 			{
 				objective.icon_rect			= CUITextureMaster::GetTextureRect(*objective.icon_texture_name);
 				objective.icon_rect.rb.sub(objective.icon_rect.rb, objective.icon_rect.lt);
-				objective.icon_texture_name	= CUITextureMaster::GetTextureFileName(*objective.icon_texture_name);
 			}else 
 				if(objective.icon_texture_name.size()){
 				objective.icon_rect.x1			= g_gameTaskXml->ReadAttribFlt(l_root, "icon", 0, "x");
@@ -401,7 +400,6 @@ void SGameTaskObjective::SetIconName_script(LPCSTR _str)
 	icon_texture_name	= _str;
 	icon_rect			= CUITextureMaster::GetTextureRect(icon_texture_name.c_str());
 	icon_rect.rb.sub	(icon_rect.rb, icon_rect.lt);
-	icon_texture_name	= CUITextureMaster::GetTextureFileName(icon_texture_name.c_str());
 }
 
 void SGameTaskObjective::SetArticleKey_script(LPCSTR _str)

@@ -6,8 +6,8 @@
 #include "UIStatsIcon.h"
 #include "../../xrEngine/string_table.h"
 #include "../level.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
 
 IC bool	DM_Compare_Players		(game_PlayerState* p1, game_PlayerState* p2);
 
@@ -132,8 +132,8 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 		{
 			CUIStatic* st = new CUIStatic();
 			st->SetAutoDelete(true);
-			//#pragma todo("Satan->Satan: remove stub for height")
-			st->Init(indent,10,m_field_info[i].width, m_header->GetHeight());
+			st->SetWndPos(Fvector2().set(indent, 10.0f));
+			st->SetWndSize(Fvector2().set(m_field_info[i].width, m_header->GetHeight()));
 			indent += m_field_info[i].width;
 
 			if (0 == xr_strcmp(m_field_info[i].name, "rank"))
@@ -149,9 +149,9 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 			if (m_h.f)
 				st->SetFont(m_h.f);
 			st->SetTextColor(m_h.c);
-			st->SetTextComplexMode(false);
+			st->TextItemControl()->SetTextComplexMode(false);
 			if (0 != i)
-                st->SetTextAlignment(CGameFont::alCenter);
+                st->TextItemControl()->SetTextAlignment(CGameFont::alCenter);
 			m_header->AttachChild(st);
 		}
 	}
@@ -159,12 +159,13 @@ void CUIStatsPlayerList::InitHeader(CUIXml& xml_doc, LPCSTR path)
 	{
 		CUIStatic* st = new CUIStatic();
 		st->SetAutoDelete(true);
-		st->Init(10,0,this->GetDesiredChildWidth(),m_h.h);		
+		st->SetWndPos(Fvector2().set(10, 0));
+		st->SetWndSize(Fvector2().set(this->GetDesiredChildWidth(), m_h.h));
 		if (m_h.f)
 			m_header->SetFont(m_h.f);
 		st->SetTextColor(m_h.c);
-		st->SetVTextAlignment(valCenter);
-		st->SetTextComplexMode(false);
+		st->TextItemControl()->SetVTextAlignment(valCenter);
+		st->TextItemControl()->SetTextComplexMode(false);
 		st->SetTextST("mp_spectators");
 		m_header->AttachChild(st);
 	}
@@ -197,7 +198,7 @@ void CUIStatsPlayerList::InitTeamHeader(CUIXml& xml_doc, LPCSTR path){
 	m_header_text->SetAutoDelete(true);
 	CUIXmlInit::InitStatic(xml_doc, xr_strconcat(_path, path, ":team_header:header"), 0, m_header_text);
 	m_header_text->SetWidth(GetDesiredChildWidth());
-	m_header_text->SetVTextAlignment(valCenter);
+	m_header_text->TextItemControl()->SetVTextAlignment(valCenter);
 	m_header_team->AttachChild(m_header_text);
 	if (t.f)
 		m_header_text->SetFont(t.f);

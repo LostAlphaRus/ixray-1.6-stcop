@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIStatic;
 class CUI3tButton;
@@ -15,8 +15,6 @@ class CUIVotingCategory : public CUIDialogWnd
 private:
 	typedef CUIDialogWnd inherited;
 public:
-	using CUIDialogWnd::Init;
-
 						CUIVotingCategory	();
 	virtual				~CUIVotingCategory	();
 

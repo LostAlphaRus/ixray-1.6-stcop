@@ -1259,28 +1259,28 @@ void CActor::OnHUDDraw	(CCustomHUD* /**hud/**/)
 	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)
 	{
 		string128 buf;
-		HUD().Font().pFontStat->SetColor	(0xffffffff);
-		HUD().Font().pFontStat->OutSet		(170,530);
-		HUD().Font().pFontStat->OutNext	("Position:      [%3.2f, %3.2f, %3.2f]",VPUSH(Position()));
-		HUD().Font().pFontStat->OutNext	("Velocity:      [%3.2f, %3.2f, %3.2f]",VPUSH(m_PhysicMovementControl->GetVelocity()));
-		HUD().Font().pFontStat->OutNext	("Vel Magnitude: [%3.2f]",m_PhysicMovementControl->GetVelocityMagnitude());
-		HUD().Font().pFontStat->OutNext	("Vel Actual:    [%3.2f]",m_PhysicMovementControl->GetVelocityActual());
+		UI().Font().pFontStat->SetColor	(0xffffffff);
+		UI().Font().pFontStat->OutSet		(170,530);
+		UI().Font().pFontStat->OutNext	("Position:      [%3.2f, %3.2f, %3.2f]",VPUSH(Position()));
+		UI().Font().pFontStat->OutNext	("Velocity:      [%3.2f, %3.2f, %3.2f]",VPUSH(m_PhysicMovementControl->GetVelocity()));
+		UI().Font().pFontStat->OutNext	("Vel Magnitude: [%3.2f]",m_PhysicMovementControl->GetVelocityMagnitude());
+		UI().Font().pFontStat->OutNext	("Vel Actual:    [%3.2f]",m_PhysicMovementControl->GetVelocityActual());
 		switch (m_PhysicMovementControl->Environment())
 		{
 		case CPHMovementControl::peOnGround:	strcpy(buf,"ground");			break;
 		case CPHMovementControl::peInAir:		strcpy(buf,"air");				break;
 		case CPHMovementControl::peAtWall:		strcpy(buf,"wall");				break;
 		}
-		HUD().Font().pFontStat->OutNext	(buf);
+		UI().Font().pFontStat->OutNext	(buf);
 
 		if (IReceived != 0)
 		{
 			float Size = 0;
-			Size = HUD().Font().pFontStat->GetSize();
-			HUD().Font().pFontStat->SetSize(Size*2);
-			HUD().Font().pFontStat->SetColor	(0xffff0000);
-			HUD().Font().pFontStat->OutNext ("Input :		[%3.2f]", ICoincidenced/IReceived * 100.0f);
-			HUD().Font().pFontStat->SetSize(Size);
+			Size = UI().Font().pFontStat->GetSize();
+			UI().Font().pFontStat->SetSize(Size*2);
+			UI().Font().pFontStat->SetColor	(0xffff0000);
+			UI().Font().pFontStat->OutNext ("Input :		[%3.2f]", ICoincidenced/IReceived * 100.0f);
+			UI().Font().pFontStat->SetSize(Size);
 		};
 	};
 #endif
@@ -1346,7 +1346,7 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	Device.mFullTransform.transform(v0r,v0);
 	Device.mFullTransform.transform(v1r,v1);
 	float size = v1r.distance_to(v0r);
-	CGameFont* pFont = HUD().Font().GetFont(ARIAL14_FONT_NAME);
+	CGameFont* pFont = UI().Font().GetFont(ARIAL14_FONT_NAME);
 	if (!pFont) return;
 //	float OldFontSize = pFont->GetHeight	();	
 	float delta_up = 0.0f;
@@ -1492,7 +1492,7 @@ void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
 		m_ArtefactsOnBelt.erase(it);
 	}	
 	if (Level().CurrentViewEntity() && Level().CurrentViewEntity() == this)
-		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
+		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 }
 
 #define ARTEFACTS_UPDATE_TIME 0.100f
@@ -1586,13 +1586,13 @@ void CActor::AnimTorsoPlayCallBack(CBlend* B)
 
 void CActor::SetActorVisibility(u16 who, float value)
 {
-	CUIMotionIcon		&motion_icon	= HUD().GetUI()->UIMainIngameWnd->MotionIcon();
+	CUIMotionIcon		&motion_icon	= CurrentGameUI()->UIMainIngameWnd->MotionIcon();
 	motion_icon.SetActorVisibility		(who, value);
 }
 
 void CActor::UpdateMotionIcon(u32 mstate_rl)
 {
-	CUIMotionIcon		&motion_icon=HUD().GetUI()->UIMainIngameWnd->MotionIcon();
+	CUIMotionIcon		&motion_icon=CurrentGameUI()->UIMainIngameWnd->MotionIcon();
 	if(mstate_rl&mcClimb)
 	{
 		motion_icon.ShowState(CUIMotionIcon::stClimb);

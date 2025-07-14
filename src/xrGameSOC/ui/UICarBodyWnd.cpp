@@ -1,14 +1,14 @@
 #include "pch_script.h"
 #include "UICarBodyWnd.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../HUDManager.h"
 #include "../level.h"
 #include "UICharacterInfo.h"
 #include "UIDragDropListEx.h"
-#include "UIFrameWindow.h"
+#include "../xrUI/Widgets/UIFrameWindow.h"
 #include "UIItemInfo.h"
-#include "UIPropertiesBox.h"
+#include "../xrUI/Widgets/UIPropertiesBox.h"
 #include "../ai/monsters/BaseMonster/base_monster.h"
 #include "../inventory.h"
 #include "UIInventoryUtilities.h"
@@ -18,13 +18,15 @@
 #include "../Actor.h"
 #include "../eatable_item.h"
 #include "../alife_registry_wrappers.h"
-#include "UI3tButton.h"
-#include "UIListBoxItem.h"
+#include "../xrUI/Widgets/UI3tButton.h"
+#include "../xrUI/Widgets/UIListBoxItem.h"
 #include "../InventoryBox.h"
 #include "../game_object_space.h"
 #include "../../xrScripts/script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../BottleItem.h"
+#include "../../xrUI/UICursor.h"
+#include "../UIHelperGame.h"
 
 #define				CAR_BODY_XML		"carbody_new.xml"
 #define				CARBODY_ITEM_XML	"carbody_item.xml"
@@ -92,11 +94,11 @@ void CUICarBodyWnd::Init()
 
 	m_pUIOurBagList					= new CUIDragDropListEx(); m_pUIOurBagList->SetAutoDelete(true);
 	m_pUIOurBagWnd->AttachChild		(m_pUIOurBagList);	
-	xml_init.InitDragDropListEx		(uiXml, "dragdrop_list_our", 0, m_pUIOurBagList);
+	CUIXmlInitGame::InitDragDropListEx		(uiXml, "dragdrop_list_our", 0, m_pUIOurBagList);
 
 	m_pUIOthersBagList				= new CUIDragDropListEx(); m_pUIOthersBagList->SetAutoDelete(true);
 	m_pUIOthersBagWnd->AttachChild	(m_pUIOthersBagList);	
-	xml_init.InitDragDropListEx		(uiXml, "dragdrop_list_other", 0, m_pUIOthersBagList);
+	CUIXmlInitGame::InitDragDropListEx		(uiXml, "dragdrop_list_other", 0, m_pUIOthersBagList);
 
 
 	//информация о предмете
@@ -113,11 +115,9 @@ void CUICarBodyWnd::Init()
 	m_pUIItemInfo->Init				(0,0, m_pUIDescWnd->GetWidth(), m_pUIDescWnd->GetHeight(), CARBODY_ITEM_XML);
 
 
-	xml_init.InitAutoStatic			(uiXml, "auto_static", this);
-
 	m_pUIPropertiesBox				= new CUIPropertiesBox(); m_pUIPropertiesBox->SetAutoDelete(true);
 	AttachChild						(m_pUIPropertiesBox);
-	m_pUIPropertiesBox->Init		(0,0,300,300);
+	m_pUIPropertiesBox->InitPropertiesBox(Fvector2().set(0,0),Fvector2().set(300,300));
 	m_pUIPropertiesBox->Hide		();
 
 	SetCurrentItem					(NULL);
@@ -217,7 +217,7 @@ void CUICarBodyWnd::Hide()
 	InventoryUtilities::SendInfoToActor			("ui_car_body_hide");
 	m_pUIOurBagList->ClearAll					(true);
 	m_pUIOthersBagList->ClearAll				(true);
-	inherited::Hide								();
+	inherited::Show								(false);
 	if(m_pInventoryBox)
 		m_pInventoryBox->m_in_use				= false;
 }
@@ -318,7 +318,7 @@ void CUICarBodyWnd::Update()
 void CUICarBodyWnd::Show() 
 { 
 	InventoryUtilities::SendInfoToActor		("ui_car_body");
-	inherited::Show							();
+	inherited::Show							(true);
 	SetCurrentItem							(NULL);
 	InventoryUtilities::UpdateWeight		(*m_pUIOurBagWnd);
 }
@@ -436,13 +436,12 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 
 	if(b_show){
 		m_pUIPropertiesBox->AutoUpdateSize	();
-		m_pUIPropertiesBox->BringAllToTop	();
 
 		Fvector2						cursor_pos;
 		Frect							vis_rect;
 
 		GetAbsoluteRect					(vis_rect);
-		cursor_pos						= GetUICursor()->GetCursorPosition();
+		cursor_pos						= GetUICursor().GetCursorPosition();
 		cursor_pos.sub					(vis_rect.lt);
 		m_pUIPropertiesBox->Show		(vis_rect, cursor_pos);
 	}

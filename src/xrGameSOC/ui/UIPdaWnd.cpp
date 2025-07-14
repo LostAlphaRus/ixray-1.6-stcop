@@ -2,22 +2,22 @@
 #include "UIPdaWnd.h"
 #include "../Pda.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIInventoryUtilities.h"
 
 #include "../HUDManager.h"
 #include "../level.h"
 #include "../game_cl_base.h"
 
-#include "UIStatic.h"
-#include "UIFrameWindow.h"
-#include "UITabControl.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 //#include "UIPdaCommunication.h"
 #include "UIPdaContactsWnd.h"
 #include "UIMapWnd.h"
 #include "UIDiaryWnd.h"
-#include "UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "UIEncyclopediaWnd.h"
 #include "UIStalkersRankingWnd.h"
 #include "UIActorInfo.h"
@@ -25,7 +25,8 @@
 #include "../../xrCore/object_broker.h"
 #include "UIMessagesWindow.h"
 #include "UIMainIngameWnd.h"
-#include "UITabButton.h"
+#include "../../xrUI/Widgets/UITabButton.h"
+#include "../uigamecustom.h"
 
 #define		PDA_XML					"pda.xml"
 u32			g_pda_info_state		= 0;
@@ -76,9 +77,6 @@ void CUIPdaWnd::Init()
 	UIMainPdaFrame			= new CUIStatic(); UIMainPdaFrame->SetAutoDelete(true);
 	AttachChild				(UIMainPdaFrame);
 	xml_init.InitStatic		(uiXml, "background_static", 0, UIMainPdaFrame);
-
-	//Элементы автоматического добавления
-	xml_init.InitAutoStatic	(uiXml, "auto_static", this);
 
 	// Main buttons background
 	UIMainButtonsBackground = new CUIFrameLineWnd(); UIMainButtonsBackground->SetAutoDelete(true);
@@ -163,15 +161,15 @@ void CUIPdaWnd::Show()
 {
 	InventoryUtilities::SendInfoToActor("ui_pda");
 
-	inherited::Show();
+	inherited::Show(true);
 }
 
 void CUIPdaWnd::Hide()
 {
-	inherited::Hide();
+	inherited::Show(false);
 
 	InventoryUtilities::SendInfoToActor("ui_pda_hide");
-	HUD().GetUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, false);
+	CurrentGameUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, false);
 
 }
 
@@ -246,7 +244,7 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 	m_pActiveDialog->Show			(true);
 
 	if(UITabControl->GetActiveIndex()!=section)
-		UITabControl->SetNewActiveTab	(section);
+		UITabControl->SetActiveTabByIndex(section);
 
 	m_pActiveSection = section;
 }
@@ -279,7 +277,7 @@ void CUIPdaWnd::PdaContentsChanged	(pda_section::part type)
 
 	if(b){
 		g_pda_info_state |= type;
-		HUD().GetUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
+		CurrentGameUI()->UIMainIngameWnd->SetFlashIconState_(CUIMainIngameWnd::efiPdaTask, true);
 	}
 
 }

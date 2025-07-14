@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "UITalkDialogWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
-#include "UIScrollView.h"
-#include "UI3tButton.h"
-#include "../UI.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 
 #define				TALK_XML				"talk.xml"
@@ -30,7 +29,7 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	m_uiXml->Load(CONFIG_PATH, UI_PATH, TALK_XML);
 	CUIXmlInit					ml_init;
 
-	inherited::Init				(x, y, width, height);
+	CUIXmlInit::InitWindow(*m_uiXml, "main", 0, this);
 
 	AttachChild					(&UIStaticTop);
 	CUIXmlInit::InitStatic		(*m_uiXml, "top_background", 0, &UIStaticTop);
@@ -50,11 +49,9 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	//основной фрейм диалога
 	AttachChild					(&UIDialogFrame);
 	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 0, &UIDialogFrame);
-	UIDialogFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 	// Фрейм с нащими фразами
 	AttachChild					(&UIOurPhrasesFrame);
 	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 1, &UIOurPhrasesFrame);
-	UIOurPhrasesFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 
 	//Ответы
 	UIAnswersList				= new CUIScrollView();
@@ -76,9 +73,6 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	CUIXmlInit::Init3tButton	(*m_uiXml, "button", 0, &UIToTradeButton);
 	UIToTradeButton.SetWindowName("trade_btn");
 
-	//Элементы автоматического добавления
-	CUIXmlInit::InitAutoStatic	(*m_uiXml, "auto_static", this);
-
 	// шрифт для индикации имени персонажа в окне разговора
 	CUIXmlInit::InitFont		(*m_uiXml, "font", 0, m_iNameTextColor, m_pNameTextFont);
 
@@ -89,8 +83,8 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	SetWindowName				("----CUITalkDialogWnd");
 
 	Register					(&UIToTradeButton);
-	AddCallback					("question_item",LIST_ITEM_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnQuestionClicked));
-	AddCallback					("trade_btn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnTradeClicked));
+	AddCallbackStr				("question_item",LIST_ITEM_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnQuestionClicked));
+	AddCallbackStr				("trade_btn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnTradeClicked));
 }
 
 #include "UIInventoryUtilities.h"
@@ -172,7 +166,7 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	CUICharacterInfo& ci			= bActor?UICharacterInfoLeft:UICharacterInfoRight; 
 	
 	news_data.texture_name			= ci.IconName();
-	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetOriginalRect();
+	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetTextureRect();
 	news_data.tex_rect.x2			= news_data.tex_rect.width();
 	news_data.tex_rect.y2			= news_data.tex_rect.height();
 	news_data.receive_time			= Level().GetGameTime();
@@ -223,7 +217,7 @@ CUIQuestionItem::CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path)
 
 	Register						(m_text);
 	m_text->SetWindowName			("text_button");
-	AddCallback						("text_button",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
+	AddCallbackStr					("text_button",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
 
 }
 
@@ -291,11 +285,9 @@ CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR texture_name, Frect texture_rect)
 {
 	inherited::Init					(text,"");
-	m_icon->CreateShader			(texture_name,"hud\\default");
-	m_icon->GetUIStaticItem().SetOriginalRect(texture_rect.x1,texture_rect.y1,texture_rect.x2,texture_rect.y2);
-	m_icon->TextureAvailable		(true);
+
+	m_icon->InitTexture				(texture_name);
 	m_icon->TextureOn				();
 	m_icon->SetStretchTexture		(true);
-
 }
 

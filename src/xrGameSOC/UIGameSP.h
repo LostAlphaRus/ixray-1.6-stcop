@@ -1,10 +1,9 @@
 #pragma once
 #include "uigamecustom.h"
-#include "ui/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
 #include "../xrCore/net_utils.h"
 #include "game_graph_space.h"
 
-class CUIInventoryWnd;
 class CUITradeWnd;			
 class CUIPdaWnd;			
 class CUITalkWnd;			
@@ -27,10 +26,9 @@ public:
 	virtual				~CUIGameSP				();
 
 	virtual	void		reset_ui				();
-	virtual	void		shedule_Update			(u32 dt);
 	virtual void		SetClGame				(game_cl_GameState* g);
-	virtual bool		IR_OnKeyboardPress		(int dik);
-	virtual bool		IR_OnKeyboardRelease	(int dik);
+	virtual bool		IR_UIOnKeyboardPress	(int dik);
+	virtual bool		IR_UIOnKeyboardRelease	(int dik);
 
 	void				StartTalk				();
 	void				StartCarBody			(CInventoryOwner* pOurInv, CInventoryOwner* pOthers);
@@ -40,7 +38,6 @@ public:
 
 	virtual void		HideShownDialogs		();
 
-	CUIInventoryWnd*	InventoryMenu;
 	CUIPdaWnd*			PdaMenu;
 	CUITalkWnd*			TalkMenu;
 	CUICarBodyWnd*		UICarBodyMenu;

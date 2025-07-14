@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "UIArtefactPanel.h"
 #include "UIInventoryUtilities.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 
 #include "../artifact.h"
 
@@ -63,8 +63,8 @@ void CUIArtefactPanel::Draw(){
 		iHeight = m_fScale*(r.bottom - r.top);
 		iWidth  = _s*m_fScale*(r.right - r.left);
 
-		m_si.SetOriginalRect(r.left, r.top, r.width(), r.height());
-		m_si.SetRect(0, 0, iWidth, iHeight);
+		m_si.SetTextureRect(Frect().set(r.left, r.top, r.width(), r.height()));
+		m_si.SetSize(Fvector2().set(iWidth, iHeight));
 
 		m_si.SetPos(x, y);
 		x = x + iIndent + iWidth;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../xrScripts/script_export_space.h"
-#include "ui\xrUIXmlParser.h"
+#include "../xrUI/xrUIXmlParser.h"
 
 class CUIWindow;
 class CUIFrameWindow;
@@ -56,7 +56,6 @@ public:
 	CUISpinFlt*			InitSpinFlt(LPCSTR path, CUIWindow* parent);
 	CUISpinText*		InitSpinText(LPCSTR path, CUIWindow* parent);
 	CUIComboBox*		InitComboBox(LPCSTR path, CUIWindow* parent);
-	CUIButton*			InitButton(LPCSTR path, CUIWindow* parent);
 	CUI3tButton*		Init3tButton(LPCSTR path, CUIWindow* parent);
 	CUITabControl*		InitTab(LPCSTR path, CUIWindow* parent);
 	CServerList*		InitServerList(LPCSTR path, CUIWindow* parent);

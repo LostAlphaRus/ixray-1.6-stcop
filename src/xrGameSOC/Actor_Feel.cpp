@@ -15,6 +15,7 @@
 #include "UIFontDefines.h"
 #include "game_cl_base.h"
 #include "Level.h"
+#include "UIGameCustom.h"
 
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
 //AAAAAA
@@ -144,7 +145,7 @@ void	CActor::PickupModeUpdate_COD	()
 		
 	if (!g_Alive() || eacFreeLook == cam_active) 
 	{
-		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
+		CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;
 	};
 	
@@ -204,7 +205,7 @@ void	CActor::PickupModeUpdate_COD	()
 				pNearestItem = NULL;
 	}
 
-	HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+	CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 
 	if (pNearestItem && m_bPickupMode)
 	{
@@ -240,9 +241,9 @@ void CActor::PickupInfoDraw(CObject* object)
 	float x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
 	float y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
 
-	HUD().Font().GetFont(LETTERICA16_FONT_NAME)->SetAligment(CGameFont::alCenter);
-	HUD().Font().GetFont(LETTERICA16_FONT_NAME)->SetColor		(PICKUP_INFO_COLOR);
-	HUD().Font().GetFont(LETTERICA16_FONT_NAME)->Out			(x,y,draw_str);
+	UI().Font().GetFont(LETTERICA16_FONT_NAME)->SetAligment(CGameFont::alCenter);
+	UI().Font().GetFont(LETTERICA16_FONT_NAME)->SetColor		(PICKUP_INFO_COLOR);
+	UI().Font().GetFont(LETTERICA16_FONT_NAME)->Out			(x,y,draw_str);
 }
 
 void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power)

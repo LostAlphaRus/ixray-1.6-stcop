@@ -9,11 +9,11 @@
 #include "../../xrEngine/string_table.h"
 #include "../relation_registry.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 
-#include "uistatic.h"
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/uistatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 
 
 #include "../alife_simulator.h"
@@ -46,16 +46,15 @@ CUICharacterInfo::~CUICharacterInfo()
 
 void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml* xml_doc)
 {
-	inherited::Init(x, y, width, height);
-
 	CUIXmlInit xml_init;
+
+	xml_init.InitWindow(*xml_doc, "window", 0, this);
 	CUIStatic*	pItem = NULL;
 
 	if(xml_doc->NavigateToNode("icon_static",0))	
 	{
 		pItem = m_icons[eUIIcon] = new CUIStatic();
 		xml_init.InitStatic	(*xml_doc, "icon_static", 0, pItem);
-		pItem->ClipperOn	();
 		pItem->Show			(true);
 		pItem->Enable		(true);
 		AttachChild			(pItem);
@@ -65,7 +64,6 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	if(xml_doc->NavigateToNode("name_static", 0)){
 		pItem = m_icons[eUIName] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "name_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 0);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -75,7 +73,6 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUIRank] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "rank_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -93,7 +90,6 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUICommunity] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "community_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -111,7 +107,6 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUIReputation] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "reputation_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -129,7 +124,6 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 	{
 		pItem = m_icons[eUIRelation] = new CUIStatic();
 		xml_init.InitStatic(*xml_doc, "relation_static", 0, pItem);
-		pItem->SetElipsis(CUIStatic::eepEnd, 1);
 		AttachChild(pItem);
 		pItem->SetAutoDelete(true);
 	}
@@ -287,7 +281,7 @@ void CUICharacterInfo::Update()
 		if(m_icons[eUIIcon]){
 			CSE_ALifeCreatureAbstract*		pCreature = smart_cast<CSE_ALifeCreatureAbstract*>(T);
 			if(pCreature && !pCreature->g_Alive())
-				m_icons[eUIIcon]->SetColor	(color_argb(255,255,160,160));
+				m_icons[eUIIcon]->SetTextureColor	(color_argb(255,255,160,160));
 		}
 	}
 }
@@ -297,9 +291,9 @@ void CUICharacterInfo::ClearInfo()
 	ResetAllStrings	();
 	
 	if (m_icons[eUIIcon]) {
-		m_icons[eUIIcon]->GetUIStaticItem().SetOriginalRect(	8*ICON_GRID_WIDTH,0,
+		m_icons[eUIIcon]->GetUIStaticItem().SetTextureRect(	Frect().set(8*ICON_GRID_WIDTH,0,
 			float(CHAR_ICON_WIDTH*ICON_GRID_WIDTH),
-			float(CHAR_ICON_HEIGHT*ICON_GRID_HEIGHT));
+			float(CHAR_ICON_HEIGHT*ICON_GRID_HEIGHT)));
 	}
 
 	for(int i = eUIName; i<eMaxCaption; ++i)

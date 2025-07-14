@@ -1,10 +1,10 @@
 #include "StdAfx.h"
 #include "UIChangeMap.h"
 #include "UIVotingCategory.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
-#include "UIListBox.h"
-#include "UIListBoxItem.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIListBox.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
 #include "../level.h"
 #include "../game_cl_teamdeathmatch.h"
 #include "../../xrEngine/xr_ioconsole.h"
@@ -59,7 +59,7 @@ void CUIChangeMap::Init(CUIXml& xml_doc)
 	CUIXmlInit::InitStatic				(xml_doc,			"change_map:header", 0, header);
 	CUIXmlInit::InitStatic				(xml_doc,			"change_map:background", 0, bkgrnd);
 	CUIXmlInit::InitStatic				(xml_doc,			"change_map:map_frame", 0, map_frame);
-	CUIXmlInit::InitStatic				(xml_doc,			"change_map:map_pic", 0, map_pic); map_pic->ClipperOn();
+	CUIXmlInit::InitStatic				(xml_doc,			"change_map:map_pic", 0, map_pic);
 	CUIXmlInit::InitFrameWindow			(xml_doc,			"change_map:list_back", 0, lst_back);
 	CUIXmlInit::InitFrameWindow			(xml_doc,			"change_map:frame", 0, frame);
 	CUIXmlInit::InitListBox				(xml_doc,			"change_map:list", 0, lst);
@@ -86,11 +86,6 @@ void CUIChangeMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	if (LIST_ITEM_SELECT==msg && pWnd==lst)
 	{		
 		OnItemSelect();
-	}else
-	if (LIST_ITEM_DB_CLICKED==msg && pWnd==lst)
-	{		
-		OnItemSelect();
-		OnBtnOk();
 	}
 	else if (BUTTON_CLICKED == msg)
 	{
@@ -142,7 +137,7 @@ void CUIChangeMap::FillUpList()
 	u32 cnt						= M.m_map_names.size();
 	for (u32 i=0; i<cnt; ++i)
 	{
-		CUIListBoxItem* itm		= lst->AddItem( g_pStringTable->translate(M.m_map_names[i]).c_str() );
+		CUIListBoxItem* itm		= lst->AddTextItem( g_pStringTable->translate(M.m_map_names[i]).c_str() );
 		itm->Enable				(m_pExtraContentFilter->IsDataEnabled(M.m_map_names[i].c_str()));
 	}
 

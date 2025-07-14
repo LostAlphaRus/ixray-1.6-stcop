@@ -8,13 +8,13 @@
 
 #include "StdAfx.h"
 #include "UIEncyclopediaWnd.h"
-#include "UIXmlInit.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UIAnimatedStatic.h"
-#include "UIListWnd.h"
-#include "UIScrollView.h"
-#include "UITreeViewItem.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIAnimatedStatic.h"
+#include "../../xrUI/Widgets/UIListWnd.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UITreeViewItem.h"
 #include "UIPdaAux.h"
 #include "UIEncyclopediaArticleWnd.h"
 #include "../encyclopedia_article.h"
@@ -70,7 +70,6 @@ void CUIEncyclopediaWnd::Init()
 	UIEncyclopediaInfoHeader	= new CUIFrameLineWnd();UIEncyclopediaInfoHeader->SetAutoDelete(true);
 	UIEncyclopediaInfoBkg->AttachChild(UIEncyclopediaInfoHeader);
 
-	UIEncyclopediaInfoHeader->UITitleText.SetElipsis(CUIStatic::eepBegin, 20);
 	xml_init.InitFrameLine(uiXml, "left_frame_line", 0, UIEncyclopediaInfoHeader);
 
 	UIArticleHeader				= new CUIStatic(); UIArticleHeader->SetAutoDelete(true);
@@ -87,8 +86,8 @@ void CUIEncyclopediaWnd::Init()
 	UIEncyclopediaInfoBkg->AttachChild(UIInfoList);
 	xml_init.InitScrollView(uiXml, "info_list", 0, UIInfoList);
 
-	xml_init.InitAutoStatic(uiXml, "left_auto_static", UIEncyclopediaInfoBkg);
-	xml_init.InitAutoStatic(uiXml, "right_auto_static", UIEncyclopediaIdxBkg);
+	xml_init.InitAutoStaticGroup(uiXml, "left_auto_static", 0, UIEncyclopediaInfoBkg);
+	xml_init.InitAutoStaticGroup(uiXml, "right_auto_static", 0, UIEncyclopediaIdxBkg);
 }
 
 #include "../../xrEngine/string_table.h"

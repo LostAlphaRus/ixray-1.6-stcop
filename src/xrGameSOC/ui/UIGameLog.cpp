@@ -7,11 +7,11 @@
 //=============================================================================
 #include "stdafx.h"
 #include "UIGameLog.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIColorAnimatorWrapper.h"
 #include "UIPdaMsgListItem.h"
 #include "UIPdaKillMessage.h"
-#include "UILines.h"
+#include "../../xrUI/Widgets/UILines.h"
 
 const char * const	CHAT_LOG_ITEMS_ANIMATION	= "ui_main_msgs_short";
 
@@ -26,15 +26,14 @@ CUIGameLog::~CUIGameLog()
 {}
 
 
-CUIStatic* CUIGameLog::AddLogMessage(LPCSTR msg)
+CUITextWnd* CUIGameLog::AddLogMessage(LPCSTR msg)
 {
-	CUIStatic* pItem				= NULL;
+	CUITextWnd* pItem				= nullptr;
 	ADD_TEXT_TO_VIEW3				(msg, pItem, this);
 	pItem->SetTextComplexMode		(true);
 	pItem->SetFont					(GetFont());
 	pItem->SetTextColor				(txt_color);
-	pItem->SetClrAnimDelay			(5000.0f);
-	pItem->SetClrLightAnim			(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
+	pItem->SetColorAnimation		(CHAT_LOG_ITEMS_ANIMATION, LA_ONLYALPHA | LA_TEXTCOLOR, 5000.0f);
 	ForceUpdate						();
 	return							pItem;
 }
@@ -45,8 +44,7 @@ CUIPdaMsgListItem* CUIGameLog::AddPdaMessage(LPCSTR msg, float delay){
 	CUIPdaMsgListItem* pItem				= new CUIPdaMsgListItem();
 	pItem->Init								(0,0, GetDesiredChildWidth(), 10);	//fake height
 	pItem->UIMsgText.SetTextST				(msg);
-	pItem->SetClrAnimDelay					(delay);
-    pItem->SetClrLightAnim					(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
+	pItem->SetColorAnimation				(CHAT_LOG_ITEMS_ANIMATION, LA_ONLYALPHA | LA_TEXTCOLOR, 5000.0f);
 	AddWindow								(pItem, true);
 
 	return pItem;
@@ -62,8 +60,7 @@ CUIPdaKillMessage* CUIGameLog::AddLogMessage(KillMessageStruct& msg){
 	pItem->SetWidth(GetDesiredChildWidth());
 	pItem->SetHeight(kill_msg_height);
 	pItem->Init(msg);
-	pItem->SetClrAnimDelay(5000.0f);
-	pItem->SetClrLightAnim(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
+	pItem->SetColorAnimation(CHAT_LOG_ITEMS_ANIMATION, LA_ONLYALPHA | LA_TEXTCOLOR, 5000.0f);
 	AddWindow(pItem, true);
 	return pItem;
 }
@@ -73,16 +70,13 @@ void CUIGameLog::AddChatMessage(LPCSTR msg, LPCSTR author){
 	sprintf_s(fullLine, "%s %s", author, msg);
 	_TrimRight	(fullLine);
     
-	CUIStatic* pItem = NULL;
-
-	pItem = new CUIStatic();
+	CUITextWnd* pItem = new CUITextWnd();
 	pItem->SetTextComplexMode		(true);
 	pItem->SetText(fullLine);
-    pItem->m_pLines->SetCutWordsMode(true);
+    pItem->SetCutWordsMode(true);
 	pItem->SetFont(GetFont());
 	pItem->SetTextColor(txt_color);
-	pItem->SetClrAnimDelay(5000.0f);
-	pItem->SetClrLightAnim(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);	
+	pItem->SetColorAnimation(CHAT_LOG_ITEMS_ANIMATION, LA_ONLYALPHA | LA_TEXTCOLOR, 5000.0f);
 	pItem->SetWidth(this->GetDesiredChildWidth());
 	pItem->AdjustHeightToText();
 	AddWindow(pItem, true);	
@@ -109,7 +103,7 @@ void CUIGameLog::Update()
 		VERIFY(pItem);
 		pItem->Update();
 
-		if (pItem->IsClrAnimStoped())
+		if (!pItem->IsColorAnimationPresent())
 			toDelList.push_back(pItem);
 	}
 

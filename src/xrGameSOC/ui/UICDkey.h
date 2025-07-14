@@ -1,27 +1,38 @@
 //
 #pragma once
-#include "UIEditBox.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
 
-class CUICDkey : public CUIEditBox {
+class CUICDkey : public CUIEditBox
+{
+private:
+	typedef			CUIEditBox		inherited;
+
 public:
-						CUICDkey		();
-	virtual	void		SetText			(LPCSTR str) {}
-	virtual	const char* GetText			();
+					CUICDkey		();
+	virtual	void	SetText			(LPCSTR str) {}
+	virtual	LPCSTR	GetText			();
+
 	// CUIOptionsItem
-	virtual void	SetCurrentValue();
-	virtual void	SaveValue();
-	virtual bool	IsChanged();
+	virtual void	SetCurrentOptValue	();	// opt->current
+	virtual void	SaveBackUpOptValue	();	// current->backup
+	virtual void	SaveOptValue		();	// current->opt
+	virtual void	UndoOptValue		();	// backup->current
+	virtual bool	IsChangedOptValue	() const;	// backup!=current
 	
 			void	CreateCDKeyEntry();			
+			void	assign_callbacks();
 
-	virtual void	Draw();
-	virtual void	AddChar(char c);
+	virtual void	Show			(bool status);
+	virtual void	Draw			();
 	virtual void	OnFocusLost		();
 
 private:
-			LPCSTR	AddHyphens(LPCSTR str);
-			LPCSTR	DelHyphens(LPCSTR str);
+	void 	paste_from_clipboard();
 
-};
+private:
+	string512		m_opt_backup_value;
+	bool			m_view_access;
+}; // class CUICDkey
+
 
 extern	void	GetCDKey(char* CDKeyStr);

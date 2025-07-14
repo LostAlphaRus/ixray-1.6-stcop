@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UIMoneyIndicator.h"
 #include "UIColorAnimatorWrapper.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIGameLog.h"
 
 CUIMoneyIndicator::CUIMoneyIndicator(){
@@ -53,7 +53,7 @@ void CUIMoneyIndicator::Update(){
         if (!m_pAnimChange->Done())
 		{
 			m_pAnimChange->Update();
-			m_money_change.SetTextColor(subst_alpha(m_money_change.GetTextColor(), m_pAnimChange->GetColor()));
+			m_money_change.SetTextColor(subst_alpha(m_money_change.TextItemControl()->GetTextColor(), m_pAnimChange->GetColor()));
 		}
 		else
 			m_money_change.SetVisible(false);

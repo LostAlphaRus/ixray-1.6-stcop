@@ -25,7 +25,7 @@
 #include "Grenade.h"
 #include "WeaponMagazined.h"
 #include "CustomOutfit.h"
-
+#include "UIGameCustom.h"
 #include "actor_anim_defs.h"
 
 #include "map_manager.h"
@@ -727,7 +727,7 @@ void CActor::net_Destroy	()
 	
 	m_ArtefactsOnBelt.clear();
 	if (Level().CurrentViewEntity() == this)
-		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);	
+		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);	
 
 	SetDefaultVisualOutfit(NULL);
 	

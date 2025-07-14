@@ -11,7 +11,7 @@
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
 #include "UIDragDropListEx.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 CUICellItem* CUIInventoryWnd::CurrentItem()
 {

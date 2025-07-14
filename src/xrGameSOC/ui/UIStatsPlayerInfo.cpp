@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 
 #include "UIStatsPlayerInfo.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "../game_cl_base.h"
 #include "UIStatsIcon.h"
 #include "../game_cl_artefacthunt.h"
@@ -30,10 +30,11 @@ CUIStatsPlayerInfo::~CUIStatsPlayerInfo()
 }
 
 void CUIStatsPlayerInfo::Init(float x, float y, float width, float height){
-	CUIWindow::Init(x,y,width,height);
+	//CUIWindow::Init(x,y,width,height);
 	
 	m_pBackground->SetStretchTexture(true);
-	m_pBackground->Init(0,0, width, height);
+	m_pBackground->SetWndPos(Fvector2().set(0, 0));
+	m_pBackground->SetWndSize(Fvector2().set(width, height));
 	m_pBackground->InitTexture("ui\\ui_mp_frags_selection");
 	
 
@@ -75,16 +76,20 @@ void CUIStatsPlayerInfo::AddField(float len, CGameFont* pF, u32 text_col, bool i
 	CUIStatic* wnd = icon ? new CUIStatsIcon() : new CUIStatic();
 
 	if (m_fields.empty())
-		wnd->Init(5,0,len,this->GetHeight());
+	{
+		wnd->SetWndPos(Fvector2().set(5, 0));
+		wnd->SetWndSize(Fvector2().set(len, this->GetHeight()));
+	}
 	else
 	{
-		wnd->Init(m_fields.back()->GetWndRect().right,0,len,this->GetHeight());
-		wnd->SetTextAlignment(CGameFont::alCenter);
+		wnd->SetWndPos(Fvector2().set(m_fields.back()->GetWndRect().right, 0.f));
+		wnd->SetWndSize(Fvector2().set(len, this->GetHeight()));
+		wnd->TextItemControl()->SetTextAlignment(CGameFont::alCenter);
 	}
 	if (pF)
 		wnd->SetFont(pF);
 	wnd->SetTextColor(text_col);
-	wnd->SetTextComplexMode(false);
+	wnd->TextItemControl()->SetTextComplexMode(false);
 	m_fields.push_back(wnd);
 	AttachChild(wnd);
 }

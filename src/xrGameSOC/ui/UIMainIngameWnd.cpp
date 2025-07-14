@@ -31,7 +31,7 @@
 #include "UIInventoryUtilities.h"
 
 
-#include "UIXmlInit.h"
+#include "../../xrUI/uixmlinit.h"
 #include "UIPdaMsgListItem.h"
 #include "../alife_registry_wrappers.h"
 #include "../actorcondition.h"
@@ -45,7 +45,7 @@
 #	include "../../xrEngine/xr_input.h"
 #endif
 
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 #include "map_hint.h"
 #include "UIColorAnimatorWrapper.h"
 #include "../game_news.h"
@@ -81,18 +81,18 @@ const u32	g_clWhite					= 0xffffffff;
 
 CUIMainIngameWnd::CUIMainIngameWnd()
 {
-	m_pActor					= NULL;
-	m_pWeapon					= NULL;
-	m_pGrenade					= NULL;
-	m_pItem						= NULL;
+	m_pActor					= nullptr;
+	m_pWeapon					= nullptr;
+	m_pGrenade					= nullptr;
+	m_pItem						= nullptr;
 	UIZoneMap					= new CUIZoneMap();
-	m_pPickUpItem				= NULL;
+	m_pPickUpItem				= nullptr;
 	m_artefactPanel				= new CUIArtefactPanel();
-	m_pMPChatWnd				= NULL;
-	m_pMPLogWnd					= NULL;	
+	m_pMPChatWnd				= nullptr;
+	m_pMPLogWnd					= nullptr;
 }
 
-#include "UIProgressShape.h"
+#include "../../xrUI/Widgets/UIProgressShape.h"
 extern CUIProgressShape* g_MissileForceShape;
 
 CUIMainIngameWnd::~CUIMainIngameWnd()
@@ -110,7 +110,7 @@ void CUIMainIngameWnd::Init()
 	uiXml.Load					(CONFIG_PATH, UI_PATH, MAININGAME_XML);
 	
 	CUIXmlInit					xml_init;
-	CUIWindow::Init				(0,0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+	xml_init.InitWindow			(uiXml,"main",0,this);
 
 	Enable(false);
 
@@ -126,7 +126,6 @@ void CUIMainIngameWnd::Init()
 
 	UIWeaponBack.AttachChild	(&UIWeaponSignAmmo);
 	xml_init.InitStatic			(uiXml, "static_ammo", 0, &UIWeaponSignAmmo);
-	UIWeaponSignAmmo.SetElipsis	(CUIStatic::eepEnd, 2);
 
 	UIWeaponBack.AttachChild	(&UIWeaponIcon);
 	xml_init.InitStatic			(uiXml, "static_wpn_icon", 0, &UIWeaponIcon);
@@ -136,7 +135,6 @@ void CUIMainIngameWnd::Init()
 	AttachChild					(&UIPickUpItemIcon);
 	xml_init.InitStatic			(uiXml, "pick_up_item", 0, &UIPickUpItemIcon);
 	UIPickUpItemIcon.SetShader	(GetEquipmentIconsShader());
-	UIPickUpItemIcon.ClipperOn	();
 
 	m_iPickUpItemIconWidth		= UIPickUpItemIcon.GetWidth();
 	m_iPickUpItemIconHeight		= UIPickUpItemIcon.GetHeight();
@@ -259,10 +257,10 @@ void CUIMainIngameWnd::Init()
 	}
 
 	AttachChild								(&UIStaticDiskIO);
-	UIStaticDiskIO.SetWndRect				(1000,750,16,16);
-	UIStaticDiskIO.GetUIStaticItem().SetRect(0,0,16,16);
+	UIStaticDiskIO.SetWndRect				(Frect().set(1000,750,16,16));
+	UIStaticDiskIO.GetUIStaticItem().SetTextureRect(Frect().set(0,0,16,16));
 	UIStaticDiskIO.InitTexture				("ui\\ui_disk_io");
-	UIStaticDiskIO.SetOriginalRect			(0 / UI()->get_current_kx(), 0, 32 / UI()->get_current_kx(), 32);
+	UIStaticDiskIO.SetTextureRect			(Frect().set(0.f / UI().get_current_kx(), 0.f, 32 / UI().get_current_kx(), 32));
 	UIStaticDiskIO.SetStretchTexture		(TRUE);
 
 
@@ -283,7 +281,7 @@ void CUIMainIngameWnd::Draw()
 	else {
 		u32		alpha			= clampr(iFloor(255.f*(1.f-(Device.fTimeGlobal-UIStaticDiskIO_start_time)/1.f)),0,255);
 		UIStaticDiskIO.Show		( true  ); 
-		UIStaticDiskIO.SetColor	(color_rgba(255,255,255,alpha));
+		UIStaticDiskIO.SetTextureColor	(color_rgba(255,255,255,alpha));
 	}
 	FS.dwOpenCounter = 0;
 
@@ -333,10 +331,10 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 	float iYPos				= pSettings->r_float(sect_name, "inv_grid_y");
 	int UseHQ				= EngineExternal()[EEngineExternalUI::HQIcons];
 
-	UIWeaponIcon.GetUIStaticItem().SetOriginalRect(	(iXPos		 *(1 + UseHQ)*INV_GRID_WIDTH),
+	UIWeaponIcon.GetUIStaticItem().SetTextureRect(Frect().set(	(iXPos		 *(1 + UseHQ)*INV_GRID_WIDTH),
 													(iYPos		 *(1 + UseHQ)*INV_GRID_HEIGHT),
 													(iGridWidth	 *(1 + UseHQ)*INV_GRID_WIDTH),
-													(iGridHeight *(1 + UseHQ)*INV_GRID_HEIGHT));
+													(iGridHeight *(1 + UseHQ)*INV_GRID_HEIGHT)));
 	UIWeaponIcon.SetStretchTexture(true);
 
 	// now perform only width scale for ammo, which (W)size >2
@@ -348,9 +346,9 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 	if	(iGridWidth<2)
 		x	+= ( UIWeaponIcon_rect.width() - w) / 2.0f;
 
-	UIWeaponIcon.SetWndPos	(x, UIWeaponIcon_rect.y1);
+	UIWeaponIcon.SetWndPos	(Fvector2().set(x, UIWeaponIcon_rect.y1));
 	
-	UIWeaponIcon.SetWidth	(w*UI()->get_current_kx());
+	UIWeaponIcon.SetWidth	(w*UI().get_current_kx());
 	UIWeaponIcon.SetHeight	(h);
 };
 
@@ -893,12 +891,12 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		{
 		case SDL_SCANCODE_KP_MINUS:
 			//.HideAll();
-			HUD().GetUI()->HideGameIndicators();
+			CurrentGameUI()->ShowGameIndicators(false);
 			return true;
 			break;
 		case SDL_SCANCODE_KP_PLUS:
 			//.ShowAll();
-			HUD().GetUI()->ShowGameIndicators();
+			CurrentGameUI()->ShowGameIndicators(true);
 			return true;
 			break;
 		}
@@ -925,7 +923,7 @@ void CUIMainIngameWnd::RenderQuickInfos()
 	if (pObject!=m_pActor->ObjectWeLookingAt())
 	{
 		UIStaticQuickHelp.SetTextST				(actor_action);
-		UIStaticQuickHelp.ResetClrAnimation		();
+		UIStaticQuickHelp.ResetColorAnimation	();
 		pObject	= m_pActor->ObjectWeLookingAt	();
 	}
 }
@@ -934,7 +932,7 @@ void CUIMainIngameWnd::ReceiveNews(GAME_NEWS_DATA* news)
 {
 	VERIFY(news->texture_name.size());
 
-	HUD().GetUI()->m_pMessagesWnd->AddIconedPdaMessage(*(news->texture_name), news->tex_rect, news->SingleLineText(), news->show_time);
+	CurrentGameUI()->m_pMessagesWnd->AddIconedPdaMessage(*(news->texture_name), news->tex_rect, news->SingleLineText(), news->show_time);
 }
 
 void CUIMainIngameWnd::SetWarningIconColor(CUIStatic* s, const u32 cl)
@@ -943,7 +941,7 @@ void CUIMainIngameWnd::SetWarningIconColor(CUIStatic* s, const u32 cl)
 	bool bIsShown = s->IsShown();
 
 	if(bOn)
-		s->SetColor	(cl);
+		s->SetTextureColor	(cl);
 
 	if(bOn&&!bIsShown){
 		m_UIIcons->AddWindow	(s, false);
@@ -1059,7 +1057,7 @@ void CUIMainIngameWnd::UpdateFlashingIcons()
 
 void CUIMainIngameWnd::AnimateContacts(bool b_snd)
 {
-	UIPdaOnline.ResetClrAnimation	();
+	UIPdaOnline.ResetColorAnimation	();
 
 	if(b_snd)
 		HUD_SOUND::PlaySound	(m_contactSnd, Fvector().set(0,0,0), 0, true );
@@ -1102,23 +1100,23 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
-	UIPickUpItemIcon.GetUIStaticItem().SetOriginalRect(
+	UIPickUpItemIcon.GetUIStaticItem().SetTextureRect(Frect().set(
 		float(m_iXPos * INV_GRID_WIDTH*(1 + UseHQ)),
 		float(m_iYPos * INV_GRID_HEIGHT*(1 + UseHQ)),
 		float(m_iGridWidth * INV_GRID_WIDTH*(1 + UseHQ)),
-		float(m_iGridHeight * INV_GRID_HEIGHT)*(1 + UseHQ));
+		float(m_iGridHeight * INV_GRID_HEIGHT)*(1 + UseHQ)));
 
 	UIPickUpItemIcon.SetStretchTexture(true);
 
-	UIPickUpItemIcon.SetWidth(m_iGridWidth*INV_GRID_WIDTH*scale * UI()->get_current_kx());
+	UIPickUpItemIcon.SetWidth(m_iGridWidth*INV_GRID_WIDTH*scale * UI().get_current_kx());
 	UIPickUpItemIcon.SetHeight(m_iGridHeight*INV_GRID_HEIGHT*scale);
 
-	UIPickUpItemIcon.SetWndPos(m_iPickUpItemIconX + 
+	UIPickUpItemIcon.SetWndPos(Fvector2().set(m_iPickUpItemIconX + 
 		(m_iPickUpItemIconWidth - UIPickUpItemIcon.GetWidth())/2,
 		m_iPickUpItemIconY + 
-		(m_iPickUpItemIconHeight - UIPickUpItemIcon.GetHeight())/2);
+		(m_iPickUpItemIconHeight - UIPickUpItemIcon.GetHeight())/2));
 
-	UIPickUpItemIcon.SetColor(color_rgba(255,255,255,192));
+	UIPickUpItemIcon.SetTextureColor(color_rgba(255,255,255,192));
 	UIPickUpItemIcon.Show(true);
 };
 

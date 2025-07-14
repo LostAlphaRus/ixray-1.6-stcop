@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #include "UISpeechMenu.h"
-#include "UIScrollView.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../game_cl_mp.h"
 #include "../level.h"
 #include "../../xrEngine/string_table.h"
@@ -15,9 +15,9 @@ CUISpeechMenu::CUISpeechMenu(LPCSTR section_name){
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "maingame.xml");
 	CUIXmlInit::InitWindow(xml_doc, "speech_menu",0,this);
 	CUIXmlInit::InitScrollView(xml_doc, "speech_menu",0,m_pList);
-	m_pList->SetWndPos(0,0);
+	m_pList->SetWndPos(Fvector2().set(0,0));
 	m_text_color = 0xffffffff;
-	SetFont(UI()->Font()->GetFont(LETTERICA18_FONT_NAME));
+	SetFont(UI().Font().GetFont(LETTERICA18_FONT_NAME));
 	CUIXmlInit::InitFont(xml_doc,"speech_menu:text",0,m_text_color,m_pFont);	
     InitList(section_name);
 }
@@ -29,12 +29,12 @@ CUISpeechMenu::~CUISpeechMenu()
 }
 
 void CUISpeechMenu::Init(float x, float y, float width, float height){
-	CUIWindow::Init(x,y,width,height);
+	//CUIWindow::Init(x,y,width,height);
 }
 
 void CUISpeechMenu::InitList(LPCSTR section_name){
 	R_ASSERT2(pSettings->section_exist(section_name), section_name);
-	CUIStatic* pItem = NULL;
+	CUITextWnd* pItem = NULL;
 
 	string64 phrase;
 	string256 str;

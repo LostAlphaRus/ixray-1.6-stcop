@@ -5,7 +5,7 @@
 #include "../xrEngine/GameMtlLib.h"
 #include "../include/xrRender/kinematics.h"
 #include "MainMenu.h"
-#include "UICursor.h"
+#include "../xrUI/UICursor.h"
 #include "game_base_space.h"
 #include "level.h"
 #include "../xrParticles/stdafx.h"
@@ -560,8 +560,8 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 		if (Device.Paused())
 			Device.Pause		(FALSE, TRUE, TRUE, "eQuickLoad");
 		
-		if(HUD().GetUI())
-			HUD().GetUI()->UIGame()->HideShownDialogs();
+		if(CurrentGameUI())
+			CurrentGameUI()->HideShownDialogs();
 		
 		LPSTR		saved_name	= (LPSTR)(P1);
 

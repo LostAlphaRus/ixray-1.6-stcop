@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 
 #include "UIMMShniaga.h"
-#include "UIStatic.h"
-#include "UIScrollView.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "MMsound.h"
 #include "../hudmanager.h"
 #include "../game_base_space.h"
@@ -12,6 +12,7 @@
 #include <math.h>
 #include "../Actor.h"
 #include "../saved_game_wrapper.h"
+#include "../../xrUI/UICursor.h"
 
 extern string_path g_last_saved_game;
 
@@ -111,7 +112,7 @@ void CUIMMShniaga::Init(CUIXml& xml_doc, LPCSTR path)
 
 void CUIMMShniaga::OnDeviceReset()
 {
-	if(UI()->is_16_9_mode())
+	if(UI().is_widescreen())
 	{
 		m_anims[0]->SetWndSize(m_wheel_size[1]);
 		m_anims[1]->SetWndSize(m_wheel_size[1]);
@@ -124,7 +125,7 @@ void CUIMMShniaga::OnDeviceReset()
 
 extern CActor*		g_actor;
 
-void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCSTR path){
+void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCSTR path){
 	CGameFont* pF;
 	u32	color;
 	float height;
@@ -140,27 +141,26 @@ void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCST
 	XML_NODE* tab_node = xml_doc.NavigateToNode(path,0);
 	xml_doc.SetLocalRoot(tab_node);
 
-	CUIStatic* st;
+	CUITextWnd* st;
 
 	for (int i = 0; i < nodes_num; ++i)
 	{		
-//		if (0 == xr_strcmp("btn_lastsave",xml_doc.ReadAttrib("btn", i, "name")))
-//		{
-//			if (g_actor && Actor()->g_Alive())
-//				continue;
-//		}
-		st = new CUIStatic();
-		st->Init(0,0,m_view->GetDesiredChildWidth(), height);
+		st							= new CUITextWnd();
+		st->SetWndPos				(Fvector2().set(0,0));
+		st->SetWndSize				(Fvector2().set(m_view->GetDesiredChildWidth(), height));
+		st->SetFont					(pF);
 		st->SetTextComplexMode		(false);
-		st->SetTextST(xml_doc.ReadAttrib	("btn", i, "caption"));
-		if (pF)
-			st->SetFont(pF);
-		st->SetTextColor(color);
-		st->SetTextAlignment(CGameFont::alCenter);
-//		st->SetTextAlignment(CGameFont::alLeft);
-		st->SetVTextAlignment(valCenter);
-		st->SetWindowName(xml_doc.ReadAttrib("btn", i, "name"));
-		st->SetMessageTarget(this);
+		st->SetTextST				(xml_doc.ReadAttrib	("btn", i, "caption"));
+
+//		float font_height			= st->GetFont()->GetHeight();
+//		UI().ClientToScreenScaledHeight(font_height);
+
+//.		st->SetTextOffset			(0, (button_height-font_height)/2.0f);
+		st->SetTextColor			(color);
+		st->SetTextAlignment		(CGameFont::alCenter);
+		st->SetVTextAlignment		(valCenter);
+		st->SetWindowName			(xml_doc.ReadAttrib("btn", i, "name"));
+		st->SetMessageTarget		(this);
 
 
 		lst.push_back(st);
@@ -176,7 +176,7 @@ void CUIMMShniaga::ShowMain(){
 	for (u32 i = 0; i<m_buttons.size(); i++)
 		m_view->AddWindow(m_buttons[i], false);
 
-	SendMessage(m_buttons[0], STATIC_FOCUS_RECEIVED);
+	SendMessage(m_buttons[0], WINDOW_FOCUS_RECEIVED);
 }
 
 void CUIMMShniaga::ShowNewGame(){
@@ -185,7 +185,7 @@ void CUIMMShniaga::ShowNewGame(){
 	for (u32 i = 0; i<m_buttons_new.size(); i++)
 		m_view->AddWindow(m_buttons_new[i], false);
 
-	SendMessage(m_buttons_new[0], STATIC_FOCUS_RECEIVED);
+	SendMessage(m_buttons_new[0], WINDOW_FOCUS_RECEIVED);
 }
 
 bool CUIMMShniaga::IsButton(CUIWindow* st){
@@ -204,7 +204,7 @@ void CUIMMShniaga::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
 	CUIWindow::SendMessage(pWnd, msg, pData);
 	if (IsButton(pWnd)){
 		switch (msg){
-			case STATIC_FOCUS_RECEIVED:
+			case WINDOW_FOCUS_RECEIVED:
 				SelectBtn(pWnd);
 				break;
 		}
@@ -277,7 +277,7 @@ void CUIMMShniaga::Update(){
 
 bool CUIMMShniaga::OnMouseAction(float x, float y, EUIMessages mouse_action){
 	
-	Fvector2 pos = UI()->GetUICursor()->GetCursorPosition();
+	Fvector2 pos = UI().GetUICursor().GetCursorPosition();
     Frect r;
 	m_magnifier->GetAbsoluteRect(r);
 	if (WINDOW_LBUTTON_DOWN == mouse_action && r.in(pos.x, pos.y))
@@ -349,6 +349,18 @@ float CUIMMShniaga::pos(float x1, float x2, u32 t){
 		return x1 - x;
 	else
         return x1 + x;
+}
+
+#include "pch_script.h"
+using namespace luabind;
+
+void CUIMMShniaga::script_register(lua_State* L)
+{
+	module(L)
+		[
+		class_<CUIMMShniaga, CUIWindow>("CUIMMShniaga") // может перенести потом ЗП экспорты? хз...
+		.def("SetVisibleMagnifier",			&CUIMMShniaga::SetVisibleMagnifier)
+	];
 }
 
 bool b_shniaganeed_pp = true;

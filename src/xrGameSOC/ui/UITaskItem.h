@@ -1,7 +1,8 @@
 #pragma once
-#include "UIDialogWnd.h"
-#include "UIListItem.h"
-#include "UIWndCallback.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIListItem.h"
+#include "../../xrUI/Widgets/UIWndCallback.h"
+#include "../../xrUI/Widgets/UI3tbutton.h"
 
 class CGameTask;
 class CUIStatic;

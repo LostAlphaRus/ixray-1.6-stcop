@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIStatic;
 class CUI3tButton;
@@ -11,8 +11,6 @@ class CUIXml;
 class CUIChangeWeather : public CUIDialogWnd 
 {
 public:
-	using CUIDialogWnd::Init;
-
 					CUIChangeWeather	();
 			void	Init				(CUIXml& xml_doc);
 

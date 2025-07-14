@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "actor.h"
 #include "customdetector.h"
-#include "uigamesp.h"
+#include "uigamecustom.h"
 #include "hudmanager.h"
 #include "weapon.h"
 #include "artifact.h"
@@ -61,19 +61,18 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 
 				inventory().Take(_GO, false, true);
 
-				CUIGameSP* pGameSP = NULL;
-				CUI* ui = HUD().GetUI();
-				if( ui&&ui->UIGame() )
+				CUIGameCustom* pGameSP = NULL;
+				if( CurrentGameUI() )
 				{
-					pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+					pGameSP = CurrentGameUI();
 					if (Level().CurrentViewEntity() == this)
-							HUD().GetUI()->UIGame()->ReInitShownUI();
+							CurrentGameUI()->ReInitShownUI();
 				};
 				
-				//äîáàâèòü îòñîåäèíåííûé àääîí â èíâåíòàðü
+				//Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¾Ñ‚ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð½Ñ‹Ð¹ Ð°Ð´Ð´Ð¾Ð½ Ð² Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€ÑŒ
 				if(pGameSP)
 				{
-					if(pGameSP->MainInputReceiver() == pGameSP->InventoryMenu)
+					if(pGameSP->TopInputReceiver() == pGameSP->InventoryMenu)
 					{
 						pGameSP->InventoryMenu->AddItemToBag(smart_cast<CInventoryItem*>(O));
 					}
@@ -112,8 +111,8 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 
 			SelectBestWeapon(O);
 
-			if (Level().CurrentViewEntity() == this && HUD().GetUI() && HUD().GetUI()->UIGame())
-				HUD().GetUI()->UIGame()->ReInitShownUI();
+			if (Level().CurrentViewEntity() == this && CurrentGameUI())
+				CurrentGameUI()->ReInitShownUI();
 		}
 		break;
 	case GE_INV_ACTION:

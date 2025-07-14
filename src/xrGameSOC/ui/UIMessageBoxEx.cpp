@@ -2,7 +2,7 @@
 
 #include "UIMessageBox.h"
 #include "UIMessageBoxEx.h"
-#include "../UIDialogHolder.h"
+#include "../../xrUI/Widgets/UIDialogHolder.h"
 
 CUIMessageBoxEx::CUIMessageBoxEx(){
 	m_pMessageBox = new CUIMessageBox();
@@ -16,7 +16,6 @@ CUIMessageBoxEx::~CUIMessageBoxEx(){
 }
 
 void CUIMessageBoxEx::Init(LPCSTR xml_template){
-	CUIDialogWnd::Init(0,0,1024,768);
 	m_pMessageBox->Init(xml_template);
 }
 

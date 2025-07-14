@@ -11,7 +11,7 @@
 #include "../include/xrRender/Kinematics.h"
 #include "game_cl_single.h"
 #include "Actor.h"
-#include "ui/UIWindow.h"
+#include "../xrUI/Widgets/UIWindow.h"
 // refs
 class CEntity;
 class ENGINE_API CMotionDef;

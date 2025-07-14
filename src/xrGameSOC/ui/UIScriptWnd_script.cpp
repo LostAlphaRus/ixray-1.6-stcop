@@ -2,18 +2,18 @@
 
 //UI-controls
 #include "UIScriptWnd.h"
-#include "UIButton.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UIButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIMessageBox.h"
-#include "UIPropertiesBox.h"
-#include "UICheckButton.h"
-#include "UIRadioButton.h"
-#include "UIStatic.h"
-#include "UIEditBox.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UIProgressBar.h"
-#include "UITabControl.h"
+#include "../../xrUI/Widgets/UIPropertiesBox.h"
+#include "../../xrUI/Widgets/UICheckButton.h"
+#include "../../xrUI/Widgets/UIRadioButton.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 
 #include "uiscriptwnd_script.h"
 
@@ -43,7 +43,6 @@ export_class script_register_ui_window1(export_class &&instance)
 	return std::move(instance)
 		.def(					constructor<>())
 
-		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&))&BaseType::AddCallback)
 		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&, const luabind::object&))&BaseType::AddCallback)
 
 		.def("Register",		(void (BaseType::*)(CUIWindow*))&BaseType::Register)

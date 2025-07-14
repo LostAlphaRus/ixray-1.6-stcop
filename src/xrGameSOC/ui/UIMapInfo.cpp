@@ -1,8 +1,8 @@
 #include "StdAfx.h"
 #include "UIMapInfo.h"
-#include "UIScrollView.h"
-#include "UIXmlInit.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrEngine/string_table.h"
 
 CUIMapInfo::CUIMapInfo(){
@@ -15,9 +15,10 @@ CUIMapInfo::~CUIMapInfo(){
 }
 
 void CUIMapInfo::Init(float x, float y, float width, float height){
-	CUIWindow::Init(x,y,width,height);
-    m_view->Init(0,0,width,height);
-	m_view->Init();
+	SetWndPos(Fvector2().set(x,y));
+	SetWndSize(Fvector2().set(width, height));
+	m_view->SetWndSize(Fvector2().set(width, height));
+	m_view->InitScrollView();
 	m_view->SetFixedScrollBar(false);
 }
 
@@ -30,7 +31,7 @@ void CUIMapInfo::Init(float x, float y, float width, float height){
 							text += *str_tbl.translate(z);									\
 						text += "%c[default]\\n";											\
 						st = new CUIStatic();											\
-						st->SetTextComplexMode(true);										\
+						st->TextItemControl()->SetTextComplexMode(true);										\
 						st->SetFont(txt_font);												\
 						st->SetTextColor(header_color);										\
 						st->SetText(text.c_str());											\
@@ -114,7 +115,7 @@ void CUIMapInfo::InitMap(const char* map_name){
 			text += "%c[default]\\n";
 
 			st						= new CUIStatic();
-			st->SetTextComplexMode	(true);
+			st->TextItemControl()->SetTextComplexMode	(true);
 			st->SetFont				(txt_font);
 			st->SetTextColor		(header_color);
 			st->SetText				(text.c_str());

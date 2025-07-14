@@ -1,12 +1,12 @@
 #include "StdAfx.h"
 #include "UIStalkersRankingWnd.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIPdaAux.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "UIPdaListItem.h"
-#include "UIAnimatedStatic.h"
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIAnimatedStatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 #include "UICharacterInfo.h"
 #include "../InventoryOwner.h"
 #include "../Level.h"
@@ -251,16 +251,16 @@ void CUIStalkerRankingInfoItem::Init	(CUIXml* xml, LPCSTR path, int idx)
 
 	xml_init.InitAutoStaticGroup			(*xml, "auto", 0, this);
 
-	m_stored_alpha							= color_get_A(m_text2->GetTextColor());
+	m_stored_alpha							= color_get_A(m_text2->TextItemControl()->GetTextColor());
 	xml->SetLocalRoot						(_stored_root);
 }
 
 void CUIStalkerRankingInfoItem::SetSelected	(bool b)
 {
 	CUISelectable::SetSelected				(b);
-	m_text1->SetTextColor( subst_alpha(m_text1->GetTextColor(), b?255:m_stored_alpha ));
-	m_text2->SetTextColor( subst_alpha(m_text2->GetTextColor(), b?255:m_stored_alpha ));
-	m_text3->SetTextColor( subst_alpha(m_text3->GetTextColor(), b?255:m_stored_alpha ));
+	m_text1->SetTextColor( subst_alpha(m_text1->TextItemControl()->GetTextColor(), b?255:m_stored_alpha ));
+	m_text2->SetTextColor( subst_alpha(m_text2->TextItemControl()->GetTextColor(), b?255:m_stored_alpha ));
+	m_text3->SetTextColor( subst_alpha(m_text3->TextItemControl()->GetTextColor(), b?255:m_stored_alpha ));
 	if(b){ 
 		m_StalkersRankingWnd->ShowHumanInfo			(m_humanID);
 	}

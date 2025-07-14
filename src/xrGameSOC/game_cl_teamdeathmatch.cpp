@@ -384,7 +384,8 @@ void game_cl_TeamDeathmatch::shedule_Update			(u32 dt)
 	CStringTable st;
 	string512	msg;
 
-	if(!m_game_ui && HUD().GetUI() ) m_game_ui = smart_cast<CUIGameTDM*>( HUD().GetUI()->UIGame() );
+	if(!m_game_ui ) 
+		m_game_ui = smart_cast<CUIGameTDM*>( CurrentGameUI() );
 	inherited::shedule_Update(dt);
 
 	if (!m_game_ui) return;
@@ -419,7 +420,7 @@ void game_cl_TeamDeathmatch::shedule_Update			(u32 dt)
 					if (!(pCurBuyMenu && pCurBuyMenu->IsShown()) && 
 						!(pCurSkinMenu && pCurSkinMenu->IsShown()) &&
 						!(m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown()) &&
-						(HUD().GetUI() && HUD().GetUI()->GameIndicatorsShown())
+						(CurrentGameUI()->GameIndicatorsShown())
 						)
 					{
 						if (!m_bTeamSelected)
@@ -557,7 +558,7 @@ BOOL game_cl_TeamDeathmatch::CanCallTeamSelectMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
 	if (!local_player) return false;
-	if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
+	if (m_game_ui->InventoryMenu && m_game_ui->InventoryMenu->IsShown())
 	{
 		return FALSE;
 	};

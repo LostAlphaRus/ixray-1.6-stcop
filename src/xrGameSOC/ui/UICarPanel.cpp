@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "UIMainIngameWnd.h"
 #include "UICarPanel.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 
 const LPCSTR CAR_PANEL_XML = "car_panel.xml";
 const LPCSTR POINTER_ARROW_TEX = "ui\\hud_map_arrow";
@@ -34,9 +34,6 @@ void CUICarPanel::Init			(float x, float y, float width, float height)
 	Show(false);
 	Enable(false);
 
-
-
-	inherited::Init(x,y, width, height);
 }
 
 //////////////////////////////////////////////////////////////////////////

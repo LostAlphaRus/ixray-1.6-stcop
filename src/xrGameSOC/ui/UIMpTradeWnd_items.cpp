@@ -701,7 +701,7 @@ void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 {
 	Fvector2							pos;
 	cell->GetAbsolutePos				(pos);
-	UI()->ClientToScreenScaled			(pos, pos.x, pos.y);
+	UI().ClientToScreenScaled			(pos, pos.x, pos.y);
 
 	int acc									= cell->GetAccelerator();
 	if(acc!=0)
@@ -711,7 +711,7 @@ void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 		string64							buff;
 
 		sprintf_s								(buff,"%d", acc - SDL_SCANCODE_ESCAPE);
-		CGameFont* pFont					= UI()->Font()->GetFont(LETTERICA16_FONT_NAME);
+		CGameFont* pFont					= UI().Font().GetFont(LETTERICA16_FONT_NAME);
 		pFont->SetColor						(color_rgba(135,123,116,255));
 		pFont->Out							(pos.x, pos.y, buff);
 		pFont->OnRender						();
@@ -721,16 +721,16 @@ void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 
 	if(!b_can_buy_rank)
 	{
-		cell->SetColor						(m_trade_wnd->m_item_color_restr_rank);
+		cell->SetTextureColor						(m_trade_wnd->m_item_color_restr_rank);
 		return;
 	}
 	bool b_can_buy_money	= m_trade_wnd->CheckBuyPossibility(m_info_item->m_name_sect, CUIMpTradeWnd::bf_check_money, true);
 	if(!b_can_buy_money)
 	{
-		cell->SetColor					(m_trade_wnd->m_item_color_restr_money);
+		cell->SetTextureColor					(m_trade_wnd->m_item_color_restr_money);
 		return;
 	}
-	cell->SetColor						(m_trade_wnd->m_item_color_normal);
+	cell->SetTextureColor						(m_trade_wnd->m_item_color_normal);
 
 }
 

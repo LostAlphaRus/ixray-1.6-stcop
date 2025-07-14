@@ -1,9 +1,9 @@
 #include "stdafx.h"
 
 #include "UIStatsWnd.h"
-#include "UIXmlInit.h"
-#include "../UI.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
+#include "../UIHelperGame.h"
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -35,9 +35,7 @@ void CUIStatsWnd::Init(LPCSTR XML)
 
 	CUIXmlInit xml_init;
 
-	CUIWindow::Init(CUIXmlInit::ApplyAlignX(0, alCenter),
-					CUIXmlInit::ApplyAlignY(0, alCenter),
-					UI_BASE_WIDTH, UI_BASE_HEIGHT);
+	xml_init.InitWindow(uiXml, "main", 0, this);
 
 	// Читаем из xml файла параметры окна и контролов
 	AttachChild(&UIFrameWnd);
@@ -48,7 +46,7 @@ void CUIStatsWnd::Init(LPCSTR XML)
 	UIStatsList.SetMessageTarget(this);
 	UIStatsList.EnableScrollBar(true);
 
-	xml_init.InitMultiTextStatic(uiXml, "headers_mt_static", 0, &UIHeader);
+	CUIXmlInitGame::InitMultiTextStatic(uiXml, "headers_mt_static", 0, &UIHeader);
 	UIFrameWnd.AttachChild(&UIHeader);
 }
 
@@ -150,22 +148,20 @@ void CUIStatsListItem::XmlInit(const char *path, CUIXml &uiXml)
 		pButton = new CUIButton();
 		pButton->SetAutoDelete(true);
 		xml_init.InitStatic(uiXml, "static", i, pButton);
-		pButton->SetTextAlignment(CGameFont::alLeft);
+		pButton->TextItemControl()->SetTextAlignment(CGameFont::alLeft);
 		AttachChild(pButton);
 		FieldsVector.push_back(pButton);
 	}
-
-	FieldsVector[0]->SetElipsis(CUIStatic::eepEnd, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////
 
 void CUIStatsListItem::Highlight(bool bHighlight)
 {
-	for (FIELDS_VECTOR_it it = FieldsVector.begin(); it != FieldsVector.end(); ++it)
+/*	for (FIELDS_VECTOR_it it = FieldsVector.begin(); it != FieldsVector.end(); ++it)
 	{
 		(*it)->HighlightItem(bHighlight);
-	}
+	}*/
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,15 +1,16 @@
 #include "stdafx.h"
 
 #include "UIMapDesc.h"
-#include "UIStatic.h"
-#include "UIScrollView.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "../hudmanager.h"
 #include "../level.h"
 #include "../game_cl_teamdeathmatch.h"
 #include "UIMapInfo.h"
 #include "../../xrEngine/xr_level_controller.h"
+#include "../../xrUI/UICursor.h"
 
 #include "UIStatsPlayerList.h"
 
@@ -109,7 +110,7 @@ bool CUIMapDesc::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 			game->OnKeyboardRelease(kSCORES);
-			UI()->GetUICursor()->Show();
+			UI().GetUICursor().Show();
 		}
 		
 		return false;
@@ -120,7 +121,7 @@ bool CUIMapDesc::OnKeyboardAction(int dik, EUIMessages keyboard_action){
         ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 		game->OnKeyboardPress(kSCORES);
-		UI()->GetUICursor()->Hide();
+		UI().GetUICursor().Hide();
 		return false;
 	}
 

@@ -10,6 +10,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "../xrEngine/xr_ioconsole.h"
 #include "MainMenu.h"
+#include "UIGameCustom.h"
 
 BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 {
@@ -274,7 +275,7 @@ bool CLevel::net_start6()
 		if	(!g_dedicated_server)
 		{
 			if (g_hud)
-				HUD().GetUI()->OnConnected();
+				CurrentGameUI()->OnConnected();
 		}
 	}
 

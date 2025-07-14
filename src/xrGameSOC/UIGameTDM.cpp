@@ -73,7 +73,7 @@ void CUIGameTDM::Init ()
 	float FrameW	= FrameRect.right - FrameRect.left;
 	float FrameH	= FrameRect.bottom - FrameRect.top;
 
-	pFragList->SetWndPos((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f);
+	pFragList->SetWndPos(Fvector2().set((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f));
 	//-----------------------------------------------------------
 	m_pFragLists->AttachChild(pFragList);
 	//-----------------------------------------------------------
@@ -87,7 +87,7 @@ void CUIGameTDM::Init ()
 	FrameW	= FrameRect.right - FrameRect.left;
 	FrameH	= FrameRect.bottom - FrameRect.top;
 
-	pPlayerListT1->SetWndPos((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f);
+	pPlayerListT1->SetWndPos(Fvector2().set((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f));
 	//-----------------------------------------------------------
 //	FrameRect = pPlayerListT2->GetWndRect ();
 //	FrameW	= FrameRect.right - FrameRect.left;
@@ -101,7 +101,7 @@ void CUIGameTDM::Init ()
 	FrameRect = pStatisticWnd->GetFrameRect ();
 	FrameW	= FrameRect.right - FrameRect.left;
 	FrameH	= FrameRect.bottom - FrameRect.top;
-	pStatisticWnd->SetWndRect((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f, FrameW, FrameH);
+	pStatisticWnd->SetWndRect(Frect().set((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f, FrameW, FrameH));
 
 	m_pStatisticWnds->AttachChild(pStatisticWnd);
 }
@@ -116,7 +116,7 @@ CUIGameTDM::~CUIGameTDM()
 	delete_data			(m_pUITeamSelectWnd);
 }
 //--------------------------------------------------------------------
-bool CUIGameTDM::IR_OnKeyboardPress(int dik)
+bool CUIGameTDM::IR_UIOnKeyboardPress(int dik)
 {
 	switch (dik) {
 		case SDL_SCANCODE_CAPSLOCK :
@@ -131,11 +131,11 @@ bool CUIGameTDM::IR_OnKeyboardPress(int dik)
 			};
 		}break;
 	}
-	if(inherited::IR_OnKeyboardPress(dik)) return true;
+	if(inherited::IR_UIOnKeyboardPress(dik)) return true;
 	return false;
 }
 
-bool CUIGameTDM::IR_OnKeyboardRelease(int dik)
+bool CUIGameTDM::IR_UIOnKeyboardRelease(int dik)
 {
 	switch (dik) {
 		case SDL_SCANCODE_CAPSLOCK :
@@ -148,7 +148,7 @@ bool CUIGameTDM::IR_OnKeyboardRelease(int dik)
 				};
 			}break;
 	}
-	if(inherited::IR_OnKeyboardRelease(dik)) return true;
+	if(inherited::IR_UIOnKeyboardRelease(dik)) return true;
 	
 	return false;
 }

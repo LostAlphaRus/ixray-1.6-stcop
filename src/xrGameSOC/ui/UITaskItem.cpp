@@ -1,12 +1,12 @@
 #include "pch_script.h"
 #include "UITaskItem.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "../gametask.h"
 #include "../../xrEngine/string_table.h"
 #include "UIEventsWnd.h"
-#include "UIEditBoxEx.h"
-#include "UIEditBox.h"
+#include "../../xrUI/Widgets/UIEditBoxEx.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
 #include "UIInventoryUtilities.h"
 #include "../map_location.h"
 #include "../map_manager.h"
@@ -45,7 +45,7 @@ void CUITaskItem::Init				()
 {
 	SetWindowName					("job_item");
 	Register						(this);
-	AddCallback						("job_item",BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUITaskItem::OnItemClicked));
+	AddCallbackStr					("job_item",BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUITaskItem::OnItemClicked));
 }
 
 void CUITaskItem::OnItemClicked(CUIWindow*, void*)
@@ -76,7 +76,7 @@ void CUITaskRootItem::Init			()
 	
 	m_switchDescriptionBtn->SetWindowName("m_switchDescriptionBtn");
 	Register					(m_switchDescriptionBtn);
-	AddCallback					("m_switchDescriptionBtn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITaskRootItem::OnSwitchDescriptionClicked));
+	AddCallbackStr				("m_switchDescriptionBtn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITaskRootItem::OnSwitchDescriptionClicked));
 
 	CUIXmlInit xml_init;
 	CUIXml&						uiXml = m_EventsWnd->m_ui_task_item_xml;
@@ -101,8 +101,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	m_taskImage->InitTexture		(*obj->icon_texture_name);
 
 	Frect r							= obj->icon_rect;
-	m_taskImage->SetOriginalRect	(r.x1, r.y1, r.x2, r.y2);
-	m_taskImage->ClipperOn			();
+	m_taskImage->SetTextureRect		(Frect().set(r.x1, r.y1, r.x2, r.y2));
 	m_taskImage->SetStretchTexture	(true);
 
 	m_captionStatic->SetText		(*stbl.translate(m_GameTask->m_Title));
@@ -114,7 +113,7 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	txt			+= *(InventoryUtilities::GetTimeAsString(gt->m_ReceiveTime, InventoryUtilities::etpTimeToMinutes));
 
 	m_captionTime->SetText		(txt.c_str());
-	m_captionTime->SetWndPos(m_captionTime->GetWndPos().x,m_captionStatic->GetWndPos().y+m_captionStatic->GetHeight()+3.0f);
+	m_captionTime->SetWndPos(Fvector2().set(m_captionTime->GetWndPos().x,m_captionStatic->GetWndPos().y+m_captionStatic->GetHeight()+3.0f));
 
 	float h = _max	(m_taskImage->GetWndPos().y+m_taskImage->GetHeight(),m_captionTime->GetWndPos().y+m_captionTime->GetHeight());
 	h	= _max(h,m_switchDescriptionBtn->GetWndPos().y+m_switchDescriptionBtn->GetHeight());
@@ -156,7 +155,7 @@ void CUITaskRootItem::Update		()
 			m_switchDescriptionBtn->InitTexture	("ui_icons_newPDA_showmap");
 	}
 
-	m_switchDescriptionBtn->SetButtonMode(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_NORMAL : CUIButton::BUTTON_PUSHED);
+	m_switchDescriptionBtn->SetButtonState(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_NORMAL : CUIButton::BUTTON_PUSHED);
 
 	if(m_remTimeStatic->IsShown())
 	{
@@ -175,7 +174,7 @@ bool CUITaskRootItem::OnDbClick	()
 
 void CUITaskRootItem::OnSwitchDescriptionClicked	(CUIWindow*, void*)
 {
-	m_switchDescriptionBtn->SetButtonMode(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
+	m_switchDescriptionBtn->SetButtonState(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
 
 	m_EventsWnd->SetDescriptionMode						(!m_EventsWnd->GetDescriptionMode());
 	OnItemClicked										(this, NULL);
@@ -208,7 +207,7 @@ void CUITaskSubItem::Init			()
 	m_showDescriptionBtn->SetWindowName	("m_showDescriptionBtn");
 	Register						(m_showDescriptionBtn);
 
-	AddCallback						("m_showDescriptionBtn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITaskSubItem::OnShowDescriptionClicked));
+	AddCallbackStr					("m_showDescriptionBtn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITaskSubItem::OnShowDescriptionClicked));
 
 
 	CUIXmlInit xml_init;
@@ -288,7 +287,7 @@ void CUITaskSubItem::OnShowDescriptionClicked (CUIWindow*, void*)
 
 void CUITaskSubItem::MarkSelected (bool b)
 {
-	m_showDescriptionBtn->SetButtonMode		(b ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
+	m_showDescriptionBtn->SetButtonState	(b ? CUIButton::BUTTON_PUSHED : CUIButton::BUTTON_NORMAL);
 }
 
 /*

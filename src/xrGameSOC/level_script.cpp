@@ -15,7 +15,7 @@
 #include "client_spawn_manager.h"
 #include "../xrEngine/igame_persistent.h"
 #include "game_cl_base.h"
-#include "ui/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
 #include "date_time.h"
 #include "ai_space.h"
 #include "level_graph.h"
@@ -24,7 +24,7 @@
 #include "HUDManager.h"
 #include "../xrScripts/script_engine.h"
 #include "game_cl_single.h"
-
+#include "uigamecustom.h"
 #include "map_manager.h"
 #include "map_location.h"
 #include "phworld.h"
@@ -276,37 +276,42 @@ CClientSpawnManager	&get_client_spawn_manager()
 
 void start_stop_menu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
-	HUD().GetUI()->StartStopMenu(pDialog,bDoHideIndicators);
+	CurrentGameUI()->StartStopMenu(pDialog,bDoHideIndicators);
 }
 
 
 void add_dialog_to_render(CUIDialogWnd* pDialog)
 {
-	HUD().GetUI()->AddDialogToRender(pDialog);
+	CurrentGameUI()->AddDialogToRender(pDialog);
 }
 
 void remove_dialog_to_render(CUIDialogWnd* pDialog)
 {
-	HUD().GetUI()->RemoveDialogToRender(pDialog);
+	CurrentGameUI()->RemoveDialogToRender(pDialog);
 }
 
 CUIDialogWnd* main_input_receiver()
 {
-	return HUD().GetUI()->MainInputReceiver();
+	return CurrentGameUI()->TopInputReceiver();
 }
 #include "UIGameCustom.h"
 void hide_indicators()
 {
-	HUD().GetUI()->UIGame()->HideShownDialogs();
-
-	HUD().GetUI()->HideGameIndicators();
-	HUD().GetUI()->HideCrosshair();
+	if (CurrentGameUI())
+	{
+		CurrentGameUI()->HideShownDialogs();
+		CurrentGameUI()->ShowGameIndicators(false);
+		CurrentGameUI()->ShowCrosshair(false);
+	}
 }
 
 void show_indicators()
 {
-	HUD().GetUI()->ShowGameIndicators();
-	HUD().GetUI()->ShowCrosshair();
+	if (CurrentGameUI())
+	{
+		CurrentGameUI()->ShowGameIndicators(true);
+		CurrentGameUI()->ShowCrosshair(true);
+	}
 }
 
 

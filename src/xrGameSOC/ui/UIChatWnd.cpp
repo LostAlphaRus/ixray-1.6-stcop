@@ -1,8 +1,8 @@
 #include <stdafx.h>
 #include "UIChatWnd.h"
 #include "UIGameLog.h"
-#include "UIEditBox.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../game_cl_base.h"
 #include "../../xrEngine/xr_level_controller.h"
 #include "../Level.h"
@@ -48,7 +48,7 @@ void CUIChatWnd::SetEditBoxPrefix(const shared_str &prefix)
 void CUIChatWnd::Show()
 {
 	UIEditBox.CaptureFocus(true);
-	inherited::Show();
+	inherited::Show(true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ void CUIChatWnd::Show()
 void CUIChatWnd::Hide()
 {
 	UIEditBox.CaptureFocus(false);
-	inherited::Hide();
+	inherited::Show(false);
 }
 
 //////////////////////////////////////////////////////////////////////////

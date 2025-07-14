@@ -1,5 +1,5 @@
 #pragma once
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/uidialogwnd.h"
 
 class CUIScrollView;
 

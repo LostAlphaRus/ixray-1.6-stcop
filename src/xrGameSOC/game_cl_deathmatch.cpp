@@ -15,11 +15,11 @@
 #include "ui/UIMapDesc.h"
 #include "ui/UIMessageBoxEx.h"
 #include "ui/UIVote.h"
-#include "dinput.h"
 #include "gamepersistent.h"
 #include "../xrEngine/string_table.h"
 #include "map_manager.h"
 #include "map_location.h"
+#include "../xrUI/Widgets/uistatic.h"
 
 #include "game_cl_deathmatch_snd_messages.h"
 #include "game_base_menu_events.h"
@@ -238,7 +238,7 @@ BOOL game_cl_Deathmatch::CanCallBuyMenu			()
 	{
 		return FALSE;
 	};
-	if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
+	if (m_game_ui->InventoryMenu && m_game_ui->InventoryMenu->IsShown())
 	{
 		return FALSE;
 	};
@@ -248,7 +248,7 @@ BOOL game_cl_Deathmatch::CanCallBuyMenu			()
 BOOL game_cl_Deathmatch::CanCallSkinMenu			()
 {
 	if (Phase()!=GAME_PHASE_INPROGRESS) return false;
-	if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
+	if (m_game_ui->InventoryMenu && m_game_ui->InventoryMenu->IsShown())
 	{
 		return FALSE;
 	};
@@ -414,7 +414,8 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 	if(g_dedicated_server)	return;
 
 	//fake	
-	if(!m_game_ui && HUD().GetUI() ) m_game_ui = smart_cast<CUIGameDM*>( HUD().GetUI()->UIGame() );
+	if(!m_game_ui) 
+		m_game_ui = smart_cast<CUIGameDM*>( CurrentGameUI() );
 	if(m_game_ui)
 	{
 		m_game_ui->SetTimeMsgCaption("");
@@ -426,8 +427,8 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 		m_game_ui->SetWarmUpCaption("");
 	};
 
-	if (HUD().GetUI() && HUD().GetUI()->UIMainIngameWnd)
-		HUD().GetUI()->UIMainIngameWnd->GetPDAOnline()->SetText("");
+	if (CurrentGameUI()->UIMainIngameWnd)
+		CurrentGameUI()->UIMainIngameWnd->GetPDAOnline()->SetText("");
 
 	switch (Phase())
 	{
@@ -508,7 +509,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 					if (!(pCurBuyMenu && pCurBuyMenu->IsShown()) && 
 						!(pCurSkinMenu && pCurSkinMenu->IsShown()) &&
 						!(m_game_ui->m_pMapDesc && m_game_ui->m_pMapDesc->IsShown()) &&
-						(HUD().GetUI() && HUD().GetUI()->GameIndicatorsShown())
+						(CurrentGameUI()->GameIndicatorsShown())
 						)
 					{
 						if (!m_bSkinSelected)
@@ -523,7 +524,7 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 
 				if (Level().CurrentControlEntity() && 
 					Level().CurrentControlEntity()->CLS_ID == CLSID_SPECTATOR &&
-					(HUD().GetUI() && HUD().GetUI()->GameIndicatorsShown())
+					(CurrentGameUI()->GameIndicatorsShown())
 					)
 				{
 					
@@ -611,8 +612,8 @@ void game_cl_Deathmatch::shedule_Update			(u32 dt)
 	//-----------------------------------------------
 	
 	//-----------------------------------------------
-	if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown() && !CanCallInventoryMenu())
-		StartStopMenu(m_game_ui->m_pInventoryMenu,true);
+	if (m_game_ui->InventoryMenu && m_game_ui->InventoryMenu->IsShown() && !CanCallInventoryMenu())
+		StartStopMenu(m_game_ui->InventoryMenu,true);
 	//-----------------------------------------
 
 	u32 cur_game_state = Phase();
@@ -661,13 +662,13 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 		if (Level().CurrentControlEntity() && Level().CurrentControlEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
 		{
 			if (m_game_ui){
-				if (m_game_ui->m_pInventoryMenu->IsShown())
-					StartStopMenu(m_game_ui->m_pInventoryMenu,true);
+				if (m_game_ui->InventoryMenu->IsShown())
+					StartStopMenu(m_game_ui->InventoryMenu,true);
 				else
 				{
 					if (CanCallInventoryMenu())
 					{
-						StartStopMenu(m_game_ui->m_pInventoryMenu,true);
+						StartStopMenu(m_game_ui->InventoryMenu,true);
 					};
 				};
 				return true;
@@ -1022,9 +1023,9 @@ void				game_cl_Deathmatch::OnGameRoundStarted				()
 	}
 	if (pCurBuyMenu) pCurBuyMenu->ClearPreset(_preset_idx_last);
 	//-----------------------------------------------------------------
-	if (m_game_ui && m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
+	if (m_game_ui && m_game_ui->InventoryMenu && m_game_ui->InventoryMenu->IsShown())
 	{
-		StartStopMenu(m_game_ui->m_pInventoryMenu,true);
+		StartStopMenu(m_game_ui->InventoryMenu,true);
 	}
 }
 

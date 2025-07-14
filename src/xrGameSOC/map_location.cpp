@@ -9,7 +9,7 @@
 #include "game_graph.h"
 #include "xrServer.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "ui/UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "ui/UIMap.h"
 #include "alife_simulator.h"
 #include "graph_engine.h"
@@ -341,8 +341,6 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 				sp->SetHeading( h_ );
 			}
 
-			Frect clip_rect = map->GetClipperRect();
-			sp->SetClipRect( clip_rect );
 			map->AttachChild(sp);
 		}
 		if( GameID() == GAME_SINGLE && GetSpotPointer(sp) ){
@@ -443,8 +441,6 @@ void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp )
 		sp->SetWndPos(pointer_pos);
 		sp->SetHeading(heading);
 
-		Frect clip_rect = map->GetClipperRect();
-		sp->SetClipRect( clip_rect );
 		map->AttachChild(sp);
 
 		Fvector2 tt = map->ConvertLocalToReal(m_position_on_map);

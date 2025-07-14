@@ -17,8 +17,10 @@
 #include "level.h"
 #include "../xrCore/object_broker.h"
 #include "../xrEngine/string_table.h"
-#include "ui\UIXmlInit.h"
-#include "ui\UIWindow.h"
+#include "../xrUI/UIXmlInit.h"
+#include "../xrUI/Widgets/UIWindow.h"
+#include "../xrUI/Widgets/UIStaticItem.h"
+#include "UIGameCustom.h"
 
 CUIXml* pWpnScopeXml = NULL;
 
@@ -397,7 +399,7 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		break;
 	case eMisfire:
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
-			HUD().GetUI()->AddInfoMessage("gun_jammed");
+			CurrentGameUI()->AddCustomStatic("gun_jammed", true);
 		break;
 	case eMagEmpty:
 		switch2_Empty	();
@@ -895,7 +897,7 @@ void CWeaponMagazined::InitAddons()
 					xr_delete(m_UIScope);
 				m_UIScope = new CUIStaticItem();
 
-				m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0, alNone);
+				m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0);
 			}
 		}
 		else if(m_eScopeStatus == ALife::eAddonPermanent)
@@ -919,7 +921,7 @@ void CWeaponMagazined::InitAddons()
 				if (m_UIScope)
 					xr_delete(m_UIScope);
 				m_UIScope = new CUIStaticItem();
-				m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0, alNone);
+				m_UIScope->Init(*scope_tex_name, "hud\\default", 0, 0);
 			}
 
 		}

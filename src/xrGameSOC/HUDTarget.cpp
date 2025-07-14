@@ -25,6 +25,8 @@
 
 #include "inventory_item.h"
 #include "inventory.h"
+#include "../xrUI/ui_base.h"
+
 namespace FVF
 {
 struct TL {
@@ -180,7 +182,7 @@ void CHUDTarget::Render()
 	PT.transform(p2, Device.mFullTransform);
 	float				di_size = C_SIZE / powf(PT.p.w, .2f);
 
-	CGameFont* F = HUD().Font().GetFont(GRAFFITI19_FONT_NAME);
+	CGameFont* F = UI().Font().GetFont(GRAFFITI19_FONT_NAME);
 	F->SetAligment(CGameFont::alCenter);
 	F->OutSetI(0.f, 0.05f);
 

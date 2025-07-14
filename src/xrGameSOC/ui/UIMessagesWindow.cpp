@@ -11,8 +11,8 @@
 #include "UIMessagesWindow.h"
 #include "../level.h"
 #include "UIGameLog.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIChatWnd.h"
 #include "UIPdaMsgListItem.h"
 #include "UIColorAnimatorWrapper.h"
@@ -21,9 +21,9 @@
 #include "../game_cl_artefacthunt.h"
 
 CUIMessagesWindow::CUIMessagesWindow(){
-	m_pChatLog = NULL;
-	m_pChatWnd = NULL;
-	m_pGameLog = NULL;
+	m_pChatLog = nullptr;
+	m_pChatWnd = nullptr;
+	m_pGameLog = nullptr;
 	Init(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
 }
 
@@ -78,10 +78,10 @@ void CUIMessagesWindow::Init(float x, float y, float width, float height){
 void CUIMessagesWindow::AddIconedPdaMessage(LPCSTR textureName, Frect originalRect, LPCSTR message, int iDelay){
 	
 	CUIPdaMsgListItem *pItem			= m_pGameLog->AddPdaMessage(message, float(iDelay));
-	pItem->SetTextComplexMode			(true);
+	pItem->TextItemControl()->SetTextComplexMode			(true);
 	pItem->UIIcon.InitTexture			(textureName);
-	pItem->UIIcon.SetOriginalRect		(originalRect.left, originalRect.top, originalRect.right, originalRect.bottom);
-	pItem->UIMsgText.SetWndPos			(pItem->UIIcon.GetWidth(), pItem->UIMsgText.GetWndPos().y);
+	pItem->UIIcon.SetTextureRect		(Frect().set(originalRect.left, originalRect.top, originalRect.right, originalRect.bottom));
+	pItem->UIMsgText.SetWndPos			(Fvector2().set(pItem->UIIcon.GetWidth(), pItem->UIMsgText.GetWndPos().y));
 	pItem->UIMsgText.AdjustHeightToText	();
 
 	if (pItem->UIIcon.GetHeight() > pItem->UIMsgText.GetHeight())

@@ -1,13 +1,13 @@
 #include "pch_script.h"
 #include "UIEventsWnd.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UIAnimatedStatic.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIAnimatedStatic.h"
 #include "UIMapWnd.h"
-#include "UIScrollView.h"
-#include "UITabControl.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "UITaskDescrWnd.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "../HUDManager.h"
 #include "../level.h"
 #include "../actor.h"
@@ -77,7 +77,7 @@ void CUIEventsWnd::Init				()
 	xml_init.InitTabControl			(uiXml, "main_wnd:left_frame:filter_tab", 0, m_TaskFilter);
 	m_TaskFilter->SetWindowName		("filter_tab");
 	Register						(m_TaskFilter);
-    AddCallback						("filter_tab",TAB_CHANGED,CUIWndCallback::void_function(this,&CUIEventsWnd::OnFilterChanged));
+    AddCallbackStr					("filter_tab",TAB_CHANGED,CUIWndCallback::void_function(this,&CUIEventsWnd::OnFilterChanged));
 /*
     m_primary_or_all_filter_btn		= new CUI3tButton(); m_primary_or_all_filter_btn->SetAutoDelete(true);
 	m_UILeftFrame->AttachChild		(m_primary_or_all_filter_btn);

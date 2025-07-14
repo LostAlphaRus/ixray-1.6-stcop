@@ -2,9 +2,9 @@
 
 #include "UITextVote.h"
 #include "UIVotingCategory.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
-#include "UIEditboxEx.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIEditbox.h"
 
 //#include "UIMapList.h"
 #include "../level.h"
@@ -21,7 +21,7 @@ CUITextVote::CUITextVote(){
 	header = new CUIStatic(); header->SetAutoDelete(true);
 	AttachChild(header);
 
-	edit = new CUIEditBoxEx(); edit->SetAutoDelete(true);
+	edit = new CUIEditBox(); edit->SetAutoDelete(true);
 	AttachChild(edit);
 
 	btn_ok = new CUI3tButton(); btn_ok->SetAutoDelete(true);
@@ -35,7 +35,7 @@ void CUITextVote::Init(CUIXml& xml_doc){
 	CUIXmlInit::InitWindow(xml_doc,			"text_vote", 0, this);
 	CUIXmlInit::InitStatic(xml_doc,			"text_vote:header", 0, header);
 	CUIXmlInit::InitStatic(xml_doc,			"text_vote:background", 0, bkgrnd);
-	CUIXmlInit::InitEditBoxEx(xml_doc,		"text_vote:edit_box", 0, edit);
+	CUIXmlInit::InitEditBox(xml_doc,		"text_vote:edit_box", 0, edit);
 	CUIXmlInit::Init3tButton(xml_doc,		"text_vote:btn_ok", 0, btn_ok);
 	CUIXmlInit::Init3tButton(xml_doc,		"text_vote:btn_cancel", 0, btn_cancel);
 }

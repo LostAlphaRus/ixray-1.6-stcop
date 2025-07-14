@@ -1,8 +1,8 @@
 #include "pch_script.h"
 #include "UIInventoryWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
 
 #include "../actor.h"
@@ -21,7 +21,7 @@
 #include "UIInventoryUtilities.h"
 using namespace InventoryUtilities;
 
-
+#include "../UIHelperGame.h"
 #include "../InfoPortion.h"
 #include "../level.h"
 #include "../game_base_space.h"
@@ -32,7 +32,7 @@ using namespace InventoryUtilities;
 #include "../ActorCondition.h"
 #include "UIDragDropListEx.h"
 #include "UIOutfitSlot.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 #define				INVENTORY_ITEM_XML		"inventory_item.xml"
 #define				INVENTORY_XML			"inventory_new.xml"
@@ -118,9 +118,6 @@ void CUIInventoryWnd::Init()
 	UIOutfitInfo.InitFromXml			(uiXml);
 //.	xml_init.InitStatic					(uiXml, "outfit_info_window",0, &UIOutfitInfo);
 
-	//Элементы автоматического добавления
-	xml_init.InitAutoStatic				(uiXml, "auto_static", this);
-
 
 	if (GameID() != GAME_SINGLE){
 		UIRankFrame = new CUIStatic (); UIRankFrame->SetAutoDelete(true);
@@ -133,28 +130,28 @@ void CUIInventoryWnd::Init()
 	}
 
 	m_pUIBagList						= new CUIDragDropListEx(); UIBagWnd.AttachChild(m_pUIBagList); m_pUIBagList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_bag", 0, m_pUIBagList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_bag", 0, m_pUIBagList);
 	BindDragDropListEnents				(m_pUIBagList);
 
 	m_pUIBeltList						= new CUIDragDropListEx(); AttachChild(m_pUIBeltList); m_pUIBeltList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_belt", 0, m_pUIBeltList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_belt", 0, m_pUIBeltList);
 	BindDragDropListEnents				(m_pUIBeltList);
 
 	m_pUIOutfitList						= new CUIOutfitDragDropList(); AttachChild(m_pUIOutfitList); m_pUIOutfitList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_outfit", 0, m_pUIOutfitList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_outfit", 0, m_pUIOutfitList);
 	BindDragDropListEnents				(m_pUIOutfitList);
 
 	m_pUIPistolList						= new CUIDragDropListEx(); AttachChild(m_pUIPistolList); m_pUIPistolList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_pistol", 0, m_pUIPistolList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_pistol", 0, m_pUIPistolList);
 	BindDragDropListEnents				(m_pUIPistolList);
 
 	m_pUIAutomaticList						= new CUIDragDropListEx(); AttachChild(m_pUIAutomaticList); m_pUIAutomaticList->SetAutoDelete(true);
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_automatic", 0, m_pUIAutomaticList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_automatic", 0, m_pUIAutomaticList);
 	BindDragDropListEnents				(m_pUIAutomaticList);
 
 	//pop-up menu
 	AttachChild							(&UIPropertiesBox);
-	UIPropertiesBox.Init				(0,0,300,300);
+	UIPropertiesBox.InitPropertiesBox	(Fvector2().set(0,0),Fvector2().set(300,300));
 	UIPropertiesBox.Hide				();
 
 	AttachChild							(&UIStaticTime);
@@ -288,7 +285,7 @@ void CUIInventoryWnd::Update()
 void CUIInventoryWnd::Show() 
 { 
 	InitInventory			();
-	inherited::Show			();
+	inherited::Show			(true);
 
 	if (!IsGameTypeSingle())
 	{
@@ -323,7 +320,7 @@ void CUIInventoryWnd::Show()
 void CUIInventoryWnd::Hide()
 {
 	PlaySnd								(eInvSndClose);
-	inherited::Hide						();
+	inherited::Show						(false);
 
 	SendInfoToActor						("ui_inventory_hide");
 	ClearAllLists						();

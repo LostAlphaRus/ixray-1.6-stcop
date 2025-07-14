@@ -15,7 +15,7 @@
 #include "ui/UIPdaWnd.h"
 #include "ui/UIMapDesc.h"
 #include "ui/UIMessageBoxEx.h"
-#include "ui/UIProgressShape.h"
+#include "../xrUI/Widgets/uiprogressshape.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "Artifact.h"
 #include "map_location.h"
@@ -340,7 +340,8 @@ void game_cl_ArtefactHunt::shedule_Update			(u32 dt)
 {
 	CStringTable st;
 	string1024 msg;
-	if(!m_game_ui && HUD().GetUI() ) m_game_ui = smart_cast<CUIGameAHunt*>( HUD().GetUI()->UIGame() );
+	if(!m_game_ui) 
+		m_game_ui = smart_cast<CUIGameAHunt*>(CurrentGameUI() );
 
 	inherited::shedule_Update		(dt);
 
@@ -536,7 +537,7 @@ BOOL game_cl_ArtefactHunt::CanCallBuyMenu			()
 	{
 		return FALSE;
 	};
-	if (m_game_ui->m_pInventoryMenu && m_game_ui->m_pInventoryMenu->IsShown())
+	if (m_game_ui->InventoryMenu && m_game_ui->InventoryMenu->IsShown())
 	{
 		return FALSE;
 	};

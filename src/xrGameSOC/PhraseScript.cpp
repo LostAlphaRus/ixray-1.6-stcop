@@ -7,7 +7,7 @@
 #include "infoportion.h"
 #include "inventoryowner.h"
 #include "ai_debug.h"
-#include "ui/xrUIXmlParser.h"
+#include "../xrUI/xrUIXmlParser.h"
 #include "actor.h"
 
 CPhraseScript::CPhraseScript	()

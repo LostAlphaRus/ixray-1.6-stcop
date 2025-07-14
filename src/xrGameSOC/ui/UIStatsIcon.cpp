@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "UIStatsIcon.h"
-#include "UITextureMaster.h"
+#include "../../xrUI/UITextureMaster.h"
 #include "UIInventoryUtilities.h"
 #include "../Include/xrRender/UIShader.h"
 
@@ -9,7 +9,6 @@ CUIStatsIcon::TEX_INFO		CUIStatsIcon::m_tex_info[MAX_DEF_TEX][2];
 CUIStatsIcon::CUIStatsIcon(){
 	SetStretchTexture(true);
 	InitTexInfo();
-	m_bAvailableTexture = true;
 }
 
 using namespace InventoryUtilities;
@@ -21,13 +20,13 @@ void CUIStatsIcon::InitTexInfo(){
 	string128 rank_tex;	
 	for (int i = RANK_0; i <= RANK_4; i++)
 	{
-		sprintf_s(rank_tex, "ui_hud_status_green_0%d", i+1);
-		m_tex_info[i][0].sh->create("hud\\default",		CUITextureMaster::GetTextureFileName(rank_tex));
-		m_tex_info[i][0].rect =						CUITextureMaster::GetTextureRect	(rank_tex);
+		xr_sprintf(rank_tex, "ui_hud_status_green_0%d", i+1);
+		CUITextureMaster::GetTextureShader		(rank_tex, m_tex_info[i][0].sh);
+		m_tex_info[i][0].rect =					CUITextureMaster::GetTextureRect	(rank_tex);
 
-		sprintf_s(rank_tex, "ui_hud_status_blue_0%d", i+1);
-		m_tex_info[i][1].sh->create("hud\\default",		CUITextureMaster::GetTextureFileName(rank_tex));
-		m_tex_info[i][1].rect =						CUITextureMaster::GetTextureRect	(rank_tex);
+		xr_sprintf(rank_tex, "ui_hud_status_blue_0%d", i+1);
+		CUITextureMaster::GetTextureShader		(rank_tex, m_tex_info[i][1].sh);
+		m_tex_info[i][1].rect =					CUITextureMaster::GetTextureRect	(rank_tex);
 	}
 
 	// artefact
@@ -86,17 +85,17 @@ void CUIStatsIcon::SetText(LPCSTR str){
 		int rank = atoi(strstr(str,"0")) - 1;
 
 		GetStaticItem()->SetShader(m_tex_info[rank][team].sh);
-		SetOriginalRect(m_tex_info[rank][team].rect);
+		SetTextureRect(m_tex_info[rank][team].rect);
 	}
 	else if (0 == xr_strcmp(str,"death"))
 	{
 		GetStaticItem()->SetShader(m_tex_info[DEATH][0].sh);
-		SetOriginalRect(m_tex_info[DEATH][0].rect);
+		SetTextureRect(m_tex_info[DEATH][0].rect);
 	}
 	else if (0 == xr_strcmp(str,"artefact"))
 	{
 		GetStaticItem()->SetShader(m_tex_info[ARTEFACT][0].sh);
-		SetOriginalRect(m_tex_info[ARTEFACT][0].rect);
+		SetTextureRect(m_tex_info[ARTEFACT][0].rect);
 	}
 	else
 	{

@@ -20,7 +20,7 @@
 #include "actorcondition.h"
 #include "actor_input_handler.h"
 #include "../xrEngine/string_table.h"
-#include "UI/UIStatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 #include "CharacterPhysicsSupport.h"
 #include "InventoryBox.h"
 
@@ -149,7 +149,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				if(itm)
 				{
 					inventory().Eat				(itm);
-					SDrawStaticStruct* _s		= HUD().GetUI()->UIGame()->AddCustomStatic("item_used", true);
+					SDrawStaticStruct* _s		= CurrentGameUI()->AddCustomStatic("item_used", true);
 					_s->m_endTime				= Device.fTimeGlobal+3.0f;// 3sec
 					string1024					str;
 					xr_strconcat				(str,*g_pStringTable->translate("st_item_used"),": ", itm->Name());
@@ -348,7 +348,7 @@ void CActor::ActorUse()
 	
 	if(m_pInvBoxWeLookingAt && m_pInvBoxWeLookingAt->nonscript_usable())
 	{
-		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 		if(pGameSP) pGameSP->StartCarBody(this, m_pInvBoxWeLookingAt );
 		return;
 	}
@@ -372,7 +372,7 @@ void CActor::ActorUse()
 				else  if(!Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
 				{
 					//только если находимся в режиме single
-					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 					if(pGameSP)pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
 				}
 			}

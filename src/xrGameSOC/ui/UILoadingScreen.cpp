@@ -2,8 +2,8 @@
 #include "UILoadingScreen.h"
 
 #include "../../xrEngine/GameFont.h"
-#include "UIHelper.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIHelper.h"
+#include "../../xrUI/UIXmlInit.h"
 
 UILoadingScreen::UILoadingScreen()
     : loadingProgress(nullptr),

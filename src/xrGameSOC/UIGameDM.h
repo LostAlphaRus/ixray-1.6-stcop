@@ -23,7 +23,6 @@ private:
 	typedef CUIGameCustom inherited;
 
 public:
-	CUIInventoryWnd*	m_pInventoryMenu;
 	CUIPdaWnd*			m_pPdaMenu;
 	CUIMapDesc*			m_pMapDesc;
 
@@ -87,8 +86,8 @@ public:
 			void					SetVoteMessage					(LPCSTR str);
 			void					SetVoteTimeResultMsg			(LPCSTR str);
 
-	virtual bool		IR_OnKeyboardPress		(int dik);
-	virtual bool		IR_OnKeyboardRelease	(int dik);
+	virtual bool		IR_UIOnKeyboardPress		(int dik);
+	virtual bool		IR_UIOnKeyboardRelease	(int dik);
 
 
 			

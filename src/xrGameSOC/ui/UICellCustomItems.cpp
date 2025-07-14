@@ -21,7 +21,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	rect.rb.set										(	rect.lt.x+INV_GRID_WIDTHF*(1 + UseHQ)*m_grid_size.x, 
 														rect.lt.y+INV_GRID_HEIGHTF*(1 + UseHQ)*m_grid_size.y);
 
-	inherited::SetOriginalRect						(rect);
+	inherited::SetTextureRect						(rect);
 	inherited::SetStretchTexture					(true);
 }
 
@@ -222,7 +222,7 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, LPCSTR section, Fvector2 addon_o
 
 		s->SetWndSize			(cell_size);
 		s->SetWndPos			(addon_offset);
-		s->SetOriginalRect		(tex_rect);
+		s->SetTextureRect		(tex_rect);
 		s->SetStretchTexture	(true);
 }
 
@@ -236,7 +236,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 		s				= new CUIStatic(); s->SetAutoDelete(true);
 		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
 		InitAddon		(s, *object()->GetSilencerName(), m_addon_offset[eSilencer]);
-		s->SetColor		(i->wnd()->GetColor());
+		s->SetTextureColor		(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);
 	}
 	
@@ -245,7 +245,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 		s				= new CUIStatic(); s->SetAutoDelete(true);
 		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
 		InitAddon		(s,	*object()->GetScopeName(),		m_addon_offset[eScope]);
-		s->SetColor		(i->wnd()->GetColor());
+		s->SetTextureColor		(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);
 	}
 
@@ -254,7 +254,7 @@ CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 		s				= new CUIStatic(); s->SetAutoDelete(true);
 		s->SetShader	(InventoryUtilities::GetEquipmentIconsShader());
 		InitAddon		(s, *object()->GetGrenadeLauncherName(),m_addon_offset[eLauncher]);
-		s->SetColor		(i->wnd()->GetColor());
+		s->SetTextureColor		(i->wnd()->GetTextureColor());
 		i->wnd			()->AttachChild	(s);
 	}
 	return				i;
@@ -284,7 +284,7 @@ void CBuyItemCustomDrawCell::OnDraw(CUICellItem* cell)
 {
 	Fvector2							pos;
 	cell->GetAbsolutePos				(pos);
-	UI()->ClientToScreenScaled			(pos, pos.x, pos.y);
+	UI().ClientToScreenScaled			(pos, pos.x, pos.y);
 	m_pFont->Out						(pos.x, pos.y, m_string);
 	m_pFont->OnRender					();
 }

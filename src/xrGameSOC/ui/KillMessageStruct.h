@@ -6,7 +6,7 @@
 // Copyright 2005 GSC Game World
 
 #pragma once
-#include "../ui_defs.h"
+#include "../../xrUI/ui_defs.h"
 
 struct PlayerInfo{
     shared_str	m_name;

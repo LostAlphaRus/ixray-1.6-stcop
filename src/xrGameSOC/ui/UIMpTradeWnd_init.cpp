@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "UIMpTradeWnd.h"
 
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIMpItemsStoreWnd.h"
-#include "UITabControl.h"
-#include "UITabButtonMP.h"
+#include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/Widgets/UITabButtonMP.h"
 #include "UIDragDropListEx.h"
 #include "UIItemInfo.h"
+#include "../UIHelperGame.h"
 
 #include "../../xrCore/object_broker.h"
 
@@ -55,7 +56,7 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	m_root_tab_control					= new CUITabControl(); AttachChild(m_root_tab_control); m_root_tab_control->SetAutoDelete(true);
 	CUIXmlInit::InitTabControl			(xml_doc, "tab_control",				0, m_root_tab_control);
 	Register							(m_root_tab_control);
-	AddCallback							("tab_control",	TAB_CHANGED,		CUIWndCallback::void_function	(this, &CUIMpTradeWnd::OnRootTabChanged));
+	AddCallbackStr						("tab_control",	TAB_CHANGED,		CUIWndCallback::void_function	(this, &CUIMpTradeWnd::OnRootTabChanged));
 
 	u32 root_cnt						= m_store_hierarchy->GetRoot().ChildCount();
 	for(u32 i=0; i<root_cnt; ++i)
@@ -139,29 +140,29 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	Register							(m_btn_rifle_ammo2		);
 
 
-	AddCallback							("btn_ok",			BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnOkClicked));
-	AddCallback							("btn_cancel",		BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnCancelClicked));
-	AddCallback							("btn_shop_back",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnShopBackClicked));
-	AddCallback							("sub_btn",			TAB_CHANGED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnSubLevelBtnClicked));
-	AddCallback							("sub_btn",			BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnSubLevelBtnClicked));
-	AddCallback							("btn_preset_1",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPreset1Clicked		));
-	AddCallback							("btn_preset_2",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPreset2Clicked		));
-	AddCallback							("btn_preset_3",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPreset3Clicked		));
-	AddCallback							("btn_preset_def",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPresetDefaultClicked	));
-	AddCallback							("btn_last_set",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnLastSetClicked		));
-	AddCallback							("btn_save_preset_1",BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnSave1PresetClicked	));
-	AddCallback							("btn_save_preset_2",BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnSave2PresetClicked	));
-	AddCallback							("btn_save_preset_3",BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnSave3PresetClicked	));
-	AddCallback							("btn_reset",		BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnResetClicked		));
-	AddCallback							("btn_sell",		BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnSellClicked		));
+	AddCallbackStr						("btn_ok",			BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnOkClicked));
+	AddCallbackStr						("btn_cancel",		BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnCancelClicked));
+	AddCallbackStr						("btn_shop_back",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnShopBackClicked));
+	AddCallbackStr						("sub_btn",			TAB_CHANGED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnSubLevelBtnClicked));
+	AddCallbackStr						("sub_btn",			BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnSubLevelBtnClicked));
+	AddCallbackStr						("btn_preset_1",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPreset1Clicked		));
+	AddCallbackStr						("btn_preset_2",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPreset2Clicked		));
+	AddCallbackStr						("btn_preset_3",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPreset3Clicked		));
+	AddCallbackStr						("btn_preset_def",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPresetDefaultClicked	));
+	AddCallbackStr						("btn_last_set",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnLastSetClicked		));
+	AddCallbackStr						("btn_save_preset_1",BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnSave1PresetClicked	));
+	AddCallbackStr						("btn_save_preset_2",BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnSave2PresetClicked	));
+	AddCallbackStr						("btn_save_preset_3",BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnSave3PresetClicked	));
+	AddCallbackStr						("btn_reset",		BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnResetClicked		));
+	AddCallbackStr						("btn_sell",		BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnSellClicked		));
 
-	AddCallback							("btn_pistol_ammo",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPistolAmmoClicked		));
-	AddCallback							("btn_pistol_silencer",	BUTTON_CLICKED,	CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPistolSilencerClicked	));
-	AddCallback							("btn_rifle_ammo",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleAmmoClicked		));
-	AddCallback							("btn_rifle_silencer",BUTTON_CLICKED,	CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleSilencerClicked	));
-	AddCallback							("btn_rifle_scope",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleScopeClicked		));
-	AddCallback							("btn_rifle_glauncher",BUTTON_CLICKED,	CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleGLClicked			));
-	AddCallback							("btn_rifle_ammo2",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleAmmo2Clicked		));
+	AddCallbackStr						("btn_pistol_ammo",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPistolAmmoClicked		));
+	AddCallbackStr						("btn_pistol_silencer",	BUTTON_CLICKED,	CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnPistolSilencerClicked	));
+	AddCallbackStr						("btn_rifle_ammo",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleAmmoClicked		));
+	AddCallbackStr						("btn_rifle_silencer",BUTTON_CLICKED,	CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleSilencerClicked	));
+	AddCallbackStr						("btn_rifle_scope",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleScopeClicked		));
+	AddCallbackStr						("btn_rifle_glauncher",BUTTON_CLICKED,	CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleGLClicked			));
+	AddCallbackStr						("btn_rifle_ammo2",	BUTTON_CLICKED,		CUIWndCallback::void_function	(this,	&CUIMpTradeWnd::OnBtnRifleAmmo2Clicked		));
 
 	for(int idx = e_first; idx<e_total_lists; ++idx)
 	{
@@ -172,7 +173,7 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 			AttachChild					(lst);
 			lst->SetAutoDelete			(true);
 		}
-		CUIXmlInit::InitDragDropListEx	(xml_doc, _list_names[idx], 0, lst);
+		CUIXmlInitGame::InitDragDropListEx	(xml_doc, _list_names[idx], 0, lst);
 		BindDragDropListEvents			(lst, true);
 	}
 

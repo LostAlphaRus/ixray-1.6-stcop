@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIWindow.h"
+#include "../../xrUI/Widgets/UIWindow.h"
 #include "../game_base_space.h"
 
 class CUIListBox;
@@ -40,6 +40,7 @@ public:
 			bool	IsEmpty();
 	const shared_str& GetMapNameInt(EGameTypes _type, u32 idx);
 
+	static void script_register(lua_State* L);
 private:
 	const char*		GetCLGameModeName(); // CL - command line
 			void	UpdateMapList(EGameTypes GameType);						

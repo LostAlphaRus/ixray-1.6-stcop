@@ -2,12 +2,12 @@
 #include "UIMpTradeWnd.h"
 
 #include "UIMpItemsStoreWnd.h"
-#include "UITabButtonMP.h"
-#include "UITabControl.h"
+#include "../../xrUI/Widgets/UITabButtonMP.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "UIDragDropListEx.h"
 #include "UICellItem.h"
 
-#include "../UIDialogHolder.h"
+#include "../../xrUI/Widgets/UIDialogHolder.h"
 #include "../game_cl_deathmatch.h"
 
 
@@ -213,7 +213,7 @@ void CUIMpTradeWnd::FillUpSubLevelItems()
 void CUIMpTradeWnd::Show()
 {
 	m_pMouseCapturer		= NULL;
-	inherited::Show			();
+	inherited::Show			(true);
 
 
 	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
@@ -227,7 +227,7 @@ void CUIMpTradeWnd::Show()
 void CUIMpTradeWnd::Hide()
 {
 	CheckDragItemToDestroy	();
-	inherited::Hide			();
+	inherited::Show			(false);
 
 	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
 	if(pActor)

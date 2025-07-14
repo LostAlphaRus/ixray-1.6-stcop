@@ -156,6 +156,7 @@ target_link_libraries(xrGameSOC PUBLIC luabind)
 target_link_libraries(xrGameSOC PUBLIC crypto)
 target_link_libraries(xrGameSOC PUBLIC ODE)
 target_link_libraries(xrGameSOC PUBLIC xrScripts)
+target_link_libraries(xrGameSOC PUBLIC xrUI)
 
 target_link_libraries(xrGameSOC PRIVATE "shlwapi.lib")
 

@@ -18,7 +18,7 @@
 #include "../../xrEngine/string_table.h"
 #include "../../xrEngine/xr_level_controller.h"
 #include "../../xrEngine/cameraBase.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 
 CUITalkWnd::CUITalkWnd()
 {
@@ -34,7 +34,7 @@ CUITalkWnd::CUITalkWnd()
 
 	Init					();
 	Hide					();
-//.	SetFont					(HUD().Font().pFontHeaderRussian);
+//.	SetFont					(UI().Font().pFontHeaderRussian);
 
 	m_bNeedToUpdateQuestions = false;
 }
@@ -49,10 +49,11 @@ CUITalkWnd::~CUITalkWnd()
 
 void CUITalkWnd::Init()
 {
-	inherited::Init(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+	inherited::SetWndRect(Frect().set(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT));
 
 	//Меню разговора
-	UITalkDialogWnd = new CUITalkDialogWnd();UITalkDialogWnd->SetAutoDelete(true);
+	UITalkDialogWnd = new CUITalkDialogWnd();
+	UITalkDialogWnd->SetAutoDelete(true);
 	AttachChild(UITalkDialogWnd);
 	UITalkDialogWnd->Init(0,0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
 
@@ -243,7 +244,7 @@ void CUITalkWnd::Draw()
 void CUITalkWnd::Show()
 {
 	InitTalkDialog				();
-	inherited::Show				();
+	inherited::Show				(true);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -252,7 +253,7 @@ void CUITalkWnd::Hide()
 {
 	StopSnd						();
 
-	inherited::Hide				();
+	inherited::Show				(false);
 	UITradeWnd->Hide				();
 	if(!m_pActor)				return;
 	
@@ -356,7 +357,6 @@ void CUITalkWnd::SwitchToTrade()
 		UITradeWnd->InitTrade		(m_pOurInvOwner, m_pOthersInvOwner);
 		UITradeWnd->Show				();
 		UITradeWnd->StartTrade		();
-		UITradeWnd->BringAllToTop	();
 		StopSnd						();
 	}
 }
@@ -374,7 +374,7 @@ bool CUITalkWnd::IR_OnKeyboardPress(int dik)
 		GetHolder()->StartStopMenu(this, true);
 		return true;
 	}
-	return inherited::IR_OnKeyboardPress(dik);
+	//return inherited::IR_OnKeyboardPress(dik);
 }
 
 bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)

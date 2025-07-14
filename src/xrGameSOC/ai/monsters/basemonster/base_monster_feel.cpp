@@ -22,7 +22,7 @@
 #include "../../../ai_monster_space.h"
 #include "../control_animation_base.h"
 #include "../../../UIGameCustom.h"
-#include "../../../UI/UIStatic.h"
+#include "../../../../xrUI/Widgets/UIStatic.h"
 #include "../../../ai_object_location.h"
 #include "../../../ActorEffector.h"
 #include "../../../../xrEngine/CameraBase.h"
@@ -107,17 +107,20 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		
 		if (pEntityNC == Actor()) {
 			START_PROFILE("BaseMonster/Animation/HitEntity");
-			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("monster_claws", false);
+			SDrawStaticStruct* s = CurrentGameUI()->AddCustomStatic("monster_claws", false);
 			s->m_endTime = Device.fTimeGlobal+3.0f;// 3sec
 			
 			float h1,p1;
 			Device.vCameraDirection.getHP	(h1,p1);
 
-			Fvector hd = hit_dir;
-			hd.mul(-1);
-			float d = -h1 + hd.getH();
+			Fvector hd				= hit_dir;
+			hd.mul					(-1);
+			float d = -h1 + hd.getH	();
 			s->wnd()->SetHeading	(d);
-			s->wnd()->SetHeadingPivot(Fvector2().set(256,512));
+			Fvector2 wnd_pos = s->wnd()->GetWndPos();
+			wnd_pos.y	+= 400.0f*_cos(d);
+			wnd_pos.x	+= 500.0f*_sin(d);
+			s->wnd()->SetWndPos(wnd_pos);
 			STOP_PROFILE;
 
 			//SetAttackEffector			();

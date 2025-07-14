@@ -16,7 +16,7 @@
 #include "game_graph.h"
 
 #include "ui/UIMap.h"
-#include "ui/UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 //////////////////////////////////////////////////////////////////////////
 
 CUIZoneMap::CUIZoneMap()
@@ -57,7 +57,7 @@ void CUIZoneMap::Init()
 //	m_background.AttachChild(&m_compass);
 
 	m_clipFrame.AttachChild			(&m_center);
-	m_center.SetWndPos				(m_clipFrame.GetWidth()/2,m_clipFrame.GetHeight()/2);
+	m_center.SetWndPos				(Fvector2().set(m_clipFrame.GetWidth()/2,m_clipFrame.GetHeight()/2));
 }
 
 void CUIZoneMap::Render			()
@@ -111,7 +111,7 @@ void CUIZoneMap::SetupCurrentMap()
 
 	Frect r;
 	m_clipFrame.GetAbsoluteRect		(r);
-	m_activeMap->SetClipRect		(r);
+	m_activeMap->WorkingArea().set	(r);
 	
 	Fvector2						wnd_size;
 	float zoom_factor				= float(m_clipFrame.GetWndRect().width())/100.0f;

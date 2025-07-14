@@ -18,7 +18,8 @@
 #include "../xrEngine/string_table.h"
 #include "actor.h"
 #include "huditem.h"
-#include "ui/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
+#include "uigamecustom.h"
 #include "clsid_game.h"
 #include "../xrEngine/xr_input.h"
 #include "saved_game_wrapper.h"
@@ -42,12 +43,12 @@ void CLevel::IR_OnMouseWheel( int direction )
 {
 	if(	g_bDisableAllInput	) return;
 
-	if (HUD().GetUI()->IR_OnMouseWheel(direction)) return;
+	if (CurrentGameUI()->IR_UIOnMouseWheel(direction)) return;
 	if( Device.Paused()		) return;
 
 	if (game && Game().IR_OnMouseWheel(direction) ) return;
 
-	if( HUD().GetUI()->MainInputReceiver() )return;
+	if( CurrentGameUI()->TopInputReceiver() )return;
 	if (CURRENT_ENTITY())		{
 			IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 			if (IR)				IR->IR_OnMouseWheel(direction);
@@ -67,7 +68,7 @@ void CLevel::IR_OnMouseHold(int btn)
 void CLevel::IR_OnMouseMove( int dx, int dy )
 {
 	if(g_bDisableAllInput)						return;
-	if (HUD().GetUI()->IR_OnMouseMove(dx, dy))	return;
+	if (CurrentGameUI()->IR_UIOnMouseMove(dx, dy))	return;
 	if (Device.Paused())							return;
 	if (CURRENT_ENTITY())		{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
@@ -80,8 +81,11 @@ extern bool g_block_pause;
 
 void CLevel::IR_OnKeyboardPress	(int key)
 {
-	bool b_ui_exist = (HUD().GetUI());
-	
+	bool b_ui_exist = (!!CurrentGameUI());
+
+	if (Device.dwPrecacheFrame)
+		return;
+
 	EGameActions _curr = get_binded_action(key);
 	switch ( _curr ) 
 	{
@@ -97,9 +101,10 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		break;
 
 	case kQUIT:	{
-		if(b_ui_exist && HUD().GetUI()->MainInputReceiver() ){
-				if(HUD().GetUI()->MainInputReceiver()->IR_OnKeyboardPress(key))	return;//special case for mp and main_menu
-				HUD().GetUI()->StartStopMenu( HUD().GetUI()->MainInputReceiver(), true);
+		if(b_ui_exist && CurrentGameUI()->TopInputReceiver() ){
+				if(CurrentGameUI()->IR_UIOnKeyboardPress(key))	
+					return;//special case for mp and main_menu
+				CurrentGameUI()->StartStopMenu(CurrentGameUI()->TopInputReceiver(), true);
 		}else
 			Console->Execute			("main_menu");
 		return;
@@ -119,13 +124,13 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	};
 
 	if(	g_bDisableAllInput )	return;
-	if ( !b_ui_exist )			return;
+	if (!bReady || !b_ui_exist )			return;
 
-	if ( b_ui_exist && HUD().GetUI()->IR_OnKeyboardPress(key)) return;
+	if ( b_ui_exist && CurrentGameUI()->IR_UIOnKeyboardPress(key)) return;
 
 	if( Device.Paused() )		return;
 
-	if ( game && Game().IR_OnKeyboardPress(key) ) return;
+	if (game && game->OnKeyboardPress(get_binded_action(key)))	return;
 
 	if(_curr == kQUICK_SAVE && IsGameTypeSingle())
 	{
@@ -327,7 +332,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	if (bindConsoleCmds.execute(key))
 		return;
 
-	if( b_ui_exist && HUD().GetUI()->MainInputReceiver() )return;
+	if( b_ui_exist && CurrentGameUI()->TopInputReceiver() )return;
 	if (CURRENT_ENTITY())		{
 			IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 			if (IR)				IR->IR_OnKeyboardPress(get_binded_action(key));
@@ -346,14 +351,14 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 void CLevel::IR_OnKeyboardRelease(int key)
 {
-	bool b_ui_exist = (HUD().GetUI());
+	bool b_ui_exist = (!!CurrentGameUI());
 
-	if (g_bDisableAllInput	) return;
-	if ( b_ui_exist && HUD().GetUI()->IR_OnKeyboardRelease(key)) return;
+	if (!bReady || g_bDisableAllInput	) return;
+	if ( b_ui_exist && CurrentGameUI()->IR_UIOnKeyboardRelease(key)) return;
 	if (Device.Paused()		) return;
 	if (game && Game().OnKeyboardRelease(get_binded_action(key)) ) return;
 
-	if( b_ui_exist && HUD().GetUI()->MainInputReceiver() )return;
+	if( b_ui_exist && CurrentGameUI()->TopInputReceiver() )return;
 	if (CURRENT_ENTITY())		{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR)				IR->IR_OnKeyboardRelease			(get_binded_action(key));
@@ -364,10 +369,10 @@ void CLevel::IR_OnKeyboardHold(int key)
 {
 	if(g_bDisableAllInput) return;
 
-	bool b_ui_exist = (HUD().GetUI());
+	bool b_ui_exist = (!!CurrentGameUI());
 
-	if (b_ui_exist && HUD().GetUI()->IR_OnKeyboardHold(key)) return;
-	if ( b_ui_exist && HUD().GetUI()->MainInputReceiver() )return;
+	if (b_ui_exist && CurrentGameUI()->IR_UIOnKeyboardHold(key)) return;
+	if ( b_ui_exist && CurrentGameUI()->TopInputReceiver() )return;
 	if ( Device.Paused() ) return;
 	if (CURRENT_ENTITY())		{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));

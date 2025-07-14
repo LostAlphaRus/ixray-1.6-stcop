@@ -1,11 +1,12 @@
 #pragma once
 
-#include "UIWindow.h"
-#include "UIListWnd.h"
+#include "../xrUI/Widgets/UIWindow.h"
+#include "../xrUI/Widgets/UIListBox.h"
 #include "UIListItemServer.h"
-#include "UIFrameWindow.h"
-#include "UIEditBox.h"
-#include "UI3tButton.h"
+#include "../xrUI/Widgets/UIFrameWindow.h"
+#include "../xrUI/Widgets/UIEditBox.h"
+#include "../xrUI/Widgets/UI3tButton.h"
+#include "ui/uilabel.h"
 #include "../battleye.h"
 
 
@@ -87,10 +88,10 @@ protected:
 
 	LIST_SRV_ITEM	m_itemInfo;
 	SServerFilters	m_sf;
-	CUIListWnd		m_list[3];
+	CUIListBox		m_list[3];
 	CUIFrameWindow	m_frame[3];
 	CUI3tButton		m_header[LST_COLUMN_COUNT];
-	CUILabel		m_header2[4];
+	CUIFrameLineWnd m_header2[4];
 	CUIFrameLineWnd	m_header_frames[LST_COLUMN_COUNT];
 	CUIEditBox		m_edit_gs_filter;
 	xr_string		m_playerName;
@@ -110,6 +111,11 @@ protected:
 	struct SrvItem{
 		CUIListItemServer*	m_ui_item;
 		bool				m_busy;
+		SrvItem(float h)
+		{
+			m_ui_item = new CUIListItemServer(h);
+			m_busy = true;
+		}
 	};
 	CUIListItemServer*			GetFreeItem		();
 	void						DestroySrvItems	();	

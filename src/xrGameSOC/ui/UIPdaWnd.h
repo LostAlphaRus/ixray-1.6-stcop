@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 #include "UIPdaAux.h"
 #include "../encyclopedia_article_defs.h"
 

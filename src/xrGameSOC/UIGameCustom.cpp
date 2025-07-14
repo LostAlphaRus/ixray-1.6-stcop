@@ -1,12 +1,17 @@
 #include "pch_script.h"
 #include "UIGameCustom.h"
-#include "ui.h"
 #include "level.h"
 #include "hudmanager.h"
 #include "ui/UIMultiTextStatic.h"
-#include "ui/UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../xrCore/object_broker.h"
 #include "../xrEngine/string_table.h"
+#include "ui/UIMainIngameWnd.h"
+#include "../xrUI/Widgets/UIStatic.h"
+#include "game_cl_base.h"
+#include "ui/UIMessagesWindow.h"
+#include "../entity.h"
+#include "ui/UIInventoryWnd.h"
 
 struct predicate_remove_stat {
 	bool	operator() (SDrawStaticStruct& s) {
@@ -17,37 +22,30 @@ struct predicate_remove_stat {
 CUIGameCustom::CUIGameCustom()
 {
 	uFlags					= 0;
-	shedule.t_min			= 5;
-	shedule.t_max			= 20;
-	shedule_register		();
+
+	UIMainIngameWnd			= nullptr;
+	m_pMessagesWnd			= nullptr;
+	InventoryMenu			= nullptr;
+
 	m_pgameCaptions			= new CUICaption();
-	m_msgs_xml				= new CUIXml();
-	m_msgs_xml->Load(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+	ShowGameIndicators		(true);
+	ShowCrosshair			(true);
+	g_pGameCustom = this;
 }
 
 CUIGameCustom::~CUIGameCustom()
 {
 	delete_data				(m_pgameCaptions);
-	shedule_unregister		();
 	delete_data				(m_custom_statics);
-	delete_data				(m_msgs_xml);
-}
-
-
-float CUIGameCustom::shedule_Scale		() 
-{
-	return 0.5f;
-};
-
-void CUIGameCustom::shedule_Update		(u32 dt)
-{
-	inherited::shedule_Update(dt);
+	g_pGameCustom = nullptr;
 }
 
 bool g_b_ClearGameCaptions = false;
 
 void CUIGameCustom::OnFrame() 
 {
+	CDialogHolder::OnFrame();
 	st_vec::iterator it = m_custom_statics.begin();
 	for(;it!=m_custom_statics.end();++it)
 		(*it).Update();
@@ -66,6 +64,10 @@ void CUIGameCustom::OnFrame()
 		delete_data				(m_custom_statics);
 		g_b_ClearGameCaptions	= false;
 	}
+
+	//update windows
+	if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+		UIMainIngameWnd->Update();
 }
 
 void CUIGameCustom::Render()
@@ -75,42 +77,14 @@ void CUIGameCustom::Render()
 	for(;it!=m_custom_statics.end();++it)
 		(*it).Draw();
 
+	CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
+	if (pEntity)
+	{
+		if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+			UIMainIngameWnd->Draw();
+	}
+	DoRenderDialogs();
 }
-
-bool CUIGameCustom::IR_OnKeyboardPress(int dik) 
-{
-	return false;
-}
-
-bool CUIGameCustom::IR_OnKeyboardRelease(int dik) 
-{
-	return false;
-}
-
-bool CUIGameCustom::IR_OnMouseMove(int dx,int dy)
-{
-	return false;
-}
-bool CUIGameCustom::IR_OnMouseWheel			(int direction)
-{
-	return false;
-}
-
-void CUIGameCustom::AddDialogToRender(CUIWindow* pDialog)
-{
-	HUD().GetUI()->AddDialogToRender(pDialog);
-
-}
-
-void CUIGameCustom::RemoveDialogToRender(CUIWindow* pDialog)
-{
-	HUD().GetUI()->RemoveDialogToRender(pDialog);
-}
-
-CUIDialogWnd* CUIGameCustom::MainInputReceiver	()
-{ 
-	return HUD().GetUI()->MainInputReceiver();
-};
 
 void CUIGameCustom::AddCustomMessage		(LPCSTR id, float x, float y, float font_size, CGameFont *pFont, u16 alignment, u32 color/* LPCSTR def_text*/ )
 {
@@ -178,6 +152,50 @@ void CUIGameCustom::RemoveCustomStatic		(LPCSTR id)
 
 extern CUISequencer* g_tutorial;
 extern CUISequencer* g_tutorial2;
+
+void CUIGameCustom::SetClGame(game_cl_GameState* g)
+{
+	// TODO: implement this??
+//	g->SetGameUI(this);
+}
+
+void CUIGameCustom::UnLoad()
+{
+	xr_delete					(m_msgs_xml);
+	xr_delete					(UIMainIngameWnd);
+	xr_delete					(InventoryMenu);
+}
+
+void CUIGameCustom::Load()
+{
+	if(g_pGameLevel)
+	{
+		R_ASSERT				(nullptr==m_msgs_xml);
+		m_msgs_xml				= new CUIXml();
+		m_msgs_xml->Load		(CONFIG_PATH, UI_PATH, "ui_custom_msgs.xml");
+
+		R_ASSERT				(nullptr==UIMainIngameWnd);
+		UIMainIngameWnd			= new CUIMainIngameWnd	();
+		UIMainIngameWnd->Init	();
+
+		R_ASSERT				(nullptr==InventoryMenu);
+		InventoryMenu			= new CUIInventoryWnd	();
+		InventoryMenu->Init		();
+		
+		Init					();
+	}
+}
+
+void CUIGameCustom::OnConnected()
+{
+	if(g_pGameLevel)
+	{
+		if(!UIMainIngameWnd)
+			Load();
+
+		UIMainIngameWnd->OnConnected();
+	}
+}
 
 void CUIGameCustom::reset_ui()
 {

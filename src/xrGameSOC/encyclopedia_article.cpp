@@ -5,8 +5,8 @@
 
 #include "stdafx.h"
 #include "encyclopedia_article.h"
-#include "ui/xrUIXmlParser.h"
-#include "ui/UIXmlInit.h"
+#include "../xrUI/xrUIXmlParser.h"
+#include "../xrUI/UIXmlInit.h"
 #include "ui/UIInventoryUtilities.h"
 #include "../xrCore/object_broker.h"
 
@@ -82,9 +82,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 		float width		= float(pSettings->r_u32(ltx, "inv_grid_width") * INV_GRID_WIDTH * (1 + UseHQ));
 		float height	= float(pSettings->r_u32(ltx, "inv_grid_height") * INV_GRID_HEIGHT * (1 + UseHQ));
 
-		data()->image.GetUIStaticItem().SetOriginalRect(x, y, width, height);
-		data()->image.ClipperOn();
-		data()->image.TextureAvailable(true);
+		data()->image.GetUIStaticItem().SetTextureRect(Frect().set(x, y, width, height));
 	}
 	else 
 	{
@@ -95,8 +93,9 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 		}
 	}
 
-	if(data()->image.TextureAvailable() ){
-		Frect r = data()->image.GetUIStaticItem().GetOriginalRect();
+//	if(data()->image.TextureAvailable() )
+	{
+		Frect r = data()->image.GetUIStaticItem().GetTextureRect();
 		data()->image.SetAutoDelete(false);
 
 		const int minSize = 65;
@@ -116,7 +115,7 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 			data()->image.SetTextureOffset(data()->image.GetTextureOffeset()[0], dy / 2);
 		}
 
-		data()->image.SetWndRect(0, 0, r.width(), r.height());
+		data()->image.SetWndRect(Frect().set(0, 0, r.width(), r.height()));
 	};
 
 	// Тип статьи

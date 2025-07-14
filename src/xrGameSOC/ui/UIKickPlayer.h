@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIStatic;
 class CUI3tButton;
@@ -13,8 +13,6 @@ struct game_PlayerState;
 class CUIKickPlayer : public CUIDialogWnd 
 {
 public:
-	using CUIDialogWnd::Init;
-
 					CUIKickPlayer	();
 
 			void	InitKick		(CUIXml& xml_doc);

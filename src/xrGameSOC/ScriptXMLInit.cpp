@@ -1,26 +1,27 @@
 #include "pch_script.h"
 #include "ScriptXmlInit.h"
-#include "ui\UIXmlInit.h"
-#include "ui\UITextureMaster.h"
-#include "ui\UICheckButton.h" //#include "ui\UI3tButton.h"
-#include "ui\UISpinNum.h"
-#include "ui\UISpinText.h"
-#include "ui\UIComboBox.h"
-#include "ui\UIListWnd.h"
-#include "ui\UITabControl.h"
-#include "ui\UIFrameWindow.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/UITextureMaster.h"
+#include "../../xrUI/Widgets/UICheckButton.h" //#include "ui\UI3tButton.h"
+#include "../../xrUI/Widgets/UISpinNum.h"
+#include "../../xrUI/Widgets/UISpinText.h"
+#include "../../xrUI/Widgets/UIComboBox.h"
+#include "../../xrUI/Widgets/UIListWnd.h"
+#include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
 #include "ui\UILabel.h"
 #include "ui\ServerList.h"
 #include "ui\UIMapList.h"
 #include "ui\UIKeyBinding.h"
-#include "ui\UIEditBox.h"
-#include "ui\UIAnimatedStatic.h"
-#include "ui\UITrackBar.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/Widgets/UIAnimatedStatic.h"
+#include "../../xrUI/Widgets/UITrackBar.h"
 #include "ui\UICDkey.h"
 #include "ui\UIMapInfo.h"
 #include "ui\UIMMShniaga.h"
-#include "ui\UIScrollView.h"
-#include "ui\UIProgressBar.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "UIHelperGame.h"
 
 using namespace luabind;
 
@@ -77,7 +78,7 @@ CUIFrameLineWnd* CScriptXmlInit::InitFrameLine(LPCSTR path, CUIWindow* parent){
 
 CUILabel* CScriptXmlInit::InitLabel(LPCSTR path, CUIWindow* parent){
 	CUILabel* pWnd = new CUILabel();
-	CUIXmlInit::InitLabel(m_xml, path, 0, pWnd);
+	CUIXmlInitGame::InitLabel(m_xml, path, 0, pWnd);
 	pWnd->SetAutoDelete(true);
 	_attach_child(pWnd, parent);
 //.	if(parent) parent->AttachChild(pWnd);
@@ -171,16 +172,6 @@ CUIComboBox* CScriptXmlInit::InitComboBox(LPCSTR path, CUIWindow* parent){
 //.	if(parent) parent->AttachChild(pWnd);
 	return pWnd;
 }
-
-CUIButton* CScriptXmlInit::InitButton(LPCSTR path, CUIWindow* parent){
-	CUIButton* pWnd = new CUIButton();
-	CUIXmlInit::InitButton(m_xml, path, 0, pWnd);
-	pWnd->SetAutoDelete(true);
-	_attach_child(pWnd, parent);
-//.	if(parent) parent->AttachChild(pWnd);
-	return pWnd;
-}
-
 
 CUI3tButton* CScriptXmlInit::Init3tButton(LPCSTR path, CUIWindow* parent){
 	CUI3tButton* pWnd = new CUI3tButton();
@@ -295,7 +286,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitWindow",				&CScriptXmlInit::InitWindow)
 		.def("InitFrame",				&CScriptXmlInit::InitFrame)
 		.def("InitFrameLine",			&CScriptXmlInit::InitFrameLine)
-		.def("InitLabel",				&CScriptXmlInit::InitLabel)
+		.def("InitLabel",				&CScriptXmlInit::InitFrameLine)
 		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)		
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
 		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)		
@@ -304,7 +295,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitSpinFlt",				&CScriptXmlInit::InitSpinFlt)
 		.def("InitSpinText",			&CScriptXmlInit::InitSpinText)
 		.def("InitComboBox",			&CScriptXmlInit::InitComboBox)		
-		.def("InitButton",				&CScriptXmlInit::InitButton)
+		.def("InitButton",				&CScriptXmlInit::Init3tButton)
 		.def("Init3tButton",			&CScriptXmlInit::Init3tButton)
 		.def("InitList",				&CScriptXmlInit::InitList)
 		.def("InitTab",					&CScriptXmlInit::InitTab)

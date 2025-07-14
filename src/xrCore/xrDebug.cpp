@@ -216,7 +216,7 @@ void xrDebug::show_dialog(const std::string& message, bool& ignore_always)
 	{
 		if (IsDebuggerPresent())
 		{
-			DEBUG_INVOKE;
+				DEBUG_INVOKE;
 		}
 		// TODO: Maybe not correct
 		exit(-1);

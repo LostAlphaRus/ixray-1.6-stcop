@@ -1,10 +1,10 @@
-// UIMainIngameWnd.h:  окошки-информация в игре
+// UIMainIngameWnd.h:  РѕРєРѕС€РєРё-РёРЅС„РѕСЂРјР°С†РёСЏ РІ РёРіСЂРµ
 // 
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
 
-#include "UIProgressBar.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
 #include "UIGameLog.h"
 
 #include "../alife_space.h"
@@ -12,7 +12,7 @@
 #include "UICarPanel.h"
 #include "UIMotionIcon.h"
 #include "../hudsound.h"
-//для режима настройки HUD
+//РґР»СЏ СЂРµР¶РёРјР° РЅР°СЃС‚СЂРѕР№РєРё HUD
 extern int				g_bHudAdjustMode;
 extern float			g_fHudAdjustValue;
 
@@ -51,10 +51,10 @@ protected:
 	CUIMotionIcon		UIMotionIcon;	
 	CUIZoneMap*			UIZoneMap;
 
-	//иконка, показывающая количество активных PDA
+	//РёРєРѕРЅРєР°, РїРѕРєР°Р·С‹РІР°СЋС‰Р°СЏ РєРѕР»РёС‡РµСЃС‚РІРѕ Р°РєС‚РёРІРЅС‹С… PDA
 	CUIStatic			UIPdaOnline;
 	
-	//изображение оружия
+	//РёР·РѕР±СЂР°Р¶РµРЅРёРµ РѕСЂСѓР¶РёСЏ
 	CUIStatic			UIWeaponBack;
 	CUIStatic			UIWeaponSignAmmo;
 	CUIStatic			UIWeaponIcon;
@@ -64,12 +64,12 @@ public:
 protected:
 
 
-	// 5 статиков для отображения иконок:
-	// - сломанного оружия
-	// - радиации
-	// - ранения
-	// - голода
-	// - усталости
+	// 5 СЃС‚Р°С‚РёРєРѕРІ РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РёРєРѕРЅРѕРє:
+	// - СЃР»РѕРјР°РЅРЅРѕРіРѕ РѕСЂСѓР¶РёСЏ
+	// - СЂР°РґРёР°С†РёРё
+	// - СЂР°РЅРµРЅРёСЏ
+	// - РіРѕР»РѕРґР°
+	// - СѓСЃС‚Р°Р»РѕСЃС‚Рё
 	CUIStatic			UIWeaponJammedIcon;
 	CUIStatic			UIRadiaitionIcon;
 	CUIStatic			UIWoundIcon;
@@ -87,7 +87,7 @@ public:
 	
 public:
 	
-	// Енумы соответсвующие предупреждающим иконкам 
+	// Р•РЅСѓРјС‹ СЃРѕРѕС‚РІРµС‚СЃРІСѓСЋС‰РёРµ РїСЂРµРґСѓРїСЂРµР¶РґР°СЋС‰РёРј РёРєРѕРЅРєР°Рј 
 	enum EWarningIcons
 	{
 		ewiAll				= 0,
@@ -103,16 +103,16 @@ public:
 
 	void				SetMPChatLog					(CUIWindow* pChat, CUIWindow* pLog);
 
-	// Задаем цвет соответствующей иконке
+	// Р—Р°РґР°РµРј С†РІРµС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµР№ РёРєРѕРЅРєРµ
 	void				SetWarningIconColor				(EWarningIcons icon, const u32 cl);
 	void				TurnOffWarningIcon				(EWarningIcons icon);
 
-	// Пороги изменения цвета индикаторов, загружаемые из system.ltx
+	// РџРѕСЂРѕРіРё РёР·РјРµРЅРµРЅРёСЏ С†РІРµС‚Р° РёРЅРґРёРєР°С‚РѕСЂРѕРІ, Р·Р°РіСЂСѓР¶Р°РµРјС‹Рµ РёР· system.ltx
 	typedef				xr_map<EWarningIcons, xr_vector<float> >	Thresholds;
 	typedef				Thresholds::iterator						Thresholds_it;
 	Thresholds			m_Thresholds;
 
-	// Енум перечисления возможных мигающих иконок
+	// Р•РЅСѓРј РїРµСЂРµС‡РёСЃР»РµРЅРёСЏ РІРѕР·РјРѕР¶РЅС‹С… РјРёРіР°СЋС‰РёС… РёРєРѕРЅРѕРє
 	enum EFlashingIcons
 	{
 		efiPdaTask	= 0,
@@ -133,21 +133,21 @@ protected:
 	void				UpdateFlashingIcons				();
 	void				UpdateActiveItemInfo			();
 
-	void				SetAmmoIcon						(const shared_str& seсt_name);
+	void				SetAmmoIcon						(const shared_str& seСЃt_name);
 
-	// first - иконка, second - анимация
+	// first - РёРєРѕРЅРєР°, second - Р°РЅРёРјР°С†РёСЏ
 	using FlashingIcons = xr_map<EFlashingIcons, CUIStatic*>;
 	using FlashingIcons_it = FlashingIcons::iterator;
 
 	FlashingIcons		m_FlashingIcons;
 
-	//для текущего активного актера и оружия
+	//РґР»СЏ С‚РµРєСѓС‰РµРіРѕ Р°РєС‚РёРІРЅРѕРіРѕ Р°РєС‚РµСЂР° Рё РѕСЂСѓР¶РёСЏ
 	CActor*				m_pActor;	
 	CWeapon*			m_pWeapon;
 	CMissile*			m_pGrenade;
 	CInventoryItem*		m_pItem;
 
-	// Отображение подсказок при наведении прицела на объект
+	// РћС‚РѕР±СЂР°Р¶РµРЅРёРµ РїРѕРґСЃРєР°Р·РѕРє РїСЂРё РЅР°РІРµРґРµРЅРёРё РїСЂРёС†РµР»Р° РЅР° РѕР±СЉРµРєС‚
 	void				RenderQuickInfos();
 
 public:

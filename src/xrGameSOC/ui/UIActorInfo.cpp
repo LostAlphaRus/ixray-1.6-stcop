@@ -1,17 +1,17 @@
 #include "StdAfx.h"
 #include "UIActorInfo.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "UIPdaAux.h"
 #include "../Level.h"
 #include "../actor.h"
 
 #include "UIInventoryUtilities.h"
-#include "UIFrameWindow.h"
-#include "UIFrameLineWnd.h"
-#include "UIAnimatedStatic.h"
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIAnimatedStatic.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 #include "UICharacterInfo.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 #include "UIInventoryUtilities.h"
 #include "../actor_statistic_mgr.h"
 #include "../character_community.h"
@@ -73,8 +73,8 @@ void CUIActorInfoWnd::Init()
 	UICharacterInfo->Init					(0,0,UICharacterWindow->GetWidth(), UICharacterWindow->GetHeight(), ACTOR_CHARACTER_XML);
 
 	//Элементы автоматического добавления
-	xml_init.InitAutoStatic					(uiXml, "right_auto_static", UICharIconFrame);
-	xml_init.InitAutoStatic					(uiXml, "left_auto_static",  UIInfoFrame);
+	xml_init.InitAutoStaticGroup					(uiXml, "right_auto_static", 0, UICharIconFrame);
+	xml_init.InitAutoStaticGroup				(uiXml, "left_auto_static", 0, UIInfoFrame);
 
 }
 
@@ -313,7 +313,7 @@ void CUIActorStaticticHeader::Init	(CUIXml* xml, LPCSTR path, int idx_in_xml)
 	m_id								= _id;
 #endif
 
-	m_stored_alpha						= color_get_A(m_text1->GetTextColor());
+	m_stored_alpha						= color_get_A(m_text1->TextItemControl()->GetTextColor());
 	xml->SetLocalRoot					(_stored_root);
 
 }
@@ -331,7 +331,7 @@ bool CUIActorStaticticHeader::OnMouseDown	(int mouse_btn)
 void CUIActorStaticticHeader::SetSelected(bool b)
 {
 	CUISelectable::SetSelected(b);
-	m_text1->SetTextColor( subst_alpha(m_text1->GetTextColor(), b?255:m_stored_alpha ));
+	m_text1->SetTextColor( subst_alpha(m_text1->TextItemControl()->GetTextColor(), b?255:m_stored_alpha ));
 	if(b){ 
 		m_actorInfoWnd->FillPointsDetail			(m_id);
 	}

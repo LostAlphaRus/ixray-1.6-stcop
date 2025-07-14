@@ -27,6 +27,7 @@
 #include "mathutils.h"
 #include "../xrCore/object_broker.h"
 #include "../xrEngine/igame_persistent.h"
+#include "../xrUI/Widgets/UIStaticItem.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -1514,7 +1515,7 @@ void CWeapon::OnDrawUI()
 		if(ZoomTexture() && !IsRotatingToZoom())
 		{
 			ZoomTexture()->SetPos	(0,0);
-			ZoomTexture()->SetRect	(0,0,UI_BASE_WIDTH, UI_BASE_HEIGHT);
+			ZoomTexture()->SetTextureRect	(Frect().set(0,0,UI_BASE_WIDTH, UI_BASE_HEIGHT));
 			ZoomTexture()->Render	();
 
 //			m_UILens.Draw();

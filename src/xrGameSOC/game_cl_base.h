@@ -128,4 +128,6 @@ public:
 	virtual		void				OnPlayerFlagsChanged	(game_PlayerState* ps)	{};
 	virtual		void				OnPlayerVoted			(game_PlayerState* ps)	{};
 	virtual		void				SendPickUpEvent			(u16 ID_who, u16 ID_what);
+
+	virtual		void				OnScreenResolutionChanged() {};
 };

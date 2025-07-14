@@ -1,8 +1,8 @@
 #include "pch_script.h"
 #include "UIGameTutorial.h"
-#include "UIWindow.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../../xrCore/object_broker.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrEngine/xr_level_controller.h"
@@ -13,6 +13,7 @@
 #include "UIInventoryWnd.h"
 #include "UITalkWnd.h"
 #include "UICarBodyWnd.h"
+#include "../../xrUI/UICursor.h"
 
 extern ENGINE_API BOOL bShowPauseString;
 
@@ -106,7 +107,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 		_si->m_length				= xml->ReadAttribFlt("auto_static",i,"length_sec",0);
 		_si->m_visible				= false;
 		_si->m_wnd					= smart_cast<CUIStatic*>(find_child_window(m_UIWindow, sname)); VERIFY(_si->m_wnd);
-		_si->m_wnd->SetTextComplexMode(true);
+		_si->m_wnd->TextItemControl()->SetTextComplexMode(true);
 		_si->m_wnd->Show			(false);
 
 		xml->SetLocalRoot			(_sr);
@@ -117,7 +118,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 void CUISequenceSimpleItem::SSubItem::Start	()
 {
 	m_wnd->Show						(true);
-	m_wnd->ResetClrAnimation			();
+	m_wnd->ResetColorAnimation		();
 	m_visible						= true;
 }
 
@@ -140,7 +141,7 @@ void CUISequenceSimpleItem::Update			()
 	}
 	
 	if (g_pGameLevel){
-	CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
 
 	if(ui_game_sp)
 	{
@@ -173,7 +174,7 @@ void CUISequenceSimpleItem::Start()
 	if(m_flags.test(etiNeedPauseSound))
 		Device.Pause			(TRUE, FALSE, TRUE, "simpleitem_start");
 
-	GetUICursor()->SetUICursorPosition		(m_desired_cursor_pos);
+	GetUICursor().SetUICursorPosition		(m_desired_cursor_pos);
 	m_time_start							= float(Device.dwTimeContinual)/1000.0f;
 	m_owner->MainWnd()->AttachChild	(m_UIWindow);
 
@@ -181,7 +182,7 @@ void CUISequenceSimpleItem::Start()
 
 	if (g_pGameLevel){
 			bool bShowPda			= false;
-			CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+			CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
 			if(!_stricmp(m_pda_section,"pda_contacts")){
 				ui_game_sp->PdaMenu->SetActiveSubdialog(eptContacts);
 				bShowPda = true;
@@ -210,7 +211,7 @@ void CUISequenceSimpleItem::Start()
 		{
 		if( (!ui_game_sp->PdaMenu->IsShown() && bShowPda) || 
 			(ui_game_sp->PdaMenu->IsShown() && !bShowPda))
-			HUD().GetUI()->StartStopMenu			(ui_game_sp->PdaMenu,true);
+			CurrentGameUI()->StartStopMenu			(ui_game_sp->PdaMenu,true);
 		}
 	}
 }
@@ -233,9 +234,9 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 		Device.Pause			(FALSE, FALSE, TRUE, "simpleitem_stop");
 
 	if (g_pGameLevel){
-		CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+		CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
 		if( ui_game_sp && ui_game_sp->PdaMenu->IsShown() ) 
-			HUD().GetUI()->StartStopMenu			(ui_game_sp->PdaMenu, true);
+			CurrentGameUI()->StartStopMenu			(ui_game_sp->PdaMenu, true);
 	}
 	inherited::Stop				();
 	return true;

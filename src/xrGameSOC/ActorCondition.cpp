@@ -12,7 +12,6 @@
 #include "../xrScripts/script_callback_ex.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
-#include "ui\UIVideoPlayerWnd.h"
 #include "../xrCore/object_broker.h"
 #include "weapon.h"
 
@@ -98,7 +97,6 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 
 
 //вычисление параметров с ходом времени
-#include "UI.h"
 #include "HUDManager.h"
 
 void CActorCondition::UpdateCondition()

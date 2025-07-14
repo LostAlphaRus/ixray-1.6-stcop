@@ -18,7 +18,7 @@
 #include "game_base_kill_type.h"
 #include "game_base_menu_events.h"
 #include "UIGameDM.h"
-#include "ui/UITextureMaster.h"
+#include "../xrUI/UITextureMaster.h"
 #include "ui/UIVotingCategory.h"
 #include "ui/UIVote.h"
 #include "ui/UIMessageBoxEx.h"
@@ -26,7 +26,7 @@
 #include "../xrEngine/IGame_Persistent.h"
 #include "MainMenu.h"
 #include "../Include/xrRender/UIShader.h"
-
+#include "../xrUI/Widgets/UIStatic.h"
 
 #define EQUIPMENT_ICONS "ui\\ui_mp_icon_kill"
 #define KILLEVENT_ICONS "ui\\ui_hud_mp_icon_death"
@@ -86,7 +86,7 @@ game_cl_mp::~game_cl_mp()
 CUIGameCustom*		game_cl_mp::createGameUI			()
 {
 //	m_pSpeechMenu = new CUISpeechMenu("test_speech_section");
-	HUD().GetUI()->m_pMessagesWnd->SetChatOwner(this);
+	CurrentGameUI()->m_pMessagesWnd->SetChatOwner(this);
 		
 	return NULL;
 };
@@ -159,7 +159,7 @@ bool game_cl_mp::OnKeyboardPress(int key)
 				shared_str prefix;
 				
 
-				CUIChatWnd* pChatWnd = HUD().GetUI()->m_pMessagesWnd->GetChatWnd();
+				CUIChatWnd* pChatWnd = CurrentGameUI()->m_pMessagesWnd->GetChatWnd();
 
 				if (kCHAT_TEAM == key)
 				{
@@ -393,11 +393,11 @@ void game_cl_mp::OnWarnMessage(NET_Packet* P)
 		u8	_cnt				= P->r_u8	();
 		u8	_total				= P->r_u8	();
 		
-		if(HUD().GetUI())
+		if(CurrentGameUI())
 		{
 			string512				_buff;
 			sprintf_s					(_buff,"max_ping_warn_%d", _cnt);
-			SDrawStaticStruct* ss	= HUD().GetUI()->AddInfoMessage(_buff);
+			SDrawStaticStruct* ss	= CurrentGameUI()->AddCustomStatic(_buff, true);
 			
 			sprintf_s					(_buff,"%d ms.", _ping);
 			ss->m_static->SetText	(_buff);
@@ -435,16 +435,16 @@ void game_cl_mp::OnChatMessage(NET_Packet* P)
 
 	string256 colPlayerName;
 	sprintf_s(colPlayerName, "%s%s:%s", Color_Teams[team], PlayerName, "%c[default]");
-	if (Level().CurrentViewEntity() && HUD().GetUI())
-		HUD().GetUI()->m_pMessagesWnd->AddChatMessage(ChatMsg, colPlayerName);
+	if (Level().CurrentViewEntity() && CurrentGameUI())
+		CurrentGameUI()->m_pMessagesWnd->AddChatMessage(ChatMsg, colPlayerName);
 };
 
 void game_cl_mp::CommonMessageOut		(LPCSTR msg)
 {
 	if(g_dedicated_server)	return;
 
-	if (HUD().GetUI())
-        HUD().GetUI()->m_pMessagesWnd->AddLogMessage(msg);
+	if (CurrentGameUI())
+		CurrentGameUI()->m_pMessagesWnd->AddLogMessage(msg);
 };
 
 
@@ -461,7 +461,7 @@ void game_cl_mp::shedule_Update(u32 dt)
 	{
 	case GAME_PHASE_PENDING:
 		{
-			CUIChatWnd* pChatWnd = HUD().GetUI()->m_pMessagesWnd->GetChatWnd();
+			CUIChatWnd* pChatWnd = CurrentGameUI()->m_pMessagesWnd->GetChatWnd();
 			if (pChatWnd && pChatWnd->IsShown())
 				StartStopMenu(pChatWnd, false);
 
@@ -484,7 +484,7 @@ void game_cl_mp::shedule_Update(u32 dt)
 		}break;
 	default:
 		{
-			CUIChatWnd* pChatWnd = HUD().GetUI()->m_pMessagesWnd->GetChatWnd();
+			CUIChatWnd* pChatWnd = CurrentGameUI()->m_pMessagesWnd->GetChatWnd();
 			if (pChatWnd && pChatWnd->IsShown())
 				StartStopMenu(pChatWnd, false);
 		}break;
@@ -606,9 +606,9 @@ void game_cl_mp::OnSwitchPhase			(u32 old_phase, u32 new_phase)
 		{
 			m_bSpectatorSelected = FALSE;
 
-			if (HUD().GetUI())
+			if (CurrentGameUI())
 			{
-				HUD().GetUI()->ShowGameIndicators();
+				CurrentGameUI()->ShowGameIndicators(true);
 			};
 		}break;
 	case GAME_PHASE_PENDING:
@@ -628,9 +628,9 @@ void game_cl_mp::OnSwitchPhase			(u32 old_phase, u32 new_phase)
 
 	default:
 		{
-			if (HUD().GetUI())
+			if (CurrentGameUI())
 			{
-				HUD().GetUI()->HideGameIndicators();
+				CurrentGameUI()->ShowGameIndicators(false);
 			};
 			HideMessageMenus();
 		}break;
@@ -874,8 +874,8 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 	default:
 		break;
 	}
-	if (HUD().GetUI() && HUD().GetUI()->m_pMessagesWnd)
-		HUD().GetUI()->m_pMessagesWnd->AddLogMessage(KMS);
+	if (CurrentGameUI()->m_pMessagesWnd)
+		CurrentGameUI()->m_pMessagesWnd->AddLogMessage(KMS);
 };
 
 void	game_cl_mp::OnPlayerChangeName		(NET_Packet& P)
@@ -1176,9 +1176,8 @@ void game_cl_mp::LoadBonuses				()
 		}
 		else
 		{
-			LPCSTR IconShader = CUITextureMaster::GetTextureFileName("ui_hud_status_blue_01");			
-			NewBonus.IconShader->create("hud\\default", IconShader);
-
+			CUITextureMaster::GetTextureShader("ui_hud_status_blue_01", NewBonus.IconShader);
+		
 			Frect IconRect;
 			for (u32 r=1; r<=5; r++)
 			{

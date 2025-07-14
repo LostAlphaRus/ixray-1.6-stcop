@@ -1,16 +1,15 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIStatic;
 class CUI3tButton;
-class CUIEditBoxEx;
+class CUIEditBox;
 class CUIXml;
 
 class CUITextVote : public CUIDialogWnd 
 {
 public:
-	using CUIDialogWnd::Init;
 
 					CUITextVote		();
 
@@ -24,7 +23,7 @@ public:
 protected:
 	CUIStatic*		bkgrnd;
 	CUIStatic*		header;
-	CUIEditBoxEx*	edit;
+	CUIEditBox*	edit;
 
 	CUI3tButton*	btn_ok;
 	CUI3tButton*	btn_cancel;

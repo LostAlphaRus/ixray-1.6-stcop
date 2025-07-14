@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "ui_af_params.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "../../xrCore/object_broker.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/UIXmlInit.h"
 
 CUIArtefactParams::CUIArtefactParams()
 {
@@ -134,7 +134,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 									_val, 
 									_sn);
 		_s->SetText				(_buff);
-		_s->SetWndPos			(_s->GetWndPos().x, _h);
+		_s->SetWndPos			(Fvector2().set(_s->GetWndPos().x, _h));
 		_h						+= _s->GetWndSize().y;
 		AttachChild				(_s);
 	}

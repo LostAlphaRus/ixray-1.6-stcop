@@ -264,7 +264,7 @@ bool	 rendered;
 	virtual void render()
 	{
 		//if(rendered) return;
-		HUD().Font().pFontStat->OutNext(s);
+		UI().Font().pFontStat->OutNext(s);
 		rendered=true;
 	}
 };
@@ -472,7 +472,7 @@ void PH_DBG_Render()
 {
 	if (ph_dbg_draw_mask.test(phDbgDrawZDisable))
 		DRender->ZEnable(false);
-	HUD().Font().pFontStat->OutSet	(550,250);
+	UI().Font().pFontStat->OutSet	(550,250);
 
 	if(ph_dbg_draw_mask.test(phDbgDrawEnabledAABBS))
 	{
@@ -524,7 +524,7 @@ void PH_DBG_Render()
 			Level().debug_renderer().draw_line(Fidentity,c.pos,dir,color_xrgb(255*is_cyl,0,255*!is_cyl));
 		}
 	}
-//	HUD().Font().pFontStat->OutNext("---------------------");
+//	UI().Font().pFontStat->OutNext("---------------------");
 #endif
 
 	if (ph_dbg_draw_mask.test(phDbgDrawZDisable))

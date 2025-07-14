@@ -2,12 +2,12 @@
 #include "UIGameCustom.h"
 #include "level.h"
 #include "hudmanager.h"
-#include "ui/uistatic.h"
+#include "../xrUI/Widgets/UIStatic.h"
 
 using namespace luabind;
 
 CUIGameCustom* get_hud(){
-	return HUD().GetUI()->UIGame();
+	return CurrentGameUI();
 }
 
 #pragma optimize("s",on)

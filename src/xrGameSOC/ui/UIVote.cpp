@@ -1,10 +1,10 @@
 #include "StdAfx.h"
 #include "UIVote.h"
-#include "UIStatic.h"
-#include "UI3tButton.h"
-#include "UIListBox.h"
-#include "UIFrameWindow.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIListBox.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../level.h"
 #include "../game_cl_base.h"
 #include "../game_cl_teamdeathmatch.h"
@@ -91,11 +91,11 @@ void CUIVote::Update()
 	for (u32 i = 0; i<items.size(); i++){
 		game_PlayerState* p					= items[i];
 		if (p->m_bCurrentVoteAgreed == 1)
-			list[0]->AddItem(p->name);
+			list[0]->AddTextItem(p->name);
 		else if (p->m_bCurrentVoteAgreed == 0)
-			list[1]->AddItem(p->name);
+			list[1]->AddTextItem(p->name);
 		else
-			list[2]->AddItem(p->name);
+			list[2]->AddTextItem(p->name);
 	}
 }
 

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "UITabControl.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UITabControl.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
 class CUIXml;
 
@@ -20,9 +20,9 @@ public:
 	virtual		~CUIBuyWeaponTab			();
 
 	virtual void Init						(CUIXml* xml, char* path);
-	virtual void OnTabChange				(int iCur, int iPrev);
+ 	virtual void OnTabChange				(const shared_str& sCur, const shared_str& sPrev);
 			void SetActiveState				(bool bState = true);
 private:
 	bool		m_bActiveState;
-	int			m_iStubIndex;
+	shared_str	m_sStubId;
 };

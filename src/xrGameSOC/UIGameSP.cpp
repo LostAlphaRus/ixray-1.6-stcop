@@ -11,19 +11,17 @@
 #include "../xrCore/object_broker.h"
 #include "GameTaskManager.h"
 #include "GameTask.h"
-
-#include "ui/UIInventoryWnd.h"
 #include "ui/UITradeWnd.h"
 #include "ui/UIPdaWnd.h"
 #include "ui/UITalkWnd.h"
 #include "ui/UICarBodyWnd.h"
 #include "ui/UIMessageBox.h"
+#include "ui/UIInventoryWnd.h"
 
 CUIGameSP::CUIGameSP()
 {
 	m_game			= NULL;
 	
-	InventoryMenu	= new CUIInventoryWnd	();
 	PdaMenu			= new CUIPdaWnd			();
 	TalkMenu		= new CUITalkWnd		();
 	UICarBodyMenu	= new CUICarBodyWnd		();
@@ -32,26 +30,15 @@ CUIGameSP::CUIGameSP()
 
 CUIGameSP::~CUIGameSP() 
 {
-	delete_data(InventoryMenu);
 	delete_data(PdaMenu);	
 	delete_data(TalkMenu);
 	delete_data(UICarBodyMenu);
 	delete_data(UIChangeLevelWnd);
 }
 
-void CUIGameSP::shedule_Update(u32 dt)
-{
-	inherited::shedule_Update			(dt);
-	CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if(!pActor)							return;
-	if(pActor->g_Alive())				return;
-
-	HideShownDialogs						();
-}
-
 void CUIGameSP::HideShownDialogs()
 {
-	CUIDialogWnd* mir				= MainInputReceiver();
+	CUIDialogWnd* mir				= TopInputReceiver();
 	if( mir			&&
 			(	mir==InventoryMenu	||
 				mir==PdaMenu		||
@@ -71,9 +58,9 @@ void CUIGameSP::SetClGame (game_cl_GameState* g)
 }
 
 
-bool CUIGameSP::IR_OnKeyboardPress(int dik) 
+bool CUIGameSP::IR_UIOnKeyboardPress(int dik) 
 {
-	if(inherited::IR_OnKeyboardPress(dik)) return true;
+	if(inherited::IR_UIOnKeyboardPress(dik)) return true;
 
 	if( Device.Paused()		) return false;
 
@@ -84,27 +71,27 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 	switch ( get_binded_action(dik) )
 	{
 	case kINVENTORY: 
-		if( !MainInputReceiver() || MainInputReceiver()==InventoryMenu){
+		if( !TopInputReceiver() || TopInputReceiver()==InventoryMenu){
 			m_game->StartStopMenu(InventoryMenu,true);
 			return true;
 		}break;
 
 	case kACTIVE_JOBS:
-		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
+		if( !TopInputReceiver() || TopInputReceiver()==PdaMenu){
 			PdaMenu->SetActiveSubdialog(eptQuests);
 			m_game->StartStopMenu(PdaMenu,true);
 			return true;
 		}break;
 
 	case kMAP:
-		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
+		if( !TopInputReceiver() || TopInputReceiver()==PdaMenu){
 			PdaMenu->SetActiveSubdialog(eptMap);
 			m_game->StartStopMenu(PdaMenu,true);
 			return true;
 		}break;
 
 	case kCONTACTS:
-		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
+		if( !TopInputReceiver() || TopInputReceiver()==PdaMenu){
 			PdaMenu->SetActiveSubdialog(eptContacts);
 			m_game->StartStopMenu(PdaMenu,true);
 			return true;
@@ -124,9 +111,9 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 	return false;
 }
 
-bool CUIGameSP::IR_OnKeyboardRelease(int dik) 
+bool CUIGameSP::IR_UIOnKeyboardRelease(int dik) 
 {
-	if(inherited::IR_OnKeyboardRelease(dik)) return true;
+	if(inherited::IR_UIOnKeyboardRelease(dik)) return true;
 
 	if( is_binded(kSCORES, dik))
 			RemoveCustomStatic		("main_task");
@@ -142,13 +129,13 @@ void CUIGameSP::StartTalk()
 
 void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, CInventoryOwner* pOthers)
 {
-	if( MainInputReceiver() )		return;
+	if(TopInputReceiver() )		return;
 	UICarBodyMenu->InitCarBody		(pOurInv,  pOthers);
 	m_game->StartStopMenu			(UICarBodyMenu,true);
 }
 void CUIGameSP::StartCarBody(CInventoryOwner* pOurInv, CInventoryBox* pBox)
 {
-	if( MainInputReceiver() )		return;
+	if(TopInputReceiver() )		return;
 	UICarBodyMenu->InitCarBody		(pOurInv,  pBox);
 	m_game->StartStopMenu			(UICarBodyMenu,true);
 }
@@ -166,7 +153,7 @@ void CUIGameSP::ReInitShownUI()
 extern ENGINE_API BOOL bShowPauseString;
 void CUIGameSP::ChangeLevel				(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b)
 {
-	if( !MainInputReceiver() || MainInputReceiver()!=UIChangeLevelWnd)
+	if( !TopInputReceiver() || TopInputReceiver()!=UIChangeLevelWnd)
 	{
 		UIChangeLevelWnd->m_game_vertex_id		= game_vert_id;
 		UIChangeLevelWnd->m_level_vertex_id		= level_vert_id;
@@ -195,7 +182,7 @@ CChangeLevelWnd::CChangeLevelWnd		()
 	AttachChild				(m_messageBox);
 	m_messageBox->Init		("message_box_change_level");
 	SetWndPos				(m_messageBox->GetWndPos());
-	m_messageBox->SetWndPos	(0.0f,0.0f);
+	m_messageBox->SetWndPos	(Fvector2().set(0.0f,0.0f));
 	SetWndSize				(m_messageBox->GetWndSize());
 }
 void CChangeLevelWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)

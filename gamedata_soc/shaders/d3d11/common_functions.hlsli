@@ -249,17 +249,17 @@ float3 unpack_D3DCOLOR(float3 c)
 float3 p_hemi(float2 tc)
 {
     float4 t_lmh = s_hemi.Sample(smp_rtlinear, tc);
-    return t_lmh.w;
+    return dot(t_lmh.xyz, 1.f / 3.f);
 }
 
 float get_hemi(float4 lmh)
 {
-    return lmh.w;
+    return dot(lmh.xyz, 1.f / 3.f);
 }
 
 float get_sun(float4 lmh)
 {
-    return lmh.y;
+    return lmh.w;
 }
 
 float3 v_sun(float3 N)

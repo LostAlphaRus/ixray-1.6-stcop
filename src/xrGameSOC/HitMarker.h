@@ -7,7 +7,7 @@ class CLAItem;
 
 #include "../Include/xrRender/FactoryPtr.h"
 class IUIShader;
-#include "ui_defs.h"
+#include "../xrUI/ui_defs.h"
 
 struct SHitMark{
 	CUIStaticItem*	m_UIStaticItem;

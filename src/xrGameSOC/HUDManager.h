@@ -2,17 +2,17 @@
 
 #include "../xrEngine/CustomHUD.h"
 #include "HitMarker.h"
-#include "UI.h"
 
 class CContextMenu;
 class CHUDTarget;
+class CUIGameCustom;
 
 class CHUDManager :
 	public CCustomHUD
 {
 	friend class CUI;
 private:
-	CUI*					pUI;
+	CUIGameCustom*			pUIGame;
 	CHitMarker				HitMarker;
 	CHUDTarget*				m_pHUDTarget;
 	bool					b_online;
@@ -29,10 +29,9 @@ public:
 
 	virtual		void		RenderUI			();
 
-	virtual		IC CUI*		GetUI				(){return pUI;}
+		CUIGameCustom*		GetGameUI			(){return pUIGame;}
 
-				void		Hit					(int idx, float power, const Fvector& dir);
-	CFontManager&			Font				()							{return *(UI()->Font());}
+		void		Hit					(int idx, float power, const Fvector& dir);
 	//текущий предмет на который смотрит HUD
 	collide::rq_result&		GetCurrentRayQuery	();
 

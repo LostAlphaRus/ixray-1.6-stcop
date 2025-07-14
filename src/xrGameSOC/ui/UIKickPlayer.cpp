@@ -2,11 +2,11 @@
 
 #include "UIKickPlayer.h"
 #include "UIVotingCategory.h"
-#include "UIXmlInit.h"
-#include "UI3tButton.h"
-#include "UIListBox.h"
-#include "UIListBoxItem.h"
-#include "UISpinNum.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIListBox.h"
+#include "../../xrUI/Widgets/UIListBoxItem.h"
+#include "../../xrUI/Widgets/UISpinNum.h"
 #include "../level.h"
 #include "../game_cl_base.h"
 #include "../game_cl_teamdeathmatch.h"
@@ -250,7 +250,7 @@ void CUIKickPlayer::Update()
 		{
 			game_PlayerState* p			= I->second;
 			m_current_set.push_back		(p);
-			m_ui_players_list->AddItem	(p->name);
+			m_ui_players_list->AddTextItem	(p->name);
 		}
 		if( bHasSelected )
 			m_ui_players_list->SetSelectedText(m_selected_item_text.c_str());

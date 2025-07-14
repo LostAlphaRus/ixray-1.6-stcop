@@ -1,12 +1,12 @@
 #include "stdafx.h"
 
 #include "uiiteminfo.h"
-#include "uistatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/uistatic.h"
+#include "../../xrUI/UIXmlInit.h"
 
-#include "UIListWnd.h"
-#include "UIProgressBar.h"
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIListWnd.h"
+#include "../../xrUI/Widgets/UIProgressBar.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 
 #include "../../xrEngine/string_table.h"
 #include "../Inventory_Item.h"
@@ -52,8 +52,6 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 		wnd_rect.x2		= uiXml.ReadAttribFlt("main_frame", 0, "width", 0);
 		wnd_rect.y2		= uiXml.ReadAttribFlt("main_frame", 0, "height", 0);
-		
-		inherited::Init(wnd_rect.x1, wnd_rect.y1, wnd_rect.x2, wnd_rect.y2);
 	}
 
 	if(uiXml.NavigateToNode("static_name",0))
@@ -113,10 +111,8 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		AttachChild					(UIItemImage);	
 		UIItemImage->SetAutoDelete	(true);
 		xml_init.InitStatic			(uiXml, "image_static", 0, UIItemImage);
-		UIItemImage->TextureAvailable(true);
 
 		UIItemImage->TextureOff			();
-		UIItemImage->ClipperOn			();
 		UIItemImageSize.set				(UIItemImage->GetWidth(),UIItemImage->GetHeight());
 	}
 
@@ -125,7 +121,6 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 
 void CUIItemInfo::Init(float x, float y, float width, float height, LPCSTR xml_name)
 {
-	inherited::Init	(x, y, width, height);
     Init			(xml_name);
 }
 
@@ -171,7 +166,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 			pItem->SetTextColor					(m_desc_info.uDescClr);
 			pItem->SetFont						(m_desc_info.pDescFont);
 			pItem->SetWidth						(UIDesc->GetDesiredChildWidth());
-			pItem->SetTextComplexMode			(true);
+			pItem->TextItemControl()->SetTextComplexMode			(true);
 			pItem->SetText						(*pInvItem->ItemDescription());
 			pItem->AdjustHeightToText			();
 			UIDesc->AddWindow					(pItem, true);
@@ -189,18 +184,17 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		int iYPos							= pInvItem->GetYPos();
 		int UseHQ							= EngineExternal()[EEngineExternalUI::HQIcons];
 
-		UIItemImage->GetUIStaticItem().SetOriginalRect(	float(iXPos*(1 + UseHQ)*INV_GRID_WIDTH), float(iYPos*(1 + UseHQ)*INV_GRID_HEIGHT),
-														float(iGridWidth*(1 + UseHQ)*INV_GRID_WIDTH),	float(iGridHeight*(1 + UseHQ)*INV_GRID_HEIGHT));
+		UIItemImage->GetUIStaticItem().SetTextureRect(	Frect().set(float(iXPos*(1 + UseHQ)*INV_GRID_WIDTH), float(iYPos*(1 + UseHQ)*INV_GRID_HEIGHT),
+														float(iGridWidth*(1 + UseHQ)*INV_GRID_WIDTH),	float(iGridHeight*(1 + UseHQ)*INV_GRID_HEIGHT)));
 		UIItemImage->TextureOn				();
-		UIItemImage->ClipperOn				();
 		UIItemImage->SetStretchTexture		(true);
 		Frect v_r							= {	0.0f, 
 												0.0f, 
 												float(iGridWidth*INV_GRID_WIDTH),	
 												float(iGridHeight*INV_GRID_HEIGHT)};
-		v_r.x2 *= UI()->get_current_kx();
+		v_r.x2 *= UI().get_current_kx();
 
-		UIItemImage->GetUIStaticItem().SetRect	(v_r);
+		UIItemImage->GetUIStaticItem().SetTextureRect	(v_r);
 		UIItemImage->SetWidth					(_min(v_r.width(),	UIItemImageSize.x));
 		UIItemImage->SetHeight					(_min(v_r.height(),	UIItemImageSize.y));
 	}

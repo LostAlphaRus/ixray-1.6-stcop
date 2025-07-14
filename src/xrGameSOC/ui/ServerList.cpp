@@ -1,15 +1,15 @@
 #include "StdAfx.h"
 #include "ServerList.h"
-#include "UIXmlInit.h"
+#include "../xrUI/UIXmlInit.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrEngine/xr_ioconsole.h"
-#include "UIEditBox.h"
+#include "../xrUI/Widgets/UIEditBox.h"
 #include "UIColorAnimatorWrapper.h"
-#include "UIListItemAdv.h"
 #include "UIMessageBoxEx.h"
 #include "UIMessageBox.h"
 #include "TeamInfo.h"
 #include "../MainMenu.h"
+#include "../xrUI/Widgets/UIListBoxItem.h"
 
 #include "../GameSpy/GameSpy_Full.h"
 #include "../GameSpy/GameSpy_Browser.h"
@@ -40,7 +40,7 @@ CServerList::CServerList()
 
 	for (int i = 0; i<3; i++)
 	{
-		m_list[i].ShowSelectedItem	();
+		m_list[i].Show				(true);
 		AttachChild					(&m_frame[i]);
 		AttachChild					(&m_list[i]);
 	}
@@ -70,7 +70,7 @@ CServerList::~CServerList()
 
 void CServerList::Init(float x, float y, float width, float height)
 {
-	CUIWindow::Init(x,y,width,height);
+	//CUIWindow::Init(x,y,width,height);
 }
 
 void CServerList::on_game_spy_browser_destroy	(CGameSpy_Browser* browser)
@@ -92,14 +92,8 @@ void CServerList::Update()
 	{
 		m_pAnimation->Update();
 
-		m_frame[LST_SRV_PROP].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
-		m_frame[LST_PLAYERS].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
-
-		for (int i = 0; i<4; i++)
-		{
-			m_header2[i].SetColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
-			m_header2[i].SetTextColor(subst_alpha(m_header2[i].GetTextColor(), color_get_A(m_pAnimation->GetColor())));
-		}
+		m_frame[LST_SRV_PROP].SetTextureColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
+		m_frame[LST_PLAYERS].SetTextureColor(subst_alpha(0xffffffff, color_get_A(m_pAnimation->GetColor())));
 
 		if (m_pAnimation->Done())
 		{
@@ -115,10 +109,9 @@ void CServerList::Update()
 
 bool CServerList::NeedToRefreshCurServer	()
 {
-	int SvId = m_list[LST_SERVER].GetSelectedItem();
-	if (-1 == SvId)
+	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetSelectedItem();
+	if(!pItem)
 		return false;
-	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetItem(SvId);
 	return m_GSBrowser->HasAllKeys(pItem->GetInfo()->info.Index) == false;
 };
 
@@ -160,11 +153,9 @@ void CServerList::SendMessage(CUIWindow* pWnd, s16 msg, void* pData){
 	}else if (MESSAGE_BOX_YES_CLICKED == msg)
 	{
 
-		int sel = m_list[LST_SERVER].GetSelectedItem();
-		if (-1 == sel)
+		CUIListItemServer* item		= smart_cast<CUIListItemServer*>(m_list[LST_SERVER].GetSelectedItem());
+		if(!item)
 			return;
-
-		CUIListItemServer* item		= smart_cast<CUIListItemServer*>(m_list[LST_SERVER].GetItem(sel));
 		xr_string					command;
 
 		item->CreateConsoleCommand	(command, m_playerName.c_str(), m_message_box->m_pMessageBox->GetUserPassword(), m_message_box->GetPassword() );
@@ -198,17 +189,14 @@ void CServerList::AfterDisappear()
 
 void CServerList::FillUpDetailedServerInfo()
 {	
-	int si = m_list[LST_SERVER].GetSelectedItem();
 
 	bool t1 = false;
 	bool t2 = false;
 	bool spect = false;
 		
-    if (-1 != si)
+	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetSelectedItem();
+	if (pItem)
 	{
-		CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetItem(si);
-		R_ASSERT					(pItem);
-
 		ServerInfo srvInfo;
 		if (m_GSBrowser) m_GSBrowser->GetServerInfoByIndex(&srvInfo, pItem->GetInfo()->info.Index);
 		u32 teams = srvInfo.m_aTeams.size();
@@ -217,7 +205,7 @@ void CServerList::FillUpDetailedServerInfo()
 		{
 			string256 _buff;
 
-			CUIListItemAdv* pItemAdv;
+			CUIListBoxItem* pItemAdv;
 
 			// TEAM 1
 			xr_vector<BrowserPlayerInfo>::iterator it;
@@ -232,24 +220,22 @@ void CServerList::FillUpDetailedServerInfo()
 				if (!t1)		// add header
 				{
 					sprintf_s(_buff, "team \"%s\"", *CTeamInfo::GetTeam1_name());
-					pItemAdv = new CUIListItemAdv();
+					pItemAdv = m_list[LST_PLAYERS].AddItem();
 					pItemAdv->SetTextColor(m_list[LST_PLAYERS].GetTextColor());
 					pItemAdv->SetFont(m_list[LST_PLAYERS].GetFont());
-					pItemAdv->AddField(_buff, m_list[LST_PLAYERS].GetItemWidth());
-					m_list[LST_PLAYERS].AddItem(pItemAdv);
+					pItemAdv->AddTextField(_buff, m_list[LST_PLAYERS].GetDesiredChildWidth());
 					t1 = true;
 				}
 
 
- 				pItemAdv = new CUIListItemAdv();				
+				pItemAdv = m_list[LST_PLAYERS].AddItem();
 
 				char buf[16];
 				pItemAdv->SetFont(m_list[LST_PLAYERS].GetFont());
 				pItemAdv->SetTextColor(m_list[LST_PLAYERS].GetTextColor());
-				pItemAdv->AddField(pf.Name, m_header2[1].GetWidth());
-				pItemAdv->AddField(_itoa(pf.Frags, buf,10), m_header2[2].GetWidth());
-				pItemAdv->AddField(_itoa(pf.Deaths, buf,10), m_header2[3].GetWidth());
-				m_list[LST_PLAYERS].AddItem(pItemAdv);
+				pItemAdv->AddTextField(pf.Name, m_header2[1].GetWidth());
+				pItemAdv->AddTextField(_itoa(pf.Frags, buf,10), m_header2[2].GetWidth());
+				pItemAdv->AddTextField(_itoa(pf.Deaths, buf,10), m_header2[3].GetWidth());
 			}
 
 			
@@ -265,23 +251,21 @@ void CServerList::FillUpDetailedServerInfo()
 				if (!t2)
 				{
 					sprintf_s(_buff, "team \"%s\"", *CTeamInfo::GetTeam2_name());
-					pItemAdv = new CUIListItemAdv();
+					pItemAdv = m_list[LST_PLAYERS].AddItem();
 					pItemAdv->SetTextColor(m_list[LST_PLAYERS].GetTextColor());
 					pItemAdv->SetFont(m_list[LST_PLAYERS].GetFont());
-					pItemAdv->AddField(_buff, m_list[LST_PLAYERS].GetItemWidth());
-					m_list[LST_PLAYERS].AddItem(pItemAdv);
+					pItemAdv->AddTextField(_buff, m_list[LST_PLAYERS].GetDesiredChildWidth());
 
 					t2 = true;
 				}
 
-				pItemAdv = new CUIListItemAdv();				
+				pItemAdv = m_list[LST_PLAYERS].AddItem();
 				char buf[16];
 				pItemAdv->SetFont(m_list[LST_PLAYERS].GetFont());
 				pItemAdv->SetTextColor(m_list[LST_PLAYERS].GetTextColor());
-				pItemAdv->AddField(pf.Name, m_header2[1].GetWidth());
-				pItemAdv->AddField(_itoa(pf.Frags, buf,10), m_header2[2].GetWidth());
-				pItemAdv->AddField(_itoa(pf.Deaths, buf,10), m_header2[3].GetWidth());
-				m_list[LST_PLAYERS].AddItem(pItemAdv);
+				pItemAdv->AddTextField(pf.Name, m_header2[1].GetWidth());
+				pItemAdv->AddTextField(_itoa(pf.Frags, buf,10), m_header2[2].GetWidth());
+				pItemAdv->AddTextField(_itoa(pf.Deaths, buf,10), m_header2[3].GetWidth());
 			}
 
 			// SPECTATORS
@@ -294,23 +278,21 @@ void CServerList::FillUpDetailedServerInfo()
 				if (!spect)
 				{
 					sprintf_s(_buff, "spectator");
-					pItemAdv = new CUIListItemAdv();
+					pItemAdv = m_list[LST_PLAYERS].AddItem();
 					pItemAdv->SetTextColor(m_list[LST_PLAYERS].GetTextColor());
 					pItemAdv->SetFont(m_list[LST_PLAYERS].GetFont());
-					pItemAdv->AddField(_buff, m_list[LST_PLAYERS].GetItemWidth());
-					m_list[LST_PLAYERS].AddItem(pItemAdv);
+					pItemAdv->AddTextField(_buff, m_list[LST_PLAYERS].GetDesiredChildWidth());
 
 					spect = true;
 				}
 
-				pItemAdv = new CUIListItemAdv();				
+				pItemAdv = m_list[LST_PLAYERS].AddItem();
 				char buf[16];
 				pItemAdv->SetFont(m_list[LST_PLAYERS].GetFont());
 				pItemAdv->SetTextColor(m_list[LST_PLAYERS].GetTextColor());
-				pItemAdv->AddField(pf.Name, m_header2[1].GetWidth());
-				pItemAdv->AddField(_itoa(pf.Frags, buf,10), m_header2[2].GetWidth());
-				pItemAdv->AddField(_itoa(pf.Deaths, buf,10), m_header2[3].GetWidth());
-				m_list[LST_PLAYERS].AddItem(pItemAdv);
+				pItemAdv->AddTextField(pf.Name, m_header2[1].GetWidth());
+				pItemAdv->AddTextField(_itoa(pf.Frags, buf,10), m_header2[2].GetWidth());
+				pItemAdv->AddTextField(_itoa(pf.Deaths, buf,10), m_header2[3].GetWidth());
 			}
 
 		}
@@ -320,28 +302,25 @@ void CServerList::FillUpDetailedServerInfo()
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
 				BrowserPlayerInfo pf = *it;
-				CUIListItemAdv* pItemAdv = new CUIListItemAdv();
+				CUIListBoxItem* pItemAdv = m_list[LST_PLAYERS].AddItem();
 
 				char buf[16];
 
 				pItemAdv->SetFont(m_list[LST_PLAYERS].GetFont());
 				pItemAdv->SetTextColor(m_list[LST_PLAYERS].GetTextColor());
-				pItemAdv->AddField(pf.Name, m_header2[1].GetWidth());
-				pItemAdv->AddField(_itoa(pf.Frags, buf,10), m_header2[2].GetWidth());
-				pItemAdv->AddField(_itoa(pf.Deaths, buf,10), m_header2[3].GetWidth());
-				m_list[LST_PLAYERS].AddItem(pItemAdv);
+				pItemAdv->AddTextField(pf.Name, m_header2[1].GetWidth());
+				pItemAdv->AddTextField(_itoa(pf.Frags, buf,10), m_header2[2].GetWidth());
+				pItemAdv->AddTextField(_itoa(pf.Deaths, buf,10), m_header2[3].GetWidth());
 			}
 		}
 
 		xr_vector<GameInfo>::iterator it;
 		for (it = srvInfo.m_aInfos.begin(); it != srvInfo.m_aInfos.end(); it++){
 			GameInfo gi = *it;
-			CUIListItemAdv* pItemAdv = new CUIListItemAdv();
+			CUIListBoxItem* pItemAdv = m_list[LST_PLAYERS].AddItem();
 
-			pItemAdv->AddField(*gi.InfoName, m_list[LST_SRV_PROP].GetWidth()/2);
-			pItemAdv->AddField(*gi.InfoData, m_list[LST_SRV_PROP].GetWidth()/2);
-
-			m_list[LST_SRV_PROP].AddItem(pItemAdv);
+			pItemAdv->AddTextField(*gi.InfoName, m_list[LST_SRV_PROP].GetWidth()/2);
+			pItemAdv->AddTextField(*gi.InfoData, m_list[LST_SRV_PROP].GetWidth()/2);
 		}
 	}
 	else
@@ -350,8 +329,8 @@ void CServerList::FillUpDetailedServerInfo()
 
 void CServerList::ClearDetailedServerInfo()
 {
-	m_list[LST_SRV_PROP].RemoveAll	();
-	m_list[LST_PLAYERS].RemoveAll	();
+	m_list[LST_SRV_PROP].Clear	();
+	m_list[LST_PLAYERS].Clear	();
 }
 
 void CServerList::ShowServerInfo()
@@ -425,22 +404,22 @@ void CServerList::InitFromXml(CUIXml& xml_doc, LPCSTR path)
 {
 	CUIXmlInit::InitWindow			(xml_doc, path, 0, this);
 	string256 buf;
-	CUIXmlInit::InitListWnd			(xml_doc, xr_strconcat(buf,path,":list"),							0, &m_list[LST_SERVER]);
+	CUIXmlInit::InitListBox			(xml_doc, xr_strconcat(buf,path,":list"),							0, &m_list[LST_SERVER]);
 	m_fListH[0] =					m_list[LST_SERVER].GetHeight();
 	m_fListH[1] =					xml_doc.ReadAttribFlt(buf,0,"height2");
-	CUIXmlInit::InitListWnd			(xml_doc, xr_strconcat(buf,path,":list_server_properties"),		0, &m_list[LST_SRV_PROP]);
-	CUIXmlInit::InitListWnd			(xml_doc, xr_strconcat(buf,path,":list_players_list"),				0, &m_list[LST_PLAYERS]);
+	CUIXmlInit::InitListBox			(xml_doc, xr_strconcat(buf,path,":list_server_properties"),		0, &m_list[LST_SRV_PROP]);
+	CUIXmlInit::InitListBox			(xml_doc, xr_strconcat(buf,path,":list_players_list"),				0, &m_list[LST_PLAYERS]);
 	CUIXmlInit::InitFrameWindow		(xml_doc, xr_strconcat(buf,path,":frame"),							0, &m_frame[LST_SERVER]);
 	CUIXmlInit::InitFrameWindow		(xml_doc, xr_strconcat(buf,path,":list_server_properties:frame"),	0, &m_frame[LST_SRV_PROP]);
 	CUIXmlInit::InitFrameWindow		(xml_doc, xr_strconcat(buf,path,":list_players_list:frame"),		0, &m_frame[LST_PLAYERS]);
-	CUIXmlInit::InitFont			(xml_doc, xr_strconcat(buf,path,":list_item:text"),				0, m_itemInfo.color, m_itemInfo.font);
+	CUIXmlInit::InitFont			(xml_doc, xr_strconcat(buf,path,":list_item:text"),				0, m_itemInfo.text_color, m_itemInfo.text_font);
 	CUIXmlInit::InitEditBox			(xml_doc, xr_strconcat(buf,path,":edit_gs_filter"),				0, &m_edit_gs_filter);
 	m_fEditPos[0] =					m_edit_gs_filter.GetWndPos().y;
 	m_fEditPos[1] =					xml_doc.ReadAttribFlt(buf,0,"y2");
-	CUIXmlInit::InitLabel			(xml_doc, xr_strconcat(buf,path,":cap_server_properties"),			0, &m_header2[0]);
-	CUIXmlInit::InitLabel			(xml_doc, xr_strconcat(buf,path,":cap_players_list"),				0, &m_header2[1]);
-	CUIXmlInit::InitLabel			(xml_doc, xr_strconcat(buf,path,":cap_frags"),						0, &m_header2[2]);
-	CUIXmlInit::InitLabel			(xml_doc, xr_strconcat(buf,path,":cap_death"),						0, &m_header2[3]);
+	CUIXmlInit::InitFrameLine		(xml_doc, xr_strconcat(buf,path,":cap_server_properties"),			0, &m_header2[0]);
+	CUIXmlInit::InitFrameLine		(xml_doc, xr_strconcat(buf,path,":cap_players_list"),				0, &m_header2[1]);
+	CUIXmlInit::InitFrameLine		(xml_doc, xr_strconcat(buf,path,":cap_frags"),						0, &m_header2[2]);
+	CUIXmlInit::InitFrameLine		(xml_doc, xr_strconcat(buf,path,":cap_death"),						0, &m_header2[3]);
 	
 	m_itemInfo.size.icon			= xml_doc.ReadAttribFlt( xr_strconcat(buf, path, ":sizes"), 0, "icon");
 	m_itemInfo.size.server			= xml_doc.ReadAttribFlt( buf, 0, "server");
@@ -464,15 +443,15 @@ void CServerList::InitFromXml(CUIXml& xml_doc, LPCSTR path)
 
 void CServerList::ConnectToSelected()
 {
-	int sel = m_list[LST_SERVER].GetSelectedItem();
-	if (-1 == sel)
-		return;
 
 	//-----------------------------------------
 	if (!MainMenu()->ValidateCDKey()) return;	
 	//-----------------------------------------
 
-	CUIListItemServer* item = smart_cast<CUIListItemServer*>(m_list[LST_SERVER].GetItem(sel));
+	CUIListItemServer* item = smart_cast<CUIListItemServer*>(m_list[LST_SERVER].GetSelectedItem());
+	if (!item)
+		return;
+
 	if (!m_GSBrowser->CheckDirectConnection(item->GetInfo()->info.Index))
 	{
 		Msg("! Direct connection to this server is not available -> its behind firewall");
@@ -564,25 +543,25 @@ void CServerList::RefreshGameSpyList(bool Local)
 void CServerList::AddServerToList	(ServerInfo* pServerInfo)
 {
 	if (!IsValidItem(*pServerInfo)) return;
-	CUIListWnd& _list			= m_list[LST_SERVER];
 	
 	CUIListItemServer* item		= GetFreeItem();
 
-	float w						= _list.GetItemWidth();
-	float h						= _list.GetItemHeight();
 	SrvInfo2LstSrvInfo			(pServerInfo);
-	item->Init					(m_itemInfo, 0, 0, w, h);
 
-	_list.AddItem<CUIListItemServer>(item);
+	m_itemInfo.size.height		= m_list[LST_SERVER].GetItemHeight();
+	item->InitItemServer		(m_itemInfo);
+
+	m_list[LST_SERVER].AddExistingItem		(item);
+	item->SetAutoDelete			(false);
 };
 
 void	CServerList::UpdateServerInList(ServerInfo* pServerInfo, int index)
 {
-	int sz = m_list[LST_SERVER].GetItemsCount();
+	int sz = m_list[LST_SERVER].GetSize();
 
 	for (int i = 0; i< sz; i++)
 	{
-		CUIListItemServer* pItem = static_cast<CUIListItemServer*>(m_list[LST_SERVER].GetItem(i));
+		CUIListItemServer* pItem = static_cast<CUIListItemServer*>(m_list[LST_SERVER].GetItemByIDX(i));
 		if (pItem->Get_gs_index() == index)
 		{
 			UpdateServerInList(pServerInfo, pItem);
@@ -609,7 +588,7 @@ void	CServerList::RefreshList_internal()
 {
 	m_need_refresh_fr				= u32(-1);
 	SaveCurItem						();
-	m_list[LST_SERVER].RemoveAll	();
+	m_list[LST_SERVER].Clear		();
 	ClearSrvItems					();
 	
 	if (!m_GSBrowser)				return;
@@ -652,10 +631,9 @@ void	CServerList::RefreshList_internal()
 
 void CServerList::RefreshQuick()
 {
-	int SvId = m_list[LST_SERVER].GetSelectedItem();
-	if (-1 == SvId)
+	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetSelectedItem();
+	if(!pItem)
 		return;
-	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetItem(SvId);
 	if (m_GSBrowser) m_GSBrowser->RefreshQuick(pItem->GetInfo()->info.Index);
 	
 	RefreshList();
@@ -776,31 +754,28 @@ bool CServerList::sort_by_Version(int p1, int p2)
 
 void CServerList::SaveCurItem()
 {
-	int SvId = m_list[LST_SERVER].GetSelectedItem();
-	if (-1 == SvId){
+	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetSelectedItem();
+	if (!pItem)
+	{
 		m_cur_item = -1;
 		return;
 	}
-
-	CUIListItemServer* pItem = (CUIListItemServer*)m_list[LST_SERVER].GetItem(SvId);
 	R_ASSERT(pItem);
-
-	m_cur_item = pItem->GetInfo()->info.Index;
+	m_cur_item = pItem->GetTAG();
 }
 
 void CServerList::RestoreCurItem()
 {
-	if (-1 == m_cur_item)		return;
+	if (-1 == m_cur_item)
+		return;
 
-	int index = m_list[LST_SERVER].FindItemWithValue(m_cur_item);
-
-	m_list[LST_SERVER].SetSelectedItem(index);	
-	m_list[LST_SERVER].ScrollToPos(index);
+	m_list[LST_SERVER].SetSelectedTAG(m_cur_item);
+	m_list[LST_SERVER].SetScrollPos(m_list[LST_SERVER].GetSelectedIDX());
 }
 
 void CServerList::ResetCurItem()
 {
-	m_list[LST_SERVER].SetSelectedItem(-1);
+	m_list[LST_SERVER].SetSelectedIDX(u32(-1));
 	m_list[LST_SERVER].ScrollToBegin();
 }
 
@@ -809,7 +784,7 @@ void CServerList::DestroySrvItems()
 {
 	m_last_retreived_index	= u32(-1);
 
-	m_list[LST_SERVER].RemoveAll				();
+	m_list[LST_SERVER].Clear				();
 	SrvItems_It it		= m_items_cache.begin	();
 	SrvItems_It it_e	= m_items_cache.end		();
 
@@ -837,17 +812,14 @@ CUIListItemServer* CServerList::GetFreeItem()
 
 	for(;it!=it_e;++it)
 	{
-		if( false==(*it).m_busy )
+		if(it->m_busy==false)
 		{
-			(*it).m_busy			= true;
-			m_last_retreived_index	= (u32)(it-m_items_cache.begin());
-			return					(*it).m_ui_item;
+			it->m_busy				= true;
+			m_last_retreived_index	= (u32)(it - m_items_cache.begin());
+			return					it->m_ui_item;
 		}
 	}
-	m_items_cache.resize	(m_items_cache.size()+1);
-	SrvItem& Res			= m_items_cache.back();
-	Res.m_ui_item			= new CUIListItemServer();
-	Res.m_busy				= true;
-	m_last_retreived_index	= m_items_cache.size()-1; 
-    return					Res.m_ui_item;
+	m_items_cache.push_back(SrvItem(m_list[LST_SERVER].GetItemHeight()));
+	m_last_retreived_index	= (u32)m_items_cache.size() - 1;
+	return					m_items_cache.back().m_ui_item;
 }

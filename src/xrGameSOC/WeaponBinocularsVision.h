@@ -1,5 +1,5 @@
 #pragma once
-#include "ui\uistatic.h"
+#include "../xrUI/Widgets/uistatic.h"
 class CObject;
 class CWeaponBinoculars;
 

@@ -8,8 +8,8 @@
 #include "../Entity.h"
 #include "../character_info.h"
 #include "UIInventoryUtilities.h"
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "uicoloranimatorwrapper.h"
 #include "../../xrCore/object_broker.h"
 
@@ -24,7 +24,8 @@ void CUIPdaMsgListItem::SetFont(CGameFont* pFont){
 
 void CUIPdaMsgListItem::Init(float x, float y, float width, float height)
 {
-	CUIStatic::Init			(x, y, width, height);
+	CUIStatic::SetWndPos(Fvector2().set(x, y));
+	CUIStatic::SetWndSize(Fvector2().set(width, height));
 
 	CUIXml uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH,PDA_MSG_MAINGAME_CHAR);
@@ -50,7 +51,7 @@ void CUIPdaMsgListItem::SetTextColor(u32 color){
 }
 
 void CUIPdaMsgListItem::SetColor(u32 color){
-	UIIcon.SetColor(color);
+	UIIcon.SetTextureColor(color);
 }
 
 void CUIPdaMsgListItem::InitCharacter(CInventoryOwner* pInvOwner)

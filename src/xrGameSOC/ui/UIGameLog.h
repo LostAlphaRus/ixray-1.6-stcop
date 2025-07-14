@@ -13,15 +13,15 @@
 
 //////////////////////////////////////////////////////////////////////////
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 //#include "UIListWnd.h"
-#include "UIScrollView.h"
+#include "../../xrUI/Widgets/UIScrollView.h"
 #include "KillMessageStruct.h"
 
 class CUIXml;
 class CUIPdaKillMessage;
 class CUIPdaMsgListItem;
-class CUIStatic;
+class CUITextWnd;
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@ class CUIGameLog: public CUIScrollView
 public:
 	CUIGameLog();
 	virtual ~CUIGameLog();
-	CUIStatic*				AddLogMessage	(LPCSTR msg);
+	CUITextWnd*				AddLogMessage	(LPCSTR msg);
 	CUIPdaKillMessage*		AddLogMessage	(KillMessageStruct& msg);
 	CUIPdaMsgListItem*		AddPdaMessage	(LPCSTR msg, float delay);
 	void					AddChatMessage	(LPCSTR msg, LPCSTR author);

@@ -7,7 +7,7 @@
 
 // #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 //#include "UIButton.h"
 //#include "UISkinWindow.h"
 

@@ -3,7 +3,7 @@
 #include "UIGameCustom.h"
 #include "UIGameDM.h"
 
-#include "ui/UIDialogWnd.h"
+#include "../xrUI/Widgets/UIDialogWnd.h"
 #include "ui/UIInventoryWnd.h"
 #include "ui/UISpawnWnd.h"
 
@@ -41,7 +41,7 @@ public:
 	virtual void		Render					();
 	virtual void		OnFrame					();
 	
-	virtual	bool		IR_OnKeyboardPress		( int dik );
-	virtual bool		IR_OnKeyboardRelease	( int dik );
+	virtual	bool		IR_UIOnKeyboardPress		( int dik );
+	virtual bool		IR_UIOnKeyboardRelease	( int dik );
 	virtual	void		reset_ui				();
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "uiwindow.h"
+#include "../../xrUI/Widgets/uiwindow.h"
 //#include "uipointergage.h"
 
 
@@ -15,7 +15,7 @@ private:
 //	CUIPointerGage		UITachometer;
 public: 
 
-	// Установить 
+	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ 
 	void				SetCarHealth	(float value);
 	void				SetSpeed		(float speed);
 	void				SetRPM			(float rmp);

@@ -2,8 +2,8 @@
 #include "UIBagWnd.h"
 #include "UIBuyWndShared.h"
 #include "Restrictions.h"
-#include "UIXmlInit.h"
-#include "UITabButtonMP.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UITabButtonMP.h"
 #include "UICellCustomItems.h"
 #include "UICellItemFactory.h"
 #include "../HUDManager.h"
@@ -11,6 +11,7 @@
 #include "../xrServer_Objects_ALife_Items.h"
 #include "../game_cl_Deathmatch.h"
 #include "../UIFontDefines.h"
+#include "../uihelpergame.h"
 
 CUIBagWnd::CUIBagWnd()
 {
@@ -82,7 +83,7 @@ void CUIBagWnd::Init(CUIXml& xml, LPCSTR path, const shared_str& sectionName, co
 
 	for (int i = 0; i < NUMBER_OF_GROUPS; i++)
 	{
-		CUIXmlInit::InitDragDropListEx		(xml, "dragdrop_list_bag", 0, &m_groups[i]);
+		CUIXmlInitGame::InitDragDropListEx		(xml, "dragdrop_list_bag", 0, &m_groups[i]);
 		m_groups[i].SetMessageTarget		(GetParent());
 		IBuyWnd*	w = smart_cast<IBuyWnd*>(GetParent());
 		w->BindDragDropListEvents			(&m_groups[i], true);
@@ -112,7 +113,7 @@ void CUIBagWnd::UpdateBuyPossibility()
 		{
 			if (m_info[m_allItems[i]->m_index].bought)
 			{
-				m_allItems[i]->SetColor(0x00ffffff);
+				m_allItems[i]->SetTextureColor(0x00ffffff);
 			}
 			else if (UpdateRank(m_allItems[i]))		// update price if there no restriction for rank
 			{
@@ -313,7 +314,7 @@ void CUIBagWnd::FillUpGroup(const u32 group)
 
             // Set custom draw
 			itoa						(j+1, tmp_str ,10);
-			CBuyItemCustomDrawCell* p	= new CBuyItemCustomDrawCell(tmp_str,UI()->Font()->GetFont(LETTERICA16_FONT_NAME));
+			CBuyItemCustomDrawCell* p	= new CBuyItemCustomDrawCell(tmp_str,UI().Font().GetFont(LETTERICA16_FONT_NAME));
 			itm->SetCustomDraw			(p);
             
 			// Set Number
@@ -449,7 +450,7 @@ void CUIBagWnd::PutItemToGroup(CUICellItem* pItem, int iGroup)
 		++subSection_group3[iActiveSection - GROUP_31];
 		
 		sprintf_s						(tmp_str, "%d", subSection_group3[iActiveSection - GROUP_31]);
-		CBuyItemCustomDrawCell* p	= new CBuyItemCustomDrawCell(tmp_str, UI()->Font()->GetFont(LETTERICA16_FONT_NAME));
+		CBuyItemCustomDrawCell* p	= new CBuyItemCustomDrawCell(tmp_str, UI().Font().GetFont(LETTERICA16_FONT_NAME));
 		pItem->SetCustomDraw		(p);
 
 		m_info[pItem->m_index].short_cut = subSection_group3[iActiveSection - GROUP_31] % 10;
@@ -660,7 +661,7 @@ void CUIBagWnd::SellItem(CUICellItem* itm)
 
 	m_info[itm->m_index].bought = false;
 
-	if (itm->GetColor() == PRICE_RESTR_COLOR)		// Fuck... loose it
+	if (itm->GetTextureColor() == PRICE_RESTR_COLOR)		// Fuck... loose it
 		return;
 
 	if (!this->m_bIgnoreMoney)

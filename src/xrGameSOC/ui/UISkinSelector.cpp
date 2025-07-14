@@ -2,15 +2,16 @@
 #include "UISkinSelector.h"
 #include "../level.h"
 //#include"../hudmanager.h"
-#include "UIXmlInit.h"
-#include "UIStatic.h"
-#include "UIAnimatedStatic.h"
-#include "UI3tButton.h"
-#include "UIStatix.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/Widgets/UIAnimatedStatic.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIStatix.h"
 #include "../game_cl_deathmatch.h"
 #include "../../xrEngine/xr_level_controller.h"
 #include "../HUDManager.h"
 #include "CExtraContentFilter.h"
+#include "../../xrUI/UICursor.h"
 
 #include "../../xrCore/object_broker.h"
 
@@ -179,7 +180,7 @@ void CUISkinSelectorWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 						OnBtnOK();					
 					}
 			break;
-		case STATIC_FOCUS_RECEIVED:
+		case WINDOW_FOCUS_RECEIVED:
 			if (pWnd == m_pButtons[0])
 			{
 				m_pAnims[0]->Rewind(0);
@@ -226,7 +227,7 @@ bool CUISkinSelectorWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 			game->OnKeyboardRelease(kSCORES);
-			UI()->GetUICursor()->Show();
+			UI().GetUICursor().Show();
 		}
 		
 		return false;
@@ -237,7 +238,7 @@ bool CUISkinSelectorWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
         ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 		game->OnKeyboardPress(kSCORES);
-		UI()->GetUICursor()->Hide();
+		UI().GetUICursor().Hide();
 		return false;
 	}
 

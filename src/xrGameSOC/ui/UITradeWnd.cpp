@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "UITradeWnd.h"
 
-#include "xrUIXmlParser.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/xrUIXmlParser.h"
+#include "../../xrUI/UIXmlInit.h"
 
 #include "../Entity.h"
 #include "../HUDManager.h"
@@ -18,8 +18,9 @@
 #include "../../xrEngine/string_table.h"
 #include "../character_info.h"
 #include "UIMultiTextStatic.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/ui3tbutton.h"
 #include "UIItemInfo.h"
+#include "../UIHelperGame.h"
 
 #include "UICharacterInfo.h"
 #include "UIDragDropListEx.h"
@@ -131,32 +132,29 @@ void CUITradeWnd::Init()
 	xml_init.InitStatic					(uiXml, "static", 1, &m_uidata->UIOthersTradeWnd);
 
 	m_uidata->UIOurTradeWnd.AttachChild	(&m_uidata->UIOurPriceCaption);
-	xml_init.InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOurPriceCaption);
+	CUIXmlInitGame::InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOurPriceCaption);
 
 	m_uidata->UIOthersTradeWnd.AttachChild(&m_uidata->UIOthersPriceCaption);
-	xml_init.InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOthersPriceCaption);
+	CUIXmlInitGame::InitMultiTextStatic		(uiXml, "price_mt_static", 0, &m_uidata->UIOthersPriceCaption);
 
 	//Списки Drag&Drop
 	m_uidata->UIOurBagWnd.AttachChild	(&m_uidata->UIOurBagList);	
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 0, &m_uidata->UIOurBagList);
 
 	m_uidata->UIOthersBagWnd.AttachChild(&m_uidata->UIOthersBagList);	
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_list", 1, &m_uidata->UIOthersBagList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 1, &m_uidata->UIOthersBagList);
 
 	m_uidata->UIOurTradeWnd.AttachChild	(&m_uidata->UIOurTradeList);	
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_list", 2, &m_uidata->UIOurTradeList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 2, &m_uidata->UIOurTradeList);
 
 	m_uidata->UIOthersTradeWnd.AttachChild(&m_uidata->UIOthersTradeList);	
-	xml_init.InitDragDropListEx			(uiXml, "dragdrop_list", 3, &m_uidata->UIOthersTradeList);
+	CUIXmlInitGame::InitDragDropListEx			(uiXml, "dragdrop_list", 3, &m_uidata->UIOthersTradeList);
 
 	
 	AttachChild							(&m_uidata->UIDescWnd);
 	xml_init.InitStatic					(uiXml, "desc_static", 0, &m_uidata->UIDescWnd);
 	m_uidata->UIDescWnd.AttachChild		(&m_uidata->UIItemInfo);
 	m_uidata->UIItemInfo.Init			(0,0, m_uidata->UIDescWnd.GetWidth(), m_uidata->UIDescWnd.GetHeight(), TRADE_ITEM_XML);
-
-
-	xml_init.InitAutoStatic				(uiXml, "auto_static", this);
 
 
 	AttachChild							(&m_uidata->UIPerformTradeButton);
@@ -239,8 +237,8 @@ void CUITradeWnd::Update()
 	if(m_uidata->UIDealMsg){
 		m_uidata->UIDealMsg->Update();
 		if( !m_uidata->UIDealMsg->IsActual()){
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_mine");
-			HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_other");
+			CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
+			CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
 			m_uidata->UIDealMsg			= NULL;
 		}
 	}
@@ -268,9 +266,9 @@ void CUITradeWnd::Hide()
 	
 	m_uidata->UIDealMsg				= NULL;
 
-	if(HUD().GetUI()->UIGame()){
-		HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_mine");
-		HUD().GetUI()->UIGame()->RemoveCustomStatic("not_enough_money_other");
+	if(CurrentGameUI()){
+		CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
+		CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
 	}
 
 	m_uidata->UIOurBagList.ClearAll		(true);
@@ -415,9 +413,9 @@ void CUITradeWnd::PerformTrade()
 	}else
 	{
 		if(others_money<0)
-			m_uidata->UIDealMsg		= HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_other", true);
+			m_uidata->UIDealMsg		= CurrentGameUI()->AddCustomStatic("not_enough_money_other", true);
 		else
-			m_uidata->UIDealMsg		= HUD().GetUI()->UIGame()->AddCustomStatic("not_enough_money_mine", true);
+			m_uidata->UIDealMsg		= CurrentGameUI()->AddCustomStatic("not_enough_money_mine", true);
 
 
 		m_uidata->UIDealMsg->m_endTime	= Device.fTimeGlobal+2.0f;// sec
@@ -629,5 +627,5 @@ void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool b)
 {
 	if(!b)
-		itm->SetColor				(color_rgba(255,100,100,255));
+		itm->SetTextureColor				(color_rgba(255,100,100,255));
 }

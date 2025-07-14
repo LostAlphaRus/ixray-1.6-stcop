@@ -1,10 +1,10 @@
 //////////////////////////////////////////////////////////////////////
-// UIPdaListItem.h: элемент окна списка в PDA
-// для отображения информации о контакте PDA
+// UIPdaListItem.h: СЌР»РµРјРµРЅС‚ РѕРєРЅР° СЃРїРёСЃРєР° РІ PDA
+// РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РєРѕРЅС‚Р°РєС‚Рµ PDA
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
-#include "UIWindow.h"
+#include "../../xrUI/Widgets/UIWindow.h"
 
 class CUIFrameWindow;
 class CUICharacterInfo;
@@ -22,7 +22,7 @@ public:
 	
 	void*					m_data;
 protected:
-	//информация о персонаже
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїРµСЂСЃРѕРЅР°Р¶Рµ
 	CUIFrameWindow*			UIMask;
 	CUICharacterInfo*		UIInfo;
 };

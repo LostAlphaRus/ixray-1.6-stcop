@@ -3,10 +3,10 @@
 #include "UIMpItemsStoreWnd.h"
 
 #include "UICellItem.h"
-#include "UITabControl.h"
+#include "../../xrUI/Widgets/UITabControl.h"
 #include "UIDragDropListEx.h"
 #include "UIItemInfo.h"
-#include "UI3tButton.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 #include "../inventory_item.h"
 #include "../PhysicsShellHolder.h"
@@ -92,14 +92,14 @@ void CUIMpTradeWnd::SetMoneyChangeString(int diff)
 	m_static_money_change->SetText			(buff);
 	u32 clr									= (diff>0)?m_text_color_money_positive:m_text_color_money_negative;
 	m_static_money_change->SetTextColor		(clr);
-	m_static_money_change->ResetClrAnimation();
+	m_static_money_change->ResetColorAnimation();
 //	Msg										("Money change:%s", buff);
 }
 
 void CUIMpTradeWnd::SetInfoString(LPCSTR str)
 {
 	m_static_information->SetText			(str);
-	m_static_information->ResetClrAnimation	();
+	m_static_information->ResetColorAnimation	();
 	Msg("Buy menu message:%s", str);
 }
 

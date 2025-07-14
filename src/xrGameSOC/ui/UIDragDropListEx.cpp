@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "UIDragDropListEx.h"
-#include "UIScrollBar.h"
+#include "../../xrUI/Widgets/UIScrollBar.h"
 #include "../../xrCore/object_broker.h"
 #include "UICellItem.h"
+#include "../../xrUI/UICursor.h"
 
 #include "../Include/xrRender/UIRender.h"
 #include "../Include/xrRender/UIShader.h"
@@ -33,12 +34,12 @@ CUIDragDropListEx::CUIDragDropListEx()
 
 	m_vScrollBar->SetWindowName	("scroll_v");
 	Register					(m_vScrollBar);
-	AddCallback					("scroll_v",	SCROLLBAR_VSCROLL,				CUIWndCallback::void_function				(this, &CUIDragDropListEx::OnScrollV)		);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_DRAG,			CUIWndCallback::void_function			(this, &CUIDragDropListEx::OnItemStartDragging)	);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_DROP,			CUIWndCallback::void_function			(this, &CUIDragDropListEx::OnItemDrop)			);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_SELECTED,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemSelected)			);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_RBUTTON_CLICK,	CUIWndCallback::void_function	(this, &CUIDragDropListEx::OnItemRButtonClick)			);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_DB_CLICK,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemDBClick)			);
+	AddCallbackStr				("scroll_v",	SCROLLBAR_VSCROLL,				CUIWndCallback::void_function				(this, &CUIDragDropListEx::OnScrollV)		);
+	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_DRAG,			CUIWndCallback::void_function			(this, &CUIDragDropListEx::OnItemStartDragging)	);
+	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_DROP,			CUIWndCallback::void_function			(this, &CUIDragDropListEx::OnItemDrop)			);
+	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_SELECTED,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemSelected)			);
+	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_RBUTTON_CLICK,	CUIWndCallback::void_function	(this, &CUIDragDropListEx::OnItemRButtonClick)			);
+	AddCallbackStr				("cell_item",	DRAG_DROP_ITEM_DB_CLICK,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemDBClick)			);
 }
 
 CUIDragDropListEx::~CUIDragDropListEx()
@@ -81,9 +82,9 @@ void CUIDragDropListEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIDragDropListEx::Init(float x, float y, float w, float h)
 {
-	inherited::SetWndRect				(x,y,w,h);
-	m_vScrollBar->Init					(w, 0, h, false);
-	m_vScrollBar->SetWndPos				(m_vScrollBar->GetWndPos().x - m_vScrollBar->GetWidth(), m_vScrollBar->GetWndPos().y);
+	inherited::SetWndRect				(Frect().set(x,y,w,h));
+	m_vScrollBar->InitScrollBar			(Fvector2().set(w, 0.f), h, false);
+	m_vScrollBar->SetWndPos				(Fvector2().set(m_vScrollBar->GetWndPos().x - m_vScrollBar->GetWidth(), m_vScrollBar->GetWndPos().y));
 /*
 //.	m_background->Init					(0,0,w,h);
 //.	m_background->Init					("ui\\ui_frame_02_back",0,0,w,h);
@@ -95,7 +96,7 @@ void CUIDragDropListEx::Init(float x, float y, float w, float h)
 
 void CUIDragDropListEx::OnScrollV(CUIWindow* w, void* pData)
 {
-	m_container->SetWndPos		(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos()));
+	m_container->SetWndPos		(Fvector2().set(m_container->GetWndPos().x, float(-m_vScrollBar->GetScrollPos())));
 }
 
 void CUIDragDropListEx::CreateDragItem(CUICellItem* itm)
@@ -213,7 +214,7 @@ void CUIDragDropListEx::ClearAll(bool bDestroy)
 	DestroyDragItem			();
 	m_container->ClearAll	(bDestroy);
 	m_selected_item			= NULL;
-	m_container->SetWndPos	(0,0);
+	m_container->SetWndPos	(Fvector2().set(0,0));
 	ResetCellsCapacity		();
 }
 
@@ -238,12 +239,12 @@ void CUIDragDropListEx::Draw()
 	inherited::Draw				();
 
 	if(0 && bDebug){
-		CGameFont* F		= UI()->Font()->pFontDI;
+		CGameFont* F		= UI().Font().pFontDI;
 		F->SetAligment		(CGameFont::alCenter);
 		F->SetHeight		(0.02f);
 		F->OutSetI			(0.f,-0.5f);
 		F->SetColor			(0xffffffff);
-		Ivector2			pt = m_container->PickCell(GetUICursor()->GetCursorPosition());
+		Ivector2			pt = m_container->PickCell(GetUICursor().GetCursorPosition());
 		F->OutNext			("%d-%d",pt.x, pt.y);
 	};
 
@@ -256,7 +257,7 @@ void CUIDragDropListEx::Update()
 	if( m_drag_item ){
 		Frect	wndRect;
 		GetAbsoluteRect(wndRect);
-		Fvector2 cp			= GetUICursor()->GetCursorPosition();
+		Fvector2 cp			= GetUICursor().GetCursorPosition();
 		if(wndRect.in(cp)){
 			if(NULL==m_drag_item->BackList())
 				m_drag_item->SetBackList(this);
@@ -279,7 +280,7 @@ void CUIDragDropListEx::ReinitScroll()
 		m_vScrollBar->SetScrollPos	(0);
 		m_vScrollBar->SetStepSize	(CellSize().y/3);
 		m_vScrollBar->SetPageSize	(iFloor(GetWndSize().y/float(CellSize().y)));
-		m_container->SetWndPos		(0,0);
+		m_container->SetWndPos		(Fvector2().set(0,0));
 }
 
 bool CUIDragDropListEx::OnMouseAction(float x, float y, EUIMessages mouse_action)
@@ -687,7 +688,7 @@ void CUICellContainer::Draw()
 
 	Fvector2					drawLT;
 	drawLT.set					(lt_abs_pos.x+tgt_cells.lt.x*cell_sz.x, lt_abs_pos.y+tgt_cells.lt.y*cell_sz.y);
-	UI()->ClientToScreenScaled	(drawLT, drawLT.x, drawLT.y);
+	UI().ClientToScreenScaled	(drawLT, drawLT.x, drawLT.y);
 
 	const Fvector2 pts[6] =		{{0.0f,0.0f},{1.0f,0.0f},{1.0f,1.0f},
 								 {0.0f,0.0f},{1.0f,1.0f},{0.0f,1.0f}};
@@ -698,7 +699,7 @@ void CUICellContainer::Draw()
 
 	// calculate cell size in screen pixels
 	Fvector2 f_len;
-	UI()->ClientToScreenScaled(f_len, float(cell_sz.x), float(cell_sz.y) );
+	UI().ClientToScreenScaled(f_len, float(cell_sz.x), float(cell_sz.y) );
 
 	GetCellsInRange(tgt_cells, m_cells_to_draw);
 
@@ -727,7 +728,7 @@ void CUICellContainer::Draw()
 		}
 	}
 
-	UI()->PushScissor					(clientArea);
+	UI().PushScissor					(clientArea);
 
 	UIRender->SetShader(*hShader);
 	UIRender->FlushPrimitive();
@@ -741,5 +742,5 @@ void CUICellContainer::Draw()
 			}
 	}
 
-	UI()->PopScissor			();
+	UI().PopScissor			();
 }

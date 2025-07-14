@@ -1,12 +1,12 @@
 #pragma once
 
 #include "UIBuyWndBase.h"
-#include "UIStatic.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 #include "UIDragDropListEx.h"
 #include "UIBuyWeaponTab.h"
 #include "UIBagWnd.h"
-#include "UI3tButton.h"
-#include "UIPropertiesBox.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UIPropertiesBox.h"
 #include "UIItemInfo.h"
 
 typedef enum {

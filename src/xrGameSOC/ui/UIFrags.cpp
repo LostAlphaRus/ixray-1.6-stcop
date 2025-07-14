@@ -2,8 +2,8 @@
 
 #include "UIFrags.h"
 #include "UIStats.h"
-#include "UIXmlInit.h"
-#include "UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
 CUIFrags::CUIFrags(){	
 	m_pBackT = new CUIStatic(); AttachChild(m_pBackT);
@@ -30,7 +30,6 @@ void CUIFrags::InitBackground(CUIXml& xml_doc, LPCSTR path){
 	CUIXmlInit::InitWindow(xml_doc, path, 0, this);
 	CUIXmlInit::InitStatic(xml_doc, xr_strconcat(_path, path, ":back_c"), 0, m_pBackC);
 	int count = xml_doc.ReadAttribInt(_path, 0, "count", 1);
-	m_pBackC->GetStaticItem()->SetTile(1,count,0,0);
 	CUIXmlInit::InitStatic(xml_doc, xr_strconcat(_path, path, ":back_t"), 0, m_pBackT);
 	CUIXmlInit::InitStatic(xml_doc, xr_strconcat(_path, path, ":back_b"), 0, m_pBackB);
 

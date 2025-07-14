@@ -2,10 +2,8 @@
 
 #include "../xrCore/object_destroyer.h"
 
-#ifdef XRGAME_EXPORTS
-#	include "ui/xrUIXmlParser.h"
-#else // XRGAME_EXPORTS
-#	include "xrUIXmlParser.h"
+#	include "../xrUI/xrUIXmlParser.h"
+#ifndef XRGAME_EXPORTS
 #	include "../xrCore/object_broker.h"
 #endif // XRGAME_EXPORTS
 

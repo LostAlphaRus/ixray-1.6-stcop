@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIDialogWnd.h"
+#include "../../xrUI/Widgets/UIDialogWnd.h"
 
 class CUIStatic;
 class CUI3tButton;
@@ -12,7 +12,6 @@ class CUIFrameWindow;
 class CUIVote : public CUIDialogWnd 
 {
 public:
-	using CUIDialogWnd::Init;
 
 					CUIVote		();
 			void 	Init		();

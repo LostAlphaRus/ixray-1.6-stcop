@@ -12,7 +12,7 @@
 #include "InventoryOwner.h"
 #include "../xrEngine/StatGraph.h"
 #include "PhraseDialogManager.h"
-#include "ui_defs.h"
+#include "../xrUI/ui_defs.h"
 
 #include "step_manager.h"
 

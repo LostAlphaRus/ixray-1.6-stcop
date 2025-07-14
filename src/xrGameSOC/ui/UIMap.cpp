@@ -34,6 +34,12 @@ void CUICustomMap::Update()
 	CUIStatic::Update		();
 }
 
+void CUICustomMap::Draw()
+{
+	UI().PushScissor		(WorkingArea());
+	CUIStatic::Draw			();
+	UI().PopScissor			();
+}
 
 void CUICustomMap::Init	(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 {
@@ -49,10 +55,11 @@ void CUICustomMap::Init	(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 		tmp.set(-10000.0f,-10000.0f,10000.0f,10000.0f);
 	}
 	m_BoundRect.set		(tmp.x, tmp.y, tmp.z, tmp.w);
-	CUIStatic::InitEx	(tex, sh_name, 0, 0, m_BoundRect.width(), m_BoundRect.height() );
+	CUIStatic::SetWndSize	(Fvector2().set(m_BoundRect.width(), m_BoundRect.height()));
+	CUIStatic::SetWndPos	(Fvector2().set(0,0));
+	CUIStatic::InitTextureEx(tex, sh_name);
 	
 	SetStretchTexture	(true);
-	ClipperOn			();
 }
 
 void rotation_(float x, float y, const float angle, float& x_, float& y_)
@@ -100,7 +107,7 @@ Fvector2 CUICustomMap::ConvertRealToLocalNoTransform  (const Fvector2& src)// me
 //position and heading for drawing pointer to src pos
 bool CUICustomMap::GetPointerTo(const Fvector2& src, float item_radius, Fvector2& pos, float& heading)
 {
-	Frect		clip_rect_abs			= GetClipperRect(); //absolute rect coords
+	Frect		clip_rect_abs			= WorkingArea(); //absolute rect coords
 	Frect		map_rect_abs;
 	GetAbsoluteRect(map_rect_abs);
 
@@ -141,7 +148,7 @@ void CUICustomMap::FitToWidth	(float width)
 	float k			= m_BoundRect.width()/m_BoundRect.height();
 	float w			= width;
 	float h			= width/k;
-	SetWndRect		(0.0f,0.0f,w,h);
+	SetWndRect		(Frect().set(0.0f,0.0f,w,h));
 	
 }
 
@@ -150,7 +157,7 @@ void CUICustomMap::FitToHeight	(float height)
 	float k			= m_BoundRect.width()/m_BoundRect.height();
 	float h			= height;
 	float w			= k*height;
-	SetWndRect		(0.0f,0.0f,w,h);
+	SetWndRect		(Frect().set(0.0f,0.0f,w,h));
 	
 }
 
@@ -180,17 +187,17 @@ void CUICustomMap::SetActivePoint(const Fvector &vNewPoint)
 	pos_abs.set(map_abs_rect.lt);
 	pos_abs.add(pos_on_map);
 
-	Frect		clip_abs_rect	= GetClipperRect();
+	Frect		clip_abs_rect	= WorkingArea();
 	Fvector2	clip_center;
 	clip_abs_rect.getcenter(clip_center);
 	clip_center.sub(pos_abs);
 	MoveWndDelta				(clip_center);
-	SetHeadingPivot				(pos_on_map);
+	SetHeadingPivot				(pos_on_map, Fvector2().set(0,0), false);
 }
 
 bool CUICustomMap::IsRectVisible(Frect r)
 {
-	Frect map_visible_rect = GetClipperRect();
+	Frect map_visible_rect = WorkingArea();
 	Fvector2 pos;
 	GetAbsolutePos(pos);
 	r.add(pos.x,pos.y);
@@ -200,7 +207,7 @@ bool CUICustomMap::IsRectVisible(Frect r)
 
 bool CUICustomMap::NeedShowPointer(Frect r)
 {
-	Frect map_visible_rect = GetClipperRect();
+	Frect map_visible_rect = WorkingArea();
 	map_visible_rect.shrink(5,5);
 	Fvector2 pos;
 	GetAbsolutePos(pos);
@@ -266,12 +273,12 @@ void CUIGlobalMap::Update()
 void CUIGlobalMap::ClipByVisRect()
 {
 	Frect r					= GetWndRect();
-	Frect clip				= GetClipperRect();
+	Frect clip				= WorkingArea();
 	if (r.x2<clip.width())	r.x1 += clip.width()-r.x2;
 	if (r.y2<clip.height())	r.y1 += clip.height()-r.y2;
 	if (r.x1>0.0f)			r.x1 = 0.0f;
 	if (r.y1>0.0f)			r.y1 = 0.0f;
-	SetWndPos				(r.x1,r.y1);
+	SetWndPos				(Fvector2().set(r.x1,r.y1));
 }
 
 Fvector2 CUIGlobalMap::ConvertRealToLocal(const Fvector2& src)// pixels->pixels (relatively own left-top pos)
@@ -521,7 +528,7 @@ CUIMiniMap::~CUIMiniMap()
 void CUIMiniMap::Init(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 {
 	inherited::Init(name, gameLtx, sh_name);
-	CUIStatic::SetColor(0x7fffffff);
+	CUIStatic::SetTextureColor(0x7fffffff);
 }
 
 void CUIMiniMap::UpdateSpots()

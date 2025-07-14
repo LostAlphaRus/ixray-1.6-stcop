@@ -2,8 +2,8 @@
 
 #include "UIFrags2.h"
 #include "UIStats.h"
-#include "UIXmlInit.h"
-#include "UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
+#include "../../xrUI/Widgets/UIStatic.h"
 
 CUIFrags2::CUIFrags2(){	
 	m_pStats2 = new CUIStats();  AttachChild(m_pStats2);

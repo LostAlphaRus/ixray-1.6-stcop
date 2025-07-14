@@ -10,8 +10,8 @@
 #include "level.h"
 #include "game_cl_ArtefactHunt.h"
 #include "ui/UIFrags2.h"
-#include "ui/UIProgressShape.h"
-#include "ui/UIXmlInit.h"
+#include "../xrUI/Widgets/UIProgressShape.h"
+#include "../xrUI/UIXmlInit.h"
 #include "ui/UIMessageBoxEx.h"
 
 #include "../xrCore/object_broker.h"
@@ -56,7 +56,7 @@ void CUIGameAHunt::SetClGame (game_cl_GameState* g)
 	m_pBuySpawnMsgBox->SetText("");
 
 	game_cl_mp* clmp_game = smart_cast<game_cl_mp*>(g);
-	m_pBuySpawnMsgBox->AddCallback("msg_box", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(clmp_game, &game_cl_mp::OnBuySpawn));
+	m_pBuySpawnMsgBox->AddCallbackStr("msg_box", MESSAGE_BOX_YES_CLICKED, CUIWndCallback::void_function(clmp_game, &game_cl_mp::OnBuySpawn));
 }
 
 void CUIGameAHunt::Init	()
@@ -77,7 +77,7 @@ void CUIGameAHunt::Init	()
 	float FrameW	= FrameRect.right - FrameRect.left;
 	float FrameH	= FrameRect.bottom - FrameRect.top;
 
-	pFragList->SetWndPos((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f);
+	pFragList->SetWndPos(Fvector2().set((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f));
 
 	//-----------------------------------------------------------
 	m_pFragLists->AttachChild(pFragList);
@@ -91,22 +91,22 @@ void CUIGameAHunt::Init	()
 	FrameW	= FrameRect.right - FrameRect.left;
 	FrameH	= FrameRect.bottom - FrameRect.top;
 
-	pPlayerListT1->SetWndPos((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f);
+	pPlayerListT1->SetWndPos(Fvector2().set((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f));
 	//-----------------------------------------------------------
 	m_pPlayerLists->AttachChild(pPlayerListT1);
 	//-----------------------------------------------------------
 
 	m_todo_caption					=	"ah_todo";
-	GameCaptions()->addCustomMessage(m_todo_caption, 0.0f, -0.8f, 0.02f, HUD().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, TODO_MSG_COLOR, "");
+	GameCaptions()->addCustomMessage(m_todo_caption, 0.0f, -0.8f, 0.02f, UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, TODO_MSG_COLOR, "");
 	GameCaptions()->customizeMessage(m_todo_caption, CUITextBanner::tbsFlicker)->fPeriod = 0.5f;
 
 	m_buy_msg_caption				=	"ah_buy";
-	GameCaptions()->addCustomMessage(m_buy_msg_caption, DI2PX(0.0f), DI2PY(0.9f), SZ(0.02f), HUD().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, BUY_MSG_COLOR, "");
+	GameCaptions()->addCustomMessage(m_buy_msg_caption, DI2PX(0.0f), DI2PY(0.9f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, BUY_MSG_COLOR, "");
 	//-----------------------------------------------------------
 	FrameRect = pStatisticWnd->GetFrameRect ();
 	FrameW	= FrameRect.right - FrameRect.left;
 	FrameH	= FrameRect.bottom - FrameRect.top;
-	pStatisticWnd->SetWndRect((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f, FrameW, FrameH);
+	pStatisticWnd->SetWndRect(Frect().set((ScreenW-FrameW)/2.0f, (ScreenH - FrameH)/2.0f, FrameW, FrameH));
 
 	m_pStatisticWnds->AttachChild(pStatisticWnd);
 

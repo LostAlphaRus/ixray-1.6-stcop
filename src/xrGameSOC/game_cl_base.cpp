@@ -23,7 +23,7 @@ game_cl_GameState::game_cl_GameState()
 
 	shedule.t_min				= 5;
 	shedule.t_max				= 20;
-	m_game_ui_custom			= NULL;
+	m_game_ui_custom			= nullptr;
 	shedule_register			();
 
 	m_u16VotingEnabled			= 0;
@@ -273,8 +273,8 @@ ClientID game_cl_GameState::GetClientIDByOrderID	(u32 idx)
 
 void game_cl_GameState::CommonMessageOut (LPCSTR msg)
 {
-	if (!HUD().GetUI()) return;
-	HUD().GetUI()->m_pMessagesWnd->AddLogMessage(msg);
+	if (!CurrentGameUI()) return;
+	CurrentGameUI()->m_pMessagesWnd->AddLogMessage(msg);
 }
 
 float game_cl_GameState::shedule_Scale		()
@@ -287,10 +287,8 @@ void game_cl_GameState::shedule_Update		(u32 dt)
 {
 	ISheduled::shedule_Update	(dt);
 
-	if(!m_game_ui_custom){
-		if( HUD().GetUI() )
-			m_game_ui_custom = HUD().GetUI()->UIGame();
-	} 
+	if(!m_game_ui_custom)
+		m_game_ui_custom = CurrentGameUI();
 	//---------------------------------------
 	switch (Phase())
 	{
@@ -307,7 +305,7 @@ void game_cl_GameState::shedule_Update		(u32 dt)
 
 void game_cl_GameState::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
 {
-	HUD().GetUI()->StartStopMenu(pDialog, bDoHideIndicators);
+	CurrentGameUI()->StartStopMenu(pDialog, bDoHideIndicators);
 }
 
 void game_cl_GameState::sv_GameEventGen(NET_Packet& P)
@@ -406,12 +404,12 @@ void game_cl_GameState::reset_ui()
 	if(g_dedicated_server)	return;
 
 	if(!m_game_ui_custom)
-		m_game_ui_custom = HUD().GetUI()->UIGame();
+		m_game_ui_custom = CurrentGameUI();
 
 	m_game_ui_custom->reset_ui					();
 
-	HUD().GetUI()->UIMainIngameWnd->reset_ui	();
+	CurrentGameUI()->UIMainIngameWnd->reset_ui	();
 
-	if (HUD().GetUI()->MainInputReceiver())
-		HUD().GetUI()->StartStopMenu			(HUD().GetUI()->MainInputReceiver(),true);
+	if (CurrentGameUI()->TopInputReceiver())
+		CurrentGameUI()->StartStopMenu			(CurrentGameUI()->TopInputReceiver(),true);
 }

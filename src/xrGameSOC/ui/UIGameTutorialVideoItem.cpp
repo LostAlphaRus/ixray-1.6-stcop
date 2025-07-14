@@ -1,8 +1,8 @@
 #include "pch_script.h"
 #include "UIGameTutorial.h"
-#include "UIWindow.h"
-#include "UIStatic.h"
-#include "UIXmlInit.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIStatic.h"
+#include "../../xrUI/UIXmlInit.h"
 #include "../../xrCore/object_broker.h"
 #include "../../xrEngine/xr_input.h"
 #include "../../xrEngine/xr_level_controller.h"
@@ -71,9 +71,9 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 	{
 		m_wnd->SetWndPos								(Fvector2().set(512.0f,384.0f));
 		m_wnd->SetAlignment								(waCenter);
-		Frect texture_coords							= m_wnd->GetUIStaticItem().GetOriginalRect();
+		Frect texture_coords							= m_wnd->GetUIStaticItem().GetTextureRect();
 
-		bool is_16_9									= UI()->is_16_9_mode();
+		bool is_16_9									= UI().is_widescreen();
 		float kw_image									= UI_BASE_WIDTH / texture_coords.width();
 
 		Fvector2										wnd_size;
@@ -181,7 +181,8 @@ bool CUISequenceVideoItem::Stop	(bool bForce)
 	m_flags.set					(etiPlaying,FALSE);
 
 	m_wnd->Show					(false);
-	m_owner->MainWnd()->DetachChild(m_wnd);
+	if (Device.dwTimeContinual >= m_time_start && m_wnd->GetParent() == m_owner->MainWnd())
+		m_owner->MainWnd()->DetachChild(m_wnd);
 
 	m_sound[0].stop				();
 	m_sound[1].stop				();

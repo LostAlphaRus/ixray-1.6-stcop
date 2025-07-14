@@ -16,6 +16,7 @@
 
 #ifndef _PP_EDITOR_
 #pragma warning(disable:4995)
+#include "../xrUI/stdafx.h"
 #include "../xrScripts/stdafx.h"
 #pragma warning(default:4995)
 
