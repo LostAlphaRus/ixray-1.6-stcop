@@ -11,7 +11,7 @@
 #include "UIMapList.h"
 
 #include "../xrCore/object_broker.h"
-#include "../UIGameCustom.h"
+#include "UIGameCustom.h"
 #include "../../xrUI/Widgets/UIDialogHolder.h"
 
 xr_token	game_types		[];
