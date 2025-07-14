@@ -23,7 +23,6 @@
 #include "../xrEngine/xr_object.h"
 #include "../xrEngine/IGame_Level.h"
 #include "../xrPhysics/xrPhysics.h"
-#include "smart_cast.h"
 #else
 #include "../Editors/ActorEditor/stdafx.h"
 #endif

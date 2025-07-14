@@ -287,7 +287,7 @@ CSE_ALifeCreatureActor *get_actor				(const CALifeSimulator *self)
 KNOWN_INFO_VECTOR *registry						(const CALifeSimulator *self, const ALife::_OBJECT_ID &id)
 {
 	THROW								(self);
-	return								(self->registry(info_portions).object(id, true));
+	return								(self->registry().get<CInfoPortionRegistry>().object(id, true));
 }
 
 class CFindByIDPred
