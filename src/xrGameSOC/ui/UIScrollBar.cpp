@@ -183,7 +183,7 @@ bool CUIScrollBar::OnKeyboardHold(int dik)
 	return false;
 }
 
-bool CUIScrollBar::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIScrollBar::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	switch(mouse_action){
 		case WINDOW_MOUSE_WHEEL_DOWN:
@@ -195,7 +195,7 @@ bool CUIScrollBar::OnMouse(float x, float y, EUIMessages mouse_action)
 			return true;
 			break;
 	};
-	return inherited::OnMouse(x, y, mouse_action);
+	return inherited::OnMouseAction(x, y, mouse_action);
 }
 
 

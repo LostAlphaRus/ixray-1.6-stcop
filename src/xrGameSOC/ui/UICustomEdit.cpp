@@ -69,7 +69,7 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 }
 
 
-bool CUICustomEdit::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUICustomEdit::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	if (m_bFocusByDbClick)
 	{
@@ -104,7 +104,7 @@ bool CUICustomEdit::KeyReleased(int dik)
 	return true;
 }
 
-bool CUICustomEdit::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUICustomEdit::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (!m_bInputFocus)
 		return false;

@@ -71,14 +71,14 @@ void CUIChangeMap::Init(CUIXml& xml_doc)
 	FillUpList							();
 }
 
-bool CUIChangeMap::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIChangeMap::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (dik == SDL_SCANCODE_ESCAPE)
 	{
 		OnBtnCancel();
 		return true;
 	}
-	return CUIDialogWnd::OnKeyboard(dik, keyboard_action);
+	return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 }
 
 void CUIChangeMap::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)

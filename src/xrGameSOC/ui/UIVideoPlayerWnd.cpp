@@ -144,7 +144,7 @@ void CUIActorSleepVideoPlayer::DeActivate	()
 	}
 }
 
-bool CUIActorSleepVideoPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIActorSleepVideoPlayer::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if(keyboard_action==WINDOW_KEY_PRESSED){
 		if(dik==SDL_SCANCODE_ESCAPE){
@@ -152,5 +152,5 @@ bool CUIActorSleepVideoPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
 			return true;
 		}
 	}
-	return inherited::OnKeyboard(dik, keyboard_action);
+	return inherited::OnKeyboardAction(dik, keyboard_action);
 }

@@ -18,7 +18,7 @@ void CUIScrollBox::SetVertical()
 	m_bIsHorizontal = false;
 }
 
-bool CUIScrollBox::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIScrollBox::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	bool cursor_over;
 

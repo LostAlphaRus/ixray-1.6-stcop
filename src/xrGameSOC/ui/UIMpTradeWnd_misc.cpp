@@ -12,7 +12,7 @@
 #include "../PhysicsShellHolder.h"
 #include "../../xrCore/object_broker.h"
 
-bool CUIMpTradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIMpTradeWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 #ifdef DEBUG
 	//for debug only
@@ -29,13 +29,13 @@ bool CUIMpTradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 	if(!m_store_hierarchy->CurrentIsRoot())
 	{
-		if (m_shop_wnd->OnKeyboard(dik, keyboard_action) )
+		if (m_shop_wnd->OnKeyboardAction(dik, keyboard_action) )
 			return true;
 
 		m_root_tab_control->SetAcceleratorsMode		(false);
 	}
 
-	bool res =  inherited::OnKeyboard(dik, keyboard_action);
+	bool res =  inherited::OnKeyboardAction(dik, keyboard_action);
 
 	m_root_tab_control->SetAcceleratorsMode		(true);
 

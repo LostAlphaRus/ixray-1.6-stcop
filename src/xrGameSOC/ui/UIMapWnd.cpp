@@ -369,7 +369,7 @@ bool CUIMapWnd::OnKeyboardHold(int dik)
 	return false;
 }
 
-bool CUIMapWnd::OnKeyboard				(int dik, EUIMessages keyboard_action)
+bool CUIMapWnd::OnKeyboardAction				(int dik, EUIMessages keyboard_action)
 {
 	switch(dik){
 		case SDL_SCANCODE_KP_MINUS:
@@ -386,12 +386,12 @@ bool CUIMapWnd::OnKeyboard				(int dik, EUIMessages keyboard_action)
 			}break;
 	}
 	
-	return inherited::OnKeyboard	(dik, keyboard_action);
+	return inherited::OnKeyboardAction	(dik, keyboard_action);
 }
 
-bool CUIMapWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIMapWnd::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
-	if(inherited::OnMouse(x,y,mouse_action)) return true;
+	if(inherited::OnMouseAction(x,y,mouse_action)) return true;
 	Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
 
 	if(GlobalMap() && !GlobalMap()->Locked() && ActiveMapRect().in( cursor_pos ) ){

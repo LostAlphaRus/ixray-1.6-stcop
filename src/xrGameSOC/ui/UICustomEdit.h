@@ -17,8 +17,8 @@ public:
 	virtual void	Init			(float x, float y, float width, float height);
 	virtual void	SendMessage		(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
-	virtual bool	OnMouse			(float x, float y, EUIMessages mouse_action);
-	virtual bool	OnKeyboard		(int dik, EUIMessages keyboard_action);
+	virtual bool	OnMouseAction			(float x, float y, EUIMessages mouse_action);
+	virtual bool	OnKeyboardAction		(int dik, EUIMessages keyboard_action);
 	virtual bool	OnKeyboardHold(int dik);
 	virtual void	OnFocusLost		();
 
@@ -36,7 +36,7 @@ public:
 			void	SetDbClickMode	(bool mode = true)	{m_bFocusByDbClick = mode;}
 			void	SetCursorColor	(u32 color)			{m_lines.SetCursorColor(color);}
 			
-			//Какой-то недодел
+			//РљР°РєРѕР№-С‚Рѕ РЅРµРґРѕРґРµР»
 			void	SetLightAnim			(LPCSTR lanim);
 
 			virtual void			SetTextPosX(float x);
@@ -57,7 +57,7 @@ protected:
 
 	u32 m_textColor[2];
 
-	//DIK клавиши, кот. нажата и удерживается, 0 если такой нет
+	//DIK РєР»Р°РІРёС€Рё, РєРѕС‚. РЅР°Р¶Р°С‚Р° Рё СѓРґРµСЂР¶РёРІР°РµС‚СЃСЏ, 0 РµСЃР»Рё С‚Р°РєРѕР№ РЅРµС‚
 	int m_iKeyPressAndHold;
 	bool m_bHoldWaitMode;
 

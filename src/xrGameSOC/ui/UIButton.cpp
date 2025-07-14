@@ -1,4 +1,4 @@
-// UIButton.cpp: êëàññ íàæèìàåìîé êíîïêè
+// UIButton.cpp: ÐºÐ»Ð°ÑÑ Ð½Ð°Ð¶Ð¸Ð¼Ð°ÐµÐ¼Ð¾Ð¹ ÐºÐ½Ð¾Ð¿ÐºÐ¸
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -58,11 +58,11 @@ void CUIButton::Enable(bool status){
 		m_bCursorOverWindow		= false;
 }
 
-bool  CUIButton::OnMouse(float x, float y, EUIMessages mouse_action)
+bool  CUIButton::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	m_bButtonClicked			= false;
 
-	if( inherited::OnMouse(x, y, mouse_action) ) return true;
+	if( inherited::OnMouseAction(x, y, mouse_action) ) return true;
 
 	if ( (	WINDOW_LBUTTON_DOWN==mouse_action	||
 			WINDOW_LBUTTON_UP==mouse_action		||
@@ -259,7 +259,7 @@ void CUIButton::OnFocusLost()
 		g_btnHint->Discard	();
 }
 
-bool CUIButton::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIButton::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (WINDOW_KEY_PRESSED == keyboard_action)
 	{
@@ -269,5 +269,5 @@ bool CUIButton::OnKeyboard(int dik, EUIMessages keyboard_action)
 			return		true;
 		}
 	}
-	return inherited::OnKeyboard(dik, keyboard_action);
+	return inherited::OnKeyboardAction(dik, keyboard_action);
 }

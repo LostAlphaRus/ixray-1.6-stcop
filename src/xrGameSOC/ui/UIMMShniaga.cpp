@@ -275,7 +275,7 @@ void CUIMMShniaga::Update(){
 }
 
 
-bool CUIMMShniaga::OnMouse(float x, float y, EUIMessages mouse_action){
+bool CUIMMShniaga::OnMouseAction(float x, float y, EUIMessages mouse_action){
 	
 	Fvector2 pos = UI()->GetUICursor()->GetCursorPosition();
     Frect r;
@@ -285,7 +285,7 @@ bool CUIMMShniaga::OnMouse(float x, float y, EUIMessages mouse_action){
 		OnBtnClick();
 	}
 
-	return CUIWindow::OnMouse(x,y,mouse_action);
+	return CUIWindow::OnMouseAction(x,y,mouse_action);
 }
 
 void CUIMMShniaga::OnBtnClick(){
@@ -297,7 +297,7 @@ void CUIMMShniaga::OnBtnClick(){
             GetMessageTarget()->SendMessage(m_selected, BUTTON_CLICKED);
 }
 
-bool CUIMMShniaga::OnKeyboard(int dik, EUIMessages keyboard_action){
+bool CUIMMShniaga::OnKeyboardAction(int dik, EUIMessages keyboard_action){
 
 	if (WINDOW_KEY_PRESSED == keyboard_action){
 		switch (dik){
@@ -320,7 +320,7 @@ bool CUIMMShniaga::OnKeyboard(int dik, EUIMessages keyboard_action){
 	}
 
 
-	return CUIWindow::OnKeyboard(dik, keyboard_action);
+	return CUIWindow::OnKeyboardAction(dik, keyboard_action);
 }
 
 int CUIMMShniaga::BtnCount(){

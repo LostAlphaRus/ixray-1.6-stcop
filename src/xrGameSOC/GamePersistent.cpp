@@ -506,7 +506,15 @@ void CGamePersistent::OnFrame	()
 		}
 #endif // MASTER_GOLD
 	}
-	__super::OnFrame			();
+	if (!g_pGameLevel)
+	{
+		if (Device.IsEditorMode())
+		{
+			__super::OnFrame();
+		}
+		return;
+	}
+	if (!g_pGameLevel->bReady)	return;
 
 	if(!Device.Paused())
 		Engine.Sheduler.Update		();
@@ -623,10 +631,16 @@ bool CGamePersistent::OnRenderPPUI_query()
 	// enable PP or not
 }
 
+extern void draw_wnds_rects();
 void CGamePersistent::OnRenderPPUI_main()
 {
+/*	if (g_pGameLevel != nullptr) {
+		Level().BulletManager().Render();
+	}
+	*/
 	// always
 	MainMenu()->OnRenderPPUI_main();
+	draw_wnds_rects();
 }
 
 void CGamePersistent::OnRenderPPUI_PP()

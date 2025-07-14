@@ -24,29 +24,29 @@ class CUIPdaWnd: public CUIDialogWnd
 private:
 	typedef CUIDialogWnd	inherited;
 protected:
-	//элементы декоративного интерфейса
+	//СЌР»РµРјРµРЅС‚С‹ РґРµРєРѕСЂР°С‚РёРІРЅРѕРіРѕ РёРЅС‚РµСЂС„РµР№СЃР°
 	CUIFrameLineWnd*		UIMainButtonsBackground;
 	CUIFrameLineWnd*		UITimerBackground;
 
-	// кнопки PDA
+	// РєРЅРѕРїРєРё PDA
 	CUITabControl*			UITabControl;
 
-	// Установить игровое время
+	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ РёРіСЂРѕРІРѕРµ РІСЂРµРјСЏ
 	void					UpdateDateTime					();
 	void					DrawUpdatedSections				();
 protected:
-	// Бэкграунд
+	// Р‘СЌРєРіСЂР°СѓРЅРґ
 	CUIStatic*				UIMainPdaFrame;
 	CUIStatic*				m_updatedSectionImage;
 	CUIStatic*				m_oldSectionImage;
 
-	// Текущий активный диалог
+	// РўРµРєСѓС‰РёР№ Р°РєС‚РёРІРЅС‹Р№ РґРёР°Р»РѕРі
 	CUIWindow*				m_pActiveDialog;
 	EPdaTabs				m_pActiveSection;
 	xr_vector<Fvector2>		m_sign_places_main;
 
 public:
-	// Поддиалоги PDA
+	// РџРѕРґРґРёР°Р»РѕРіРё PDA
 	CUIMapWnd*				UIMapWnd;
 	CUIPdaContactsWnd*		UIPdaContactsWnd;
 	CUIEncyclopediaWnd*		UIEncyclopediaWnd;
@@ -67,7 +67,7 @@ public:
 	virtual void 			Update				();
 	virtual void 			Show				();
 	virtual void 			Hide				();
-	virtual bool			OnMouse				(float x, float y, EUIMessages mouse_action) {CUIDialogWnd::OnMouse(x,y,mouse_action);return true;} //always true because StopAnyMove() == false
+	virtual bool			OnMouseAction				(float x, float y, EUIMessages mouse_action) {CUIDialogWnd::OnMouseAction(x,y,mouse_action);return true;} //always true because StopAnyMove() == false
 	
 	void					SetActiveSubdialog	(EPdaTabs section);
 	virtual bool			StopAnyMove			(){return false;}

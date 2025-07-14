@@ -282,9 +282,9 @@ void CUIDragDropListEx::ReinitScroll()
 		m_container->SetWndPos		(0,0);
 }
 
-bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
+bool CUIDragDropListEx::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
-	bool b = inherited::OnMouse		(x,y,mouse_action);
+	bool b = inherited::OnMouseAction		(x,y,mouse_action);
 
 	if(m_vScrollBar->IsShown())
 	{

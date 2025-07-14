@@ -82,14 +82,14 @@ void CUIKickPlayer::InitKick(CUIXml& xml_doc)
 	m_ban_sec_label->Show		(false);
 }
 
-bool CUIKickPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
+bool CUIKickPlayer::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if (dik == SDL_SCANCODE_ESCAPE)
 	{
 		OnBtnCancel	();
 		return		true;
 	}
-	return CUIDialogWnd::OnKeyboard(dik, keyboard_action);
+	return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 }
 
 void CUIKickPlayer::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)

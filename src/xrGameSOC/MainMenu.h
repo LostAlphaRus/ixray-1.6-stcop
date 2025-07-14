@@ -55,6 +55,7 @@ class CMainMenu :
 	xr_vector<CUIWindow*>		m_pp_draw_wnds;
 
 	CGameSpy_Full*				m_pGameSpyFull;	
+	CGameFont* pCGameFont;
 
 public:
 	enum	EErrorDlg 
