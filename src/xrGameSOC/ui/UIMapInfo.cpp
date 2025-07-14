@@ -14,43 +14,44 @@ CUIMapInfo::~CUIMapInfo(){
 	xr_delete(m_view);
 }
 
-void CUIMapInfo::Init(float x, float y, float width, float height){
-	SetWndPos(Fvector2().set(x,y));
-	SetWndSize(Fvector2().set(width, height));
-	m_view->SetWndSize(Fvector2().set(width, height));
+void CUIMapInfo::InitMapInfo(Fvector2 pos, Fvector2 size)
+{
+	SetWndPos(pos);
+	SetWndSize(size);
+//.	m_view->SetWndPos(pos);
+	m_view->SetWndSize(size);
 	m_view->InitScrollView();
 	m_view->SetFixedScrollBar(false);
 }
 
-#define ADD_TEXT(x,y,z)	text = *str_tbl.translate(x);										\
+#define ADD_TEXT(x,y,z)	text = *g_pStringTable->translate(x);										\
 						text += ": ";														\
 						text += txt_color_tag;												\
 						if (ltx.line_exist("map_info",y))									\
-							text += *str_tbl.translate(ltx.r_string_wb("map_info",y));		\
+							text += *g_pStringTable->translate(ltx.r_string_wb("map_info",y));		\
 						else																\
-							text += *str_tbl.translate(z);									\
+							text += *g_pStringTable->translate(z);									\
 						text += "%c[default]\\n";											\
-						st = new CUIStatic();											\
-						st->TextItemControl()->SetTextComplexMode(true);										\
-						st->SetFont(txt_font);												\
+						st = new CUITextWnd();											\
+						st->SetTextComplexMode(true);										\
+						st->SetFont(txt_font);								\
 						st->SetTextColor(header_color);										\
 						st->SetText(text.c_str());											\
 						st->SetWidth(m_view->GetDesiredChildWidth());						\
 						st->AdjustHeightToText();											\
 						m_view->AddWindow(st, true)											\
 
-void CUIMapInfo::InitMap(const char* map_name){
+void CUIMapInfo::InitMap(LPCSTR map_name, LPCSTR map_ver)
+{
 	m_view->Clear();
-	if (NULL == map_name)
+	if (nullptr == map_name)
 		return;
-
-	CStringTable str_tbl;
 
  	CUIXml xml_doc;
 	xml_doc.Load(CONFIG_PATH, UI_PATH, "ui_mapinfo.xml");
 
 
-	CUIStatic* st;
+	CUITextWnd* st;
     // try to find file with info
 	xr_string info_path = "text\\map_desc\\";
 	info_path += map_name;
@@ -65,10 +66,17 @@ void CUIMapInfo::InitMap(const char* map_name){
 
 
 		//map name
-		st						= new CUIStatic(); 
-		CUIXmlInit::InitStatic	(xml_doc,"map_name",0,st); 
+		st						= new CUITextWnd(); 
+		CUIXmlInit::InitTextWnd	(xml_doc,"map_name",0,st); 
 
-		st->SetTextST			(map_name);
+		xr_string S				= g_pStringTable->translate(map_name).c_str();
+		if(map_ver)
+		{
+			S					+= "[";
+			S					+= map_ver;
+			S					+= "]";
+		}
+		st->SetText				(S.c_str());
 		st->SetWidth			(m_view->GetDesiredChildWidth());
 		st->AdjustHeightToText	();
 		m_view->AddWindow		(st, true);
@@ -79,43 +87,42 @@ void CUIMapInfo::InitMap(const char* map_name){
 		CUIXmlInit::InitFont	(xml_doc,"header",0,header_color, txt_font);
 		txt_color				= CUIXmlInit::GetColor(xml_doc,"txt:text", 0, 0x00);
 		string64				txt_color_tag;
-		sprintf_s					(txt_color_tag, "%s[%u,%u,%u,%u]", "%c", 
-								(txt_color & 0xff000000)>>24, 
-								(txt_color & 0x00ff0000)>>16, 
-								(txt_color & 0x0000ff00) >> 8, 
-								txt_color & 0x000000ff);
+		xr_sprintf				(	txt_color_tag, 
+									"%s[%u,%u,%u,%u]", "%c", 
+									color_get_A(txt_color), 
+									color_get_R(txt_color), 
+									color_get_G(txt_color),
+									color_get_B(txt_color) );
 
 		ADD_TEXT("mp_players",		"players",		"Unknown");
 
-//.		ADD_TEXT("mp_modes",		"modes",		"Unknown");		
-		
 		shared_str _modes = ltx.r_string_wb("map_info", "modes");
 
-			text = *str_tbl.translate("mm_mp_gamemode");
+			text = *g_pStringTable->translate("modes");
 			text += ": ";
 			text += txt_color_tag;
 			bool b_ = false;
 			if(strstr(_modes.c_str(),"st_deathmatch"))
 			{
-				text += *str_tbl.translate("st_deathmatch");
+				text += *g_pStringTable->translate("st_deathmatch");
 				b_ = true;
 			}
 			if(strstr(_modes.c_str(),"st_team_deathmatch"))
 			{
 				if(b_) text			+= ", ";
-				text				+= *str_tbl.translate("st_team_deathmatch");
+				text				+= *g_pStringTable->translate("st_team_deathmatch");
 				b_					= true;
 			}
 			if(strstr(_modes.c_str(),"st_artefacthunt"))
 			{
 				if(b_) text			+= ", ";
-				text				+= *str_tbl.translate("st_artefacthunt");
+				text				+= *g_pStringTable->translate("st_artefacthunt");
 			}
 
 			text += "%c[default]\\n";
 
-			st						= new CUIStatic();
-			st->TextItemControl()->SetTextComplexMode	(true);
+			st						= new CUITextWnd();
+			st->SetTextComplexMode	(true);
 			st->SetFont				(txt_font);
 			st->SetTextColor		(header_color);
 			st->SetText				(text.c_str());
@@ -127,20 +134,17 @@ void CUIMapInfo::InitMap(const char* map_name){
 		ADD_TEXT("mp_description",	"short_desc", "");
 
 		if (ltx.line_exist("map_info","large_desc"))
-			m_large_desc = str_tbl.translate(ltx.r_string_wb("map_info", "large_desc"));		
+			m_large_desc = g_pStringTable->translate(ltx.r_string_wb("map_info", "large_desc"));		
 	}
 	else
 	{
-		st = new CUIStatic(); 
-		CUIXmlInit::InitStatic(xml_doc,"map_name",0,st); 
-		st->SetTextST(map_name);
-		st->SetWidth(m_view->GetDesiredChildWidth());
-		st->AdjustHeightToText();
-		m_view->AddWindow(st, true);
+		st							= new CUITextWnd(); 
+		CUIXmlInit::InitTextWnd		(xml_doc,"map_name",0,st); 
+		st->SetTextST				(map_name);
+		st->SetWidth				(m_view->GetDesiredChildWidth());
+		st->AdjustHeightToText		();
+		m_view->AddWindow			(st, true);
 	}
-
-//.	if (!m_large_desc)
-//.       m_large_desc = str_tbl.translate("no_desc_for_this_map");
 }
 
 const char*	 CUIMapInfo::GetLargeDesc(){

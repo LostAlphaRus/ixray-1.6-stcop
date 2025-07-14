@@ -1,16 +1,16 @@
 #pragma once
 
-#include "../xrUI/Widgets/UIWindow.h"
-#include "../xrUI/Widgets/UIListBox.h"
+#include "../../xrUI/Widgets/UIWindow.h"
+//#include "UIListWnd.h"
+#include "../../xrUI/Widgets/UIListBox.h"
 #include "UIListItemServer.h"
-#include "../xrUI/Widgets/UIFrameWindow.h"
-#include "../xrUI/Widgets/UIEditBox.h"
-#include "../xrUI/Widgets/UI3tButton.h"
-#include "ui/uilabel.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameLineWnd.h"
+#include "../../xrUI/Widgets/UIEditBox.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 class CUIXml;
 class CGameSpy_Browser;
-class CUIColorAnimatorWrapper;
 class CUIMessageBoxEx;
 class CGameSpy_Browser;
 struct ServerInfo;
@@ -33,10 +33,9 @@ public:
 
 class CServerList : public CUIWindow{
 public:
-	CServerList();
-	virtual ~CServerList();
+					CServerList			();
+	virtual			~CServerList		();
 
-	virtual void 	Init				(float x, float y, float width, float height);
 	virtual void 	Update				();
 	virtual void 	SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 			void 	InitFromXml			(CUIXml& xml_doc, LPCSTR path);
@@ -81,14 +80,13 @@ protected:
 	static	bool sort_by_Ping(int p1, int p2);
 	static	bool sort_by_Version(int p1, int p2);
 
-	CUIColorAnimatorWrapper* m_pAnimation;
-
 	LIST_SRV_ITEM	m_itemInfo;
 	SServerFilters	m_sf;
+//	CUIListWnd		m_list[3];
 	CUIListBox		m_list[3];
 	CUIFrameWindow	m_frame[3];
 	CUI3tButton		m_header[LST_COLUMN_COUNT];
-	CUIFrameLineWnd m_header2[4];
+	CUIFrameLineWnd	m_header2[4];
 	CUIFrameLineWnd	m_header_frames[LST_COLUMN_COUNT];
 	CUIEditBox		m_edit_gs_filter;
 	xr_string		m_playerName;
@@ -110,8 +108,8 @@ protected:
 		bool				m_busy;
 		SrvItem(float h)
 		{
-			m_ui_item = new CUIListItemServer(h);
-			m_busy = true;
+			m_ui_item			= new CUIListItemServer(h);
+			m_busy				= true;
 		}
 	};
 	CUIListItemServer*			GetFreeItem		();
@@ -124,4 +122,7 @@ protected:
 	u32							m_last_retreived_index;
 	u32							m_need_refresh_fr;
 	void						RefreshList_internal();
+
+private:
+	inline	CGameSpy_Browser&	browser			() const;
 };

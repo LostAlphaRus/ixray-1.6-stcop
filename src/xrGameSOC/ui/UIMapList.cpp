@@ -124,7 +124,7 @@ void CUIMapList::OnListItemClicked()
 	else
 		m_pMapPic->InitTexture("ui\\ui_noise");
 
-	m_pMapInfo->InitMap(_map_name.c_str());
+	m_pMapInfo->InitMap(_map_name.c_str(), nullptr);
 }
 
 xr_token g_GameModes[];

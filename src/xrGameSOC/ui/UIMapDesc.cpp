@@ -74,8 +74,8 @@ void CUIMapDesc::Init(){
 		m_pImage->InitTexture("ui\\ui_noise");
 
 	CUIXmlInit::InitWindow(xml_doc, "map_desc:map_info", 0, m_pMapInfo);
-
-	m_pMapInfo->InitMap(*Level().name());
+	m_pMapInfo->InitMapInfo(m_pMapInfo->GetWndPos(), m_pMapInfo->GetWndSize());
+	m_pMapInfo->InitMap(*Level().name(), nullptr);
 
 	ADD_TEXT_TO_VIEW2(m_pMapInfo->GetLargeDesc(),m_pTextDesc);
 

@@ -233,12 +233,12 @@ CUIMMShniaga* CScriptXmlInit::InitMMShniaga(LPCSTR path, CUIWindow* parent){
 	return pWnd;
 }
 
-CUIMapInfo* CScriptXmlInit::InitMapInfo(LPCSTR path, CUIWindow* parent){
-	CUIMapInfo* pWnd = new CUIMapInfo();
+CUIMapInfo* CScriptXmlInit::InitMapInfo(LPCSTR path, CUIWindow* parent)
+{
+	CUIMapInfo* pWnd	= new CUIMapInfo();
 	CUIXmlInit::InitWindow(m_xml,path,0,pWnd);
-	pWnd->SetAutoDelete(true);
-	_attach_child(pWnd, parent);
-//.	if(parent) parent->AttachChild(pWnd);
+	pWnd->InitMapInfo(pWnd->GetWndPos(),pWnd->GetWndSize());
+	_attach_child		(pWnd, parent);
 	return pWnd;	
 }
 
@@ -286,7 +286,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitWindow",				&CScriptXmlInit::InitWindow)
 		.def("InitFrame",				&CScriptXmlInit::InitFrame)
 		.def("InitFrameLine",			&CScriptXmlInit::InitFrameLine)
-		.def("InitLabel",				&CScriptXmlInit::InitFrameLine)
+		.def("InitLabel",				&CScriptXmlInit::InitLabel)
 		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)		
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
 		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)		
