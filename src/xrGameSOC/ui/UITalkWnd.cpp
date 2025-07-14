@@ -55,7 +55,7 @@ void CUITalkWnd::Init()
 	UITalkDialogWnd = new CUITalkDialogWnd();
 	UITalkDialogWnd->SetAutoDelete(true);
 	AttachChild(UITalkDialogWnd);
-	UITalkDialogWnd->Init(0,0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+	UITalkDialogWnd->InitTalkDialogWnd();
 
 	/////////////////////////
 	//Меню торговли

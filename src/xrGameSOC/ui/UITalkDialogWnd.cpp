@@ -23,11 +23,14 @@ CUITalkDialogWnd::~CUITalkDialogWnd()
 	xr_delete(m_uiXml);
 }
 
-void CUITalkDialogWnd::Init(float x, float y, float width, float height)
+void CUITalkDialogWnd::InitTalkDialogWnd()
 {
 	m_uiXml						= new CUIXml();
 	m_uiXml->Load(CONFIG_PATH, UI_PATH, TALK_XML);
 	CUIXmlInit					ml_init;
+
+	SetWndPos(Fvector2().set(0, 0));
+	SetWndSize(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
 
 	AttachChild					(&UIStaticTop);
 	CUIXmlInit::InitStatic		(*m_uiXml, "top_background", 0, &UIStaticTop);

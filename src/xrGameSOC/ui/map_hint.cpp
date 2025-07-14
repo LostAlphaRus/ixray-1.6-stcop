@@ -12,15 +12,17 @@ void CUIMapHint::Init		()
 	CUIXmlInit xml_init;
 	CUIXml uiXml;
 	uiXml.Load(CONFIG_PATH, UI_PATH, "hint_item.xml");
+
+	xml_init.InitWindow(uiXml,"hint_item",0,this);
 	
 	m_border			= new CUIFrameWindow();m_border->SetAutoDelete(true);
 	AttachChild			(m_border);
-	xml_init.InitFrameWindow(uiXml,"button_hint",0,m_border);
+	xml_init.InitFrameWindow(uiXml,"hint_item:frame",0,m_border);
 
 	m_text				= new CUIStatic();m_text->SetAutoDelete(true);
 	AttachChild			(m_text);
-	xml_init.InitStatic	(uiXml,"button_hint:description",0,m_text);
-
+	xml_init.InitStatic	(uiXml,"hint_item:description",0,m_text);
+	m_visible			= false;
 }
 
 void CUIMapHint::SetText		(LPCSTR text)
@@ -32,7 +34,8 @@ void CUIMapHint::SetText		(LPCSTR text)
 	m_border->SetWidth			(GetWndSize().x);
 	m_border->SetHeight			(GetWndSize().y);
 }
-void CUIMapHint::Draw_		()
+void CUIMapHint::Draw		()
 {
-	inherited::Draw			();
+	if (m_visible)
+		inherited::Draw			();
 }

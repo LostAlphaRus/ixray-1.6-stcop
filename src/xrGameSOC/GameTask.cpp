@@ -130,7 +130,7 @@ void CGameTask::Load(const TASK_ID& id)
 				0 != stricmp(*objective.icon_texture_name, "ui\\ui_icons_task") )
 			{
 				objective.icon_rect			= CUITextureMaster::GetTextureRect(*objective.icon_texture_name);
-				objective.icon_rect.rb.sub(objective.icon_rect.rb, objective.icon_rect.lt);
+				objective.icon_rect.rb.add(objective.icon_rect.lt);
 				objective.icon_texture_name = CUITextureMaster::GetTextureFileName(*objective.icon_texture_name);
 			}else
 				if(objective.icon_texture_name.size()){

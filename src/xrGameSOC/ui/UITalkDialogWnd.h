@@ -25,7 +25,7 @@ public:
 	virtual ~CUITalkDialogWnd();
 	
 
-	virtual void Init(float x, float y, float width, float height);
+	virtual void InitTalkDialogWnd();
 	
 	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 

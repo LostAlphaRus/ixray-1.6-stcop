@@ -341,7 +341,10 @@ void CUIMapWnd::Draw()
 {
 	inherited::Draw();
 	m_text_hint->Draw		();
-	if(m_hint->GetOwner())	m_hint->Draw_();
+	if (m_hint->GetOwner())
+		m_hint->m_visible = true;
+	else
+		m_hint->m_visible = false;
 }
 
 bool CUIMapWnd::OnKeyboardHold(int dik)
