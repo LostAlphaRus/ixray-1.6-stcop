@@ -32,6 +32,7 @@ void CUITaskItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 
 void CUITaskItem::SendMessage				(CUIWindow* pWnd, s16 msg, void* pData)
 {
+	inherited::SendMessage(pWnd, msg, pData);
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
 }
 
@@ -40,6 +41,10 @@ SGameTaskObjective*	CUITaskItem::Objective	()
 	return &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
 }
 
+bool CUITaskItem::OnMouseDown(int mouse_btn)
+{
+	return inherited::OnMouseDown(mouse_btn);
+}
 
 void CUITaskItem::Init				()
 {
@@ -74,10 +79,6 @@ void CUITaskRootItem::Init			()
 	m_switchDescriptionBtn		= new CUI3tButton();	m_switchDescriptionBtn->SetAutoDelete(true); AttachChild(m_switchDescriptionBtn);
 	m_captionTime				= new CUI3tButton();	m_captionTime->SetAutoDelete(true);			AttachChild(m_captionTime);
 	
-	m_switchDescriptionBtn->SetWindowName("m_switchDescriptionBtn");
-	Register					(m_switchDescriptionBtn);
-	AddCallbackStr				("m_switchDescriptionBtn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITaskRootItem::OnSwitchDescriptionClicked));
-
 	CUIXmlInit xml_init;
 	CUIXml&						uiXml = m_EventsWnd->m_ui_task_item_xml;
 	xml_init.InitWindow			(uiXml,"task_root_item",0,this);
@@ -88,6 +89,10 @@ void CUITaskRootItem::Init			()
 	xml_init.InitStatic			(uiXml,	"task_root_item:rem_time",		0,	m_remTimeStatic);
 	
 	xml_init.Init3tButton		(uiXml,"task_root_item:switch_description_btn",0,m_switchDescriptionBtn);
+
+	m_switchDescriptionBtn->SetWindowName("m_switchDescriptionBtn");
+	m_switchDescriptionBtn->SetMessageTarget(this);
+	AddCallbackStr				("m_switchDescriptionBtn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITaskRootItem::OnSwitchDescriptionClicked));
 }
 
 
@@ -160,7 +165,7 @@ void CUITaskRootItem::Update		()
 			m_switchDescriptionBtn->InitTexture	("ui_icons_newPDA_showmap");
 	}
 
-	m_switchDescriptionBtn->SetButtonState(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_NORMAL : CUIButton::BUTTON_PUSHED);
+	//m_switchDescriptionBtn->SetButtonState(m_EventsWnd->GetDescriptionMode() ? CUIButton::BUTTON_NORMAL : CUIButton::BUTTON_PUSHED);
 
 	if(m_remTimeStatic->IsShown())
 	{
@@ -174,7 +179,7 @@ void CUITaskRootItem::Update		()
 
 bool CUITaskRootItem::OnDbClick	()
 {
-	return true;
+	return inherited::OnDbClick();
 }
 
 void CUITaskRootItem::OnSwitchDescriptionClicked	(CUIWindow*, void*)

@@ -24,7 +24,9 @@ public:
 					CUITaskItem				(CUIEventsWnd* w);
 	virtual			~CUITaskItem			();
 	virtual void	SendMessage				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
-					
+
+	virtual bool	OnMouseDown				(int mouse_btn);
+			
 	virtual void	SetGameTask				(CGameTask* gt, u16 obj_idx);
 
 	CGameTask*		GameTask				()	{return m_GameTask;}

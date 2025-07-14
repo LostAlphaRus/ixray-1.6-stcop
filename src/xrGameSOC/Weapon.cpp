@@ -1515,7 +1515,7 @@ void CWeapon::OnDrawUI()
 		if(ZoomTexture() && !IsRotatingToZoom())
 		{
 			ZoomTexture()->SetPos	(0,0);
-			ZoomTexture()->SetTextureRect	(Frect().set(0,0,UI_BASE_WIDTH, UI_BASE_HEIGHT));
+			ZoomTexture()->SetSize	(Fvector2().set(UI_BASE_WIDTH, UI_BASE_HEIGHT));
 			ZoomTexture()->Render	();
 
 //			m_UILens.Draw();

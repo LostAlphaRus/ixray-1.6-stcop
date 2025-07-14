@@ -63,7 +63,8 @@ void CUIDiaryWnd::Init()
 	m_UILeftHeader->AttachChild		(m_FilterTab);
 	xml_init.InitTabControl			(uiXml, "main_wnd:left_frame:left_frame_header:filter_tab", 0, m_FilterTab);
 	m_FilterTab->SetWindowName		("filter_tab");
-    AddCallback						(m_FilterTab,TAB_CHANGED,CUIWndCallback::void_function(this,&CUIDiaryWnd::OnFilterChanged));
+	Register						(m_FilterTab);
+    AddCallbackStr					("filter_tab", TAB_CHANGED, CUIWndCallback::void_function(this, &CUIDiaryWnd::OnFilterChanged));
 
 	m_UIAnimation					= new CUIAnimatedStatic(); m_UIAnimation->SetAutoDelete(true);
 	xml_init.InitAnimatedStatic		(uiXml, "main_wnd:left_frame:left_frame_header:anim_static", 0, m_UIAnimation);
@@ -77,7 +78,8 @@ void CUIDiaryWnd::Init()
 	m_SrcListWnd					= new CUIListWnd(); m_SrcListWnd->SetAutoDelete(false);
 	xml_init.InitListWnd			(uiXml, "main_wnd:left_frame:work_area:src_list", 0, m_SrcListWnd);
 	m_SrcListWnd->SetWindowName		("src_list");
-    AddCallback						(m_SrcListWnd,LIST_ITEM_CLICKED,CUIWndCallback::void_function(this,&CUIDiaryWnd::OnSrcListItemClicked));
+  	Register						(m_SrcListWnd);
+	AddCallbackStr					("src_list", LIST_ITEM_CLICKED, CUIWndCallback::void_function(this, &CUIDiaryWnd::OnSrcListItemClicked));
 
 	xml_init.InitFont				(uiXml, "main_wnd:left_frame:work_area:src_list:tree_item_font", 0, m_uTreeItemColor, m_pTreeItemFont);
 	R_ASSERT						(m_pTreeItemFont);
