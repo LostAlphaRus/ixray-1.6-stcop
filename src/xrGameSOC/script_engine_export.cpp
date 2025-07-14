@@ -68,7 +68,7 @@ void export_classes	(lua_State *L)
 	CSE_ALifeObjectClimable::script_register(L);
 	CSE_ALifeMountedWeapon::script_register(L);
 	CSE_ALifeTeamBaseZone::script_register(L);
-	CSE_InventoryBox::script_register(L);
+	//CSE_InventoryBox::script_register(L);
 	CSE_ALifeInventoryItem::script_register(L);
 	CSE_ALifeItem::script_register(L);
 	CSE_ALifeItemTorch::script_register(L);
@@ -177,7 +177,7 @@ void export_classes	(lua_State *L)
 	CScriptWorldPropertyWrapper::script_register(L);
 	CScriptWorldStateWrapper::script_register(L);
 	CScriptZone::script_register(L);
-	CSpaceRestrictor::script_register(L);
+//	CSpaceRestrictor::script_register(L);
 	CStalkerOutfit::script_register(L);
 	CTorch::script_register(L);
 	CWeaponAK74::script_register(L);
@@ -224,7 +224,7 @@ void export_classes	(lua_State *L)
 	CALifeMonsterBrain::script_register(L);
 	CALifeHumanBrain::script_register(L);
 	CGameGraph::script_register(L);
-	CCustomZone::script_register(L);
+//	CCustomZone::script_register(L);
 
 	IKinematicsAnimatedScript::script_register(L);
 	RPoint::script_register(L);
