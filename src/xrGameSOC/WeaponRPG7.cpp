@@ -5,7 +5,7 @@
 #include "explosiverocket.h"
 #include "entity.h"
 #include "level.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrRender/kinematics.h"
 
 CWeaponRPG7::CWeaponRPG7(void) : CWeaponCustomPistol("RPG7") 
 {
@@ -35,10 +35,10 @@ void CWeaponRPG7::UpdateMissileVisibility()
 	vis_hud		= (!!iAmmoElapsed || GetState() == eReload);
 	vis_weap	= !!iAmmoElapsed;
 
-	CKinematics* pHudVisual = smart_cast<CKinematics*>(m_pHUD->Visual());
+	IKinematics* pHudVisual = smart_cast<IKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
 	if (H_Parent() != Level().CurrentEntity()) pHudVisual = NULL;
-	CKinematics* pWeaponVisual = smart_cast<CKinematics*>(Visual()); 
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); 
 	VERIFY(pWeaponVisual);
 
 	if (pHudVisual) pHudVisual->LL_SetBoneVisible(pHudVisual->LL_BoneID(*m_sHudGrenadeBoneName),vis_hud,TRUE);
@@ -111,11 +111,11 @@ void CWeaponRPG7::switch2_Fire	()
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
-			Log("current_state", GetState() );
-			Log("next_state", GetNextState());
-			Log("state_time", m_dwStateTime);
-			Log("item_sect", cNameSect().c_str());
-			Log("H_Parent", H_Parent()->cNameSect().c_str());
+			Msg("current_state %s", GetState() );
+			Msg("next_state %s", GetNextState());
+			Msg("state_time %s", m_dwStateTime);
+			Msg("item_sect %s", cNameSect().c_str());
+			Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
 			}
 			E->g_fireParams				(this, p1,d);
 		}

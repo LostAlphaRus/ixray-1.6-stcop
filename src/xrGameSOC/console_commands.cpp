@@ -7,7 +7,6 @@
 #include "xrMessages.h"
 #include "xrserver.h"
 #include "level.h"
-#include "script_debugger.h"
 #include "ai_debug.h"
 #include "alife_simulator.h"
 #include "game_cl_base.h"
@@ -18,9 +17,9 @@
 #include "actor.h"
 #include "Actor_Flags.h"
 #include "customzone.h"
-#include "script_engine.h"
-#include "script_engine_space.h"
-#include "script_process.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/script_engine_space.h"
+#include "../xrScripts/script_process.h"
 #include "xrServer_Objects.h"
 #include "ui/UIMainIngameWnd.h"
 #include "PhysicsGamePars.h"
@@ -37,20 +36,19 @@
 #include "MainMenu.h"
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
-#include "../xrEngine/resourcemanager.h"
 #include "doug_lea_memory_allocator.h"
 #include "cameralook.h"
 
 #include "GameSpy/GameSpy_Full.h"
 #include "GameSpy/GameSpy_Patching.h"
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 #	include "PHDebug.h"
 #	include "game_graph.h"
 #	include "ai_object_location.h"
 #	include "xrServer_objects_alife.h"
 #	include "xrServer_Objects_ALife_Monsters.h"
-#endif // DEBUG
+#endif
 
 #include "hudmanager.h"
 
@@ -127,39 +125,47 @@ CUIOptConCom g_OptConCom;
 	extern		u32 game_lua_memory_usage	();
 #endif // SEVERAL_ALLOCATORS
 
+typedef void (*full_memory_stats_callback_type) ();
+XRCORE_API full_memory_stats_callback_type g_full_memory_stats_callback;
+
+static void full_memory_stats()
+{
+	Memory.mem_compact();
+	u32		_process_heap = mem_usage_impl((HANDLE)_get_heap_handle(), 0, 0);
+#ifdef SEVERAL_ALLOCATORS
+	u32		_render = ::Render->memory_usage();
+#endif // SEVERAL_ALLOCATORS
+	int		_eco_strings = (int)g_pStringContainer->stat_economy();
+	int		_eco_smem = (int)g_pSharedMemoryContainer->stat_economy();
+	u32		m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
+
+
+	//if (Device.Resources)	Device.Resources->_GetMemoryUsage	(m_base,c_base,m_lmaps,c_lmaps);
+	//	Resource check moved to m_pRender
+	if (Device.m_pRender) Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
+	log_vminfo();
+
+	Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
+
+#ifndef SEVERAL_ALLOCATORS
+	Msg("* [x-ray]: process heap[%d K]", _process_heap / 1024);
+#else // SEVERAL_ALLOCATORS
+	Msg("* [x-ray]: process heap[%d K], render[%d K]", _process_heap / 1024, _render / 1024);
+#endif // SEVERAL_ALLOCATORS
+
+	Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", _eco_strings / 1024, _eco_smem);
+}
+
 class CCC_MemStats : public IConsole_Command
 {
 public:
-	CCC_MemStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
+	CCC_MemStats(LPCSTR N) : IConsole_Command(N) {
+		bEmptyArgsHandled = TRUE;
+		g_full_memory_stats_callback = &full_memory_stats;
+	};
 	virtual void Execute(LPCSTR args) {
-		Memory.mem_compact		();
-		u32		_process_heap	= mem_usage_impl(nullptr, nullptr);
-#ifdef SEVERAL_ALLOCATORS
-		u32		_game_lua		= game_lua_memory_usage();
-		u32		_render			= ::Render->memory_usage();
-#endif // SEVERAL_ALLOCATORS
-		int		_eco_strings	= (int)g_pStringContainer->stat_economy			();
-		int		_eco_smem		= (int)g_pSharedMemoryContainer->stat_economy	();
-		u32		m_base=0,c_base=0,m_lmaps=0,c_lmaps=0;
-		
-		if (Device.Resources)	Device.Resources->_GetMemoryUsage	(m_base,c_base,m_lmaps,c_lmaps);
-		
-		log_vminfo	();
-		
-		Msg		("* [ D3D ]: textures[%d K]", (m_base+m_lmaps)/1024);
-
-#ifndef SEVERAL_ALLOCATORS
-		Msg		("* [x-ray]: process heap[%d K]",_process_heap/1024);
-#else // SEVERAL_ALLOCATORS
-		Msg		("* [x-ray]: process heap[%d K], game lua[%d K], render[%d K]", _process_heap/1024, _game_lua/1024, _render/1024);
-#endif // SEVERAL_ALLOCATORS
-
-		Msg		("* [x-ray]: economy: strings[%d K], smem[%d K]",_eco_strings/1024,_eco_smem);
-
-#ifdef DEBUG
-		Msg		("* [x-ray]: file mapping: memory[%d K], count[%d]",g_file_mapped_memory/1024,g_file_mapped_count);
-		dump_file_mappings	();
-#endif // DEBUG
+		full_memory_stats();
 	}
 };
 
@@ -174,7 +180,7 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
 	FS.rescan_pathes();
 
 	string256 fext;
-	strconcat(sizeof(fext), fext, "*", file_ext);
+	xr_strconcat(fext, "*", file_ext);
 
 	FS_FileSet  files_set;
 	FS.file_list(files_set, dir, FS_ListFiles, fext);
@@ -219,7 +225,7 @@ public:
 };
 
 
-#ifdef DEBUG
+#ifndef MASTER_GOLD
 class CCC_GiveMoney : public IConsole_Command {
 public:
 	CCC_GiveMoney(LPCSTR N) : IConsole_Command(N) {
@@ -610,7 +616,7 @@ public:
 		#endif
 		Console->Hide	();
 		string_path		fn_; 
-		strconcat		(sizeof(fn_),fn_, args, ".xrdemo");
+		xr_strconcat	(fn_, args, ".xrdemo");
 		string_path		fn;
 		FS.update_path	(fn, "$game_saves$", fn_);
 
@@ -643,7 +649,7 @@ public:
 				  loops			=	atoi	(comma+1);
 				  *comma		=	0;	//. :)
 			  }
-			  strconcat			(sizeof(fn),fn, args, ".xrdemo");
+			  xr_strconcat		(fn, args, ".xrdemo");
 			  FS.update_path	(fn, "$game_saves$", fn);
 			  g_pGameLevel->Cameras().AddCamEffector(new CDemoPlay (fn, 1.0f, loops));
 		  }
@@ -699,7 +705,7 @@ public:
 		timer.Start				();
 #endif
 		if (!xr_strlen(S)){
-			strconcat			(sizeof(S),S,Core.UserName," - ",CStringTable().translate("quicksave").c_str());
+			xr_strconcat		(S,Core.UserName," - ",CStringTable().translate("quicksave").c_str());
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
 			net_packet.w_stringZ(S);
@@ -723,7 +729,7 @@ public:
 		SDrawStaticStruct* _s		= HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
 		_s->m_endTime				= Device.fTimeGlobal+3.0f;// 3sec
 		string_path					save_name;
-		strconcat					(sizeof(save_name),save_name,*CStringTable().translate("st_game_saved"),": ", S);
+		xr_strconcat				(save_name,*CStringTable().translate("st_game_saved"),": ", S);
 		_s->wnd()->SetText			(save_name);
 
 		strcat					(S,".dds");
@@ -741,7 +747,7 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
-		get_files_list(tips, "$game_saves$", SAVE_EXTENSION);
+		get_files_list(tips, "$game_saves$", IXRAY_DEF_SAVE_EXTENSION);
 	}
 };
 
@@ -802,7 +808,7 @@ public:
 
 	virtual void fill_tips(vecTips& tips, u32 mode)
 	{
-		get_files_list(tips, "$game_saves$", SAVE_EXTENSION);
+		get_files_list(tips, "$game_saves$", IXRAY_DEF_SAVE_EXTENSION);
 	}
 };
 
@@ -827,12 +833,12 @@ public:
 
 		string512				command;
 		if (ai().get_alife()) {
-			strconcat			(sizeof(command),command,"load ",g_last_saved_game);
+			xr_strconcat		(command,"load ",g_last_saved_game);
 			Console->Execute	(command);
 			return;
 		}
 
-		strconcat				(sizeof(command),command,"start server(",g_last_saved_game,"/single/alife/load)");
+		xr_strconcat			(command,"start server(",g_last_saved_game,"/single/alife/load)");
 		Console->Execute		(command);
 	}
 	
@@ -849,7 +855,7 @@ class CCC_FlushLog : public IConsole_Command {
 public:
 	CCC_FlushLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR /**args/**/) {
-		FlushLog();
+		xrLogger::FlushLog();
 		Msg		("* Log file has been saved successfully!");
 	}
 };
@@ -858,8 +864,8 @@ class CCC_ClearLog : public IConsole_Command {
 public:
 	CCC_ClearLog(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 	virtual void Execute(LPCSTR) {
-		LogFile->resize(0);
-		FlushLog				();
+		Console->ClearLog();
+		xrLogger::FlushLog();
 		Msg						("* Log file has been cleaned successfully!");
 	}
 };
@@ -1567,10 +1573,10 @@ public:
 		}
 
 		IRender_Visual			*visual = Render->model_Create(arguments);
-		CKinematics				*kinematics = smart_cast<CKinematics*>(visual);
+		IKinematics				*kinematics = smart_cast<IKinematics*>(visual);
 		if (!kinematics) {
 			Render->model_Delete(visual);
-			Msg					("! Invalid visual type \"%s\" (not a CKinematics)",arguments);
+			Msg					("! Invalid visual type \"%s\" (not a IKinematics)",arguments);
 			return;
 		}
 

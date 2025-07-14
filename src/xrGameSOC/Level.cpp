@@ -21,9 +21,9 @@
 #include "ShootingObject.h"
 //.#include "LevelFogOfWar.h"
 #include "Level_Bullet_Manager.h"
-#include "script_process.h"
-#include "script_engine.h"
-#include "script_engine_space.h"
+#include "../xrScripts/script_process.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/script_engine_space.h"
 #include "team_base_zone.h"
 #include "infoportion.h"
 #include "patrol_path_storage.h"
@@ -81,12 +81,12 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	game_configured				= FALSE;
 	m_bGameConfigStarted		= FALSE;
 
-	eChangeRP					= Engine.Event.Handler_Attach	("LEVEL:ChangeRP",this);
-	eDemoPlay					= Engine.Event.Handler_Attach	("LEVEL:PlayDEMO",this);
-	eChangeTrack				= Engine.Event.Handler_Attach	("LEVEL:PlayMusic",this);
-	eEnvironment				= Engine.Event.Handler_Attach	("LEVEL:Environment",this);
+	eChangeRP					= g_pEventManager->Event.Handler_Attach	("LEVEL:ChangeRP",this);
+	eDemoPlay					= g_pEventManager->Event.Handler_Attach	("LEVEL:PlayDEMO",this);
+	eChangeTrack				= g_pEventManager->Event.Handler_Attach	("LEVEL:PlayMusic",this);
+	eEnvironment				= g_pEventManager->Event.Handler_Attach	("LEVEL:Environment",this);
 
-	eEntitySpawn				= Engine.Event.Handler_Attach	("LEVEL:spawn",this);
+	eEntitySpawn				= g_pEventManager->Event.Handler_Attach	("LEVEL:spawn",this);
 
 	m_pBulletManager			= new CBulletManager();
 
@@ -200,12 +200,12 @@ CLevel::~CLevel()
 //	g_pGameLevel		= NULL;
 	Msg							("- Destroying level");
 
-	Engine.Event.Handler_Detach	(eEntitySpawn,	this);
+	g_pEventManager->Event.Handler_Detach	(eEntitySpawn,	this);
 
-	Engine.Event.Handler_Detach	(eEnvironment,	this);
-	Engine.Event.Handler_Detach	(eChangeTrack,	this);
-	Engine.Event.Handler_Detach	(eDemoPlay,		this);
-	Engine.Event.Handler_Detach	(eChangeRP,		this);
+	g_pEventManager->Event.Handler_Detach	(eEnvironment,	this);
+	g_pEventManager->Event.Handler_Detach	(eChangeTrack,	this);
+	g_pEventManager->Event.Handler_Detach	(eDemoPlay,		this);
+	g_pEventManager->Event.Handler_Detach	(eChangeRP,		this);
 
 	if (ph_world)
 	{
@@ -445,7 +445,7 @@ void CLevel::OnFrame	()
 		if (OnClient() && GameID() != GAME_SINGLE) 
 			ClearAllObjects();
 
-		Engine.Event.Defer				("kernel:disconnect");
+		g_pEventManager->Event.Defer				("kernel:disconnect");
 		return;
 	} else {
 
@@ -477,17 +477,17 @@ void CLevel::OnFrame	()
 				const IServerStatistic* S = Server->GetStatistic();
 				F->SetHeight	(0.015f);
 				F->OutSetI	(0.0f,0.5f);
-				F->SetColor	(D3DCOLOR_XRGB(0,255,0));
+				F->SetColor	(color_xrgb(0,255,0));
 				F->OutNext	("IN:  %4d/%4d (%2.1f%%)",	S->bytes_in_real,	S->bytes_in,	100.f*float(S->bytes_in_real)/float(S->bytes_in));
 				F->OutNext	("OUT: %4d/%4d (%2.1f%%)",	S->bytes_out_real,	S->bytes_out,	100.f*float(S->bytes_out_real)/float(S->bytes_out));
 				F->OutNext	("client_2_sever ping: %d",	net_Statistic.getPing());
 				F->OutNext	("SPS/Sended : %4d/%4d", S->dwBytesPerSec, S->dwBytesSended);
 				F->OutNext	("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
 
-				F->SetColor	(D3DCOLOR_XRGB(255,255,255));
-				for (u32 I=0; I<Server->client_Count(); ++I)	
+				F->SetColor	(color_xrgb(255,255,255));
+				for (u32 I=0; I<Server->GetClientsCount(); ++I)	
 				{
-					IClient*	C = Server->client_Get(I);
+					IClient*	C = Server->GetClientByID(I);
 					Server->UpdateClientStatistic(C);
 					F->OutNext("P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d)",
 						//Server->game->get_option_s(*C->Name,"name",*C->Name),
@@ -507,11 +507,11 @@ void CLevel::OnFrame	()
 
 				F->SetHeight(0.015f);
 				F->OutSetI	(0.0f,0.5f);
-				F->SetColor	(D3DCOLOR_XRGB(0,255,0));
+				F->SetColor	(color_xrgb(0,255,0));
 				F->OutNext	("client_2_sever ping: %d",	net_Statistic.getPing());
 				F->OutNext	("sv_urate/cl_urate : %4d/%4d", psNET_ServerUpdate, psNET_ClientUpdate);
 
-				F->SetColor	(D3DCOLOR_XRGB(255,255,255));
+				F->SetColor	(color_xrgb(255,255,255));
 				F->OutNext("P(%d), BPS(%2.1fK), MRR(%2d), MSR(%2d), Retried(%2d), Blocked(%2d), Sended(%2d), SPS(%2d)",
 					//Server->game->get_option_s(C->Name,"name",C->Name),
 					//					C->Name,
@@ -521,8 +521,7 @@ void CLevel::OnFrame	()
 					net_Statistic.getMPS_Send	(),
 					net_Statistic.getRetriedCount(),
 					net_Statistic.dwTimesBlocked,
-					net_Statistic.dwBytesSended,
-					net_Statistic.dwBytesPerSec
+					net_Statistic.dwBytesSended
 					);
 			}
 		}
@@ -548,15 +547,17 @@ void CLevel::OnFrame	()
 	if(!g_dedicated_server)
 	{
 		if (g_mt_config.test(mtLevelSounds)) 
-			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(m_level_sound_manager,&CLevelSoundManager::Update));
-		else								
+			Device.seqParallel.push_back(xr_make_delegate(m_level_sound_manager, &CLevelSoundManager::Update));
+		else
 			m_level_sound_manager->Update	();
 	}
 	// deffer LUA-GC-STEP
 	if (!g_dedicated_server)
 	{
-		if (g_mt_config.test(mtLUA_GC))	Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CLevel::script_gc));
-		else							script_gc	()	;
+		if (g_mt_config.test(mtLUA_GC))
+			Device.seqParallel.push_back(xr_make_delegate(this, &CLevel::script_gc));
+		else
+			script_gc	()	;
 	}
 	//-----------------------------------------------------
 	if (pStatGraphR)
@@ -985,7 +986,7 @@ bool CLevel::IsServer ()
 		return IsServerDemo();
 	};	
 	if (!Server) return false;
-	return (Server->client_Count() != 0);
+	return (Server->GetClientsCount() != 0);
 
 }
 
@@ -997,7 +998,7 @@ bool CLevel::IsClient ()
 		return IsClientDemo();
 	};	
 	if (!Server) return true;
-	return (Server->client_Count() == 0);
+	return (Server->GetClientsCount() == 0);
 }
 
 void CLevel::OnSessionTerminate		(LPCSTR reason)

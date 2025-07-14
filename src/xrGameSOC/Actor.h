@@ -3,7 +3,7 @@
 #include "../xrEngine/feel_touch.h"
 #include "../xrEngine/feel_sound.h"
 #include "../xrEngine/iinputreceiver.h"
-#include "../include/xrRender/Kinematics.h"
+#include "../include/xrRender/animation_motion.h"
 #include "actor_flags.h"
 #include "actor_defs.h"
 #include "entity_alive.h"

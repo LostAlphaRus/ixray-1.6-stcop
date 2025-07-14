@@ -23,4 +23,5 @@ public:
 
     void SetLevelLogo(const char* name) const override;
     void SetStageTitle(const char* title) const override;
+    void SetStageTip(const char* header, const char* tipNumber, const char* tip) const override;
 };

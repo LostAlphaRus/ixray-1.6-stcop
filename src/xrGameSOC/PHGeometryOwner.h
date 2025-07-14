@@ -7,7 +7,7 @@ using GEOM_STORAGE = xr_vector<CODEGeom*>;
 using GEOM_I = GEOM_STORAGE::iterator;
 
 struct SBoneShape;
-class CKinematics;
+class IKinematics;
 
 class CPHGeometryOwner
 {
@@ -50,7 +50,7 @@ public:
 		dGeomID						dSpacedGeometry							();																				//aux
 		Fvector						get_mc_data								();																				//aux
 		Fvector						get_mc_geoms							();																				//aux
-		void						get_mc_kinematics						(CKinematics* K,Fvector& mc,float& mass);
+		void						get_mc_kinematics						(IKinematics* K,Fvector& mc,float& mass);
 		void						calc_volume_data						();																				//aux
 const	Fvector&					local_mass_Center						()		{return m_mass_center;}													//aux
 		float						get_volume								()		{calc_volume_data();return m_volume;};									//aux

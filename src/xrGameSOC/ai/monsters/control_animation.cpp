@@ -12,7 +12,7 @@ void CControlAnimation::reinit()
 {
 	inherited::reinit			();
 
-	m_skeleton_animated			= smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	m_skeleton_animated			= smart_cast<IKinematicsAnimated*>(m_object->Visual());
 
 	m_anim_events.clear			();
 
@@ -106,10 +106,6 @@ void CControlAnimation::play_part(SAnimationPart &part, PlayCallback callback)
 	float pos		= -1.f;
 	if (part.blend && !part.blend->stop_at_end) 
 		pos			= fmod(part.blend->timeCurrent,part.blend->timeTotal)/part.blend->timeTotal;
-#ifdef DEBUG
-	//CKinematicsAnimated * K = m_object->Visual()->dcast_PKinematicsAnimated();
-	//Msg				("%6d Playing animation : %s , %s , Object %s",Device.dwTimeGlobal, K->LL_MotionDefName_dbg(part.motion).first,K->LL_MotionDefName_dbg(part.motion).second, *(m_object->cName()));
-#endif
 	
 	part.blend			= m_skeleton_animated->LL_PlayCycle(bone_or_part,part.motion, TRUE, callback, this);
 	
@@ -224,7 +220,7 @@ void CControlAnimation::restart(SAnimationPart &part, PlayCallback callback)
 
 void CControlAnimation::restart()
 {
-	m_skeleton_animated			= smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	m_skeleton_animated			= smart_cast<IKinematicsAnimated*>(m_object->Visual());
 
 	if (m_data.global.blend)	restart(m_data.global,global_animation_end_callback);
 	if (m_data.legs.blend)		restart(m_data.legs,legs_animation_end_callback);

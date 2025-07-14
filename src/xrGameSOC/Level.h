@@ -6,6 +6,7 @@
 #define AFX_LEVEL_H__38F63863_DB0C_494B_AFAB_C495876EC671__INCLUDED_
 #pragma once
 
+#include "../xrEngine/customhud.h"
 #include "../xrEngine/igame_level.h"
 #include "../xrNetServer/net_client.h"
 #include "../xrScripts/script_export_space.h"
@@ -358,7 +359,7 @@ IC game_cl_GameState&	Game()		{ return *Level().game;					}
 	u32					GameID();
 
 
-IC CHUDManager&			HUD()		{ return *((CHUDManager*)Level().pHUD);	}
+IC CHUDManager&			HUD()		{ return *((CHUDManager*)g_hud);	}
 
 #ifdef DEBUG
 IC CLevelDebug&			DBG()		{return *((CLevelDebug*)Level().m_level_debug);}

@@ -120,10 +120,8 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 				CLX->m_dwPort				= dwPort;
 				CLX->flags.bReconnect		= TRUE;
 				
-				csPlayers.Enter();
 				net_Players.push_back( CLX );
 				net_Players.back()->server = this;
-				csPlayers.Leave();
 
 				Msg							( "# Player found" );
 				return						CLX;
@@ -139,10 +137,8 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 		newCL->m_dwPort		= dwPort;
 	}
 	
-	csPlayers.Enter();
 	net_Players.push_back( newCL );
 	net_Players.back()->server = this;
-	csPlayers.Leave();
 
 	Msg		("# Player not found. New player created.");
 	return newCL;
@@ -151,9 +147,7 @@ IClient*	xrServer::client_Find_Get	(ClientID ID)
 INT	g_sv_Client_Reconnect_Time = 0;
 
 void		xrServer::client_Destroy	(IClient* C)
-{
-	csPlayers.Enter	();
-	
+{	
 	// Delete assosiated entity
 	// xrClientData*	D = (xrClientData*)C;
 	// CSE_Abstract* E = D->owner;
@@ -214,8 +208,6 @@ void		xrServer::client_Destroy	(IClient* C)
 			break;
 		};
 	}
-
-	csPlayers.Leave();
 }
 
 //--------------------------------------------------------------------
@@ -228,7 +220,6 @@ INT g_sv_SendUpdate = 0;
 void xrServer::Update	()
 {
 	NET_Packet		Packet;
-	csPlayers.Enter	();
 
 	VERIFY						(verify_entities());
 
@@ -279,7 +270,6 @@ void xrServer::Update	()
 	PerformCheckClientsForMaxPing	();
 
 	Flush_Clients_Buffers			();
-	csPlayers.Leave					();
 	
 	if( 0==(Device.dwFrame%100) )//once per 100 frames
 	{
@@ -435,8 +425,6 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 	u16						type;
 	P.r_begin				(type);
 
-	csPlayers.Enter			();
-
 	VERIFY							(verify_entities());
 	xrClientData* CL				= ID_to_client(sender);
 	R_ASSERT2						(CL, make_string("packet type [%d]",type).c_str());
@@ -476,7 +464,6 @@ u32 xrServer::OnDelayedMessage	(NET_Packet& P, ClientID sender)			// Non-Zero me
 	}
 	VERIFY							(verify_entities());
 
-	csPlayers.Leave					();
 	return 0;
 }
 
@@ -486,8 +473,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 	if (g_pGameLevel && Level().IsDemoSave()) Level().Demo_StoreServerData(P.B.data, P.B.count);
 	u16			type;
 	P.r_begin	(type);
-
-	csPlayers.Enter			();
 
 	VERIFY							(verify_entities());
 	xrClientData* CL				= ID_to_client(sender);
@@ -692,8 +677,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 
 	VERIFY							(verify_entities());
 
-	csPlayers.Leave					();
-
 	return							IPureServer::OnMessage(P, sender);
 }
 
@@ -766,29 +749,24 @@ void			xrServer::entity_Destroy	(CSE_Abstract *&P)
 
 //--------------------------------------------------------------------
 void			xrServer::Server_Client_Check	( IClient* CL )
-{
-	clients_Lock	();
-	
+{	
 	if (SV_Client && SV_Client->ID == CL->ID)
 	{
 		if (!CL->flags.bConnected)
 		{
 			SV_Client = NULL;
 		};
-		clients_Unlock	();
 		return;
 	};
 
 	if (SV_Client && SV_Client->ID != CL->ID)
 	{
-		clients_Unlock	();
 		return;
 	};
 
 
 	if (!CL->flags.bConnected) 
 	{
-		clients_Unlock();
 		return;
 	};
 
@@ -802,13 +780,12 @@ void			xrServer::Server_Client_Check	( IClient* CL )
 		CL->flags.bLocal	= 0;
 	}
 
-	clients_Unlock();
 };
 
 bool		xrServer::OnCL_QueryHost		() 
 {
 	if (game->Type() == GAME_SINGLE) return false;
-	return (client_Count() != 0); 
+	return (GetClientsCount() != 0); 
 };
 
 CSE_Abstract*	xrServer::GetEntity			(u32 Num)
@@ -952,7 +929,7 @@ void xrServer::PerformCheckClientsForMaxPing()
 
 			if(Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)
 			{  //kick
-				Level().Server->DisconnectClient		(Client);
+				Level().Server->DisconnectClient		(Client, "st_kicked_by_server");
 			}else
 			{ //send warning
 				NET_Packet		P;	

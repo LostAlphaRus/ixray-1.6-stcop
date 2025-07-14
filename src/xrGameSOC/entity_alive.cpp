@@ -8,7 +8,7 @@
 #include "wound.h"
 #include "xrmessages.h"
 #include "level.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrRender/kinematics.h"
 #include "relation_registry.h"
 #include "monster_community.h"
 #include "entitycondition.h"
@@ -16,7 +16,7 @@
 #include "hit.h"
 #include "PHDestroyable.h"
 #include "CharacterPhysicsSupport.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "game_object_space.h"
 #include "material_manager.h"
 #include "game_base_space.h"
@@ -101,7 +101,6 @@ void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
 	
 	int cnt		=_GetItemCount(wallmarks_name);
 	
-	ref_shader	s;
 	for (int k=0; k<cnt; ++k)
 		(*m_pBloodMarksVector)->AppendMark(_GetItem(wallmarks_name, k, tmp));
 
@@ -350,7 +349,7 @@ void CEntityAlive::BloodyWallmarks (float P, const Fvector &dir, s16 element,
 		return;
 
 	//вычислить координаты попадания
-	CKinematics* V = smart_cast<CKinematics*>(Visual());
+	IKinematics* V = smart_cast<IKinematics*>(Visual());
 		
 	Fvector start_pos = position_in_object_space;
 	if(V)
@@ -429,7 +428,7 @@ void CEntityAlive::StartFireParticles(CWound* pWound)
 			m_ParticleWounds.push_back(pWound);
 		}
 
-		CKinematics* V = smart_cast<CKinematics*>(Visual());
+		IKinematics* V = smart_cast<IKinematics*>(Visual());
 
 		u16 particle_bone = CParticlesPlayer::GetNearestBone(V, pWound->GetBoneNum());
 		VERIFY(particle_bone  < 64 || BI_NONE == particle_bone);

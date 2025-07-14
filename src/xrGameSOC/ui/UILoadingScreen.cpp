@@ -54,3 +54,9 @@ void UILoadingScreen::SetLevelLogo(const char* name) const { loadingLogo->InitTe
 void UILoadingScreen::SetStageTitle(const char* title) const {
     loadingStage->SetText(title);
 }
+
+void UILoadingScreen::SetStageTip(const char* header, const char* tipNumber,
+    const char* tip) const 
+{
+    // TODO: Implement CoP-style loading screen
+}

@@ -25,7 +25,8 @@
 #include "../../../xrEngine/xr_level_controller.h"
 #include "../../hudmanager.h"
 #include "../../clsid_game.h"
-#include "../../../xrEngine/skeletoncustom.h"
+#include "../../../include/xrRender/kinematics.h"
+#include "../../../include/xrRender/kinematicsanimated.h"
 #include "../../character_info.h"
 #include "../../actor.h"
 #include "../../relation_registry.h"
@@ -42,7 +43,7 @@
 #include "../../ai_object_location.h"
 #include "../../stalker_movement_manager.h"
 #include "../../entitycondition.h"
-#include "../../script_engine.h"
+#include "../../../xrScripts/script_engine.h"
 #include "ai_stalker_impl.h"
 #include "../../sound_player.h"
 #include "../../stalker_sound_data.h"
@@ -346,7 +347,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 		sound().set_sound_mask(u32(eStalkerSoundMaskDie));
 
 	//загрузить иммунитеты из модельки сталкера
-	CKinematics* pKinematics = smart_cast<CKinematics*>(Visual()); VERIFY(pKinematics);
+	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual()); VERIFY(pKinematics);
 	CInifile* ini = pKinematics->LL_UserData();
 	if(ini)
 	{
@@ -598,7 +599,7 @@ void CAI_Stalker::UpdateCL()
 
 	if (g_Alive()) {
 		if (g_mt_config.test(mtObjectHandler) && CObjectHandler::planner().initialized()) {
-			fastdelegate::FastDelegate0<>								f = fastdelegate::FastDelegate0<>(this,&CAI_Stalker::update_object_handler);
+			auto f = xr_make_delegate(this, &CAI_Stalker::update_object_handler);
 #ifdef DEBUG
 			xr_vector<xr_delegate<void()> >::const_iterator I = std::find(Device.seqParallel.begin(), Device.seqParallel.end(), f);
 			VERIFY(I == Device.seqParallel.end());
@@ -714,7 +715,7 @@ void CAI_Stalker::shedule_Update		( u32 DT )
 		memory().visual().check_visibles();
 #endif
 		if (g_mt_config.test(mtAiVision))
-			Device.seqParallel.push_back(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+			Device.seqParallel.push_back(xr_make_delegate(this,&CCustomMonster::Exec_Visibility));
 		else {
 			START_PROFILE("stalker/schedule_update/vision")
 			Exec_Visibility				();
@@ -965,7 +966,7 @@ void CAI_Stalker::UpdateCamera			()
 			temp						= weapon_shot_effector_direction(temp);
 	}
 
-	g_pGameLevel->Cameras().Update		(eye_matrix.c,temp,eye_matrix.j,new_fov,.75f,new_range);
+	g_pGameLevel->Cameras().Update		(eye_matrix.c,temp,eye_matrix.j,new_fov,.75f,new_range, 0);
 }
 
 bool CAI_Stalker::can_attach			(const CInventoryItem *inventory_item) const
@@ -1008,7 +1009,7 @@ void CAI_Stalker::fill_bones_body_parts	(LPCSTR bone_id, const ECriticalWoundTyp
 	LPCSTR					body_part_section_id = pSettings->r_string(body_parts_section_id,bone_id);
 	VERIFY					(body_part_section_id);
 
-	CKinematics				*kinematics	= smart_cast<CKinematics*>(Visual());
+	IKinematics				*kinematics	= smart_cast<IKinematics*>(Visual());
 	VERIFY					(kinematics);
 
 	CInifile::Sect			&body_part_section = pSettings->r_section(body_part_section_id);

@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////
 // GraviArtifact.cpp
-// GraviArtefact - гравитационный артефакт, прыгает на месте
-// и неустойчиво парит над землей
+// GraviArtefact - РіСЂР°РІРёС‚Р°С†РёРѕРЅРЅС‹Р№ Р°СЂС‚РµС„Р°РєС‚, РїСЂС‹РіР°РµС‚ РЅР° РјРµСЃС‚Рµ
+// Рё РЅРµСѓСЃС‚РѕР№С‡РёРІРѕ РїР°СЂРёС‚ РЅР°Рґ Р·РµРјР»РµР№
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@
 #include "level.h"
 #include "xrmessages.h"
 #include "game_cl_base.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrRender/kinematics.h"
 #include "phworld.h"
 extern CPHWorld*	ph_world;
 #define CHOOSE_MAX(x,inst_x,y,inst_y,z,inst_z)\
@@ -55,7 +55,7 @@ void CGraviArtefact::UpdateCLChild()
 			dir.set(0, -1.f, 0);
 			collide::rq_result RQ;
 			
-			//проверить высоту артифакта
+			//РїСЂРѕРІРµСЂРёС‚СЊ РІС‹СЃРѕС‚Сѓ Р°СЂС‚РёС„Р°РєС‚Р°
 			if(Level().ObjectSpace.RayPick(Position(), dir, m_fJumpHeight, collide::rqtBoth, RQ, this)) 
 			{
 				dir.y = 1.f; 
@@ -71,7 +71,7 @@ void CGraviArtefact::UpdateCLChild()
 			
 			if (GameID() == GAME_ARTEFACTHUNT && m_CarringBoneID != u16(-1))
 			{
-				CKinematics* K	= smart_cast<CKinematics*>(H_Parent()->Visual());
+				IKinematics* K	= smart_cast<IKinematics*>(H_Parent()->Visual());
 				if (K)
 				{
 					K->CalculateBones	();

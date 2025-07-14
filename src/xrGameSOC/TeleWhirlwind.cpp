@@ -6,7 +6,7 @@
 #include "hit.h"
 #include "phdestroyable.h"
 #include "xrmessages.h"
-#include "../xrEngine/SkeletonCustom.h"
+#include "../include/xrRender/kinematics.h"
 #include "PHWorld.h"
 CTeleWhirlwind ::CTeleWhirlwind () 
 {
@@ -69,7 +69,7 @@ static bool RemovePred(CTelekineticObject *tele_object)
 
 void CTeleWhirlwind::clear_notrelevant()
 {
-	//óáðàòü âñå îáúåòû ñî ñòàðûìè ïàðàìåòðàìè
+	//ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ Ð²ÑÐµ Ð¾Ð±ÑŠÐµÑ‚Ñ‹ ÑÐ¾ ÑÑ‚Ð°Ñ€Ñ‹Ð¼Ð¸ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸
 	objects.erase	(
 		std::remove_if(
 			objects.begin(),
@@ -134,7 +134,7 @@ void		CTeleWhirlwindObject::		release					()
 	float magnitude	= dir_inv.magnitude();
 	
 
-	// âêëþ÷èòü ãðàâèòàöèþ 
+	// Ð²ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ð³Ñ€Ð°Ð²Ð¸Ñ‚Ð°Ñ†Ð¸ÑŽ 
 	//Fvector zer;zer.set(0,0,0);
 	//object->m_pPhysicsShell->set_LinearVel(zer);
 	object->m_pPhysicsShell->set_ApplyByGravity(TRUE);
@@ -176,7 +176,7 @@ bool	CTeleWhirlwindObject::destroy_object		(const Fvector dir,float val)
 		CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(object);
 		if(PP)
 		{
-			u16 root=(smart_cast<CKinematics*>(object->Visual()))->LL_GetBoneRoot();
+			u16 root=(smart_cast<IKinematics*>(object->Visual()))->LL_GetBoneRoot();
 			PP->StartParticles(m_telekinesis->destroing_particles(),root, Fvector().set(0,1,0),m_telekinesis->OwnerObject()->ID());
 		}
 		return true;

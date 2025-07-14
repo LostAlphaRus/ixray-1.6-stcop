@@ -1,25 +1,27 @@
 #ifndef  PHNETSTATE_H
 #define  PHNETSTATE_H
 
+#include "../xrEngine/VisMask.h"
+
 class NET_Packet;
 
 struct SPHNetState
 {
-	Fvector		linear_vel;
-	Fvector		angular_vel;
-	Fvector		force;
-	Fvector		torque;
-	Fvector		position;
-	Fvector		previous_position;
+	Fvector		linear_vel = {};
+	Fvector		angular_vel = {};
+	Fvector		force = {};
+	Fvector		torque = {};
+	Fvector		position = {};
+	Fvector		previous_position = {};
 	union{
-		Fquaternion quaternion;
+		Fquaternion quaternion = {};
 		struct{
 			Fvector	accel;
 			float	max_velocity;
 		};
 	};
-	Fquaternion	previous_quaternion;
-	bool		enabled;
+	Fquaternion	previous_quaternion = {};
+	bool		enabled = false;
 	void								net_Export			(		NET_Packet&		P);					
 	void								net_Import			(		NET_Packet&		P);
 	void								net_Import			(		IReader&		P);
@@ -41,7 +43,7 @@ using PHNETSTATE_I = PHNETSTATE_VECTOR::iterator;
 
 struct SPHBonesData 
 {
-	u64				  bones_mask;
+	VisMask			  bones_mask;
 	u16				  root_bone;
 	PHNETSTATE_VECTOR bones;
 	Fvector			  m_min;

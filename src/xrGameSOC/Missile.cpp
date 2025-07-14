@@ -8,7 +8,7 @@
 #include "ActorEffector.h"
 #include "level.h"
 #include "../xrEngine/xr_level_controller.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "ExtendedGeom.h"
 #include "MathUtils.h"
@@ -364,7 +364,7 @@ void CMissile::UpdateXForm	()
 			return;
 
 		VERIFY				(E);
-		CKinematics*		V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*		V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY				(V);
 
 		// Get matrices
@@ -417,11 +417,11 @@ void CMissile::setup_throw_params()
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 		if(NULL == io->inventory().ActiveItem())
 		{
-				Log("current_state", GetState() );
-				Log("next_state", GetNextState());
-				Log("state_time", m_dwStateTime);
-				Log("item_sect", cNameSect().c_str());
-				Log("H_Parent", H_Parent()->cNameSect().c_str());
+				Msg("current_state %s", GetState() );
+				Msg("next_state %s", GetNextState());
+				Msg("state_time %s", m_dwStateTime);
+				Msg("item_sect %s", cNameSect().c_str());
+				Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
 		}
 
 		entity->g_fireParams(this, FirePos, FireDir);
@@ -556,7 +556,7 @@ void  CMissile::UpdateFireDependencies_internal	()
 		
 		if (GetHUDmode() && !IsHidden()){
 			// 1st person view - skeletoned
-			CKinematics* V			= smart_cast<CKinematics*>(m_pHUD->Visual());
+			IKinematics* V			= smart_cast<IKinematics*>(m_pHUD->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 
@@ -623,7 +623,7 @@ void CMissile::activate_physic_shell()
 	m_pPhysicsShell->SetAirResistance	(0.f,0.f);
 	m_pPhysicsShell->set_DynamicScales	(1.f,1.f);
 
-	CKinematics							*kinematics = smart_cast<CKinematics*>(Visual());
+	IKinematics							*kinematics = smart_cast<IKinematics*>(Visual());
 	VERIFY								(kinematics);
 	kinematics->CalculateBones_Invalidate();
 	kinematics->CalculateBones			();
@@ -652,7 +652,7 @@ void CMissile::setup_physic_shell	()
 	VERIFY(!m_pPhysicsShell);
 	create_physic_shell();
 	m_pPhysicsShell->Activate	(XFORM(),0,XFORM());//,true 
-	CKinematics					*kinematics = smart_cast<CKinematics*>(Visual());
+	IKinematics					*kinematics = smart_cast<IKinematics*>(Visual());
 	VERIFY						(kinematics);
 	kinematics->CalculateBones_Invalidate();
 	kinematics->CalculateBones			();

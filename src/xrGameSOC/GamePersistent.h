@@ -14,15 +14,21 @@ class CGamePersistent:
 	public IEventReceiver
 {
 	// ambient particles
-	CParticlesObject*	ambient_particles; 
-	u32					ambient_sound_next_time;
+	xr_shared_ptr<CParticlesObject>	ambient_particles;
+	u32					ambient_sound_next_time[20]; //max snd channels
 	u32					ambient_effect_next_time;
 	u32					ambient_effect_stop_time;
+
+	float				ambient_effect_wind_start;
+	float				ambient_effect_wind_in_time;
+	float				ambient_effect_wind_end;
+	float				ambient_effect_wind_out_time;
+	bool				ambient_effect_wind_on;
 
 	CUISequencer*		m_intro;
 	EVENT				eQuickLoad;
 
-	fastdelegate::FastDelegate0<> m_intro_event;
+	xr_delegate<void()> m_intro_event;
 
 	void 		start_logo_intro		();
 	void 		update_logo_intro		();
@@ -61,7 +67,7 @@ public:
 
 	virtual void		UpdateGameType			();
 
-	virtual void		RegisterModel			(IRender_Visual* V);
+	virtual void		RegisterModel			(IRenderVisual* V);
 	virtual	float		MtlTransparent			(u32 mtl_idx);
 	virtual	void		Statistics				(CGameFont* F);
 

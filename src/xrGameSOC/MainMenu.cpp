@@ -258,11 +258,16 @@ bool CMainMenu::ReloadUI()
 	m_activatedScreenRatio		= (float)Device.TargetWidth/(float)Device.TargetHeight > (1024.0f/768.0f+0.01f);
 	return true;
 }
+
 bool CMainMenu::IsActive()
 {
 	return !!m_Flags.test(flActive);
 }
 
+bool CMainMenu::CanSkipSceneRendering()
+{
+	return IsActive() && !m_Flags.test(flGameSaveScreenshot);
+}
 
 //IInputReceiver
 static int mouse_button_2_key []	=	{MOUSE_1,MOUSE_2,MOUSE_3};

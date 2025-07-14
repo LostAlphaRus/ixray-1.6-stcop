@@ -19,8 +19,8 @@ class CObject;
 class IRender_Visual;
 class FHierrarhyVisual;
 class CBlend;
-class CKinematics;
-class CKinematicsAnimated;
+class IKinematics;
+class IKinematicsAnimated;
 
 typedef class_exporter<DLL_Pure>	DLL_PureScript;
 
@@ -36,4 +36,4 @@ typedef class_exporter<CBlend>	CBlendScript;
 
 typedef class_exporter<IRender_Visual>	IRender_VisualScript;
 
-typedef class_exporter<CKinematicsAnimated>	CKinematicsAnimatedScript;
+typedef class_exporter<IKinematicsAnimated>	CKinematicsAnimatedScript;

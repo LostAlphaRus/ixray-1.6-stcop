@@ -74,8 +74,6 @@ void xrServer::OnCL_Connected		(IClient* _CL)
 	CL->net_Accepted = TRUE;
 ///	Server_Client_Check(CL); 
 
-	csPlayers.Enter					();
-
 	Export_game_type(CL);
 	Perform_game_export();
 	SendConnectionData(CL);
@@ -87,7 +85,6 @@ void xrServer::OnCL_Connected		(IClient* _CL)
 	P.r_pos = 0;
 	ClientID clientID;clientID.set	(0);
 	game->AddDelayedEvent			(P,GAME_EVENT_PLAYER_CONNECTED, 0, clientID);
-	csPlayers.Leave					();
 	game->ProcessDelayedEvent		();
 }
 
@@ -148,7 +145,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 
 	if ( _our != _him )
 	{
-		SendConnectResult( CL, 0, 0, "Data verification failed. Cheater? [3]" );
+		SendConnectResult( CL, 0, 0, (char*)"Data verification failed. Cheater? [3]" );
 	}
 	else
 	{				
@@ -179,5 +176,5 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 void xrServer::Check_BuildVersion_Success			( IClient* CL )
 {
 	CL->flags.bVerified = TRUE;
-	SendConnectResult(CL, 1, 0, "All Ok");
+	SendConnectResult(CL, 1, 0, (char*)"All Ok");
 };

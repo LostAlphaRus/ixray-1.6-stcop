@@ -10,10 +10,10 @@
 #endif
 extern CPHWorld* ph_world;
 
-CPHObject::CPHObject	()	: ISpatial(g_SpatialSpacePhysic)
+CPHObject::CPHObject	()
 {
+	ISpatialOwner::spatial_create(g_SpatialSpacePhysic, this, STYPE_PHYSIC);
 	m_flags.flags	=	0;
-	spatial.type	|=	STYPE_PHYSIC;
 	m_island.Init	();
 	m_check_count	=0;
 	CPHCollideValidator::InitObject	(*this);
@@ -70,7 +70,7 @@ void CPHObject::check_recently_deactivated()
 void CPHObject::spatial_move()
 {
 	get_spatial_params();
-	ISpatial::spatial_move();
+	ISpatialOwner::spatial_move();
 	m_flags.set(st_dirty,TRUE);
 }
 
@@ -194,17 +194,17 @@ void CPHObject::UnFreezeContent()
 void CPHObject::spatial_register()
 {
 	get_spatial_params();
-	ISpatial::spatial_register();
+	ISpatialOwner::spatial_register();
 	m_flags.set(st_dirty,TRUE);
 }
 
 void CPHObject::collision_disable()
 {
-	ISpatial::spatial_unregister();
+	ISpatialOwner::spatial_unregister();
 }
 void CPHObject::collision_enable()
 {
-	ISpatial::spatial_register();
+	ISpatialOwner::spatial_register();
 }
 
 void CPHObject::Freeze()

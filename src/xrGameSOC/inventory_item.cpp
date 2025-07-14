@@ -18,7 +18,7 @@
 #include "game_cl_base.h"
 #include "Actor.h"
 #include "../xrEngine/string_table.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "../xrCore/object_broker.h"
 #include "../xrEngine/igame_persistent.h"
@@ -925,7 +925,7 @@ void CInventoryItem::UpdateXForm	()
 		return;
 
 	R_ASSERT		(E);
-	CKinematics*	V		= smart_cast<CKinematics*>	(E->Visual());
+	IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
 	VERIFY			(V);
 
 	// Get matrices

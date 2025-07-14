@@ -57,13 +57,13 @@ extern int g_AI_inactive_time;
 	Flags32		psAI_Flags	= {0};
 #endif // MASTER_GOLD
 
-void CCustomMonster::SAnimState::Create(CKinematicsAnimated* K, LPCSTR base)
+void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 {
 	char	buf[128];
-	fwd		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_fwd"));
-	back	= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_back"));
-	ls		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_ls"));
-	rs		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_rs"));
+	fwd		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_fwd"));
+	back	= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_back"));
+	ls		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_ls"));
+	rs		= K->ID_Cycle_Safe(xr_strconcat(buf,base,"_rs"));
 }
 
 //void  CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
@@ -79,7 +79,8 @@ void CCustomMonster::SAnimState::Create(CKinematicsAnimated* K, LPCSTR base)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CCustomMonster::CCustomMonster()
+CCustomMonster::CCustomMonster() : 
+	Feel::Vision(cast_game_object())
 {
 	m_sound_user_data_visitor	= 0;
 	m_memory_manager			= 0;
@@ -306,7 +307,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	if (g_Alive()) {
 		if (g_mt_config.test(mtAiVision))
 #ifndef DEBUG
-			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
+			Device.seqParallel.push_back	(xr_delegate<void()>(this, &CCustomMonster::Exec_Visibility));
 #else // DEBUG
 		{
 			if (!psAI_Flags.test(aiStalker) || !!smart_cast<CActor*>(Level().CurrentEntity()))
@@ -420,7 +421,7 @@ void CCustomMonster::UpdateCL	()
 	*/
 
 	if (g_mt_config.test(mtSoundPlayer))
-		Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::update_sound_player));
+		Device.seqParallel.push_back	(xr_delegate<void()>(this, &CCustomMonster::update_sound_player));
 	else {
 		START_PROFILE("CustomMonster/client_update/sound_player")
 		update_sound_player	();
@@ -530,7 +531,7 @@ BOOL CCustomMonster::feel_visible_isRelevant (CObject* O)
 void CCustomMonster::eye_pp_s0			( )
 {
 	// Eye matrix
-	CKinematics* V							= smart_cast<CKinematics*>(Visual());
+	IKinematics* V							= smart_cast<IKinematics*>(Visual());
 	V->CalculateBones						();
 	Fmatrix&	mEye						= V->LL_GetTransform(u16(eye_bone));
 	Fmatrix		X;							X.mul_43	(XFORM(),mEye);
@@ -546,9 +547,9 @@ void CCustomMonster::update_range_fov	(float &new_range, float &new_fov, float s
 {
 	const float	standard_far_plane			= eye_range;
 
-	float	current_fog_density				= GamePersistent().Environment().CurrentEnv.fog_density	;	
+	float	current_fog_density				= GamePersistent().Environment().CurrentEnv->fog_density	;	
 	// 0=no_fog, 1=full_fog, >1 = super-fog
-	float	current_far_plane				= GamePersistent().Environment().CurrentEnv.far_plane	;	
+	float	current_far_plane				= GamePersistent().Environment().CurrentEnv->far_plane	;	
 	// 300=standart, 50=super-fog
 
 	new_fov									= start_fov;
@@ -625,7 +626,7 @@ void CCustomMonster::UpdateCamera()
 	float									new_range = eye_range, new_fov = eye_fov;
 	if (g_Alive())
 		update_range_fov					(new_range, new_fov, memory().visual().current_state().m_max_view_distance*eye_range, eye_fov);
-	g_pGameLevel->Cameras().Update(eye_matrix.c,eye_matrix.k,eye_matrix.j,new_fov,.75f,new_range);
+	g_pGameLevel->Cameras().Update(eye_matrix.c,eye_matrix.k,eye_matrix.j,new_fov,.75f,new_range, 0);
 }
 
 void CCustomMonster::HitSignal(float /**perc/**/, Fvector& /**vLocalDir/**/, CObject* /**who/**/)
@@ -696,7 +697,7 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	}
 
 	// Eyes
-	eye_bone					= smart_cast<CKinematics*>(Visual())->LL_BoneID(pSettings->r_string(cNameSect(),"bone_head"));
+	eye_bone					= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(cNameSect(),"bone_head"));
 
 	// weapons
 	if (Local()) {
@@ -752,13 +753,13 @@ void CCustomMonster::net_Destroy()
 	movement().net_Destroy		();
 	
 	Device.remove_from_seq_parallel	(
-		fastdelegate::FastDelegate0<>(
+		xr_delegate<void()>(
 			this,
 			&CCustomMonster::update_sound_player
 		)
 	);
 	Device.remove_from_seq_parallel	(
-		fastdelegate::FastDelegate0<>(
+		xr_delegate<void()>(
 			this,
 			&CCustomMonster::Exec_Visibility
 		)
@@ -1137,7 +1138,7 @@ void CCustomMonster::OnRender()
 		character_physics_support()->movement()->dbg_Draw();
 	
 	if (bDebug)
-		smart_cast<CKinematics*>(Visual())->DebugRender(XFORM());
+		smart_cast<IKinematics*>(Visual())->DebugRender(XFORM());
 }
 #endif // DEBUG
 

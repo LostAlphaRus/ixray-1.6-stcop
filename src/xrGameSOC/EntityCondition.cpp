@@ -7,7 +7,7 @@
 #include "level.h"
 #include "game_cl_base.h"
 #include "entity_alive.h"
-#include "..\xrEngine/SkeletonCustom.h"
+#include "../include/xrRender/kinematics.h"
 #include "../xrCore/object_broker.h"
 
 #define MAX_HEALTH 1.0f
@@ -427,7 +427,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		}break;
 	}
 
-	if (bDebug) Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<CKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost*100.0f, hit_power_org);
+	if (bDebug) Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost*100.0f, hit_power_org);
 	//раны добавляются только живому
 	if(bAddWound && GetHealth()>0)
 		return AddWound(hit_power*m_fWoundBoneScale, pHDS->hit_type, pHDS->boneID);
@@ -546,19 +546,19 @@ void CEntityCondition::SConditionChangeV::load(LPCSTR sect, LPCSTR prefix)
 	string256				str;
 	m_fV_Circumspection		= 0.01f;
 
-	strconcat				(sizeof(str),str,"radiation_v",prefix);
+	xr_strconcat			(str,"radiation_v",prefix);
 	m_fV_Radiation			= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"radiation_health_v",prefix);
+	xr_strconcat			(str,"radiation_health_v",prefix);
 	m_fV_RadiationHealth	= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"morale_v",prefix);
+	xr_strconcat			(str,"morale_v",prefix);
 	m_fV_EntityMorale		= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"psy_health_v",prefix);
+	xr_strconcat			(str,"psy_health_v",prefix);
 	m_fV_PsyHealth			= pSettings->r_float(sect,str);	
-	strconcat				(sizeof(str),str,"bleeding_v",prefix);
+	xr_strconcat			(str,"bleeding_v",prefix);
 	m_fV_Bleeding			= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"wound_incarnation_v",prefix);
+	xr_strconcat			(str,"wound_incarnation_v",prefix);
 	m_fV_WoundIncarnation	= pSettings->r_float(sect,str);
-	strconcat				(sizeof(str),str,"health_restore_v",prefix);
+	xr_strconcat			(str,"health_restore_v",prefix);
 	m_fV_HealthRestore		= READ_IF_EXISTS(pSettings,r_float,sect, str,0.0f);
 }
 

@@ -14,7 +14,7 @@
 #include "squad_hierarchy_holder.h"
 #include "group_hierarchy_holder.h"
 #include "clsid_game.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrRender/kinematics.h"
 #include "monster_community.h"
 #include "ai_space.h"
 
@@ -103,7 +103,7 @@ float CEntity::CalcCondition(float hit)
 void	CEntity::Hit		(SHit* pHDS)
 {
 
-	if (bDebug)				Log("Process HIT: ", *cName());
+	if (bDebug)				Msg("Process HIT: %s", *cName().c_str());
 
 	// *** process hit calculations
 	// Calc impulse
@@ -214,7 +214,7 @@ BOOL CEntity::net_Spawn		(CSE_Abstract* DC)
 		return				(FALSE);
 
 //	SetfHealth			(E->fHealth);
-	CKinematics* pKinematics=smart_cast<CKinematics*>(Visual());
+	IKinematics* pKinematics=smart_cast<IKinematics*>(Visual());
 	CInifile* ini = NULL;
 
 	if(pKinematics) ini = pKinematics->LL_UserData();

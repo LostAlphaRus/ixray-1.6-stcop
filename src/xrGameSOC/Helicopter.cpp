@@ -6,7 +6,8 @@
 #include "ai_sounds.h"
 #include "clsid_game.h"
 #include "../include/xrRender/Kinematics.h"
-#include "script_callback_ex.h"
+#include "../include/xrRender/KinematicsAnimated.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "game_object_space.h"
 #include "script_game_object.h"
 #include "../xrEngine/LightAnimLibrary.h"
@@ -160,8 +161,8 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	CSE_ALifeHelicopter	*heli		= smart_cast<CSE_ALifeHelicopter*>(abstract);
 	VERIFY				(heli);
 
-	R_ASSERT						(Visual()&&smart_cast<CKinematics*>(Visual()));
-	CKinematics* K					= smart_cast<CKinematics*>(Visual());
+	R_ASSERT						(Visual()&&smart_cast<IKinematics*>(Visual()));
+	IKinematics* K					= smart_cast<IKinematics*>(Visual());
 	CInifile* pUserData				= K->LL_UserData();
 
 	m_rotate_x_bone			= K->LL_BoneID	(pUserData->r_string("helicopter_definition","wpn_rotate_x_bone"));
@@ -191,9 +192,9 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 		}
 	}
 	
-	CBoneInstance& biX		= smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
+	CBoneInstance& biX		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_x_bone);	
 	biX.set_callback		(bctCustom,BoneMGunCallbackX,this);
-	CBoneInstance& biY		= smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
+	CBoneInstance& biY		= smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(m_rotate_y_bone);	
 	biY.set_callback		(bctCustom,BoneMGunCallbackY,this);
 	CBoneData& bdX			= K->LL_GetData(m_rotate_x_bone); VERIFY(bdX.IK_data.type==jtJoint);
 	m_lim_x_rot.set			(bdX.IK_data.limits[0].limit.x,bdX.IK_data.limits[0].limit.y);
@@ -209,10 +210,11 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract*	DC)
 	m_bind_x.set			(matrices[m_rotate_x_bone].c);
 	m_bind_y.set			(matrices[m_rotate_y_bone].c);
 	
-	CKinematicsAnimated	*A	= smart_cast<CKinematicsAnimated*>(Visual());
+	IKinematics	*K			= smart_cast<IKinematics*>(Visual());
+	IKinematicsAnimated	*A	= smart_cast<IKinematicsAnimated*>(Visual());
 	if (A) {
 		A->PlayCycle		(*heli->startup_animation);
-		A->CalculateBones	();
+		K->CalculateBones	();
 	}
 
 	m_engineSound.create			(*heli->engine_sound,st_Effect,sg_SourceType);
@@ -320,12 +322,7 @@ void CHelicopter::MoveStep()
 		float vp = m_movement.curLinearSpeed*STEP+(m_movement.curLinearAcc*STEP*STEP)/2.0f;
 		m_movement.currP.mad	(dir, vp);
 		m_movement.curLinearSpeed += m_movement.curLinearAcc*STEP;
-		static bool aaa = false;
-		if(aaa)
-			Log("1-m_movement.curLinearSpeed=",m_movement.curLinearSpeed);
 		clamp(m_movement.curLinearSpeed,0.0f,1000.0f);
-		if(aaa)
-			Log("2-m_movement.curLinearSpeed=",m_movement.curLinearSpeed);
 	}else{ //go stopping
 		if( !fis_zero(m_movement.curLinearSpeed) ){
 			m_movement.curLinearAcc = -m_movement.LinearAcc_bk;
@@ -385,7 +382,7 @@ void CHelicopter::UpdateCL()
 
 		PPhysicsShell()->InterpolateGlobalTransform(&XFORM());
 
-		CKinematics* K		= smart_cast<CKinematics*>(Visual());
+		IKinematics* K		= smart_cast<IKinematics*>(Visual());
 		K->CalculateBones	();
 		//smoke
 		UpdateHeliParticles();
@@ -428,7 +425,7 @@ void CHelicopter::UpdateCL()
 	UpdateWeapons();
 	UpdateHeliParticles();
 
-	CKinematics* K		= smart_cast<CKinematics*>(Visual());
+	IKinematics* K		= smart_cast<IKinematics*>(Visual());
 	K->CalculateBones	();
 }
 

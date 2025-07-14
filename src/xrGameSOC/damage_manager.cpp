@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "damage_manager.h"
 #include "../xrEngine/xr_object.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrrender/kinematics.h"
 
 CDamageManager::CDamageManager			()
 {
@@ -34,7 +34,7 @@ void CDamageManager::reload				(LPCSTR section,CInifile* ini)
 
 	bool section_exist		= ini && ini->section_exist(section);
 	
-	// прочитать дефолтные параметры
+	// РїСЂРѕС‡РёС‚Р°С‚СЊ РґРµС„РѕР»С‚РЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
 	if (section_exist) {
 		string32 buffer;
 		if (ini->line_exist(section,"default")) {
@@ -44,10 +44,10 @@ void CDamageManager::reload				(LPCSTR section,CInifile* ini)
 		}
 	}
 
-	//инициализировать default параметрами
+	//РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ default РїР°СЂР°РјРµС‚СЂР°РјРё
 	init_bones		(section,ini);
 
-	// записать поверху прописанные параметры
+	// Р·Р°РїРёСЃР°С‚СЊ РїРѕРІРµСЂС…Сѓ РїСЂРѕРїРёСЃР°РЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹
 	if (section_exist) {
 		load_section	(section,ini);
 	}
@@ -63,7 +63,7 @@ void CDamageManager::reload(LPCSTR section,LPCSTR line,CInifile* ini)
 
 void CDamageManager::init_bones(LPCSTR section,CInifile* ini)
 {
-	CKinematics				*kinematics = smart_cast<CKinematics*>(m_object->Visual());
+	IKinematics				*kinematics = smart_cast<IKinematics*>(m_object->Visual());
 	VERIFY					(kinematics);
 	for(u16 i = 0; i<kinematics->LL_BoneCount(); i++)
 	{
@@ -76,7 +76,7 @@ void CDamageManager::init_bones(LPCSTR section,CInifile* ini)
 void CDamageManager::load_section(LPCSTR section,CInifile* ini)
 {
 	string32				buffer;
-	CKinematics				*kinematics = smart_cast<CKinematics*>(m_object->Visual());
+	IKinematics				*kinematics = smart_cast<IKinematics*>(m_object->Visual());
 	CInifile::Sect			&damages = ini->r_section(section);
 	for (CInifile::SectCIt i=damages.Data.begin(); damages.Data.end() != i; ++i) {
 		if (xr_strcmp(*(*i).first,"default")) { // read all except default line
@@ -109,13 +109,13 @@ void  CDamageManager::HitScale			(const int element, float& hit_scale, float& wo
 {
 	if(BI_NONE == u16(element))
 	{
-		//считаем что параметры для BI_NONE заданы как 1.f 
+		//СЃС‡РёС‚Р°РµРј С‡С‚Рѕ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ BI_NONE Р·Р°РґР°РЅС‹ РєР°Рє 1.f 
 		hit_scale = 1.f * m_default_hit_factor;
 		wound_scale = 1.f * m_default_wound_factor;
 		return;
 	}
 
-	CKinematics* V		= smart_cast<CKinematics*>(m_object->Visual());			VERIFY(V);
+	IKinematics* V		= smart_cast<IKinematics*>(m_object->Visual());			VERIFY(V);
 	// get hit scale
 	float scale;			
 	if (aim_bullet)

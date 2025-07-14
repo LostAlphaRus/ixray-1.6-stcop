@@ -15,7 +15,7 @@
 #include "../team_hierarchy_holder.h"
 #include "../squad_hierarchy_holder.h"
 #include "../group_hierarchy_holder.h"
-#include "../../include/xrRender/Kinematics.h"
+#include "../../include/xrRender/KinematicsAnimated.h"
 #include "ai_monsters_anims.h"
 #include "../ef_pattern.h"
 #include "../memory_manager.h"
@@ -106,12 +106,12 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 	GroupHierarchyHolder::MEMBER_REGISTRY	Members;
 	if (!tpEntity)
 		for (int k=0; k<(int)Group.members().size(); ++k) {
-			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
+			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
 				Members.push_back(Group.members()[k]);
 		}
 	else
 		for (int k=0; k<(int)Group.members().size(); ++k) {
-			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
+			if (Group.members()[k]->g_Alive() && ((Group.members()[k]->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) == STYPE_VISIBLEFORAI))
 				if (tpEntity->Position().distance_to(Group.members()[k]->Position()) < fGroupDistance) {
 
 					if (!stalker) {
@@ -172,13 +172,13 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 				}
 }
 
-void CAniVector::Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
+void CAniVector::Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 {
 	A.clear		();
 	string256	S1, S2;
 	MotionID	tpMotionDef;
 	for (int i=0; ; ++i)
-		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(strconcat(sizeof(S1),S1,caBaseName,_itoa(i,S2,10))))) {
+		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(xr_strconcat(S1,caBaseName,_itoa(i,S2,10))))) {
 			A.push_back(tpMotionDef);
 #ifdef DEBUG
 			if (psAI_Flags.test(aiAnimation))
@@ -186,7 +186,7 @@ void CAniVector::Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 #endif
 		}
 		else
-			if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(strconcat(sizeof(S1),S1,caBaseName,_itoa(i,S2,10))))) {
+			if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(xr_strconcat(S1,caBaseName,_itoa(i,S2,10))))) {
 				A.push_back(tpMotionDef);
 #ifdef DEBUG
 			if (psAI_Flags.test(aiAnimation))

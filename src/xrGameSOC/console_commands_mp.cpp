@@ -14,6 +14,7 @@
 #include "game_sv_artefacthunt.h"
 #include "date_time.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "../xrGameSpy/xrGameSpy_MainDefs.h"
 
 extern	float	g_cl_lvInterp;
 extern	int		g_cl_InterpolationType; //0 - Linear, 1 - BSpline, 2 - HSpline
@@ -275,12 +276,11 @@ public:
 
 		xr_strlwr			(PlayerName);
 
-		Level().Server->clients_Lock();
 		u32	cnt					= Level().Server->game->get_players_count();
 		u32 it = 0;
 		for(; it<cnt; it++)	
 		{
-			xrClientData *l_pC = (xrClientData*)	Level().Server->client_Get	(it);
+			xrClientData *l_pC = (xrClientData*)	Level().Server->GetClientByID	(it);
 			if (l_pC)
 			{
 				string64			_low_name;
@@ -292,7 +292,7 @@ public:
 					if (Level().Server->GetServerClient() != l_pC)
 					{
 						Msg("Disconnecting : %s", l_pC->ps->getName());
-						Level().Server->DisconnectClient(l_pC);
+						Level().Server->DisconnectClient(l_pC, "st_kicked_by_server");
 						break;
 					}else
 						Msg("! Can't disconnect server's client");
@@ -303,7 +303,6 @@ public:
 		{
 			Msg("! No such player found : %s", PlayerName);
 		}
-		Level().Server->clients_Unlock();		
 	};
 
 	virtual void	Info	(TInfo& I)	{strcpy(I,"Kick Player by name"); }
@@ -355,12 +354,11 @@ public:
 
 		xr_strlwr			(PlayerName);
 
-		Level().Server->clients_Lock();
 		u32	cnt					= Level().Server->game->get_players_count();
 		u32 it = 0;
 		for(; it<cnt; it++)	
 		{
-			xrClientData *l_pC = (xrClientData*)	Level().Server->client_Get	(it);
+			xrClientData *l_pC = (xrClientData*)	Level().Server->GetClientByID	(it);
 			if (l_pC)
 			{
 				string64			_low_name;
@@ -373,7 +371,7 @@ public:
 					{
 						Msg("Disconnecting and Banning: %s", l_pC->ps->getName());
 						Level().Server->BanClient(l_pC, ban_time);
-						Level().Server->DisconnectClient(l_pC);
+						Level().Server->DisconnectClient(l_pC, "st_kicked_by_server");
 						break;
 					}else
 					{
@@ -386,7 +384,6 @@ public:
 		if (it == cnt)
 			Msg("! No such player found : %s", PlayerName);
 
-		Level().Server->clients_Unlock();	
 	};
 
 	virtual void	Info	(TInfo& I){strcpy(I,"Ban Player by Name"); }
@@ -435,11 +432,9 @@ public:
 
 		ip_address							Address;
 		Address.set							(s_ip_addr);
-		Level().Server->clients_Lock		();
 		Msg									("Disconnecting and Banning: %s",Address.to_string().c_str() ); 
 		Level().Server->BanAddress			(Address, ban_time);
-		Level().Server->DisconnectAddress	(Address);
-		Level().Server->clients_Unlock		();
+		Level().Server->DisconnectAddress	(Address, "st_kicked_by_server");
 	};
 
 	virtual void	Info	(TInfo& I){strcpy(I,"Ban Player by IP"); }
@@ -456,9 +451,7 @@ public:
 
 		ip_address						Address;
 		Address.set						(args);
-		Level().Server->clients_Lock	();
 		Level().Server->UnBanAddress	(Address);
-		Level().Server->clients_Unlock	();
 	};
 
 	virtual void	Info	(TInfo& I){strcpy(I,"UnBan Player by IP");}
@@ -476,7 +469,7 @@ public:
 		Msg("- Total Players : %d", cnt);
 		for(u32 it=0; it<cnt; it++)	
 		{
-			xrClientData *l_pC	= (xrClientData*)	Level().Server->client_Get	(it);
+			xrClientData *l_pC	= (xrClientData*)	Level().Server->GetClientByID	(it);
 			if (!l_pC)			continue;
 			ip_address			Address;
 			DWORD dwPort		= 0;

@@ -3,8 +3,8 @@
 #include "PhysicsShell.h"
 #include "xrMessages.h"
 #include "ph_shell_interface.h"
-#include "../xrEngine/skeletoncustom.h"
-#include "script_callback_ex.h"
+#include "../include/xrRender/Kinematics.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "Level.h"
 #include "PHCommander.h"
 #include "PHScriptCall.h"
@@ -149,11 +149,11 @@ void CPhysicsShellHolder::activate_physic_shell()
 	m_pPhysicsShell->Activate	(l_p1, 0, l_p2);
 	if(H_Parent()&&H_Parent()->Visual())
 	{
-		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
-		smart_cast<CKinematics*>(H_Parent()->Visual())->CalculateBones	();
+		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate	();
+		smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones	();
 	}
-	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate	();
-	smart_cast<CKinematics*>(Visual())->CalculateBones();
+	smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones();
 	if(!IsGameTypeSingle())
 	{
 		if(!smart_cast<CCustomRocket*>(this)&&!smart_cast<CGrenade*>(this)) PPhysicsShell()->SetIgnoreDynamic();
@@ -170,8 +170,8 @@ void CPhysicsShellHolder::setup_physic_shell	()
 	VERIFY						(!m_pPhysicsShell);
 	create_physic_shell			();
 	m_pPhysicsShell->Activate	(XFORM(),0,XFORM());
-	smart_cast<CKinematics*>(Visual())->CalculateBones_Invalidate	();
-	smart_cast<CKinematics*>(Visual())->CalculateBones();
+	smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones();
 	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 }
 
@@ -283,16 +283,13 @@ void		CPhysicsShellHolder::	load				(IReader &input_packet)
 
 void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 {
+	IKinematics* K	=smart_cast<IKinematics*>(Visual());
+	VisMask _vm;
 
-	//CPhysicsShell* pPhysicsShell=PPhysicsShell();
-	CKinematics* K	=smart_cast<CKinematics*>(Visual());
-	//Flags8 lflags;
-	//if(pPhysicsShell&&pPhysicsShell->isActive())			lflags.set(CSE_PHSkeleton::flActive,pPhysicsShell->isEnabled());
-
-//	P.w_u8 (lflags.get());
 	if(K)
 	{
-		P.w_u64(K->LL_GetBonesVisible());
+		_vm = K->LL_GetBonesVisible();
+		P.w_u64(_vm._visimask.flags);
 		P.w_u16(K->LL_GetBoneRoot());
 	}
 	else
@@ -338,29 +335,36 @@ void CPhysicsShellHolder::PHSaveState(NET_Packet &P)
 		state.net_Save(P,min,max);
 	}
 }
-void
-CPhysicsShellHolder::PHLoadState(IReader &P)
-{
-	
-//	Flags8 lflags;
-	CKinematics* K=smart_cast<CKinematics*>(Visual());
-//	P.r_u8 (lflags.flags);
-	if(K)
+
+void CPhysicsShellHolder::PHLoadState(IReader& P) {
+	u64 _low = 0;
+	u64 _high = 0;
+
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
+	if (K)
 	{
-		K->LL_SetBonesVisible(P.r_u64());
+		_low = P.r_u64();
 		K->LL_SetBoneRoot(P.r_u16());
 	}
 
-	Fvector min=P.r_vec3();
-	Fvector max=P.r_vec3();
-	
+	Fvector min = P.r_vec3();
+	Fvector max = P.r_vec3();
+
 	VERIFY(!min.similar(max));
 
-	u16 bones_number=P.r_u16();
-	for(u16 i=0;i<bones_number;i++)
+	u16 bones_number = P.r_u16();
+	if (bones_number > 64) {
+		Msg("!![CPhysicsShellHolder::PHLoadState] bones_number is [%u]!", bones_number);
+		_high = P.r_u64();
+	}
+
+	VisMask _vm(_low, _high);
+	K->LL_SetBonesVisible(_vm);
+
+	for (u16 i = 0; i < bones_number; i++)
 	{
 		SPHNetState state;
-		state.net_Load(P,min,max);
+		state.net_Load(P, min, max);
 		PHGetSyncItem(i)->set_State(state);
 	}
 }

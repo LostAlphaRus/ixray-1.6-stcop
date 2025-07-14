@@ -14,7 +14,7 @@
 #include "gamemtllib.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrrender/kinematics.h"
 #include "PHSimpleCharacterInline.h"
 #include "DamageSource.h"
 #include "PHCollideValidator.h"
@@ -1371,7 +1371,7 @@ u16 CPHSimpleCharacter::RetriveContactBone()
 	}
 	else 
 	{
-		CKinematics* K=smart_cast<CKinematics*>(object->Visual());
+		IKinematics* K=smart_cast<IKinematics*>(object->Visual());
 		u16 count=K->LL_BoneCount();
 		CBoneInstance* bone_instances=&K->LL_GetBoneInstance(0);
 		Fvector pos_in_object;
@@ -1620,7 +1620,7 @@ void CPHSimpleCharacter::set_State(const SPHNetState& state)
 
 void CPHSimpleCharacter::get_spatial_params()
 {
-	spatialParsFromDGeom((dGeomID)m_space,spatial.sphere.P,AABB,spatial.sphere.R);
+	spatialParsFromDGeom((dGeomID)m_space,SpatialComponent->spatial.sphere.P,AABB,SpatialComponent->spatial.sphere.R);
 }
 
 float CPHSimpleCharacter::FootRadius()

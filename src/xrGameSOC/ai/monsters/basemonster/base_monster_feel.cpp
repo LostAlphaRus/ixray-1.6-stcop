@@ -16,7 +16,7 @@
 #include "../../../../include/xrRender/Kinematics.h"
 #include "../../../sound_player.h"
 #include "../../../level.h"
-#include "../../../script_callback_ex.h"
+#include "../../../xrScripts/script_callback_ex.h"
 #include "../../../script_game_object.h"
 #include "../../../game_object_space.h"
 #include "../../../ai_monster_space.h"
@@ -99,7 +99,7 @@ void CBaseMonster::HitEntity(const CEntity *pEntity, float fDamage, float impuls
 		HS.weaponID			= (ID());															//		l_P.w_u16	(ID());
 		HS.dir				= (hit_dir);														//		l_P.w_dir	(hit_dir);
 		HS.power			= (fDamage);														//		l_P.w_float	(fDamage);
-		HS.boneID			= (smart_cast<CKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());//		l_P.w_s16	(smart_cast<CKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
+		HS.boneID			= (smart_cast<IKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());//		l_P.w_s16	(smart_cast<CKinematics*>(pEntityNC->Visual())->LL_GetBoneRoot());
 		HS.p_in_bone_space	= (position_in_bone_space);											//		l_P.w_vec3	(position_in_bone_space);
 		HS.impulse			= (impulse);														//		l_P.w_float	(impulse);
 		HS.hit_type			= (ALife::eHitTypeWound);											//		l_P.w_u16	( u16(ALife::eHitTypeWound) );
@@ -199,7 +199,7 @@ BOOL  CBaseMonster::feel_vision_isRelevant(CObject* O)
 	if (!g_Alive())					return FALSE;
 	if (0==smart_cast<CEntity*>(O))	return FALSE;
 	
-	if ((O->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI) return FALSE;
+	if ((O->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI) return FALSE;
 	
 	// если спит, то ничего не видит
 	if (m_bSleep) return FALSE;
@@ -292,7 +292,7 @@ void CBaseMonster::Hit_Wound(CObject *object, float value, const Fvector &dir, f
 	HS.weaponID			= (ID());															//	P.w_u16		(ID());
 	HS.dir				= (dir);															//	P.w_dir		(dir);
 	HS.power			= (value);															//	P.w_float	(value);
-	HS.boneID			= (smart_cast<CKinematics*>(object->Visual())->LL_GetBoneRoot());	//	P.w_s16		(smart_cast<CKinematics*>(object->Visual())->LL_GetBoneRoot());
+	HS.boneID			= (smart_cast<IKinematics*>(object->Visual())->LL_GetBoneRoot());	//	P.w_s16		(smart_cast<CKinematics*>(object->Visual())->LL_GetBoneRoot());
 	HS.p_in_bone_space	= (Fvector().set(0.f,0.f,0.f));										//	P.w_vec3	(Fvector().set(0.f,0.f,0.f));
 	HS.impulse			= (impulse);														//	P.w_float	(impulse);
 	HS.hit_type			= (ALife::eHitTypeWound);											//	P.w_u16		(u16(ALife::eHitTypeWound));

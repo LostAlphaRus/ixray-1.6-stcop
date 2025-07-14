@@ -145,7 +145,15 @@ BOOL CAnimatorCamEffector::Valid()
 
 BOOL CAnimatorCamEffector::Process (Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
 {
-	if(!inherited::Process(p,d,n,fFov,fFar,fAspect))	return FALSE;
+	SCamEffectorInfo info;
+	info.p = p;
+	info.d = d;
+	info.n = n;
+	info.fFov = fFov;
+	info.fFar = fFar;
+	info.fAspect = fAspect;
+	if(!inherited::ProcessCam(info))
+		return FALSE;
 
 	const Fmatrix& m			= m_objectAnimator->XFORM();
 	m_objectAnimator->Update	(Device.fTimeDelta);
@@ -173,7 +181,14 @@ BOOL CAnimatorCamEffector::Process (Fvector &p, Fvector &d, Fvector &n, float& f
 
 BOOL CAnimatorCamLerpEffector::Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect)
 {
-	if(!inherited::inherited::Process(p,d,n,fFov,fFar,fAspect))	return FALSE;
+	SCamEffectorInfo info;
+	info.p = p;
+	info.d = d;
+	info.n = n;
+	info.fFov = fFov;
+	info.fFar = fFar;
+	info.fAspect = fAspect;
+	if(!inherited::inherited::ProcessCam(info))	return FALSE;
 
 	const Fmatrix& m			= m_objectAnimator->XFORM();
 	m_objectAnimator->Update	(Device.fTimeDelta);

@@ -77,9 +77,7 @@ public:
 	virtual CSE_Motion* 	motion			() = 0;
 };
 
-struct ISE_AbstractLEOwner{
-	virtual void			get_bone_xform	(LPCSTR name, Fmatrix& xform) = 0;
-};
+struct ISE_AbstractLEOwner;
 
 struct ISE_Abstract {
 public:

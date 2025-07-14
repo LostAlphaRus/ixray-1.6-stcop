@@ -20,7 +20,7 @@ class CGameObject;
 class NET_Packet;
 struct SBoneShape;
 class  CPHShellSplitterHolder;
-class CKinematics;
+class IKinematics;
 typedef u32	CLClassBits;
 typedef u32	CLBits;
 typedef u32	CGID;
@@ -231,18 +231,18 @@ class CPHIsland;
 class CPhysicsShell			: public CPhysicsBase
 {
 protected:
-					CKinematics					*m_pKinematics																															;
+					IKinematics					*m_pKinematics																															;
 public:
 #ifdef DEBUG
 					CPhysicsShellHolder			*dbg_obj																																;
 #endif
 public:
-IC					CKinematics					*PKinematics								()																{return m_pKinematics		;}
+IC					IKinematics					*PKinematics								()																{return m_pKinematics		;}
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 	virtual			CPhysicsShellAnimator*		PPhysicsShellAnimator						()																							= 0;
 #endif
-					void						set_Kinematics								(CKinematics* p)														{m_pKinematics=p	;}
+					void						set_Kinematics								(IKinematics* p)														{m_pKinematics=p	;}
 	virtual			void						set_JointResistance							(float force)																				= 0;
 	virtual			void						add_Element									(CPhysicsElement* E)																		= 0;
 	virtual			void						add_Joint									(CPhysicsJoint* E)																			= 0;
@@ -307,8 +307,8 @@ IC					CKinematics					*PKinematics								()																{return m_pKinemati
 	virtual			void						SetGlTransformDynamic						(const Fmatrix &form)																		= 0;
 	virtual			void						CollideAll									()																							= 0;
 	virtual			CPhysicsElement				*NearestToPoint								(const Fvector& point)																		= 0;
-	virtual			void						build_FromKinematics						(CKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
-	virtual			void						preBuild_FromKinematics						(CKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
+	virtual			void						build_FromKinematics						(IKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
+	virtual			void						preBuild_FromKinematics						(IKinematics* K,BONE_P_MAP* p_geting_map=NULL)												= 0;
 	virtual			void						Build										(bool disable=false)																		= 0;
 	virtual			void						SetMaxAABBRadius							(float size)																				 {};
 	virtual			void						AddTracedGeom								(u16 element=0,u16 geom=0)																	= 0;
@@ -316,7 +316,7 @@ IC					CKinematics					*PKinematics								()																{return m_pKinemati
 	virtual			void						RunSimulation								(bool place_current_forms=true)																= 0;
 	virtual			void						UpdateRoot									()																							= 0;
 	virtual			void            		    ZeroCallbacks								()																							= 0;
-	virtual			void						ResetCallbacks								(u16 id,Flags64 &mask)																		= 0;
+	virtual			void						ResetCallbacks								(u16 id,VisMask &mask)																		= 0;
 	virtual			void						SetCallbacks								(BoneCallbackFun* callback)																	= 0;
 	virtual			void						EnabledCallbacks							(BOOL val)																					= 0;
 	virtual			void						ToAnimBonesPositions						()																							= 0;

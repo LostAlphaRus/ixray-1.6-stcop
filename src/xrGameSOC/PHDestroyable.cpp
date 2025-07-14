@@ -16,26 +16,27 @@
 #include "PHCollideValidator.h"
 #include "PHShell.h"
 #include "MathUtils.h"
+#include "../Include/xrRender/Kinematics.h"
 #ifdef DEBUG
 #include "PHWorld.h"
 #endif
 /*
 [impulse_transition_to_parts]
-random_min              =1       ; õ ìàññó îáúåêòà = âåëè÷èíà ñëó÷àéíî íàïðàâëåííîãî èìïóëüñà 
-; ñ ñëó÷àéí				î âûáðàííîé òî÷êîé ïðèëîæåíèÿ â ïðåäåëàõ íîâîãî îáåêòà
-random_hit_imp         =0.1     ; õ âåëè÷åíà õèò - èìïóëüñà =............
+random_min              =1       ; Ñ… Ð¼Ð°ÑÑÑƒ Ð¾Ð±ÑŠÐµÐºÑ‚Ð° = Ð²ÐµÐ»Ð¸Ñ‡Ð¸Ð½Ð° ÑÐ»ÑƒÑ‡Ð°Ð¹Ð½Ð¾ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð½Ð¾Ð³Ð¾ Ð¸Ð¼Ð¿ÑƒÐ»ÑŒÑÐ° 
+; Ñ ÑÐ»ÑƒÑ‡Ð°Ð¹Ð½				Ð¾ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¹ Ñ‚Ð¾Ñ‡ÐºÐ¾Ð¹ Ð¿Ñ€Ð¸Ð»Ð¾Ð¶ÐµÐ½Ð¸Ñ Ð² Ð¿Ñ€ÐµÐ´ÐµÐ»Ð°Ñ… Ð½Ð¾Ð²Ð¾Ð³Ð¾ Ð¾Ð±ÐµÐºÑ‚Ð°
+random_hit_imp         =0.1     ; Ñ… Ð²ÐµÐ»Ð¸Ñ‡ÐµÐ½Ð° Ñ…Ð¸Ñ‚ - Ð¸Ð¼Ð¿ÑƒÐ»ÑŒÑÐ° =............
 
-;ref_bone                       ; êîñòü èç ïî êîòîðîé îïðåäåëÿåòñÿ ñêîðîñòü äëÿ ÷àñòåé ó êîòîðûé ñâÿçü íå çàäàíà ïî óìîë÷àíèþ ðóò
-imp_transition_factor  =0.1     ; ôàêòîð ñ êîòîðûì ïðèêëàäûâàåòñÿ õèò ïî èñõîäíîìó îáúåêòó êî âñåì ÷àñòÿì 
-lv_transition_factor   =1       ; êîýôôèöèåíò ïåðåäà÷è ëèíåéíîé ñêîðîñòè
-av_transition_factor   =1       ; êîýôôèöèåíò ïåðåäà÷è óãëîâîé ñêîðîñòè
+;ref_bone                       ; ÐºÐ¾ÑÑ‚ÑŒ Ð¸Ð· Ð¿Ð¾ ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¹ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÑ‚ÑÑ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚ÑŒ Ð´Ð»Ñ Ñ‡Ð°ÑÑ‚ÐµÐ¹ Ñƒ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¹ ÑÐ²ÑÐ·ÑŒ Ð½Ðµ Ð·Ð°Ð´Ð°Ð½Ð° Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ Ñ€ÑƒÑ‚
+imp_transition_factor  =0.1     ; Ñ„Ð°ÐºÑ‚Ð¾Ñ€ Ñ ÐºÐ¾Ñ‚Ð¾Ñ€Ñ‹Ð¼ Ð¿Ñ€Ð¸ÐºÐ»Ð°Ð´Ñ‹Ð²Ð°ÐµÑ‚ÑÑ Ñ…Ð¸Ñ‚ Ð¿Ð¾ Ð¸ÑÑ…Ð¾Ð´Ð½Ð¾Ð¼Ñƒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñƒ ÐºÐ¾ Ð²ÑÐµÐ¼ Ñ‡Ð°ÑÑ‚ÑÐ¼ 
+lv_transition_factor   =1       ; ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚ Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸ Ð»Ð¸Ð½ÐµÐ¹Ð½Ð¾Ð¹ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚Ð¸
+av_transition_factor   =1       ; ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚ Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸ ÑƒÐ³Ð»Ð¾Ð²Ð¾Ð¹ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚Ð¸
 
 
 [impulse_transition_from_source_bone]
 source_bone            =0       ; ref_bone
-imp_transition_factor  =1       ; êîýôôèöèåíò ïåðåäà÷è èìïóëüñà     
-lv_transition_factor   =1       ; êîýôôèöèåíò ïåðåäà÷è ëèíåéíîé ñêîðîñòè 
-av_transition_factor   =1       ; êîýôôèöèåíò ïåðåäà÷è óãëîâîé ñêîðîñòè
+imp_transition_factor  =1       ; ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚ Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸ Ð¸Ð¼Ð¿ÑƒÐ»ÑŒÑÐ°     
+lv_transition_factor   =1       ; ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚ Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸ Ð»Ð¸Ð½ÐµÐ¹Ð½Ð¾Ð¹ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚Ð¸ 
+av_transition_factor   =1       ; ÐºÐ¾ÑÑ„Ñ„Ð¸Ñ†Ð¸ÐµÐ½Ñ‚ Ð¿ÐµÑ€ÐµÐ´Ð°Ñ‡Ð¸ ÑƒÐ³Ð»Ð¾Ð²Ð¾Ð¹ ÑÐºÐ¾Ñ€Ð¾ÑÑ‚Ð¸
 
 */
 CPHDestroyable::CPHDestroyable()
@@ -211,8 +212,8 @@ void CPHDestroyable::NotificatePart(CPHDestroyableNotificate *dn)
 {
 	CPhysicsShell	*own_shell=PPhysicsShellHolder()->PPhysicsShell()			;
 	CPhysicsShell	*new_shell=dn->PPhysicsShellHolder()->PPhysicsShell()		;
-	CKinematics		*own_K	  =PKinematics(PPhysicsShellHolder()->Visual())		;
-	CKinematics		*new_K	  =PKinematics(dn->PPhysicsShellHolder()->Visual())	;
+	IKinematics		*own_K	  = smart_cast<IKinematics*>(PPhysicsShellHolder()->Visual())		;
+	IKinematics		*new_K	  = smart_cast<IKinematics*>(dn->PPhysicsShellHolder()->Visual())	;
 	VERIFY			(own_K&&new_K&&own_shell&&new_shell)						;
 	CInifile		*own_ini  =own_K->LL_UserData()								;
 	CInifile		*new_ini  =new_K->LL_UserData()								;

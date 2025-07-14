@@ -9,15 +9,14 @@
 #include "../xrEngine/feel_vision.h"
 #include "../xrEngine/feel_sound.h"
 #include "../xrEngine/feel_touch.h"
-#include "../include/xrRender/Kinematics.h"
-#include "associative_vector.h"
+#include "../include/xrRender/KinematicsAnimated.h"
+#include "../xrCore/associative_vector.h"
 
 namespace MonsterSpace {
 	struct SBoneRotation;
 };
 
 class CMotionDef;
-class CKinematicsAnimated;
 class CMemoryManager;
 class CItemManager;
 class CEnemyManager;
@@ -55,7 +54,7 @@ protected:
 		MotionID		ls;
 		MotionID		rs;
 
-		void			Create(CKinematicsAnimated* K, LPCSTR base);
+		void			Create(IKinematicsAnimated* K, LPCSTR base);
 	};
 
 private:

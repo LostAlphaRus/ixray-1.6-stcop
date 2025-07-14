@@ -10,7 +10,7 @@
 #include "Actor_Flags.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "level.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrRender/kinematics.h"
 #include "../xrCore/object_broker.h"
 #include "game_base_space.h"
 #include "MathUtils.h"
@@ -282,11 +282,11 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
-			Log("current_state", GetState() );
-			Log("next_state", GetNextState());
-			Log("state_time", m_dwStateTime);
-			Log("item_sect", cNameSect().c_str());
-			Log("H_Parent", H_Parent()->cNameSect().c_str());
+			Msg("current_state %s", GetState() );
+			Msg("next_state %s", GetNextState());
+			Msg("state_time %s", m_dwStateTime);
+			Msg("item_sect %s", cNameSect().c_str());
+			Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
 			}
 
 			smart_cast<CEntity*>	(H_Parent())->g_fireParams	(this, p1,d);
@@ -337,11 +337,11 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 			if(NULL == io->inventory().ActiveItem())
 			{
-			Log("current_state", GetState() );
-			Log("next_state", GetNextState());
-			Log("state_time", m_dwStateTime);
-			Log("item_sect", cNameSect().c_str());
-			Log("H_Parent", H_Parent()->cNameSect().c_str());
+			Msg("current_state %s", GetState() );
+			Msg("next_state %s", GetNextState());
+			Msg("state_time %s", m_dwStateTime);
+			Msg("item_sect %s", cNameSect().c_str());
+			Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
 			}
 			E->g_fireParams		(this, p1,d);
 		}
@@ -703,7 +703,7 @@ void CWeaponMagazinedWGrenade::UpdateSounds	()
 void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)
 {
 	if (H_Parent() != Level().CurrentEntity())	return;
-	CKinematics* pHudVisual						= smart_cast<CKinematics*>(m_pHUD->Visual());
+	IKinematics* pHudVisual						= smart_cast<IKinematics*>(m_pHUD->Visual());
 	VERIFY										(pHudVisual);
 	pHudVisual->LL_SetBoneVisible				(pHudVisual->LL_BoneID(*grenade_bone_name),visibility,TRUE);
 	pHudVisual->CalculateBones_Invalidate		();

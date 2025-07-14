@@ -20,7 +20,7 @@
 
 #include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"
@@ -128,7 +128,7 @@ void CWeapon::UpdateXForm	()
 			return;
 
 		R_ASSERT		(E);
-		CKinematics*	V		= smart_cast<CKinematics*>	(E->Visual());
+		IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
 		VERIFY			(V);
 
 		// Get matrices
@@ -177,7 +177,7 @@ void CWeapon::UpdateFireDependencies_internal()
 		if (GetHUDmode() && (0!=H_Parent()) )
 		{
 			// 1st person view - skeletoned
-			CKinematics* V			= smart_cast<CKinematics*>(m_pHUD->Visual());
+			IKinematics* V			= smart_cast<IKinematics*>(m_pHUD->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 
@@ -233,11 +233,11 @@ void CWeapon::ForceUpdateFireParticles()
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
 		if(NULL == io->inventory().ActiveItem())
 		{
-				Log("current_state", GetState() );
-				Log("next_state", GetNextState());
-				Log("state_time", m_dwStateTime);
-				Log("item_sect", cNameSect().c_str());
-				Log("H_Parent", H_Parent()->cNameSect().c_str());
+				Msg("current_state %s", GetState() );
+				Msg("next_state %s", GetNextState());
+				Msg("state_time %s", m_dwStateTime);
+				Msg("item_sect %s", cNameSect().c_str());
+				Msg("H_Parent %s", H_Parent()->cNameSect().c_str());
 		}
 
 		Fvector					p, d; 
@@ -426,7 +426,7 @@ void CWeapon::Load		(LPCSTR section)
 
 	string256						temp;
 	for (int i=egdNovice; i<egdCount; ++i) {
-		strconcat					(sizeof(temp),temp,"hit_probability_",get_token_name(difficulty_type_token,i));
+		xr_strconcat				(temp,"hit_probability_",get_token_name(difficulty_type_token,i));
 		m_hit_probability[i]		= READ_IF_EXISTS(pSettings,r_float,section,temp,1.f);
 	}
 }
@@ -450,9 +450,9 @@ void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
 void CWeapon::LoadZoomOffset (LPCSTR section, LPCSTR prefix)
 {
 	string256 full_name;
-	m_pHUD->SetZoomOffset(pSettings->r_fvector3	(hud_sect, strconcat(sizeof(full_name),full_name, prefix, "zoom_offset")));
-	m_pHUD->SetZoomRotateX(pSettings->r_float	(hud_sect, strconcat(sizeof(full_name),full_name, prefix, "zoom_rotate_x")));
-	m_pHUD->SetZoomRotateY(pSettings->r_float	(hud_sect, strconcat(sizeof(full_name),full_name, prefix, "zoom_rotate_y")));
+	m_pHUD->SetZoomOffset(pSettings->r_fvector3	(hud_sect, xr_strconcat(full_name, prefix, "zoom_offset")));
+	m_pHUD->SetZoomRotateX(pSettings->r_float	(hud_sect, xr_strconcat(full_name, prefix, "zoom_rotate_x")));
+	m_pHUD->SetZoomRotateY(pSettings->r_float	(hud_sect, xr_strconcat(full_name, prefix, "zoom_rotate_y")));
 
 	if(pSettings->line_exist(hud_sect, "zoom_rotate_time"))
 		m_fZoomRotateTime = pSettings->r_float(hud_sect,"zoom_rotate_time");
@@ -564,7 +564,7 @@ void CWeapon::net_Import(NET_Packet& P)
 	P.r_u8					(wstate);
 
 	u8 Zoom;
-	P.r_u8					((u8)Zoom);
+	P.r_u8					(Zoom);
 
 	if (H_Parent() && H_Parent()->Remote())
 	{
@@ -1061,7 +1061,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 //	if(IsZoomed() && )
 
 
-	CKinematics* pHudVisual									= smart_cast<CKinematics*>(m_pHUD->Visual());
+	IKinematics* pHudVisual									= smart_cast<IKinematics*>(m_pHUD->Visual());
 	VERIFY(pHudVisual);
 	if (H_Parent() != Level().CurrentEntity()) pHudVisual	= NULL;
 
@@ -1142,7 +1142,7 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 void CWeapon::UpdateAddonsVisibility()
 {
-	CKinematics* pWeaponVisual = smart_cast<CKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); R_ASSERT(pWeaponVisual);
 
 	u16  bone_id;
 	UpdateHUDAddonsVisibility								();	

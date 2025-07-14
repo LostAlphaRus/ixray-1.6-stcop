@@ -92,6 +92,7 @@ ENGINE_API _action  actions[]		= {
 	{ "alife_command",		kALIFE_CMD				,_sp},		
 	{ "use_bandage",		kUSE_BANDAGE			,_sp},
 	{ "use_medkit",			kUSE_MEDKIT				,_sp},
+	{ "engine",				kENGINE					,_sp},
 
 	{ "custom1",			kCUSTOM1				,_sp},
 	{ "custom2",			kCUSTOM2				,_sp},

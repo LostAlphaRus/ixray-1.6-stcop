@@ -11,7 +11,7 @@
 #include "script_game_object_impl.h"
 #include "script_entity_action.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "script_entity.h"
 #include "physicsshellholder.h"
 #include "helicopter.h"
@@ -22,8 +22,8 @@
 #include "weaponmagazined.h"
 #include "xrmessages.h"
 #include "inventory.h"
-#include "script_ini_file.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../xrScripts/exports/script_ini_file.h"
+#include "../include/xrRender/kinematics.h"
 #include "HangingLamp.h"
 #include "patrol_path_manager.h"
 #include "ai_object_location.h"
@@ -35,7 +35,7 @@
 #include "actor.h"
 #include "actor_memory.h"
 #include "visual_memory_manager.h"
-
+#include "../xrScripts/script_callback_ex.h"
 
 class CScriptBinderObject;
 
@@ -99,7 +99,7 @@ u32 CScriptGameObject::game_vertex_id		() const
 
 float CScriptGameObject::level_vertex_light	(const u32 &level_vertex_id) const
 {
-	return						((float)ai().level_graph().vertex(level_vertex_id)->light()/15.f);
+	return						((float)127.f / 15.f);
 }
 
 CScriptIniFile *CScriptGameObject::spawn_ini			() const
@@ -297,12 +297,12 @@ Fvector	CScriptGameObject::bone_position	(LPCSTR bone_name) const
 {
 	u16					bone_id;
 	if (xr_strlen(bone_name))
-		bone_id			= smart_cast<CKinematics*>(object().Visual())->LL_BoneID(bone_name);
+		bone_id			= smart_cast<IKinematics*>(object().Visual())->LL_BoneID(bone_name);
 	else
-		bone_id			= smart_cast<CKinematics*>(object().Visual())->LL_GetBoneRoot();
+		bone_id			= smart_cast<IKinematics*>(object().Visual())->LL_GetBoneRoot();
 
 	Fmatrix				matrix;
-	matrix.mul_43		(object().XFORM(),smart_cast<CKinematics*>(object().Visual())->LL_GetBoneInstance(bone_id).mTransform);
+	matrix.mul_43		(object().XFORM(),smart_cast<IKinematics*>(object().Visual())->LL_GetBoneInstance(bone_id).mTransform);
 	return				(matrix.c);
 }
 

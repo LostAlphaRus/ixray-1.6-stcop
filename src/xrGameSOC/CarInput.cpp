@@ -14,7 +14,7 @@
 #include "camerafirsteye.h"
 #include "script_entity_action.h"
 #include "../xrEngine/xr_level_controller.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrrender/kinematics.h"
 #include "level.h"
 #include "CarWeapon.h"
 
@@ -63,7 +63,7 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 	if (l_tObjectAction.m_bCompleted || !xr_strlen(l_tObjectAction.m_caBoneName))
 		return((l_tObjectAction.m_bCompleted = true) == false);
 
-	s16	l_sBoneID = smart_cast<CKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
+	s16	l_sBoneID = smart_cast<IKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
 	if (is_Door(l_sBoneID)) {
 		switch(l_tObjectAction.m_tGoalType) {
 			case MonsterSpace::eObjectActionActivate : {

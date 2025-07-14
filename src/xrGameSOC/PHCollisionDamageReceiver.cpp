@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "phcollisiondamagereceiver.h"
 #include "PhysicsShellHolder.h"
-#include "xr_ini.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../xrCore/xr_ini.h"
+#include "../include/xrrender/kinematics.h"
 #include "geometry.h"
 #include "PhysicsShell.h"
 #include "GameMtlLib.h"
@@ -18,7 +18,7 @@ void CPHCollisionDamageReceiver::BoneInsert(u16 id,float k)
 void CPHCollisionDamageReceiver::Init()
 {
 	CPhysicsShellHolder *sh	=PPhysicsShellHolder	();
-	CKinematics			*K	=smart_cast<CKinematics*>(sh->Visual());
+	IKinematics			*K	=smart_cast<IKinematics*>(sh->Visual());
 	CInifile			*ini=K->LL_UserData();
 	if(ini->section_exist("collision_damage"))
 	{

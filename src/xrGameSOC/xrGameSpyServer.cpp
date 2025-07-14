@@ -62,7 +62,7 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name)
 	{
 		string1024	CompName;
 		DWORD		CompNameSize = 1024;
-		if (GetComputerName(CompName, &CompNameSize)) HostName._set(CompName);
+		if (GetComputerNameA(CompName, &CompNameSize)) HostName._set(CompName);
 	}
 	else
 		HostName._set(game->get_option_s		(*session_name,"hname",NULL));
@@ -131,7 +131,7 @@ void			xrGameSpyServer::Update				()
 
 int				xrGameSpyServer::GetPlayersCount()
 {
-	int NumPlayers = client_Count();
+	int NumPlayers = GetClientsCount();
 	if (!g_dedicated_server || NumPlayers < 1) return NumPlayers;
 	return NumPlayers - 1;
 };
@@ -152,15 +152,12 @@ void			xrGameSpyServer::OnCL_Disconnected	(IClient* _CL)
 {
 	inherited::OnCL_Disconnected(_CL);
 
-	csPlayers.Enter			();
-
 	if (m_bCDKey_Initialized)
 	{
 		Msg("xrGS::CDKey::Server : Disconnecting Client");
 		m_GCDServer.DisconnectUser(int(_CL->ID.value()));
 	};
 
-	csPlayers.Leave			();
 }
 
 u32				xrGameSpyServer::OnMessage(NET_Packet& P, ClientID sender)			// Non-Zero means broadcasting with "flags" as returned

@@ -108,6 +108,7 @@ public:
 
 	virtual void	Activate						(bool bActive); 
 	virtual	bool	IsActive						(); 
+	virtual	bool	CanSkipSceneRendering			(); 
 
 	virtual void	IR_OnMousePress					(int btn);
 	virtual void	IR_OnMouseRelease				(int btn);
@@ -131,6 +132,7 @@ public:
 	virtual bool	UseIndicators					()						{return false;}
 
 
+	virtual CDialogHolder* GetDialogHolder() override { return this; }
 	void			OnDeviceCreate					();
 
 	void			Screenshot						(IRender_interface::ScreenshotMode mode=IRender_interface::SM_NORMAL, LPCSTR name = 0);

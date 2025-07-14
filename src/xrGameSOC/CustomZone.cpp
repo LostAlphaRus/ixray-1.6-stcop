@@ -13,9 +13,10 @@
 #include "../xrEngine/igame_persistent.h"
 #include "artifact.h"
 #include "ai_object_location.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../include/xrrender/kinematics.h"
 #include "zone_effector.h"
 #include "breakableobject.h"
+#include "../xrEngine/xr_collide_form.h"
 
 //////////////////////////////////////////////////////////////////////////
 #define PREFETCHED_ARTEFACTS_NUM 1	//количество предварительно проспавненых артефактов
@@ -646,7 +647,7 @@ BOOL CCustomZone::feel_touch_contact(CObject* O)
 {
 	if (smart_cast<CCustomZone*>(O))				return FALSE;
 	if (smart_cast<CBreakableObject*>(O))			return FALSE;
-	if (0==smart_cast<CKinematics*>(O->Visual()))	return FALSE;
+	if (0==smart_cast<IKinematics*>(O->Visual()))	return FALSE;
 
 	if (O->ID() == ID())
 		return		(FALSE);
@@ -1434,7 +1435,7 @@ void CCustomZone::GoEnabledState()
 
 BOOL CCustomZone::feel_touch_on_contact	(CObject *O)
 {
-	if ((spatial.type | STYPE_VISIBLEFORAI) != spatial.type)
+	if ((SpatialComponent->spatial.type | STYPE_VISIBLEFORAI) != SpatialComponent->spatial.type)
 		return			(FALSE);
 
 	return				(inherited::feel_touch_on_contact(O));
