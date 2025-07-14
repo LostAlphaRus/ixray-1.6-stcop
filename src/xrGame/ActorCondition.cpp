@@ -453,7 +453,7 @@ void CActorCondition::UpdateRadiation()
 		m_fRadiationZonePower = 0;
 		for (CObject* pFeelObject : m_object->q_nearest)
 		{
-			if (!pFeelObject || pFeelObject->getDestroy()) 
+			if (!pFeelObject || pFeelObject->getDestroy() || pFeelObject->CLS_ID == 0) 
 				continue;									// Don't touch candidates for destroy
 
 			CRadioactiveZone* pRadZone = smart_cast<CRadioactiveZone*>(pFeelObject);
