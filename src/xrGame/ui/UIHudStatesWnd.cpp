@@ -189,6 +189,7 @@ void CUIHudStatesWnd::InitFromXml( CUIXml& xml, LPCSTR path )
 	if (xml.NavigateToNode("progress_bar_armor", 0))
 	{
 		m_ui_armor_bar = UIHelper::CreateProgressBar(xml, "progress_bar_armor", this);
+		m_ui_armor_bar->IsExpressionSystem = xml.ReadAttrib("progress_bar_armor", 0, "expression", nullptr) != nullptr;
 	}
 
 	if (xml.NavigateToNode("progress", 0))
@@ -304,7 +305,7 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 		}
 	}
 
-	if (!m_ui_stamina_bar->IsExpressionSystem)
+	if (m_ui_stamina_bar && !m_ui_stamina_bar->IsExpressionSystem)
 	{
 		float cur_stamina = actor->conditions().GetPower();
 		m_ui_stamina_bar->SetProgressPos(iCeil(cur_stamina * 100.0f * 35.f) / 35.f);
@@ -312,6 +313,19 @@ void CUIHudStatesWnd::UpdateHealth( CActor* actor )
 		{
 			m_ui_stamina_bar->m_UIProgressItem.ResetColorAnimation();
 		}
+	}
+
+	if (m_ui_armor_bar && !m_ui_armor_bar->IsExpressionSystem)
+	{
+		float cur_armor = 0.f;
+		if (actor->GetOutfit() != nullptr && actor->GetHelmet() != nullptr)
+			cur_armor = (actor->GetOutfit()->GetCondition() * 0.5f) + (actor->GetHelmet()->GetCondition() * 0.5f);
+		else if (actor->GetOutfit() != nullptr)
+			cur_armor = actor->GetOutfit()->GetCondition();
+		else if (actor->GetHelmet() != nullptr)
+			cur_armor = actor->GetHelmet()->GetCondition();
+
+		m_ui_armor_bar->SetProgressPos(iCeil(cur_armor * 100.0f * 35.f) / 35.f);
 	}
 
 	CCustomOutfit* outfit = actor->GetOutfit();
@@ -353,8 +367,23 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 
 		item->GetBriefInfo(m_item_info);
 
-		//		UIWeaponBack.SetText		( str_name.c_str() );
-		m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+		if (m_static_weapon)
+		{
+			string256 ammoName;
+			if (m_item_info.fire_mode.size())
+			{
+				xr_sprintf(ammoName, sizeof(ammoName), "%s (%s)", m_item_info.name.c_str(), m_item_info.fire_mode.c_str());
+			}
+			else
+			{
+				xr_sprintf(ammoName, "%s", m_item_info.name.c_str());
+			}
+
+			m_static_weapon->SetText(ammoName);
+		}
+		if (m_fire_mode)
+			m_fire_mode->SetText(m_item_info.fire_mode.c_str());
+		
 		SetAmmoIcon(m_item_info.icon.c_str());
 
 		if (m_ui_weapon_cur_ammo)
@@ -407,7 +436,8 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 			}
 		}
 
-		m_fire_mode->Show(true);
+		if (m_fire_mode)
+			m_fire_mode->Show(true);
 
 		if (m_ui_grenade)
 		{
@@ -452,7 +482,11 @@ void CUIHudStatesWnd::UpdateActiveItemInfo(CActor* actor)
 		if (m_ui_weapon_third_ammo)
 			m_ui_weapon_third_ammo->Show(false); //Alundaio: Third Ammo
 
-		m_fire_mode->Show(false);
+		if (m_static_weapon)
+			m_static_weapon->SetText("");
+
+		if (m_fire_mode)
+			m_fire_mode->Show(false);
 
 		if (m_ui_grenade)
 			m_ui_grenade->Show(false);
@@ -662,8 +696,12 @@ void CUIHudStatesWnd::UpdateIndicators( CActor* actor )
 
 	UpdateSatiety(actor);
 
+
 	for ( int i = 0; i < it_max ; ++i ) // it_max = ALife::infl_max_count-1
 	{
+		if (!m_indik[i])
+			return;
+
 		UpdateIndicatorType( actor, (ALife::EInfluenceType)i );
 	}
 }
@@ -851,17 +889,11 @@ void CUIHudStatesWnd::DrawZoneIndicators()
 
 	UpdateIndicators(actor);
 
-	if(m_indik[ALife::infl_rad]->IsShown())
-		m_indik[ALife::infl_rad]->Draw();
-
-	if(m_indik[ALife::infl_fire]->IsShown())
-		m_indik[ALife::infl_fire]->Draw();
-
-	if(m_indik[ALife::infl_acid]->IsShown())
-		m_indik[ALife::infl_acid]->Draw();
-
-	if(m_indik[ALife::infl_psi]->IsShown())
-		m_indik[ALife::infl_psi]->Draw();
+	for (int i = 0; i < it_max; ++i) // it_max = ALife::infl_max_count-1
+	{
+		if (m_indik[i] && m_indik[i]->IsShown())
+			m_indik[i]->Draw();
+	}
 }
 
 void CUIHudStatesWnd::FakeUpdateIndicatorType(u8 t, float power)

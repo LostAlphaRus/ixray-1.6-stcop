@@ -78,6 +78,7 @@ constexpr auto C_DEFAULT = color_xrgb(0xff, 0xff, 0xff);
 CUIMainIngameWnd::CUIMainIngameWnd()
 :/*m_pGrenade(nullptr),m_pItem(nullptr),*/m_pPickUpItem(nullptr),m_pMPChatWnd(nullptr),UIArtefactIcon(nullptr),m_pMPLogWnd(nullptr)
 {
+	UIStaticDiskIO				= nullptr;
 	UIZoneMap					= new CUIZoneMap();
 }
 
@@ -101,7 +102,9 @@ void CUIMainIngameWnd::Init()
 	uiXml.Load					(CONFIG_PATH, UI_PATH, MAININGAME_XML);
 	
 	CUIXmlInit					xml_init;
-	xml_init.InitWindow			(uiXml,"main",0,this);
+
+	if (uiXml.NavigateToNode("main"))
+		xml_init.InitWindow			(uiXml,"main",0,this);
 
 	Enable(false);
 
@@ -299,12 +302,61 @@ void CUIMainIngameWnd::Init()
     else
         AttachChild(UIMotionIcon);
 
-	UIStaticDiskIO							= UIHelper::CreateStatic(uiXml, "disk_io", this);
-
 	m_ui_hud_states							= new CUIHudStatesWnd();
 	m_ui_hud_states->SetAutoDelete			(true);
 	AttachChild								(m_ui_hud_states);
-	m_ui_hud_states->InitFromXml			(uiXml, "hud_states");
+
+	bool hudStatesExist = false;
+	if (uiXml.NavigateToNode("hud_states"))
+	{
+		m_ui_hud_states->InitFromXml			(uiXml, "hud_states");
+		hudStatesExist = true;
+	}
+
+	// SoC compatibility layer starts here
+	if (!hudStatesExist)
+	{
+		m_ui_hud_states->m_static_health = UIHelper::CreateStatic(uiXml, "static_health", this);
+		m_ui_hud_states->m_ui_health_bar = UIHelper::CreateProgressBar(uiXml, "progress_bar_health", m_ui_hud_states->m_static_health);
+		m_ui_hud_states->m_ui_health_bar->IsExpressionSystem = uiXml.ReadAttrib("progress_bar_health", 0, "expression", nullptr) != nullptr;
+
+		m_ui_hud_states->m_static_armor = UIHelper::CreateStatic(uiXml, "static_armor", this);
+		m_ui_hud_states->m_ui_armor_bar = UIHelper::CreateProgressBar(uiXml, "progress_bar_armor", m_ui_hud_states->m_static_armor);
+		m_ui_hud_states->m_ui_armor_bar->IsExpressionSystem = uiXml.ReadAttrib("progress_bar_armor", 0, "expression", nullptr) != nullptr;
+
+		m_ui_hud_states->m_ui_stamina_bar = nullptr;
+
+		m_ui_hud_states->m_static_weapon = UIHelper::CreateStatic(uiXml, "static_weapon", this);
+		m_ui_hud_states->m_ui_weapon_sign_ammo = UIHelper::CreateTextWnd(uiXml, "static_ammo", m_ui_hud_states->m_static_weapon);
+
+		m_ui_hud_states->m_ui_weapon_icon			= UIHelper::CreateStatic( uiXml, "static_wpn_icon", m_ui_hud_states->m_static_weapon);
+		m_ui_hud_states->m_ui_weapon_icon->SetShader( InventoryUtilities::GetEquipmentIconsShader() );
+		m_ui_hud_states->m_ui_weapon_icon_rect		= m_ui_hud_states->m_ui_weapon_icon->GetWndRect();
+
+	}
+
+	if (uiXml.NavigateToNode("static_pda_online") && IsGameTypeSingleCompatible())
+	{
+		UIPdaOnline = new CUIStatic();
+		xml_init.InitStatic(uiXml, "static_pda_online", 0, UIPdaOnline);
+		UIZoneMap->Background().AttachChild(UIPdaOnline);
+	}
+	// ...and ends here
+
+	if (uiXml.NavigateToNode("disk_io"))
+	{
+		UIStaticDiskIO = UIHelper::CreateStatic(uiXml, "disk_io", this);
+	}
+	else
+	{
+		UIStaticDiskIO = new CUIStatic();
+		AttachChild(UIStaticDiskIO);
+		UIStaticDiskIO->SetWndPos(Fvector2().set(1000, 750));
+		UIStaticDiskIO->SetWndSize(Fvector2().set(16, 16));
+		UIStaticDiskIO->InitTexture("ui\\ui_disk_io");
+		UIStaticDiskIO->SetTextureRect(Frect().set(0.f / UI().get_current_kx(), 0.f, 32 / UI().get_current_kx(), 32));
+		UIStaticDiskIO->SetStretchTexture(true);
+	}
 
 	for(int i=0; i<4; i++)
 	{
@@ -445,6 +497,23 @@ void CUIMainIngameWnd::Update()
 	{
 		lookat_player = Game().lookat_player();
 	}
+
+	if (UIPdaOnline && !(Device.dwFrame % 20) && IsGameTypeSingleCompatible())
+	{
+		string256				text_str;
+		CPda* _pda = pActor->GetPDA();
+		u32 _cn = 0;
+		if (_pda && 0 != (_cn = _pda->ActiveContactsNum()))
+		{
+			sprintf_s(text_str, "%d", _cn);
+			UIPdaOnline->SetText(text_str);
+		}
+		else
+		{
+			UIPdaOnline->SetText("");
+		}
+	};
+
 	bool b_God = ( GodMode() || ( !lookat_player ) )? true : lookat_player->testFlag(GAME_PLAYER_FLAG_INVINCIBLE);
 	if ( b_God )
 	{

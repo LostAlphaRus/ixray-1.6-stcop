@@ -24,6 +24,8 @@ CUIZoneMap::CUIZoneMap()
 visible(true)
 {	
 	m_clock_wnd = nullptr;
+	m_Counter_text = nullptr;
+	m_Counter = nullptr;
 	m_pointerDistanceText = nullptr;
 	disabled = false;
 }
@@ -58,12 +60,15 @@ void CUIZoneMap::Init()
 
 	m_activeMap->SetRounded(m_background.WndSizeIsProbablyRelative());
 
+	bool ShadowOfChernobylStyle = !uiXml.NavigateToNode("minimap:static_counter"); // St4lker0k765: может есть варианты и получше, 
+																				   // но пока это единственное что приходит на ум, увы
 	xml_init.InitStatic				(uiXml, "minimap:compass", 0, &m_compass);
-	m_background.AttachChild		(&m_compass);
+
+	if (!ShadowOfChernobylStyle)
+		m_background.AttachChild		(&m_compass);
 
 	m_clipFrame.AttachChild			(&m_center);
 
-	m_Counter_text.SetText( "" );
 	visible = true;
 
 	Fvector2 temp;
@@ -108,16 +113,20 @@ void CUIZoneMap::Init()
 
 	if ( IsGameTypeSingleCompatible() )
 	{
-		xml_init.InitStatic			(uiXml, "minimap:static_counter", 0, &m_Counter);
-		m_background.AttachChild	(&m_Counter);
-		xml_init.InitTextWnd		(uiXml, "minimap:static_counter:text_static", 0, &m_Counter_text);
-		m_Counter.AttachChild		(&m_Counter_text);
+		if (ShadowOfChernobylStyle)
+			return;
 
-        if (m_Counter.WndPosIsProbablyRelative())
+		xml_init.InitStatic			(uiXml, "minimap:static_counter", 0, m_Counter);
+		m_background.AttachChild	(m_Counter);
+		xml_init.InitTextWnd		(uiXml, "minimap:static_counter:text_static", 0, m_Counter_text);
+		m_Counter_text->SetText( "" );
+		m_Counter->AttachChild		(m_Counter_text);
+
+        if (m_Counter->WndPosIsProbablyRelative())
         {
-            temp = m_Counter.GetWndPos();
+            temp = m_Counter->GetWndPos();
             temp.mul(m_background.GetWndSize());
-            m_Counter.SetWndPos(temp);
+            m_Counter->SetWndPos(temp);
         }
 	}
 
@@ -162,7 +171,8 @@ void CUIZoneMap::Update()
 				xr_sprintf(text_str, sizeof(text_str), "%d", cn);
 			}
 		}
-		m_Counter_text.SetText(text_str);
+		if (m_Counter_text)
+			m_Counter_text->SetText(text_str);
 	}
 
 	UpdateRadar(Device.vCameraPosition);
@@ -265,5 +275,6 @@ void CUIZoneMap::OnSectorChanged(int sector)
 
 void CUIZoneMap::Counter_ResetClrAnimation()
 {
-	m_Counter_text.ResetColorAnimation();
+	if (m_Counter_text)
+		m_Counter_text->ResetColorAnimation();
 }
