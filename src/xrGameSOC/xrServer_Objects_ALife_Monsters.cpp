@@ -403,7 +403,7 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 	if(NO_REPUTATION == m_reputation)
 		m_reputation = selected_char.Reputation();
 
-	m_character_name = *(CStringTable().translate(selected_char.Name()));
+	m_character_name = *(g_pStringTable->translate(selected_char.Name()));
 	
 	LPCSTR gen_name = "GENERATE_NAME_";
 	if( strstr(m_character_name.c_str(),gen_name) ){
@@ -420,14 +420,14 @@ void CSE_ALifeTraderAbstract::set_specific_character	(shared_str new_spec_char)
 		n					+= subset;
 		n					+= "_";
 		n					+= _itoa(::Random.randI(name_cnt),S,10);
-		m_character_name	= *(CStringTable().translate(n.c_str()));
+		m_character_name	= *(g_pStringTable->translate(n.c_str()));
 		m_character_name	+= " ";
 
 		n					= "lname_";
 		n					+= subset;
 		n					+= "_";
 		n					+= _itoa(::Random.randI(last_name_cnt),S,10);
-		m_character_name	+= *(CStringTable().translate(n.c_str()));
+		m_character_name	+= *(g_pStringTable->translate(n.c_str()));
 
 
 	

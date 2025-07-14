@@ -31,6 +31,19 @@ void CUICursor::OnScreenResolutionChanged()
 	InitInternal();
 }
 
+void CUICursor::Show()
+{
+	if (bVisible)
+		return;
+
+	u32 screenWidth = psCurrentVidMode[0];
+	u32 screenHeight = psCurrentVidMode[1];
+
+	SetUICursorPosition(Fvector2().set(512.0f, 384.0f));
+	SDL_WarpMouseInWindow(g_AppInfo.Window, screenWidth / 2, screenHeight / 2);
+
+	bVisible = true;
+}
 void CUICursor::InitInternal()
 {
 	m_static					= new CUIStatic();
@@ -88,25 +101,21 @@ Fvector2 CUICursor::GetCursorPositionDelta()
 
 void CUICursor::UpdateCursorPosition()
 {
-
-	POINT		p;
-	BOOL r		= GetCursorPos(&p);
-	R_ASSERT	(r);
-
-	vPrevPos = vPos;
-
-	vPos.x			= (float)p.x * (UI_BASE_WIDTH/(float)Device.TargetWidth);
-	vPos.y			= (float)p.y * (UI_BASE_HEIGHT/(float)Device.TargetHeight);
-	clamp			(vPos.x, 0.f, UI_BASE_WIDTH);
-	clamp			(vPos.y, 0.f, UI_BASE_HEIGHT);
+	if (!CImGuiManager::Instance().IsCapturingInputs())
+	{
+		vPrevPos = vPos;
+		SDL_GetMouseState(&vPos.x, &vPos.y);
+		vPos.x = vPos.x * (UI_BASE_WIDTH / (float)Device.TargetWidth);
+		vPos.y = vPos.y * (UI_BASE_HEIGHT / (float)Device.TargetHeight);
+		clamp(vPos.x, 0.f, UI_BASE_WIDTH);
+		clamp(vPos.y, 0.f, UI_BASE_HEIGHT);
+	}
 }
 
 void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
-	vPos		= pos;
-	POINT		p;
-	p.x			= iFloor(vPos.x / (UI_BASE_WIDTH/(float)Device.TargetWidth));
-	p.y			= iFloor(vPos.y / (UI_BASE_HEIGHT/(float)Device.TargetHeight));
-
-	SetCursorPos(p.x, p.y);
+	if (!CImGuiManager::Instance().IsCapturingInputs())
+	{
+		vPos = pos;
+	}
 }

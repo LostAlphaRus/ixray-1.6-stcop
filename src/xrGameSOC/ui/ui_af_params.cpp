@@ -129,7 +129,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 
 
 		sprintf_s					(	_buff, "%s %s %+.0f %s", 
-									CStringTable().translate(af_item_param_names[i]).c_str(), 
+									g_pStringTable->translate(af_item_param_names[i]).c_str(), 
 									_color, 
 									_val, 
 									_sn);

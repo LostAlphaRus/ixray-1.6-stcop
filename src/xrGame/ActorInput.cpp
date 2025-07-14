@@ -168,7 +168,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				inventory().Eat(itm);
 				SDrawStaticStruct* _s = CurrentGameUI()->AddCustomStatic("item_used", true, 3.0f);
 				string1024					str;
-				xr_strconcat(str, *CStringTable().translate("st_item_used"), ": ", itm->NameItem());
+				xr_strconcat(str, *g_pStringTable->translate("st_item_used"), ": ", itm->NameItem());
 				_s->wnd()->TextItemControl()->SetText(str);
 			}
 		}

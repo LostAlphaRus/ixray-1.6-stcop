@@ -142,7 +142,7 @@ void CUIChangeMap::FillUpList()
 	u32 cnt						= M.m_map_names.size();
 	for (u32 i=0; i<cnt; ++i)
 	{
-		CUIListBoxItem* itm		= lst->AddItem( CStringTable().translate(M.m_map_names[i]).c_str() );
+		CUIListBoxItem* itm		= lst->AddItem( g_pStringTable->translate(M.m_map_names[i]).c_str() );
 		itm->Enable				(m_pExtraContentFilter->IsDataEnabled(M.m_map_names[i].c_str()));
 	}
 

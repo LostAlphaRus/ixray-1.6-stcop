@@ -180,7 +180,7 @@ void				game_cl_mp::OnSpeechMessage			(NET_Packet& P)
 		{
 			pMSound->mSound_Radio.play_at_pos(NULL, Fvector().set(0,0,0), sm_2D, 0);
 		}
-		Msg("%s said: %s", ps->getName(), *CStringTable().translate(pMMessage->pMessage));
+		Msg("%s said: %s", ps->getName(), *g_pStringTable->translate(pMMessage->pMessage));
 	}
 	else
 	{

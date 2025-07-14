@@ -3,8 +3,8 @@
 //	Created by Roman E. Marchenko, vortex@gsc-game.kiev.ua
 //	Copyright 2004. GSC Game World
 //	---------------------------------------------------------------------------
-//  Ñòàòèê êîíòðîë íà êîòîðîì ìîæíî âûâîäèòü ìíîæåñòâî íàäïèñåé ðàçëè÷íûìè
-//	øðèôòàìè, öâåòàìè è äàæå ñ àíèìàöèåé
+//  Ð¡Ñ‚Ð°Ñ‚Ð¸Ðº ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð» Ð½Ð° ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð¼ Ð¼Ð¾Ð¶Ð½Ð¾ Ð²Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ÑŒ Ð¼Ð½Ð¾Ð¶ÐµÑÑ‚Ð²Ð¾ Ð½Ð°Ð´Ð¿Ð¸ÑÐµÐ¹ Ñ€Ð°Ð·Ð»Ð¸Ñ‡Ð½Ñ‹Ð¼Ð¸
+//	ÑˆÑ€Ð¸Ñ„Ñ‚Ð°Ð¼Ð¸, Ñ†Ð²ÐµÑ‚Ð°Ð¼Ð¸ Ð¸ Ð´Ð°Ð¶Ðµ Ñ Ð°Ð½Ð¸Ð¼Ð°Ñ†Ð¸ÐµÐ¹
 //=============================================================================
 
 #include "stdafx.h"
@@ -137,7 +137,7 @@ void CUICaption::addCustomMessage(const shared_str& msg_name, float x, float y, 
 	sp->effect.SetTextColor(color);
 	sp->effect.SetFontAlignment(al);
 
-	sp->str = *CStringTable().translate(def_str);
+	sp->str = *g_pStringTable->translate(def_str);
 	sp->key = msg_name;
 
 //	m_indices[msg_name] = m_vPhrases.size()-1;
@@ -181,7 +181,7 @@ void CUICaption::setCaption(const shared_str& msg_name, LPCSTR message_to_out, u
 {
 //	R_ASSERT2( (m_indices.find(msg_name) != m_indices.end()),"message not defined !!!" );
 	SinglePhrase * sp = GetPhraseByIndex(findIndexOf(msg_name));
-	sp->str = *CStringTable().translate(message_to_out);
+	sp->str = *g_pStringTable->translate(message_to_out);
 
 	if(replaceColor)
 		sp->effect.SetTextColor(color);

@@ -121,7 +121,7 @@ void CUIComboBox::SetCurrentValue()
 		tok++;
 	}
 
-	LPCSTR cur_val		= *CStringTable().translate( GetOptTokenValue());
+	LPCSTR cur_val		= *g_pStringTable->translate( GetOptTokenValue());
 	m_text.SetText		( cur_val );
 	m_list.SetSelectedText( cur_val );
 	

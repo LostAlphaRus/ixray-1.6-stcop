@@ -180,7 +180,7 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 
 	m_pInvOwner							= pOur;
 	m_pOthersInvOwner					= pOthers;
-	m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(*CStringTable().translate("ui_st_opponent_items"));
+	m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(*g_pStringTable->translate("ui_st_opponent_items"));
 
 	m_uidata->UICharacterInfoLeft.InitCharacter(m_pInvOwner->object_id());
 	m_uidata->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner->object_id());

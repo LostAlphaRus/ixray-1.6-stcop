@@ -330,7 +330,7 @@ void CUITalkWnd::SayPhrase(const shared_str& phrase_id)
 void CUITalkWnd::AddQuestion(const shared_str& text, const shared_str& value)
 {
 	if(text.size() == 0) return;
-	UITalkDialogWnd->AddQuestion(*CStringTable().translate(text),value.c_str());
+	UITalkDialogWnd->AddQuestion(*g_pStringTable->translate(text),value.c_str());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -342,7 +342,7 @@ void CUITalkWnd::AddAnswer(const shared_str& text, LPCSTR SpeakerName)
 	PlaySnd			(text.c_str());
 
 	bool i_am = (0 == xr_strcmp(SpeakerName, m_pOurInvOwner->Name()));
-	UITalkDialogWnd->AddAnswer(SpeakerName,*CStringTable().translate(text),i_am);
+	UITalkDialogWnd->AddAnswer(SpeakerName,*g_pStringTable->translate(text),i_am);
 }
 
 //////////////////////////////////////////////////////////////////////////

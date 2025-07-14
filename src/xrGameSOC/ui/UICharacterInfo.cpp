@@ -184,7 +184,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
 	}
 
 	if(m_icons[eUICommunity]){
-		sprintf_s(str, "%s", *CStringTable().translate(chInfo.Community().id()));
+		sprintf_s(str, "%s", *g_pStringTable->translate(chInfo.Community().id()));
 		m_icons[eUICommunity]->SetText(str);
 	}
 

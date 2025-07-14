@@ -178,11 +178,11 @@ bool CUIMpTradeWnd::CheckBuyPossibility(const shared_str& sect_name, u32 buy_fla
 			if(!b_silent)
 				sprintf_s					(	info_buffer,
 											"%s. %s. %s[%d] %s[%d]",
-											CStringTable().translate("ui_inv_cant_buy_item").c_str(),
-											CStringTable().translate("ui_inv_not_enought_money").c_str(),
-											CStringTable().translate("ui_inv_has").c_str(),
+											g_pStringTable->translate("ui_inv_cant_buy_item").c_str(),
+											g_pStringTable->translate("ui_inv_not_enought_money").c_str(),
+											g_pStringTable->translate("ui_inv_has").c_str(),
 											GetMoneyAmount(), 
-											CStringTable().translate("ui_inv_need").c_str(),
+											g_pStringTable->translate("ui_inv_need").c_str(),
 											_item_cost);
 			b_can_buy				= false;
 		};
@@ -193,11 +193,11 @@ bool CUIMpTradeWnd::CheckBuyPossibility(const shared_str& sect_name, u32 buy_fla
 		if(!b_silent)
 			sprintf_s					(	info_buffer,
 										"%s. %s. %s[%s] %s[%s] ", 
-										CStringTable().translate("ui_inv_cant_buy_item").c_str(),
-										CStringTable().translate("ui_inv_rank_restr").c_str(),
-										CStringTable().translate("ui_inv_has").c_str(),
+										g_pStringTable->translate("ui_inv_cant_buy_item").c_str(),
+										g_pStringTable->translate("ui_inv_rank_restr").c_str(),
+										g_pStringTable->translate("ui_inv_has").c_str(),
 										g_mp_restrictions.GetRankName(GetRank()).c_str(), 
-										CStringTable().translate("ui_inv_need").c_str(),
+										g_pStringTable->translate("ui_inv_need").c_str(),
 										g_mp_restrictions.GetRankName(get_rank(sect_name)).c_str()
 										);
 		b_can_buy				= false;
@@ -216,9 +216,9 @@ bool CUIMpTradeWnd::CheckBuyPossibility(const shared_str& sect_name, u32 buy_fla
 			if(!b_silent)
 				sprintf_s				(	info_buffer,
 										"%s. %s. %s [%d]", 
-										CStringTable().translate("ui_inv_cant_buy_item").c_str(),
-										CStringTable().translate("ui_inv_count_restr").c_str(),
-										CStringTable().translate("ui_inv_you_already_have").c_str(),
+										g_pStringTable->translate("ui_inv_cant_buy_item").c_str(),
+										g_pStringTable->translate("ui_inv_count_restr").c_str(),
+										g_pStringTable->translate("ui_inv_you_already_have").c_str(),
 										cnt_have);
 		b_can_buy				= false;
 		}

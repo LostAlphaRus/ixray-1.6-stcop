@@ -212,7 +212,7 @@ void CServerInfo::AddItem( LPCSTR name_, LPCSTR value_, u32 color_ )
 void CServerInfo::AddItem( shared_str& name_, LPCSTR value_, u32 color_ )
 {
 	SItem_ServerInfo it;
-	//	shared_str s_name = CStringTable().translate( name_ );
+	//	shared_str s_name = g_pStringTable->translate( name_ );
 
 	//	xr_strcpy( it.name, s_name.c_str() );
 	xr_strcpy( it.name, name_.c_str() );

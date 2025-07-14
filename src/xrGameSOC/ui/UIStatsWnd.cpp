@@ -124,7 +124,7 @@ void CUIStatsWnd::SelectItem(const u32 uItem)
 
 void CUIStatsWnd::SetHeaderColumnText(const u32 headerItem, const shared_str &text)
 {
-	UIHeader.GetPhraseByIndex(headerItem)->str = CStringTable().translate(text);
+	UIHeader.GetPhraseByIndex(headerItem)->str = g_pStringTable->translate(text);
 }
 
 //////////////////////////////////////////////////////////////////////////

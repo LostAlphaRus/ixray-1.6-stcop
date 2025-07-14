@@ -68,7 +68,7 @@ void CAutosaveManager::shedule_Update		(u32 dt)
 	update_autosave_time		();
 
 	string_path					temp;
-	xr_strconcat				(temp,Core.UserName," - ",CStringTable().translate("autosave").c_str());
+	xr_strconcat				(temp,Core.UserName," - ",g_pStringTable->translate("autosave").c_str());
 	NET_Packet					net_packet;
 	net_packet.w_begin			(M_SAVE_GAME);
 	net_packet.w_stringZ		(temp);

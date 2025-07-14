@@ -215,7 +215,7 @@ void CUIActorInfoWnd::FillPointsDetail(const shared_str& id)
 		sprintf_s							(buff,"%d.",_cntr);
 		itm->m_text0->SetText				(buff);
 
-		itm->m_text1->SetTextST				(*CStringTable().translate((*it).key));
+		itm->m_text1->SetTextST				(*g_pStringTable->translate((*it).key));
 		itm->m_text1->AdjustHeightToText	();
 
 		if( 0==(*it).str_value.size() )

@@ -700,7 +700,7 @@ public:
 		timer.Start				();
 #endif
 		if (!xr_strlen(S)){
-			xr_strconcat		(S,Core.UserName," - ",CStringTable().translate("quicksave").c_str());
+			xr_strconcat		(S,Core.UserName," - ",g_pStringTable->translate("quicksave").c_str());
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
 			net_packet.w_stringZ(S);
@@ -724,7 +724,7 @@ public:
 		SDrawStaticStruct* _s		= HUD().GetUI()->UIGame()->AddCustomStatic("game_saved", true);
 		_s->m_endTime				= Device.fTimeGlobal+3.0f;// 3sec
 		string_path					save_name;
-		xr_strconcat				(save_name,*CStringTable().translate("st_game_saved"),": ", S);
+		xr_strconcat				(save_name,*g_pStringTable->translate("st_game_saved"),": ", S);
 		_s->wnd()->SetText			(save_name);
 
 		strcat					(S,".dds");

@@ -592,7 +592,7 @@ void CUIStatic::RescaleRelative2Rect(const Frect& r){
 
 void CUIStatic::SetTextST				(LPCSTR str_id)
 {
-	SetText					(*CStringTable().translate(str_id));
+	SetText					(*g_pStringTable->translate(str_id));
 }
 
 void CUIStatic::DrawHighlightedText(){

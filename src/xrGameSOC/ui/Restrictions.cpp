@@ -70,7 +70,7 @@ void CRestrictions::InitGroups()
 		sprintf_s				(rank,"rank_%d", i);
 		
         AddRestriction4rank	(i, pSettings->r_string(rank, "amount_restriction"));
-		m_names[i]			= CStringTable().translate( pSettings->r_string(rank, "rank_name"));
+		m_names[i]			= g_pStringTable->translate( pSettings->r_string(rank, "rank_name"));
 	}
 
 	Dump();

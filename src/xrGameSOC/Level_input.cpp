@@ -140,7 +140,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		FS.rescan_pathes			();
 #endif // DEBUG
 		string_path					saved_game,command;
-		xr_strconcat				(saved_game,Core.UserName," - ",CStringTable().translate("quicksave").c_str());
+		xr_strconcat				(saved_game,Core.UserName," - ",g_pStringTable->translate("quicksave").c_str());
 		if (!CSavedGameWrapper::valid_saved_game(saved_game))
 			return;
 

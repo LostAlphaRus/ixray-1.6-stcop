@@ -251,7 +251,7 @@ void CUIMessageBox::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 
 void CUIMessageBox::SetText(LPCSTR str)
 {
-	m_UIStaticText->SetText(*(CStringTable().translate(str)));
+	m_UIStaticText->SetText(*(g_pStringTable->translate(str)));
 }
 
 LPCSTR CUIMessageBox::GetText()

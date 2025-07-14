@@ -107,7 +107,7 @@ void  CHUDManager::RenderUI()
 	if( Device.Paused() && bShowPauseString){
 		CGameFont* pFont	= Font().GetFont(GRAFFITI50_FONT_NAME);
 		pFont->SetColor		(0x80FF0000	);
-		LPCSTR _str			= CStringTable().translate("st_game_paused").c_str();
+		LPCSTR _str			= g_pStringTable->translate("st_game_paused").c_str();
 		
 		Fvector2			_pos;
 		_pos.set			(UI_BASE_WIDTH/2.0f, UI_BASE_HEIGHT/2.0f);
@@ -173,17 +173,12 @@ void CHUDManager::OnDisconnected()
 {
 //.	if(!b_online)			return;
 	b_online				= false;
-	if(pUI)
-		Device.seqFrame.Remove	(pUI);
 }
 
 void CHUDManager::OnConnected()
 {
 	if(b_online)			return;
 	b_online				= true;
-	if(pUI){
-		Device.seqFrame.Add	(pUI,REG_PRIORITY_LOW-1000);
-	}
 }
 
 void CHUDManager::net_Relcase	(CObject *object)

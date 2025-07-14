@@ -320,7 +320,7 @@ bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3
 	
 	LPCSTR text_hint		= xml_doc.ReadAttrib	(path, index, "hint", NULL);
 	if(text_hint)
-		pWnd->m_hint_text	= CStringTable().translate(text_hint);
+		pWnd->m_hint_text	= g_pStringTable->translate(text_hint);
 
 	return true;
 }
@@ -393,7 +393,7 @@ bool CUIXmlInit::InitButton(CUIXml& xml_doc, LPCSTR path,
 
 	LPCSTR text_hint		= xml_doc.ReadAttrib	(path, index, "hint", NULL);
 	if(text_hint)
-		pWnd->m_hint_text	= CStringTable().translate(text_hint);
+		pWnd->m_hint_text	= g_pStringTable->translate(text_hint);
 
 	pWnd->SetShadowOffset	(Fvector2().set(shadowOffsetX, shadowOffsetY) );
 	pWnd->SetPushOffset		(Fvector2().set(pushOffsetX,pushOffsetY) );

@@ -38,7 +38,7 @@ void start_tutorial(LPCSTR name)
 
 LPCSTR translate_string(LPCSTR str)
 {
-	return *CStringTable().translate(str);
+	return *g_pStringTable->translate(str);
 }
 
 bool has_active_tutotial()
