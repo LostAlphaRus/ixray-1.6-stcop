@@ -119,7 +119,7 @@ CLevelGraph::CLevelGraph()
 
 	// m_header & data
 	m_header					= (CHeader*)m_reader->pointer();
-	R_ASSERT					(header().version() == XRAI_SOC_CURRENT_VERSION);
+	R_ASSERT					(header().version() == XRAI_SOC_VERSION);
 	m_reader->advance			(sizeof(CHeader));
 
 
