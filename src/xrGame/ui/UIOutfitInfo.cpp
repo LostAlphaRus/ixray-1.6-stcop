@@ -52,13 +52,16 @@ CUIOutfitImmunity::~CUIOutfitImmunity()
 {
 }
 
-void CUIOutfitImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type )
+bool CUIOutfitImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_type )
 {
 	CUIXmlInit::InitWindow( xml_doc, base_str, 0, this );
 
 	string256 buf;
 	
 	xr_strconcat(buf, base_str, ":", immunity_names[hit_type] );
+	if (!xml_doc.NavigateToNode(buf))
+		return false;
+
 	CUIXmlInit::InitWindow( xml_doc, buf, 0, this );
 	CUIXmlInit::InitStatic( xml_doc, buf, 0, &m_name );
 	m_name.TextItemControl()->SetTextST( immunity_st_names[hit_type] );
@@ -73,6 +76,7 @@ void CUIOutfitImmunity::InitFromXml( CUIXml& xml_doc, LPCSTR base_str, u32 hit_t
 
 	LPCSTR unit_str = xml_doc.ReadAttrib(buf, 0, "unit_str", "");
 	m_unit_str._set(g_pStringTable->translate(unit_str));
+	return true;
 }
 
 void CUIOutfitImmunity::SetProgressValue(float cur, float comp)
@@ -141,10 +145,16 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 	for ( u32 i = 0; i < max_count; ++i )
 	{
 		m_items[i] = new CUIOutfitImmunity();
-		m_items[i]->InitFromXml( xml_doc, base_str, i );
-		AttachChild( m_items[i] );
-		m_items[i]->SetWndPos( pos );
-		pos.y += m_items[i]->GetWndSize().y;
+		if (m_items[i]->InitFromXml(xml_doc, base_str, i))
+		{
+			AttachChild(m_items[i]);
+			m_items[i]->SetWndPos(pos);
+			pos.y += m_items[i]->GetWndSize().y;
+		}
+		else
+		{
+			xr_delete(m_items[i]);
+		}
 	}
 	pos.x = GetWndSize().x;
 	SetWndSize( pos );
@@ -160,11 +170,11 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 
 	for ( u32 i = 0; i < max_count; ++i )
 	{
-		if ( i == ALife::eHitTypeFireWound )
+		if ( i == ALife::eHitTypeFireWound || !m_items[i] )
 		{
 			continue;
 		}
-		
+
 		ALife::EHitType hit_type = (ALife::EHitType)i;
 		float max_power = actor->conditions().GetZoneMaxPower( hit_type );
 
@@ -221,7 +231,7 @@ void CUIOutfitInfo::UpdateInfo(CHelmet* cur_helmet, CHelmet* slot_helmet)
 
 	for ( u32 i = 0; i < max_count; ++i )
 	{
-		if ( i == ALife::eHitTypeFireWound )
+		if ( i == ALife::eHitTypeFireWound || !m_items[i] )
 		{
 			continue;
 		}
