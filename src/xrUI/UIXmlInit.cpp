@@ -839,7 +839,6 @@ bool CUIXmlInit::InitTabControl(CUIXml &xml_doc, LPCSTR path, int index, CUITabC
 		if (!newButton->m_btn_id.size())
 		{
 			string32 temp;
-			Msg("! [%s] doesn't have `id` tag in file [%s]", xml_doc.m_xml_file_name, path);
 			xr_sprintf(temp, "tab_button_%d", i);
 			newButton->m_btn_id = temp;
 		}
