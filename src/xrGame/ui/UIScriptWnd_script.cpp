@@ -14,7 +14,7 @@
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UITabControl.h"
-
+#include "../../xrUI/Widgets/UIListWnd.h"
 #include "uiscriptwnd_script.h"
 
 using namespace luabind;
@@ -53,8 +53,6 @@ export_class script_register_ui_window1(export_class &&instance)
 		.def("GetFrameLineWnd", (CUIFrameLineWnd * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIFrameLineWnd>)
 		.def("GetProgressBar", (CUIProgressBar * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIProgressBar>)
 		.def("GetTabControl", (CUITabControl * (BaseType::*)(pcstr)) & BaseType::GetControl<CUITabControl>)
-		// XXX: ListWnd and ListBox has the same functionality but different function prototypes
-		// We should not use ListBox for CS and SOC, we should return ListWnd class
-		//.def("GetListWnd", (CUIListBox* (BaseType::*)(pcstr)) &BaseType::GetControl<CUIListBox>)
+		.def("GetListWnd", (CUIListBox* (BaseType::*)(pcstr)) &BaseType::GetControl<CUIListWnd>)
 	;
 }

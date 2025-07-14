@@ -67,7 +67,17 @@ void SMusicTrack::Load(LPCSTR fn, LPCSTR params)
 #ifdef DEBUG
 	m_DbgName			= fn;
 #endif
-	m_SourceStereo.create(fn,st_Music,sg_Undefined);
+	string_path _path;
+	if (FS.exist(_path, "$game_sounds$", fn, ".ogg"))
+		m_SourceStereo.create(fn,st_Music,sg_Undefined);
+	else
+	{
+		string_path			_l, _r;
+		xr_strconcat(_l, fn, "_l");
+		xr_strconcat(_r, fn, "_r");
+		m_SourceLeft.create(_l, st_Music, sg_Undefined);
+		m_SourceRight.create(_r, st_Music, sg_Undefined);
+	}
 
 	// parse params
 	int cnt				= _GetItemCount(params); 
@@ -105,23 +115,37 @@ BOOL SMusicTrack::in(u32 game_time)
 
 void SMusicTrack::Play()
 {
-	m_SourceStereo.play_at_pos	(0,Fvector().set(0.0f,0.0f,0.0f), sm_Intro);
+	if (m_SourceStereo._handle())
+		m_SourceStereo.play_at_pos	(0,Fvector().set(0.0f,0.0f,0.0f), sm_Intro);
+	else
+	{
+		m_SourceLeft.play_at_pos(0, Fvector().set(-0.5f, 0.f, 0.3f), sm_Intro);
+		m_SourceRight.play_at_pos(0, Fvector().set(+0.5f, 0.f, 0.3f), sm_Intro);
+	}
 	SetVolume					(1.0f);
 }
 
 BOOL SMusicTrack::IsPlaying()
 {
-	BOOL  ret = (nullptr!=m_SourceStereo._feedback());
+	BOOL  ret = (m_SourceStereo._feedback() || m_SourceLeft._feedback());
 	return ret;
 }
 
 void SMusicTrack::SetVolume(float volume)
 {
-	m_SourceStereo.set_volume	(volume*m_Volume);
+	if (m_SourceStereo._handle())
+		m_SourceStereo.set_volume	(volume*m_Volume);
+	else
+	{
+		m_SourceLeft.set_volume(volume * m_Volume);
+		m_SourceRight.set_volume(volume * m_Volume);
+	}
 }
 
 void SMusicTrack::Stop()
 {
+	m_SourceLeft.stop_deffered();
+	m_SourceRight.stop_deffered();
 	m_SourceStereo.stop_deffered();
 }
 

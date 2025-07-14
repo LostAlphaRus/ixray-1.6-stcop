@@ -230,5 +230,6 @@ public:
 		VERIFY(m_alife_simulator);
 		return (*m_alife_simulator);
 	}
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

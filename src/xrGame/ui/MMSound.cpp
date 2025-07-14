@@ -73,22 +73,41 @@ void CMMSound::music_Play()
 
 	string_path		_path;
 	xr_strconcat(_path, m_play_list[i].c_str(), ".ogg");
-	VERIFY			(FS.exist("$game_sounds$", _path ));	
+	if (FS.exist("$game_sounds$", _path))
+	{
+		m_music_stereo.create(_path, st_Music, sg_SourceType);
+		m_music_stereo.play(nullptr, sm_Intro|sm_Looped);
+	}
+	else
+	{
+		string_path		_path;
+		string_path		_path2;
+		xr_strconcat(_path, m_play_list[i].c_str(), "_l.ogg");
+		xr_strconcat(_path2, m_play_list[i].c_str(), "_r.ogg");
+		VERIFY(FS.exist("$game_sounds$", _path));
+		VERIFY(FS.exist("$game_sounds$", _path2));
 
-	m_music_stereo.create(_path,st_Music,sg_SourceType);
-    m_music_stereo.play(nullptr, sm_Intro|sm_Looped);
+		m_music_l.create(_path, st_Music, sg_SourceType);
+		m_music_r.create(_path2, st_Music, sg_SourceType);
+
+		m_music_l.play_at_pos(nullptr, Fvector().set(-0.5f, 0.f, 0.3f), sm_2D);
+		m_music_r.play_at_pos(nullptr, Fvector().set(+0.5f, 0.f, 0.3f), sm_2D);
+
+	}
 }
 
 void CMMSound::music_Update()
 {
 	if (Device.Paused()) return;
 
-	if ( 0==m_music_stereo._feedback() )
+	if ( (m_music_stereo._handle() && !m_music_stereo._feedback()) || (m_music_l._handle() && !m_music_l._feedback()) || (m_music_r._handle() && !m_music_r._feedback()) )
 		music_Play();
 }
 
 void CMMSound::music_Stop()
 {
+	m_music_l.stop();
+	m_music_r.stop();
 	m_music_stereo.stop();
 }
 
