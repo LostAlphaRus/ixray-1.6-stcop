@@ -3,10 +3,13 @@
 #include "../../xrUI/Widgets/UIMultiTextStatic.h"
 #include "inventory_space.h"
 #include "UIDragDropListEx.h"
+#include "UICharacterInfo.h"
+#include "../../xrUI/Widgets/UI3tButton.h"
 
 class CInventoryOwner;
 class CEatableItem;
 class CTrade;
+class CUI3tButton;
 
 class CUICellItem;
 
