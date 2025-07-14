@@ -237,8 +237,8 @@ void CActor::PickupInfoDraw(CObject* object)
 	if (v_res.z < 0 || v_res.w < 0)	return;
 	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f) return;
 
-	float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
-	float y = (1.f - v_res.y)/2.f * (Device.dwHeight);
+	float x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
+	float y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
 
 	HUD().Font().GetFont(LETTERICA16_FONT_NAME)->SetAligment(CGameFont::alCenter);
 	HUD().Font().GetFont(LETTERICA16_FONT_NAME)->SetColor		(PICKUP_INFO_COLOR);

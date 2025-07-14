@@ -201,21 +201,21 @@ protected:
 	BOOL						net_start_result_total;
 	BOOL						connected_to_server;
 
-	bool	xr_stdcall			net_start1				();
-	bool	xr_stdcall			net_start2				();
-	bool	xr_stdcall			net_start3				();
-	bool	xr_stdcall			net_start4				();
-	bool	xr_stdcall			net_start5				();
-	bool	xr_stdcall			net_start6				();
+	bool				net_start1				();
+	bool				net_start2				();
+	bool				net_start3				();
+	bool				net_start4				();
+	bool				net_start5				();
+	bool				net_start6				();
 
-	bool	xr_stdcall			net_start_client1				();
-	bool	xr_stdcall			net_start_client2				();
-	bool	xr_stdcall			net_start_client3				();
-	bool	xr_stdcall			net_start_client4				();
-	bool	xr_stdcall			net_start_client5				();
-	bool	xr_stdcall			net_start_client6				();
+	bool				net_start_client1				();
+	bool				net_start_client2				();
+	bool				net_start_client3				();
+	bool				net_start_client4				();
+	bool				net_start_client5				();
+	bool				net_start_client6				();
 
-	bool	xr_stdcall			net_start_finalizer				();
+	bool				net_start_finalizer				();
 
 	void						net_OnChangeSelfName			(NET_Packet* P);
 
@@ -286,7 +286,7 @@ public:
 #ifdef DEBUG
 	IC CDebugRenderer				&debug_renderer				();
 #endif
-	void	__stdcall				script_gc					();			// GC-cycle
+	void					script_gc					();			// GC-cycle
 
 	IC CPHCommander					&ph_commander				();
 	IC CPHCommander					&ph_commander_scripts		();
@@ -295,17 +295,17 @@ public:
 	CLevel();
 	virtual ~CLevel();
 
-	//названияе текущего уровня
+	//РЅР°Р·РІР°РЅРёСЏРµ С‚РµРєСѓС‰РµРіРѕ СѓСЂРѕРІРЅСЏ
 	virtual shared_str			name				() const;
 	virtual void				GetLevelInfo		( CServerInfo* si );
 
 	//gets the time from the game simulation
 	
-	//возвращает время в милисекундах относительно начала игры
+	//РІРѕР·РІСЂР°С‰Р°РµС‚ РІСЂРµРјСЏ РІ РјРёР»РёСЃРµРєСѓРЅРґР°С… РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°С‡Р°Р»Р° РёРіСЂС‹
 	ALife::_TIME_ID		GetGameTime				();
-	//возвращает время для энвайронмента в милисекундах относительно начала игры
+	//РІРѕР·РІСЂР°С‰Р°РµС‚ РІСЂРµРјСЏ РґР»СЏ СЌРЅРІР°Р№СЂРѕРЅРјРµРЅС‚Р° РІ РјРёР»РёСЃРµРєСѓРЅРґР°С… РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РЅР°С‡Р°Р»Р° РёРіСЂС‹
 	ALife::_TIME_ID		GetEnvironmentGameTime	();
-	//игровое время в отформатированном виде
+	//РёРіСЂРѕРІРѕРµ РІСЂРµРјСЏ РІ РѕС‚С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРЅРѕРј РІРёРґРµ
 	void				GetGameDateTime			(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs);
 
 	float				GetGameTimeFactor		();
@@ -328,7 +328,7 @@ public:
 	CMapManager&			MapManager					()	{return *m_map_manager;}
 //	CFogOfWarMngr&			FogOfWarMngr				()	{return *m_pFogOfWarMngr;}
 
-	//работа с пулями
+	//СЂР°Р±РѕС‚Р° СЃ РїСѓР»СЏРјРё
 protected:	
 	CBulletManager*		m_pBulletManager;
 public:

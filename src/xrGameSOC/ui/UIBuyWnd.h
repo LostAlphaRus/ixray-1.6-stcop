@@ -82,15 +82,15 @@ public:
 	virtual void 	Hide						();
 
 	// drag drop handlers
-	bool	xr_stdcall	OnItemDrop				(CUICellItem* itm);
-	bool	xr_stdcall	OnItemStartDrag			(CUICellItem* itm);
-	bool	xr_stdcall	OnItemDbClick			(CUICellItem* itm);
-	bool	xr_stdcall	OnItemSelected			(CUICellItem* itm);
-	bool	xr_stdcall	OnItemRButtonClick		(CUICellItem* itm);
+	bool		OnItemDrop				(CUICellItem* itm);
+	bool		OnItemStartDrag			(CUICellItem* itm);
+	bool		OnItemDbClick			(CUICellItem* itm);
+	bool		OnItemSelected			(CUICellItem* itm);
+	bool		OnItemRButtonClick		(CUICellItem* itm);
 
 	
 
-	// Получить данные о аддонах к оружию. Младшие 3 бита, если установлены в 1 означают:
+	// РџРѕР»СѓС‡РёС‚СЊ РґР°РЅРЅС‹Рµ Рѕ Р°РґРґРѕРЅР°С… Рє РѕСЂСѓР¶РёСЋ. РњР»Р°РґС€РёРµ 3 Р±РёС‚Р°, РµСЃР»Рё СѓСЃС‚Р°РЅРѕРІР»РµРЅС‹ РІ 1 РѕР·РЅР°С‡Р°СЋС‚:
 	// 2 - Silencer, 1 - Grenade Launcher, 0 - Scope
 	const u8			GetWeaponAddonInfoByIndex	(u8 idx);
 

@@ -94,11 +94,11 @@ protected:
 	EListType					GetType						(CUIDragDropListEx* l);
 	CUIDragDropListEx*			GetSlotList					(u32 slot_idx);
 
-	bool		xr_stdcall		OnItemDrop					(CUICellItem* itm);
-	bool		xr_stdcall		OnItemStartDrag				(CUICellItem* itm);
-	bool		xr_stdcall		OnItemDbClick				(CUICellItem* itm);
-	bool		xr_stdcall		OnItemSelected				(CUICellItem* itm);
-	bool		xr_stdcall		OnItemRButtonClick			(CUICellItem* itm);
+	bool				OnItemDrop					(CUICellItem* itm);
+	bool				OnItemStartDrag				(CUICellItem* itm);
+	bool				OnItemDbClick				(CUICellItem* itm);
+	bool				OnItemSelected				(CUICellItem* itm);
+	bool				OnItemRButtonClick			(CUICellItem* itm);
 
 
 	CUIStatic					UIProgressBack;
@@ -110,7 +110,7 @@ protected:
 
 	CUIPropertiesBox			UIPropertiesBox;
 	
-	//информация о персонаже
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїРµСЂСЃРѕРЅР°Р¶Рµ
 	CUIOutfitInfo				UIOutfitInfo;
 	CUIItemInfo					UIItemInfo;
 

@@ -1,4 +1,4 @@
-// ActorCondition.h: класс состояния игрока
+// ActorCondition.h: РєР»Р°СЃСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ РёРіСЂРѕРєР°
 //
 
 #pragma once
@@ -44,7 +44,7 @@ public:
 	virtual void 		ChangeAlcohol				(float value);
 	virtual void 		ChangeSatiety				(float value);
 
-	// хромание при потере сил и здоровья
+	// С…СЂРѕРјР°РЅРёРµ РїСЂРё РїРѕС‚РµСЂРµ СЃРёР» Рё Р·РґРѕСЂРѕРІСЊСЏ
 	virtual	bool		IsLimping					() const;
 	virtual bool		IsCantWalk					() const;
 	virtual bool		IsCantWalkWeight			();
@@ -54,8 +54,8 @@ public:
 			void		ConditionWalk				(float weight, bool accel, bool sprint);
 			void		ConditionStand				(float weight);
 			
-			float	xr_stdcall	GetAlcohol			()	{return m_fAlcohol;}
-			float	xr_stdcall	GetPsy				()	{return 1.0f-GetPsyHealth();}
+			float		GetAlcohol			()	{return m_fAlcohol;}
+			float		GetPsy				()	{return 1.0f-GetPsyHealth();}
 			float				GetSatiety			()  {return m_fSatiety;}
 
 public:
@@ -94,7 +94,7 @@ protected:
 	mutable bool m_bCantWalk;
 	mutable bool m_bCantSprint;
 
-	//порог силы и здоровья меньше которого актер начинает хромать
+	//РїРѕСЂРѕРі СЃРёР»С‹ Рё Р·РґРѕСЂРѕРІСЊСЏ РјРµРЅСЊС€Рµ РєРѕС‚РѕСЂРѕРіРѕ Р°РєС‚РµСЂ РЅР°С‡РёРЅР°РµС‚ С…СЂРѕРјР°С‚СЊ
 	float m_fLimpingPowerBegin;
 	float m_fLimpingPowerEnd;
 	float m_fCantWalkPowerBegin;

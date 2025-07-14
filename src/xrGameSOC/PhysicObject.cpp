@@ -3,7 +3,7 @@
 #include "PhysicsShell.h"
 #include "Physics.h"
 #include "xrserver_objects_alife.h"
-#include "../xrEngine/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
 #include "../xrEngine/xr_collide_form.h"
 #include "game_object_space.h"
 

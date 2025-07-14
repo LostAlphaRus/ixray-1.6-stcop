@@ -16,7 +16,7 @@ struct CSaver {
 		template <bool a>
 		IC	static void save_data(const T &data, M &stream, const P &p)
 		{
-			STATIC_CHECK				(!std::is_polymorphic<T>::value,Cannot_save_polymorphic_classes_as_binary_data);
+			static_assert(!std::is_polymorphic<T>::value, "Cannot save polymorphic classes as binary data");
 			stream.w					(&data,sizeof(T));
 		}
 
@@ -130,8 +130,8 @@ struct CSaver {
 	IC	static void save_data(const svector<T,size> &data, M &stream, const P &p)
 	{
 		stream.w_u32					((u32)data.size());
-		svector<T,size>::const_iterator	I = data.begin();
-		svector<T,size>::const_iterator	E = data.end();
+		typename svector<T,size>::const_iterator	I = data.begin();
+		typename svector<T,size>::const_iterator	E = data.end();
 		for ( ; I != E; ++I)
 			if (p(data,*I))
 				CSaver<M,P>::save_data	(*I,stream,p);

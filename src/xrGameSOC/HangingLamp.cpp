@@ -6,7 +6,7 @@
 #include "Physics.h"
 #include "xrserver_objects_alife.h"
 #include "PHElement.h"
-#include "../xrEngine/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"

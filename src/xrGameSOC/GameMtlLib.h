@@ -107,12 +107,12 @@ public:
     float				fPHBounceStartVelocity;	// ?
 	float				fPHBouncing;            // ?
 	// shoot&bounce&visibility&flotation
-    float		    	fFlotationFactor;		// 0.f - 1.f   	(1.f-полностью проходимый)
-    float				fShootFactor;			// 0.f - 1.f	(1.f-полностью простреливаемый)
+    float		    	fFlotationFactor;		// 0.f - 1.f   	(1.f-РїРѕР»РЅРѕСЃС‚СЊСЋ РїСЂРѕС…РѕРґРёРјС‹Р№)
+    float				fShootFactor;			// 0.f - 1.f	(1.f-РїРѕР»РЅРѕСЃС‚СЊСЋ РїСЂРѕСЃС‚СЂРµР»РёРІР°РµРјС‹Р№)
     float				fBounceDamageFactor;	// 0.f - 100.f
-    float				fInjuriousSpeed; 		// 0.f - ...	(0.f-не отбирает здоровье (скорость уменьшения здоровья))
-    float				fVisTransparencyFactor;	// 0.f - 1.f	(1.f-полностью прозрачный)
-    float				fSndOcclusionFactor;	// 0.f - 1.f    (1.f-полностью слышен)
+    float				fInjuriousSpeed; 		// 0.f - ...	(0.f-РЅРµ РѕС‚Р±РёСЂР°РµС‚ Р·РґРѕСЂРѕРІСЊРµ (СЃРєРѕСЂРѕСЃС‚СЊ СѓРјРµРЅСЊС€РµРЅРёСЏ Р·РґРѕСЂРѕРІСЊСЏ))
+    float				fVisTransparencyFactor;	// 0.f - 1.f	(1.f-РїРѕР»РЅРѕСЃС‚СЊСЋ РїСЂРѕР·СЂР°С‡РЅС‹Р№)
+    float				fSndOcclusionFactor;	// 0.f - 1.f    (1.f-РїРѕР»РЅРѕСЃС‚СЊСЋ СЃР»С‹С€РµРЅ)
 public:
 	SGameMtl			()
     {
@@ -176,10 +176,10 @@ public:
     PropValue*			propCollideSounds;
     PropValue*			propCollideParticles;
     PropValue*			propCollideMarks;
-    void __stdcall	 	OnFlagChange	(PropValue* sender);
-	void __stdcall	 	OnParentClick	(ButtonValue* sender, bool& bModif, bool& bSafe);
-	void __stdcall	 	OnCommandClick	(ButtonValue* sender, bool& bModif, bool& bSafe);
-    void __stdcall	 	FillChooseMtl	(ChooseItemVec& items, void* param);
+    void 	 	OnFlagChange	(PropValue* sender);
+	void 	 	OnParentClick	(ButtonValue* sender, bool& bModif, bool& bSafe);
+	void 	 	OnCommandClick	(ButtonValue* sender, bool& bModif, bool& bSafe);
+    void 	 	FillChooseMtl	(ChooseItemVec& items, void* param);
 #endif
 public:
 	SGameMtlPair		(CGameMtlLibrary* owner)

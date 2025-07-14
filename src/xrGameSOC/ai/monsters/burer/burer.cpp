@@ -4,7 +4,7 @@
 #include "../../../characterphysicssupport.h"
 #include "../../../actor.h"
 #include "burer_state_manager.h"
-#include "../../../../xrEngine/skeletonanimated.h"
+#include "../../../../include/xrRender/Kinematics.h"
 #include "../../../sound_player.h"
 #include "../../../level.h"
 #include "../../../ai_monster_space.h"

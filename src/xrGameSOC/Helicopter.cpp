@@ -5,7 +5,7 @@
 #include "level.h"
 #include "ai_sounds.h"
 #include "clsid_game.h"
-#include "../xrEngine/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 #include "script_game_object.h"

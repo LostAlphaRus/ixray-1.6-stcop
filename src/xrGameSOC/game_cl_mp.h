@@ -34,7 +34,7 @@ struct SND_Message{
 
 struct cl_TeamStruct
 {
-	shared_str			caSection;		// имя секции комманды
+	shared_str			caSection;		// РёРјСЏ СЃРµРєС†РёРё РєРѕРјРјР°РЅРґС‹
 	//-----------------------------------
 	ui_shader 			IndicatorShader;
 	ui_shader 			InvincibleShader;
@@ -170,7 +170,7 @@ public:
 	virtual							~game_cl_mp();
 
 
-	void xr_stdcall					OnBuySpawn				(CUIWindow* pWnd, void* p);
+	void 					OnBuySpawn				(CUIWindow* pWnd, void* p);
 	virtual		void				TranslateGameMessage	(u32 msg, NET_Packet& P);
 	virtual		void				CommonMessageOut		(LPCSTR msg);
 

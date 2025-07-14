@@ -91,7 +91,7 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 		*RQ				= result;
 		return FALSE;
 	}else{
-		//получить треугольник и узнать его материал
+		//РїРѕР»СѓС‡РёС‚СЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРє Рё СѓР·РЅР°С‚СЊ РµРіРѕ РјР°С‚РµСЂРёР°Р»
 		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
 		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable)) 
 			return TRUE;
@@ -245,13 +245,13 @@ void CHUDTarget::Render()
 		F->SetColor		(C);
 		F->OutNext		("%4.1f",RQ.range);
 	}
-	//отрендерить кружочек или крестик
+	//РѕС‚СЂРµРЅРґРµСЂРёС‚СЊ РєСЂСѓР¶РѕС‡РµРє РёР»Рё РєСЂРµСЃС‚РёРє
 	if(!m_bShowCrosshair){
 		// actual rendering
 		UIRender->StartPrimitive(6, IUIRender::ptTriList, IUIRender::ePointType::pttTL);
 
 		Fvector2		scr_size;
-		scr_size.set	(float(Device.dwWidth) ,float(Device.dwHeight));
+		scr_size.set	(float(Device.TargetWidth) ,float(Device.TargetHeight));
 		float			size_x = scr_size.x	* di_size;
 		float			size_y = scr_size.y * di_size;
 
@@ -278,7 +278,7 @@ void CHUDTarget::Render()
 		UIRender->SetShader(*hShader);
 		UIRender->FlushPrimitive();
 	}else{
-		//отрендерить прицел
+		//РѕС‚СЂРµРЅРґРµСЂРёС‚СЊ РїСЂРёС†РµР»
 		HUDCrosshair.cross_color	= C;
 		HUDCrosshair.OnRender		();
 	}

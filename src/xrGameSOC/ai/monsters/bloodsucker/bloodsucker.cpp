@@ -4,7 +4,7 @@
 #include "../../../../xrEngine/skeletoncustom.h"
 #include "../../../actor.h"
 #include "../../../ActorEffector.h"
-#include "../../../../xrEngine/skeletonanimated.h"
+#include "../../../../include/xrRender/Kinematics.h"
 #include "../../../level.h"
 #include "../../../material_manager.h"
 #include "bloodsucker_vampire_effector.h"

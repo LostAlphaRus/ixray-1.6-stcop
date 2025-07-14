@@ -8,7 +8,7 @@
 #include "PhysicsShellHolder.h"
 #include "game_object_space.h"
 //#include "../skeletoncustom.h"
-#include "../xrEngine/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
 #include <../3rd party/ode/ode/src/util.h>
 #include <../3rd party/ode/include\ode\objects.h>
 #ifdef DEBUG

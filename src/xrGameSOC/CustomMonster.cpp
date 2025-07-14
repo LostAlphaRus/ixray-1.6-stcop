@@ -16,7 +16,7 @@
 #include "group_hierarchy_holder.h"
 #include "customzone.h"
 #include "clsid_game.h"
-#include "../xrEngine/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
 #include "detail_path_manager.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
@@ -66,7 +66,7 @@ void CCustomMonster::SAnimState::Create(CKinematicsAnimated* K, LPCSTR base)
 	rs		= K->ID_Cycle_Safe(strconcat(sizeof(buf),buf,base,"_rs"));
 }
 
-//void __stdcall CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
+//void  CCustomMonster::TorsoSpinCallback(CBoneInstance* B)
 //{
 //	CCustomMonster*		M = static_cast<CCustomMonster*> (B->Callback_Param);
 //

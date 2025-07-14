@@ -45,10 +45,11 @@
 #include "xrmessages.h"
 #include "../xrEngine/string_table.h"
 #include "usablescriptobject.h"
-#include "../xrEngine/cl_intersect.h"
+#include "../xrCore/Collision/cl_intersect.h"
 #include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
-#include "../xrEngine/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
+#include "../Include/xrRender/KinematicsAnimated.h"
 #include "artifact.h"
 #include "CharacterPhysicsSupport.h"
 #include "material_manager.h"
@@ -159,7 +160,7 @@ CActor::CActor() : CEntityAlive()
 
 	m_fSprintFactor			= 4.f;
 
-	hFriendlyIndicator.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
+	//hFriendlyIndicator.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
 
 	m_pUsableObject			= NULL;
 
@@ -204,7 +205,7 @@ CActor::~CActor()
 
 	xr_delete				(m_pSleepEffector);
 
-	hFriendlyIndicator.destroy();
+	//hFriendlyIndicator.destroy();
 
 	xr_delete				(m_pPhysics_support);
 
@@ -351,10 +352,10 @@ if(!g_dedicated_server)
 		}
 		char buf[256];
 
-		::Sound->create		(sndDie[0],			strconcat(sizeof(buf),buf,*cName(),"\\die0"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[1],			strconcat(sizeof(buf),buf,*cName(),"\\die1"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[2],			strconcat(sizeof(buf),buf,*cName(),"\\die2"), st_Effect,SOUND_TYPE_MONSTER_DYING);
-		::Sound->create		(sndDie[3],			strconcat(sizeof(buf),buf,*cName(),"\\die3"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[0],			xr_strconcat(buf,*cName(),"\\die0"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[1],			xr_strconcat(buf,*cName(),"\\die1"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[2],			xr_strconcat(buf,*cName(),"\\die2"), st_Effect,SOUND_TYPE_MONSTER_DYING);
+		::Sound->create		(sndDie[3],			xr_strconcat(buf,*cName(),"\\die3"), st_Effect,SOUND_TYPE_MONSTER_DYING);
 
 		m_HeavyBreathSnd.create	(pSettings->r_string(section,"heavy_breath_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
 		m_BloodSnd.create		(pSettings->r_string(section,"heavy_blood_snd"), st_Effect,SOUND_TYPE_MONSTER_INJURING);
@@ -481,7 +482,7 @@ void	CActor::Hit							(SHit* pHDS)
 				S.set_volume(10.0f);
 				if(!m_sndShockEffector){
 					m_sndShockEffector = new SndShockEffector();
-					m_sndShockEffector->Start(this, float(S._handle()->length_ms()), HDS.damage() );
+					m_sndShockEffector->Start(this, float(S._handle()->length_sec()*1000.f), HDS.damage() );
 				}
 			}
 			else
@@ -669,10 +670,11 @@ void CActor::HitSignal(float perc, Fvector& vLocalDir, CObject* who, s16 element
 
 		float	yaw, pitch;
 		D.getHP(yaw,pitch);
-		CKinematicsAnimated *tpKinematics = smart_cast<CKinematicsAnimated*>(Visual());
+		IKinematicsAnimated *tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
+		IKinematics* pK = smart_cast<IKinematics*>(tpKinematics);
 		VERIFY(tpKinematics);
 #pragma todo("Dima to Dima : forward-back bone impulse direction has been determined incorrectly!")
-		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(tpKinematics->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta,yaw) <= PI_DIV_2 ? 0 : 1))];
+		MotionID motion_ID = m_anims->m_normal.m_damage[iFloor(pK->LL_GetBoneInstance(element).get_param(1) + (angle_difference(r_model_yaw + r_model_yaw_delta,yaw) <= PI_DIV_2 ? 0 : 1))];
 		float power_factor = perc/100.f; clamp(power_factor,0.f,1.f);
 		VERIFY(motion_ID.valid());
 		tpKinematics->PlayFX(motion_ID,power_factor);
@@ -932,7 +934,7 @@ void CActor::UpdateCL	()
 	if (g_Alive()) 
 		CStepManager::update();
 
-	spatial.type |=STYPE_REACTTOSOUND;
+	SpatialComponent->spatial.type |=STYPE_REACTTOSOUND;
 
 	if(m_sndShockEffector)
 	{
@@ -1291,9 +1293,9 @@ void CActor::RenderIndicator(Fvector dpos, float r1, float r2, const ui_shader& 
 	UIRender->StartPrimitive(4, IUIRender::ptTriStrip, IUIRender::pttLIT);
 	// base rect
 
-	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<CKinematics*>(Visual())->CalculateBones	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones	();
 	M.mul						(XFORM(),BI.mTransform);
 
 	Fvector pos = M.c; pos.add(dpos);
@@ -1330,9 +1332,9 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 {
 	if (!g_Alive()) return;
 	
-	CBoneInstance& BI = smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
+	CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(u16(m_head));
 	Fmatrix M;
-	smart_cast<CKinematics*>(Visual())->CalculateBones	();
+	smart_cast<IKinematics*>(Visual())->CalculateBones	();
 	M.mul						(XFORM(),BI.mTransform);
 	//------------------------------------------------
 	Fvector v0, v1;
@@ -1362,8 +1364,8 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	if (v_res.z < 0 || v_res.w < 0)	return;
 	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f) return;
 
-	float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
-	float y = (1.f - v_res.y)/2.f * (Device.dwHeight);
+	float x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
+	float y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
 
 	pFont->SetAligment	(CGameFont::alCenter);
 	pFont->SetColor		(color);
@@ -1680,10 +1682,10 @@ void CActor::OnDifficultyChanged	()
 	VERIFY(g_SingleGameDifficulty>=egdNovice && g_SingleGameDifficulty<=egdMaster); 
 	LPCSTR diff_name				= get_token_name(difficulty_type_token, g_SingleGameDifficulty);
 	string128						tmp;
-	strconcat						(sizeof(tmp),tmp,"actor_immunities_",diff_name);
+	xr_strconcat					(tmp,"actor_immunities_",diff_name);
 	conditions().LoadImmunities		(tmp,pSettings);
 	// hit probability
-	strconcat						(sizeof(tmp),tmp,"hit_probability_",diff_name);
+	xr_strconcat					(tmp,"hit_probability_",diff_name);
 	hit_probability					= pSettings->r_float(*cNameSect(),tmp);
 }
 

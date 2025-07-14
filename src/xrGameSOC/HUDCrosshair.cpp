@@ -1,4 +1,4 @@
-// HUDCrosshair.cpp:  крестик прицела, отображающий текущую дисперсию
+// HUDCrosshair.cpp:  РєСЂРµСЃС‚РёРє РїСЂРёС†РµР»Р°, РѕС‚РѕР±СЂР°Р¶Р°СЋС‰РёР№ С‚РµРєСѓС‰СѓСЋ РґРёСЃРїРµСЂСЃРёСЋ
 // 
 //////////////////////////////////////////////////////////////////////
 
@@ -20,16 +20,16 @@ CHUDCrosshair::~CHUDCrosshair	()
 
 void CHUDCrosshair::Load		()
 {
-	//все размеры в процентах от длины экрана
-	//длина крестика 
+	//РІСЃРµ СЂР°Р·РјРµСЂС‹ РІ РїСЂРѕС†РµРЅС‚Р°С… РѕС‚ РґР»РёРЅС‹ СЌРєСЂР°РЅР°
+	//РґР»РёРЅР° РєСЂРµСЃС‚РёРєР° 
 	cross_length_perc = pSettings->r_float (HUD_CURSOR_SECTION, "cross_length");
-//	cross_length = iFloor(0.5f + cross_length_perc*float(Device.dwWidth));
+//	cross_length = iFloor(0.5f + cross_length_perc*float(Device.TargetWidth));
 
 	min_radius_perc = pSettings->r_float (HUD_CURSOR_SECTION, "min_radius");
-	//min_radius = iFloor(0.5f + min_radius_perc*float(Device.dwWidth));
+	//min_radius = iFloor(0.5f + min_radius_perc*float(Device.TargetWidth));
 
 	max_radius_perc = pSettings->r_float (HUD_CURSOR_SECTION, "max_radius");
-	//max_radius = iFloor(0.5f + max_radius_perc*float(Device.dwWidth));
+	//max_radius = iFloor(0.5f + max_radius_perc*float(Device.TargetWidth));
 
 	cross_color = pSettings->r_fcolor (HUD_CURSOR_SECTION, "cross_color").get();
 
@@ -37,7 +37,7 @@ void CHUDCrosshair::Load		()
 	radius_speed_perc = pSettings->r_float (HUD_CURSOR_SECTION, "radius_lerp_speed");
 }
 
-//выставляет radius от min_radius до max_radius
+//РІС‹СЃС‚Р°РІР»СЏРµС‚ radius РѕС‚ min_radius РґРѕ max_radius
 void CHUDCrosshair::SetDispersion	(float disp)
 { 
 	Fvector4 r;

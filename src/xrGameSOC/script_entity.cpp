@@ -10,7 +10,7 @@
 #include "script_entity.h"
 #include "CustomMonster.h"
 #include "../xrEngine/feel_vision.h"
-#include "../xrEngine/skeletonanimated.h"
+#include "../include/xrRender/Kinematics.h"
 #include "script_entity_action.h"
 #include "weapon.h"
 #include "ParticlesObject.h"
@@ -29,7 +29,7 @@
 #include "script_callback_ex.h"
 #include "game_object_space.h"
 
-void __stdcall ActionCallback(CKinematics *tpKinematics);
+void  ActionCallback(CKinematics *tpKinematics);
 
 CScriptEntity::CScriptEntity()
 {
@@ -193,7 +193,7 @@ CScriptEntityAction *CScriptEntity::GetCurrentAction()
 		return(m_tpActionQueue.front());
 }
 
-void __stdcall ActionCallback(CKinematics *tpKinematics)
+void  ActionCallback(CKinematics *tpKinematics)
 {
 	// sounds
 	CScriptEntity	*l_tpScriptMonster = smart_cast<CScriptEntity*>((CGameObject*)(tpKinematics->Update_Callback_Param));
