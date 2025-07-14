@@ -6,7 +6,6 @@
 #include "UITabButtonMP.h"
 #include "UICellCustomItems.h"
 #include "UICellItemFactory.h"
-#include <dinput.h>
 #include "../HUDManager.h"
 #include "../weapon.h"
 #include "../xrServer_Objects_ALife_Items.h"
@@ -543,7 +542,7 @@ bool CUIBagWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 	int iGroup;
 
-	if (DIK_ESCAPE == dik)
+	if (SDL_SCANCODE_ESCAPE == dik)
 	{
 		m_btnBack.OnClick();
 		return true;
@@ -556,30 +555,30 @@ bool CUIBagWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		break;
 	case mlBoxes:
 
-		if (DIK_ESCAPE == dik)
+		if (SDL_SCANCODE_ESCAPE == dik)
 		{
 			ShowSectionEx(-1);			return true;
 		}
 
 		switch (dik)
 		{
-		case DIK_1:
+		case SDL_SCANCODE_1:
 			OnBtnShotgunsClicked();					return true;
 
-		case DIK_2:
+		case SDL_SCANCODE_2:
 			OnBtnMachinegunsClicked();				return true;
 
-		case DIK_3:
+		case SDL_SCANCODE_3:
 			OnBtnSniperClicked();					return true;
 
-		case DIK_4:
+		case SDL_SCANCODE_4:
 			OnBtnHeavyClicked();					return true;
 		}
 		break;
 
 	case mlWpnSubType:		
 		iGroup = GetCurrentGroupIndex();
-		if (DIK_ESCAPE == dik)
+		if (SDL_SCANCODE_ESCAPE == dik)
 		{
 			if (iGroup >= GROUP_31 && iGroup <= GROUP_34 )
 				ShowSectionEx(GROUP_BOXES);
@@ -589,7 +588,7 @@ bool CUIBagWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 			return true;
 		}
 
-		if (dik <= DIK_0 && dik >= DIK_1)
+		if (dik <= SDL_SCANCODE_0 && dik >= SDL_SCANCODE_1)
 		{
 			CUICellItem* itm = GetItemByKey(dik,GetCurrentGroupIndex());
 			if (itm && IsInBag(itm))

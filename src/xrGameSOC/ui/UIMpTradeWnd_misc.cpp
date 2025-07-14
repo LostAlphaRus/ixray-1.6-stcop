@@ -10,19 +10,18 @@
 
 #include "../inventory_item.h"
 #include "../PhysicsShellHolder.h"
-#include "../object_broker.h"
-#include <dinput.h>
+#include "../../xrCore/object_broker.h"
 
 bool CUIMpTradeWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 #ifdef DEBUG
 	//for debug only
-	if(keyboard_action==WINDOW_KEY_PRESSED && dik==DIK_NUMPAD7)
+	if(keyboard_action==WINDOW_KEY_PRESSED && dik==SDL_SCANCODE_KP_7)
 	{
 		if(GetRank()>0)
 			SetRank( clampr(u32(GetRank()-1),u32(0),u32(4) ) );
 	}
-	if(keyboard_action==WINDOW_KEY_PRESSED && dik==DIK_NUMPAD8)
+	if(keyboard_action==WINDOW_KEY_PRESSED && dik==SDL_SCANCODE_KP_8)
 	{
 		SetRank( clampr(u32(GetRank()+1),u32(0),u32(4) ) );
 	}

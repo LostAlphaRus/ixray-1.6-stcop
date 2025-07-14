@@ -464,7 +464,6 @@ void CUIInventoryWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 
 
 #include "../../xrEngine/xr_level_controller.h"
-#include <dinput.h>
 
 bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
@@ -484,12 +483,12 @@ bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	if (WINDOW_KEY_PRESSED == keyboard_action)
 	{
 #ifdef DEBUG
-		if(DIK_NUMPAD7 == dik && CurrentIItem())
+		if(SDL_SCANCODE_KP_7 == dik && CurrentIItem())
 		{
 			CurrentIItem()->ChangeCondition(-0.05f);
 			UIItemInfo.InitItem(CurrentIItem());
 		}
-		else if(DIK_NUMPAD8 == dik && CurrentIItem())
+		else if(SDL_SCANCODE_KP_8 == dik && CurrentIItem())
 		{
 			CurrentIItem()->ChangeCondition(0.05f);
 			UIItemInfo.InitItem(CurrentIItem());

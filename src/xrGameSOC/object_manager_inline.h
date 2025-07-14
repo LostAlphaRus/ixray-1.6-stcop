@@ -71,7 +71,7 @@ bool CAbstractObjectManager::is_useful				(T *object) const
 	if (!self)
 		return				(false);
 
-	if ((object->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI)
+	if ((object->SpatialComponent->spatial.type & STYPE_VISIBLEFORAI) != STYPE_VISIBLEFORAI)
 		return				(false);
 
 	return					(true);
@@ -83,7 +83,7 @@ bool CAbstractObjectManager::add					(T *object)
 	if (!is_useful(object))
 		return				(false);
 
-	OBJECTS::const_iterator	I = std::find(m_objects.begin(),m_objects.end(),object);
+	typename OBJECTS::const_iterator	I = std::find(m_objects.begin(),m_objects.end(),object);
 	if (m_objects.end() == I) {
 		m_objects.push_back	(object);
 		return				(true);

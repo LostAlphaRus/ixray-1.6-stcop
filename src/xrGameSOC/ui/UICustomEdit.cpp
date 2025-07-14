@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <dinput.h>
 #include "UICustomEdit.h"
 #include "../../xrEngine/LightAnimLibrary.h"
 
@@ -60,7 +59,7 @@ void CUICustomEdit::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
 //	if(pWnd == GetParent())
 //	{
-		//кто-то другой захватил клавиатуру
+		//РєС‚Рѕ-С‚Рѕ РґСЂСѓРіРѕР№ Р·Р°С…РІР°С‚РёР» РєР»Р°РІРёР°С‚СѓСЂСѓ
 		if(msg == WINDOW_KEYBOARD_CAPTURE_LOST)
 		{
 			m_bInputFocus = false;
@@ -139,15 +138,13 @@ bool CUICustomEdit::KeyPressed(int dik)
 
 	switch (dik)
 	{
-	case DIK_LEFT:
-	case DIKEYBOARD_LEFT:
+	case SDL_SCANCODE_LEFT:
 		m_lines.DecCursorPos();
 		break;
-	case DIK_RIGHT:
-	case DIKEYBOARD_RIGHT:
+	case SDL_SCANCODE_RIGHT:
 		m_lines.IncCursorPos();
 		break;
-	case DIK_ESCAPE:
+	case SDL_SCANCODE_ESCAPE:
 		if (strlen(GetText()))
 		{
 			SetText("");
@@ -160,47 +157,46 @@ bool CUICustomEdit::KeyPressed(int dik)
 			m_iKeyPressAndHold = 0;
 		}
 		break;
-	case DIK_RETURN:
-	case DIK_NUMPADENTER:
+	case SDL_SCANCODE_RETURN:
+	case SDL_SCANCODE_KP_ENTER:
 		GetParent()->SetKeyboardCapture(this, false);
 		m_bInputFocus = false;
 		m_iKeyPressAndHold = 0;
 		GetMessageTarget()->SendMessage(this, EDIT_TEXT_COMMIT, NULL);
 		break;
-	case DIK_BACKSPACE:
+	case SDL_SCANCODE_BACKSPACE:
 		m_lines.DelLeftChar();
 		bChanged = true;
 		break;
-	case DIK_DELETE:
-	case DIKEYBOARD_DELETE:
+	case SDL_SCANCODE_DELETE:
 		m_lines.DelChar();
 		bChanged = true;
 		break;
-	case DIK_LSHIFT:
-	case DIK_RSHIFT:
-		if ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0)
-			PostMessage(Device.m_hWnd, WM_INPUTLANGCHANGEREQUEST, 2, 0); //Переключили язык
+	case SDL_SCANCODE_LSHIFT:
+	case SDL_SCANCODE_RSHIFT:
+	//	if ((GetAsyncKeyState(VK_MENU) & 0x8000) != 0)
+	//		PostMessage(Device.m_hWnd, WM_INPUTLANGCHANGEREQUEST, 2, 0); //РџРµСЂРµРєР»СЋС‡РёР»Рё СЏР·С‹Рє
 		break;
-	// Эти клавиши через ToAsciiEx не обработать, поэтому пропишем явно
-	case DIK_NUMPAD0: out_me = '0'; break;
-	case DIK_NUMPAD1: out_me = '1'; break;
-	case DIK_NUMPAD2: out_me = '2'; break;
-	case DIK_NUMPAD3: out_me = '3'; break;
-	case DIK_NUMPAD4: out_me = '4'; break;
-	case DIK_NUMPAD5: out_me = '5'; break;
-	case DIK_NUMPAD6: out_me = '6'; break;
-	case DIK_NUMPAD7: out_me = '7'; break;
-	case DIK_NUMPAD8: out_me = '8'; break;
-	case DIK_NUMPAD9: out_me = '9'; break;
-	case DIK_NUMPADSLASH: out_me = '/'; break;
-	case DIK_NUMPADPERIOD: out_me = '.'; break;
+	// Р­С‚Рё РєР»Р°РІРёС€Рё С‡РµСЂРµР· ToAsciiEx РЅРµ РѕР±СЂР°Р±РѕС‚Р°С‚СЊ, РїРѕСЌС‚РѕРјСѓ РїСЂРѕРїРёС€РµРј СЏРІРЅРѕ
+	case SDL_SCANCODE_KP_0: out_me = '0'; break;
+	case SDL_SCANCODE_KP_1: out_me = '1'; break;
+	case SDL_SCANCODE_KP_2: out_me = '2'; break;
+	case SDL_SCANCODE_KP_3: out_me = '3'; break;
+	case SDL_SCANCODE_KP_4: out_me = '4'; break;
+	case SDL_SCANCODE_KP_5: out_me = '5'; break;
+	case SDL_SCANCODE_KP_6: out_me = '6'; break;
+	case SDL_SCANCODE_KP_7: out_me = '7'; break;
+	case SDL_SCANCODE_KP_8: out_me = '8'; break;
+	case SDL_SCANCODE_KP_9: out_me = '9'; break;
+	case SDL_SCANCODE_SLASH: out_me = '/'; break;
+	case SDL_SCANCODE_KP_PERIOD: out_me = '.'; break;
 	//
 	default:
-		// GetKeyboardState не используем, потому что оно очень глючно работает
+		// GetKeyboardState РЅРµ РёСЃРїРѕР»СЊР·СѓРµРј, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРЅРѕ РѕС‡РµРЅСЊ РіР»СЋС‡РЅРѕ СЂР°Р±РѕС‚Р°РµС‚
 		u8 State[256] = { 0 };
-		if ((GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0) //Для получения правильных символов при зажатом шифте
+		if ((GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0) //Р”Р»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РїСЂР°РІРёР»СЊРЅС‹С… СЃРёРјРІРѕР»РѕРІ РїСЂРё Р·Р°Р¶Р°С‚РѕРј С€РёС„С‚Рµ
 			State[VK_SHIFT] = 0x80;
-		auto layout = GetKeyboardLayout(GetWindowThreadProcessId(Device.m_hWnd, nullptr));
+		auto layout = GetKeyboardLayout(GetWindowThreadProcessId(nullptr, nullptr));
 		u16 symbol;
 		if (ToAsciiEx(MapVirtualKeyEx(dik, 1, layout), dik, State, &symbol, 0, layout) == 1)
 			out_me = (char)symbol;
@@ -238,8 +234,8 @@ void CUICustomEdit::AddChar(char c)
 }
 
 
-//время для обеспечивания печатания
-//символа при удерживаемой кнопке
+//РІСЂРµРјСЏ РґР»СЏ РѕР±РµСЃРїРµС‡РёРІР°РЅРёСЏ РїРµС‡Р°С‚Р°РЅРёСЏ
+//СЃРёРјРІРѕР»Р° РїСЂРё СѓРґРµСЂР¶РёРІР°РµРјРѕР№ РєРЅРѕРїРєРµ
 #define HOLD_WAIT_TIME 300
 #define HOLD_REPEAT_TIME 50
 

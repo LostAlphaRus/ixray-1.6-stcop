@@ -1,6 +1,6 @@
 #include "pch_script.h"
 #include "PhraseScript.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "ai_space.h"
 #include "gameobject.h"
 #include "script_game_object.h"
@@ -17,7 +17,7 @@ CPhraseScript::~CPhraseScript	()
 {
 }
 
-//загрузка из XML файла
+//Р·Р°РіСЂСѓР·РєР° РёР· XML С„Р°Р№Р»Р°
 void CPhraseScript::Load		(CUIXml* uiXml, XML_NODE* phrase_node)
 {
 //	m_sScriptTextFunc = uiXml.Read(phrase_node, "script_text", 0, NULL);

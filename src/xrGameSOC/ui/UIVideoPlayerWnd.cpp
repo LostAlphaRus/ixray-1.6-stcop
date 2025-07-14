@@ -5,7 +5,6 @@
 #include "UIXmlInit.h"
 #include "../level.h"
 #include "../hudmanager.h"
-#include <dinput.h>
 #include "../Include/xrRender/UIShader.h"
 #include "../Include/xrRender/DebugRender.h"
 #include "../Include/xrRender/UISequenceVideoItem.h"
@@ -148,7 +147,7 @@ void CUIActorSleepVideoPlayer::DeActivate	()
 bool CUIActorSleepVideoPlayer::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 	if(keyboard_action==WINDOW_KEY_PRESSED){
-		if(dik==DIK_ESCAPE){
+		if(dik==SDL_SCANCODE_ESCAPE){
 			DeActivate	();
 			return true;
 		}

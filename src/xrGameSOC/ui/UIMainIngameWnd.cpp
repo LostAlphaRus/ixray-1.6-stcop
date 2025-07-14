@@ -7,7 +7,6 @@
 #include "../UIZoneMap.h"
 
 
-#include <dinput.h>
 #include "../actor.h"
 #include "../HUDManager.h"
 #include "../PDA.h"
@@ -525,57 +524,57 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 			switch (dik)
 			{
 				// Rotate +y
-			case DIK_K:
+			case SDL_SCANCODE_K:
 				pWpnHud->SetZoomRotateX(pWpnHud->ZoomRotateX() + g_fHudAdjustValue);
 				flag = true;
 				break;
 				// Rotate -y
-			case DIK_I:
+			case SDL_SCANCODE_I:
 				pWpnHud->SetZoomRotateX(pWpnHud->ZoomRotateX() - g_fHudAdjustValue);
 				flag = true;
 				break;
 				// Rotate +x
-			case DIK_L:
+			case SDL_SCANCODE_L:
 				pWpnHud->SetZoomRotateY(pWpnHud->ZoomRotateY() + g_fHudAdjustValue);
 				flag = true;
 				break;
 				// Rotate -x
-			case DIK_J:
+			case SDL_SCANCODE_J:
 				pWpnHud->SetZoomRotateY(pWpnHud->ZoomRotateY() - g_fHudAdjustValue);
 				flag = true;
 				break;
 				// Shift +x
-			case DIK_W:
+			case SDL_SCANCODE_W:
 				tmpV.y += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -y
-			case DIK_S:
+			case SDL_SCANCODE_S:
 				tmpV.y -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift +x
-			case DIK_D:
+			case SDL_SCANCODE_D:
 				tmpV.x += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -x
-			case DIK_A:
+			case SDL_SCANCODE_A:
 				tmpV.x -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift +z
-			case DIK_Q:
+			case SDL_SCANCODE_Q:
 				tmpV.z += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -z
-			case DIK_E:
+			case SDL_SCANCODE_E:
 				tmpV.z -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// output coordinate info to the console
-			case DIK_P:
+			case SDL_SCANCODE_P:
 				string256 tmpStr;
 				sprintf_s(tmpStr, "%s",
 					*m_pWeapon->cNameSect());
@@ -610,37 +609,37 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 			switch (dik)
 			{
 				// Shift +x
-			case DIK_A:
+			case SDL_SCANCODE_A:
 				tmpV.y += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -x
-			case DIK_D:
+			case SDL_SCANCODE_D:
 				tmpV.y -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift +z
-			case DIK_Q:
+			case SDL_SCANCODE_Q:
 				tmpV.x += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -z
-			case DIK_E:
+			case SDL_SCANCODE_E:
 				tmpV.x -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift +y
-			case DIK_S:
+			case SDL_SCANCODE_S:
 				tmpV.z += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -y
-			case DIK_W:
+			case SDL_SCANCODE_W:
 				tmpV.z -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// output coordinate info to the console
-			case DIK_P:
+			case SDL_SCANCODE_P:
 				string256 tmpStr;
 				if (m_pWeapon)
 				{
@@ -683,37 +682,37 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 			switch (dik)
 			{
 				// Shift +x
-			case DIK_A:
+			case SDL_SCANCODE_A:
 				tmpV.y += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -x
-			case DIK_D:
+			case SDL_SCANCODE_D:
 				tmpV.y -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift +z
-			case DIK_Q:
+			case SDL_SCANCODE_Q:
 				tmpV.x += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -z
-			case DIK_E:
+			case SDL_SCANCODE_E:
 				tmpV.x -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift +y
-			case DIK_S:
+			case SDL_SCANCODE_S:
 				tmpV.z += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -y
-			case DIK_W:
+			case SDL_SCANCODE_W:
 				tmpV.z -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// output coordinate info to the console
-			case DIK_P:
+			case SDL_SCANCODE_P:
 				string256 tmpStr;
 				if (m_pWeapon)
 				{
@@ -755,37 +754,37 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 			switch (dik)
 			{
 				// Shift +x
-			case DIK_E:
+			case SDL_SCANCODE_E:
 				tmpV.y += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -x
-			case DIK_Q:
+			case SDL_SCANCODE_Q:
 				tmpV.y -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift +z
-			case DIK_D:
+			case SDL_SCANCODE_D:
 				tmpV.x += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -z
-			case DIK_A:
+			case SDL_SCANCODE_A:
 				tmpV.x -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift +y
-			case DIK_W:
+			case SDL_SCANCODE_W:
 				tmpV.z += g_fHudAdjustValue;
 				flag = true;
 				break;
 				// Shift -y
-			case DIK_S:
+			case SDL_SCANCODE_S:
 				tmpV.z -= g_fHudAdjustValue;
 				flag = true;
 				break;
 				// output coordinate info to the console
-			case DIK_P:
+			case SDL_SCANCODE_P:
 				string256 tmpStr;
 				if (m_pWeapon)
 				{
@@ -815,53 +814,53 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		if(CAttachableItem::m_dbgItem){
 			static float rot_d = deg2rad(0.5f);
 			static float mov_d = 0.01f;
-			bool shift = !!pInput->iGetAsyncKeyState(DIK_LSHIFT);
+			bool shift = !!pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT);
 			flag = true;
 			switch (dik)
 			{
 				// Shift +x
-			case DIK_A:
+			case SDL_SCANCODE_A:
 				if(shift)	CAttachableItem::rot_dx(rot_d);
 				else		CAttachableItem::mov_dx(rot_d);
 				break;
 				// Shift -x
-			case DIK_D:
+			case SDL_SCANCODE_D:
 				if(shift)	CAttachableItem::rot_dx(-rot_d);
 				else		CAttachableItem::mov_dx(-rot_d);
 				break;
 				// Shift +z
-			case DIK_Q:
+			case SDL_SCANCODE_Q:
 				if(shift)	CAttachableItem::rot_dy(rot_d);
 				else		CAttachableItem::mov_dy(rot_d);
 				break;
 				// Shift -z
-			case DIK_E:
+			case SDL_SCANCODE_E:
 				if(shift)	CAttachableItem::rot_dy(-rot_d);
 				else		CAttachableItem::mov_dy(-rot_d);
 				break;
 				// Shift +y
-			case DIK_S:
+			case SDL_SCANCODE_S:
 				if(shift)	CAttachableItem::rot_dz(rot_d);
 				else		CAttachableItem::mov_dz(rot_d);
 				break;
 				// Shift -y
-			case DIK_W:
+			case SDL_SCANCODE_W:
 				if(shift)	CAttachableItem::rot_dz(-rot_d);
 				else		CAttachableItem::mov_dz(-rot_d);
 				break;
 
-			case DIK_SUBTRACT:
+			case SDL_SCANCODE_SUBTRACT:
 				if(shift)	rot_d-=deg2rad(0.01f);
 				else		mov_d-=0.001f;
 				Msg("rotation delta=[%f]; moving delta=[%f]",rot_d,mov_d);
 				break;
-			case DIK_ADD:
+			case SDL_SCANCODE_ADD:
 				if(shift)	rot_d+=deg2rad(0.01f);
 				else		mov_d+=0.001f;
 				Msg("rotation delta=[%f]; moving delta=[%f]",rot_d,mov_d);
 				break;
 
-			case DIK_P:
+			case SDL_SCANCODE_P:
 				Msg("LTX section [%s]",*CAttachableItem::m_dbgItem->item().object().cNameSect());
 				Msg("attach_angle_offset [%f,%f,%f]",VPUSH(CAttachableItem::get_angle_offset()));
 				Msg("attach_position_offset [%f,%f,%f]",VPUSH(CAttachableItem::get_pos_offset()));
@@ -874,15 +873,15 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		}
 #endif		
 
-	if(Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
+	if(Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT) || Level().IR_GetKeyState(SDL_SCANCODE_RSHIFT))
 	{
 		switch(dik)
 		{
-		case DIK_NUMPADMINUS:
+		case SDL_SCANCODE_KP_MINUS:
 			UIZoneMap->ZoomOut();
 			return true;
 			break;
-		case DIK_NUMPADPLUS:
+		case SDL_SCANCODE_KP_PLUS:
 			UIZoneMap->ZoomIn();
 			return true;
 			break;
@@ -892,12 +891,12 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 	{
 		switch(dik)
 		{
-		case DIK_NUMPADMINUS:
+		case SDL_SCANCODE_KP_MINUS:
 			//.HideAll();
 			HUD().GetUI()->HideGameIndicators();
 			return true;
 			break;
-		case DIK_NUMPADPLUS:
+		case SDL_SCANCODE_KP_PLUS:
 			//.ShowAll();
 			HUD().GetUI()->ShowGameIndicators();
 			return true;
@@ -1197,7 +1196,7 @@ void test_update()
 void test_key	(int dik)
 {
 
-	if(dik==DIK_K)
+	if(dik==SDL_SCANCODE_K)
 	{
 		if(!pUIFrame)
 		{
@@ -1211,7 +1210,7 @@ void test_key	(int dik)
 	}
 
 /*
-	if(dik==DIK_K){
+	if(dik==SDL_SCANCODE_K){
 		if(g_pTestFont){
 			g_pTestFont->Release();
 			g_pTestFont = NULL;

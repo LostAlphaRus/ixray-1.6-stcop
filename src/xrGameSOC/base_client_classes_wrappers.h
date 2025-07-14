@@ -18,7 +18,7 @@
 #include "../xrEngine/xr_object.h"
 #include "entity.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include <loki/typelist.h>
 #include <loki/hierarchygenerators.h>
 #include "xrServer_Object_Base.h"

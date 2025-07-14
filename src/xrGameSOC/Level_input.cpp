@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <dinput.h>
 #include "HUDmanager.h"
 #include "../xrEngine/xr_ioconsole.h"
 #include "entity_alive.h"
@@ -67,7 +66,7 @@ void CLevel::IR_OnMouseHold(int btn)
 void CLevel::IR_OnMouseMove( int dx, int dy )
 {
 	if(g_bDisableAllInput)						return;
-	if (pHUD->GetUI()->IR_OnMouseMove(dx,dy))	return;
+	if (HUD().GetUI()->IR_OnMouseMove(dx, dy))	return;
 	if (Device.Paused())							return;
 	if (CURRENT_ENTITY())		{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
@@ -80,10 +79,7 @@ extern bool g_block_pause;
 
 void CLevel::IR_OnKeyboardPress	(int key)
 {
-	bool b_ui_exist = (pHUD && pHUD->GetUI());
-
-//.	if (DIK_F10 == key)		vtune.enable();
-//.	if (DIK_F11 == key)		vtune.disable();
+	bool b_ui_exist = (HUD().GetUI());
 	
 	EGameActions _curr = get_binded_action(key);
 	switch ( _curr ) 
@@ -124,7 +120,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	if(	g_bDisableAllInput )	return;
 	if ( !b_ui_exist )			return;
 
-	if ( b_ui_exist && pHUD->GetUI()->IR_OnKeyboardPress(key)) return;
+	if ( b_ui_exist && HUD().GetUI()->IR_OnKeyboardPress(key)) return;
 
 	if( Device.Paused() )		return;
 
@@ -154,7 +150,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 #ifndef MASTER_GOLD
 	switch (key) {
-	case DIK_NUMPAD5: 
+	case SDL_SCANCODE_KP_5: 
 		{
 			if (GameID() != GAME_SINGLE) 
 			{
@@ -167,20 +163,20 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		break;
 #endif // MASTER_GOLD
 #ifdef DEBUG
-	case DIK_RETURN:
+	case SDL_SCANCODE_RETURN:
 			bDebug	= !bDebug;
 		return;
 
-	case DIK_BACK:
+	case SDL_SCANCODE_BACK:
 		if (GameID() == GAME_SINGLE)
 			HW.Caps.SceneMode			= (HW.Caps.SceneMode+1)%3;
 		return;
 
-	case DIK_F4: {
-		if (pInput->iGetAsyncKeyState(DIK_LALT))
+	case SDL_SCANCODE_F4: {
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT))
 			break;
 
-		if (pInput->iGetAsyncKeyState(DIK_RALT))
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_RALT))
 			break;
 
 		bool bOk = false;
@@ -245,7 +241,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	case MOUSE_1: {
 		if (GameID() != GAME_SINGLE)
 			break;
-		if (pInput->iGetAsyncKeyState(DIK_LALT)) {
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LALT)) {
 			if (CurrentEntity()->CLS_ID == CLSID_OBJECT_ACTOR)
 				try_change_current_entity	();
 			else
@@ -257,7 +253,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	/**/
 
 
-	case DIK_DIVIDE:
+	case SDL_SCANCODE_DIVIDE:
 		if( OnServer() ){
 //			float NewTimeFactor				= pSettings->r_float("alife","time_factor");
 			
@@ -270,7 +266,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 			};
 		}
 		break;	
-	case DIK_MULTIPLY:
+	case SDL_SCANCODE_MULTIPLY:
 		if( OnServer() ){
 			float NewTimeFactor				= 1000.f;
 			if (GameID() == GAME_SINGLE)
@@ -284,7 +280,7 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		break;
 #endif
 #ifdef DEBUG
-	case DIK_F9:{
+	case SDL_SCANCODE_F9:{
 //		if (!ai().get_alife())
 //			break;
 //		const_cast<CALifeSimulatorHeader&>(ai().alife().header()).set_state(ALife::eZoneStateSurge);
@@ -349,10 +345,10 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 void CLevel::IR_OnKeyboardRelease(int key)
 {
-	bool b_ui_exist = (pHUD && pHUD->GetUI());
+	bool b_ui_exist = (HUD().GetUI());
 
 	if (g_bDisableAllInput	) return;
-	if ( b_ui_exist && pHUD->GetUI()->IR_OnKeyboardRelease(key)) return;
+	if ( b_ui_exist && HUD().GetUI()->IR_OnKeyboardRelease(key)) return;
 	if (Device.Paused()		) return;
 	if (game && Game().OnKeyboardRelease(get_binded_action(key)) ) return;
 
@@ -367,9 +363,9 @@ void CLevel::IR_OnKeyboardHold(int key)
 {
 	if(g_bDisableAllInput) return;
 
-	bool b_ui_exist = (pHUD && pHUD->GetUI());
+	bool b_ui_exist = (HUD().GetUI());
 
-	if (b_ui_exist && pHUD->GetUI()->IR_OnKeyboardHold(key)) return;
+	if (b_ui_exist && HUD().GetUI()->IR_OnKeyboardHold(key)) return;
 	if ( b_ui_exist && HUD().GetUI()->MainInputReceiver() )return;
 	if ( Device.Paused() ) return;
 	if (CURRENT_ENTITY())		{

@@ -12,7 +12,7 @@
 #include "../Editors/Public/xrEProps.h"
 #include "../xrCore/net_utils.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 //#define USE_WRITER_READER
 class CSE_Abstract;

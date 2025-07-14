@@ -3,7 +3,7 @@
 #include "LevelGameDef.h"
 #include "script_process.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "script_engine_space.h"
 #include "level.h"
 #include "xrserver.h"

@@ -81,6 +81,7 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 
 	game_configured				= FALSE;
 	m_bGameConfigStarted		= FALSE;
+	m_connect_server_err		= xrServer::ErrNoError;
 
 	eChangeRP					= g_pEventManager->Event.Handler_Attach	("LEVEL:ChangeRP",this);
 	eDemoPlay					= g_pEventManager->Event.Handler_Attach	("LEVEL:PlayDEMO",this);

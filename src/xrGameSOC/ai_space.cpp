@@ -15,7 +15,7 @@
 #include "ai_space.h"
 #include "cover_manager.h"
 #include "cover_point.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "patrol_path_storage.h"
 #include "alife_simulator.h"
 

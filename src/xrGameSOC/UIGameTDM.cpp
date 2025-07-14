@@ -12,7 +12,6 @@
 
 #include "ui/UIFrags2.h"
 #include "ui/TeamInfo.h"
-#include <dinput.h>
 
 #include "../xrCore/object_broker.h"
 
@@ -120,7 +119,7 @@ CUIGameTDM::~CUIGameTDM()
 bool CUIGameTDM::IR_OnKeyboardPress(int dik)
 {
 	switch (dik) {
-		case DIK_CAPSLOCK :
+		case SDL_SCANCODE_CAPSLOCK :
 		{
 			if (m_game)
 			{
@@ -139,7 +138,7 @@ bool CUIGameTDM::IR_OnKeyboardPress(int dik)
 bool CUIGameTDM::IR_OnKeyboardRelease(int dik)
 {
 	switch (dik) {
-		case DIK_CAPSLOCK :
+		case SDL_SCANCODE_CAPSLOCK :
 			{
 				if (m_game)
 				{

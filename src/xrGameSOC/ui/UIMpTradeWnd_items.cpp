@@ -696,7 +696,6 @@ void CUIMpTradeWnd::DumpPreset(ETradePreset idx)
 	}
 }
 
-#include <dinput.h>
 #include "../HUDManager.h"
 void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 {
@@ -711,7 +710,7 @@ void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 			acc = 1;
 		string64							buff;
 
-		sprintf_s								(buff,"%d", acc - DIK_ESCAPE);
+		sprintf_s								(buff,"%d", acc - SDL_SCANCODE_ESCAPE);
 		CGameFont* pFont					= UI()->Font()->GetFont(LETTERICA16_FONT_NAME);
 		pFont->SetColor						(color_rgba(135,123,116,255));
 		pFont->Out							(pos.x, pos.y, buff);

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../xrEngine/resourcemanager.h"
 #include "HUDmanager.h"
 #include "PHdynamicdata.h"
 #include "Physics.h"
@@ -61,13 +60,12 @@ bool	CLevel::net_start_client3				()
 			level_name	= ai().get_alife() ? *name() : net_SessionName	();
 
 		// Determine internal level-ID
-		int						level_id = pApp->Level_ID(level_name);
+		int						level_id = pApp->Level_ID(level_name, "1.0", true);
 		if (level_id<0)	{
 			Disconnect			();
 			pApp->LoadEnd		();
 			connected_to_server = FALSE;
 			m_name				= level_name;
-			m_connect_server_err = xrServer::ErrNoLevel;
 			return				false;
 		}
 		pApp->Level_Set			(level_id);
@@ -142,10 +140,10 @@ bool	CLevel::net_start_client5				()
 		// Textures
 		if	(!g_dedicated_server)
 		{
-			pHUD->Load							();
+			HUD().Load();
 			g_pGamePersistent->LoadTitle				("st_loading_textures");
-			Device.Resources->DeferredLoad		(FALSE);
-			Device.Resources->DeferredUpload	();
+			Device.m_pRender->DeferredLoad		(FALSE);
+			Device.m_pRender->ResourcesDeferredUpload	();
 			LL_CheckTextures					();
 		}
 	}
@@ -162,7 +160,7 @@ bool	CLevel::net_start_client6				()
 
 		g_pGamePersistent->LoadTitle		("st_client_synchronising");
 		pApp->LoadForceFinish				();
-		Device.PreCache						(30);
+		Device.PreCache						(30, true, true);
 		net_start_result_total				= TRUE;
 	}else{
 		net_start_result_total				= FALSE;

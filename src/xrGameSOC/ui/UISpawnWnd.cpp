@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <dinput.h>
 #include "UISpawnWnd.h"
 #include "UIXmlInit.h"
 #include "../hudmanager.h"
@@ -114,7 +113,7 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 	if (WINDOW_KEY_PRESSED != keyboard_action)
 	{
-		if (dik == DIK_TAB)
+		if (dik == SDL_SCANCODE_TAB)
 		{
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -124,7 +123,7 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		return false;
 	}
 
-	if (dik == DIK_TAB)
+	if (dik == SDL_SCANCODE_TAB)
 	{
         ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -135,11 +134,11 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 	game_cl_TeamDeathmatch * dm = smart_cast<game_cl_TeamDeathmatch *>(&(Game()));
 	
-	if (DIK_1 == dik || DIK_2 == dik)
+	if (SDL_SCANCODE_1 == dik || SDL_SCANCODE_2 == dik)
 	{
 		dm->StartStopMenu(this,true);
 		
-		if (DIK_1 == dik)
+		if (SDL_SCANCODE_1 == dik)
 			dm->OnTeamSelect(0);
 		else
 			dm->OnTeamSelect(1);
@@ -147,15 +146,15 @@ bool CUISpawnWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	}
 	switch (dik)
 	{
-	case DIK_ESCAPE:
+	case SDL_SCANCODE_ESCAPE:
 		dm->StartStopMenu(this,true);
 		dm->OnTeamMenuBack();
 		return true;
-	case DIK_SPACE:
+	case SDL_SCANCODE_SPACE:
 		dm->StartStopMenu(this,true);
 		dm->OnTeamSelect(-1);
 		return true;
-	case DIK_RETURN:
+	case SDL_SCANCODE_RETURN:
 		dm->StartStopMenu(this,true);
 		if (m_pImage1->GetSelectedState())
 			dm->OnTeamSelect(0);

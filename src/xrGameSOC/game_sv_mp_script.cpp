@@ -5,7 +5,7 @@
 #include "xrserver_objects_alife_monsters.h"
 #include "level.h"
 #include "ai_space.h"
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 
 using namespace luabind;
 

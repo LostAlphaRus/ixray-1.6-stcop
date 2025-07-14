@@ -4,7 +4,6 @@
 #include "UIStatic.h"
 #include "UIXmlInit.h"
 #include "../game_cl_mp.h"
-#include <dinput.h>
 #include "../level.h"
 #include "../../xrEngine/string_table.h"
 #include "../HUDManager.h"
@@ -60,13 +59,13 @@ void CUISpeechMenu::InitList(LPCSTR section_name){
 }
 
 bool CUISpeechMenu::OnKeyboard(int dik, EUIMessages keyboard_action){
-    if (dik < DIK_1 || dik > DIK_0)
+    if (dik < SDL_SCANCODE_1 || dik > SDL_SCANCODE_0)
 		return CUIDialogWnd::OnKeyboard(dik, keyboard_action);
 
 	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 
 	Game().StartStopMenu(this,true);
-	game->OnMessageSelected(this, static_cast<u8>(dik - DIK_1));
+	game->OnMessageSelected(this, static_cast<u8>(dik - SDL_SCANCODE_1));
 
 	return true;
 }

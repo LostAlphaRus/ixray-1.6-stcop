@@ -744,7 +744,7 @@ public:
 private:
 	collide::rq_results			RQR;
 			BOOL				CanPickItem						(const CFrustum& frustum, const Fvector& from, CObject* item);
-	xr_vector<ISpatial*>		ISpatialResult;
+	xr_vector<ISpatialShared>	ISpatialResult;
 
 private:
 	CLocationManager				*m_location_manager;

@@ -249,7 +249,7 @@ void CActor::cam_Update(float dt, float fFOV)
 			g_SpatialSpace->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(Device.fViewportNear, Device.fViewportNear, Device.fViewportNear));
 			for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
 			{
-				CPHShell*		pCPHS= smart_cast<CPHShell*>(ISpatialResult[o_it]);
+				CPHShell*		pCPHS= smart_cast<CPHShell*>(ISpatialResult[o_it].get());
 				if (pCPHS)
 				{
 					_viewport_near			= 0.01f;

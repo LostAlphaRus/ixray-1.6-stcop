@@ -9,7 +9,6 @@
 #include "ui/UIChatWnd.h"
 #include "ui/UIGameLog.h"
 #include "clsid_game.h"
-#include <dinput.h>
 #include "UIGameCustom.h"
 #include "ui/UIInventoryUtilities.h"
 #include "ui/UIMessagesWindow.h"

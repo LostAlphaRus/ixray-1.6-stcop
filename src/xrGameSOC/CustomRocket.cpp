@@ -13,7 +13,7 @@
 #include "xrMessages.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "tri-colliderknoopc/dTriList.h"
-#include "../xrEngine/fbasicvisual.h"
+#include "../include/xrRender/rendervisual.h"
 #include "CalculateTriangle.h"
 #include "actor.h"
 #ifdef DEBUG
@@ -137,7 +137,7 @@ void CCustomRocket::create_physic_shell	()
 {
 	VERIFY(!m_pPhysicsShell);
 	Fobb								obb;
-	Visual()->vis.box.get_CD			(obb.m_translate,obb.m_halfsize);
+	Visual()->getVisData().box.get_CD(obb.m_translate, obb.m_halfsize);
 	obb.m_rotate.identity				();
 
 	// Physics (Elements)
@@ -571,7 +571,7 @@ void CCustomRocket::StartEngineParticles()
 	m_pEngineParticles = Particles::Details::Create(*m_sEngineParticles,FALSE).get();
 
 	UpdateParticles();
-	m_pEngineParticles->Play();
+	m_pEngineParticles->Play(false);
 
 	VERIFY(m_pEngineParticles);
 	VERIFY3(m_pEngineParticles->IsLooped(), "must be a looped particle system for rocket engine: %s", *m_sEngineParticles);
@@ -594,7 +594,7 @@ void CCustomRocket::StartFlyParticles()
 	m_pFlyParticles = Particles::Details::Create(*m_sFlyParticles,FALSE).get();
 	
 	UpdateParticles();
-	m_pFlyParticles->Play();
+	m_pFlyParticles->Play(false);
 	
 	VERIFY(m_pFlyParticles);
 	VERIFY3(m_pFlyParticles->IsLooped(), "must be a looped particle system for rocket fly: %s", *m_sFlyParticles);

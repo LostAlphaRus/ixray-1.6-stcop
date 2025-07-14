@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <dinput.h>
 #include "Actor.h"
 #include "Torch.h"
 #include "trade.h"
@@ -370,7 +369,7 @@ void CActor::ActorUse()
 					TryToTalk();
 				}
 				//обыск трупа
-				else  if(!Level().IR_GetKeyState(DIK_LSHIFT))
+				else  if(!Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
 				{
 					//только если находимся в режиме single
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -385,7 +384,7 @@ void CActor::ActorUse()
 		if(object) 
 			element = (u16)RQ.element;
 
-		if(object && Level().IR_GetKeyState(DIK_LSHIFT))
+		if(object && Level().IR_GetKeyState(SDL_SCANCODE_LSHIFT))
 		{
 			bool b_allow = !!pSettings->line_exist("ph_capture_visuals",object->cNameVisual());
 			if(b_allow && !character_physics_support()->movement()->PHCapture())

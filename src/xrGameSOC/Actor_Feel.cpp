@@ -160,7 +160,7 @@ void	CActor::PickupModeUpdate_COD	()
 	CInventoryItem* pNearestItem = NULL;
 	for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
 	{
-		ISpatial*		spatial	= ISpatialResult[o_it];
+		ISpatialShared		spatial	= ISpatialResult[o_it];
 		CInventoryItem*	pIItem	= smart_cast<CInventoryItem*> (spatial->dcast_CObject        ());
 		if (0 == pIItem) continue;
 		if (pIItem->object().H_Parent() != NULL) continue;

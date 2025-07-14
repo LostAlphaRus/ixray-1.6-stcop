@@ -118,7 +118,7 @@ void			xrGameSpyServer::Update				()
 	{
 		m_GCDServer.Think();
 	};
-	static u32 next_send_time = Device.dwTimeGlobal+10000;
+/*	static u32 next_send_time = Device.dwTimeGlobal + 10000;
 	if(Device.dwTimeGlobal >= next_send_time)
 	{
 		next_send_time					= Device.dwTimeGlobal+5000;
@@ -126,7 +126,7 @@ void			xrGameSpyServer::Update				()
 		Packet.w_begin					(M_MAP_SYNC);
 		Packet.w_stringZ				(MapName);
 		SendBroadcast					(BroadcastCID, Packet, net_flags(TRUE,TRUE));
-	}
+	}*/
 }
 
 int				xrGameSpyServer::GetPlayersCount()

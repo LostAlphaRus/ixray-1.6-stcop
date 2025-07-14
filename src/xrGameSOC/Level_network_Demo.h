@@ -41,7 +41,7 @@ private:
 		u32			m_dwFrame;
 		u32			m_dwTimeReceive;
 		union		{
-			NET_Packet	Packet;
+			NET_Packet	Packet = {};
 			DemoFrameTime	FrameTime;
 		};
 	};

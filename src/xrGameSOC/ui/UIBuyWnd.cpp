@@ -12,7 +12,6 @@
 #include "../game_cl_Deathmatch.h"
 #include "UIOutfitSlot.h"
 #include "UIListBoxItem.h"
-#include <dinput.h>
 #include "../actor.h"
 #include "restrictions.h"
 
@@ -162,7 +161,7 @@ void CUIBuyWnd::Init(const shared_str& sectionName, const shared_str& sectionPri
 	
 
 	// controls
-	m_tab.Init							(&xml_doc, "tab");
+	m_tab.Init							(&xml_doc, (char*)"tab");
 	m_bag.Init							(xml_doc, "bag_background_static",		m_sectionName, sectionPrice);
 	CUIXmlInit::InitDragDropListEx		(xml_doc, "pistol_list",				0, m_list[MP_SLOT_PISTOL]);
 	CUIXmlInit::InitDragDropListEx		(xml_doc, "rifle_list",					0, m_list[MP_SLOT_RIFLE]);
@@ -200,25 +199,25 @@ bool CUIBuyWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 			return true;
 	}
 
-	if (DIK_ESCAPE == dik)
+	if (SDL_SCANCODE_ESCAPE == dik)
 	{
 		m_btnCancel.OnClick			();
-	}else if (DIK_SPACE == dik || DIK_RETURN == dik)
+	}else if (SDL_SCANCODE_SPACE == dik || SDL_SCANCODE_RETURN == dik)
 	{
 		m_btnOk.OnClick				();
-	}else if (DIK_B == dik)
+	}else if (SDL_SCANCODE_B == dik)
 	{
 		m_tab.SetActiveState		();
-	}else if (DIK_C == dik)
+	}else if (SDL_SCANCODE_C == dik)
 	{
 		m_btnClear.OnClick			();
-	}else if (DIK_Q == dik)
+	}else if (SDL_SCANCODE_Q == dik)
 	{
 		m_btnPistolBullet.OnClick	();
-	}else if (DIK_W == dik)
+	}else if (SDL_SCANCODE_W == dik)
 	{
 		m_btnRifleBullet.OnClick	();
-	}else if (DIK_E == dik)
+	}else if (SDL_SCANCODE_E == dik)
 	{
 		m_btnRifleGrenade.OnClick	();
 	}
@@ -309,7 +308,7 @@ void CUIBuyWnd::OnBtnBulletBuy(int slot)
 
 		itemsList		= pSettings->r_string(*iitm->object().cNameSect(), "ammo_class");
 		int n = 0;
-		if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
+		if (pInput->iGetAsyncKeyState(SDL_SCANCODE_LSHIFT))
 			n = 1;
 		if (_GetItemCount(itemsList.c_str())<2)
 			n = 0;

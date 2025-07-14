@@ -10,7 +10,6 @@
 #include "../game_cl_teamdeathmatch.h"
 #include "UIMapInfo.h"
 #include "../../xrEngine/xr_level_controller.h"
-#include <dinput.h>
 
 #include "UIStatsPlayerList.h"
 
@@ -105,7 +104,7 @@ void CUIMapDesc::SendMessage(CUIWindow* pWnd,s16 msg, void* pData){
 bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action){
 	if (WINDOW_KEY_RELEASED == keyboard_action) 
 	{
-		if (dik == DIK_TAB)
+		if (dik == SDL_SCANCODE_TAB)
 		{
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -116,7 +115,7 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action){
 		return false;
 	}
 
-	if (dik == DIK_TAB)
+	if (dik == SDL_SCANCODE_TAB)
 	{
         ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -128,13 +127,13 @@ bool CUIMapDesc::OnKeyboard(int dik, EUIMessages keyboard_action){
 	game_cl_mp * dm = smart_cast<game_cl_mp *>(&(Game()));
 
 	switch (dik){
-		case DIK_ESCAPE:
+		case SDL_SCANCODE_ESCAPE:
 			dm->StartStopMenu(this,true);
 			dm->OnSpectatorSelect();
 			return true;
 			break;
-		case DIK_SPACE:
-		case DIK_RETURN:
+		case SDL_SCANCODE_SPACE:
+		case SDL_SCANCODE_RETURN:
 			dm->StartStopMenu(this,true);
 			dm->OnMapInfoAccept();
 			return true;

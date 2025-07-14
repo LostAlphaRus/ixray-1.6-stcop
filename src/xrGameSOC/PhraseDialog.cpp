@@ -184,7 +184,7 @@ void CPhraseDialog::Load(shared_str dialog_id)
 	inherited_shared::load_shared(m_DialogId, NULL);
 }
 
-#include "script_engine.h"
+#include "../xrScripts/script_engine.h"
 #include "ai_space.h"
 
 void CPhraseDialog::load_shared	(LPCSTR)

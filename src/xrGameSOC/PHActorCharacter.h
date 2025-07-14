@@ -1,4 +1,5 @@
 #pragma once
+#include "extendedgeom.h"
 #include "phsimplecharacter.h"
 #include "PHActorCharacterInline.h"
 class CPhysicShellHolder;

@@ -1,5 +1,4 @@
 #include "StdAfx.h"
-#include <dinput.h>
 #include "UISkinSelector.h"
 #include "../level.h"
 //#include"../hudmanager.h"
@@ -13,7 +12,7 @@
 #include "../HUDManager.h"
 #include "CExtraContentFilter.h"
 
-#include "../object_broker.h"
+#include "../../xrCore/object_broker.h"
 
 CUISkinSelectorWnd::CUISkinSelectorWnd(const char* strSectionName, s16 team)
 {	
@@ -222,7 +221,7 @@ bool CUISkinSelectorWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
 	if (WINDOW_KEY_PRESSED != keyboard_action)
 	{
-		if (dik == DIK_TAB)
+		if (dik == SDL_SCANCODE_TAB)
 		{
 			ShowChildren(true);
 			game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -233,7 +232,7 @@ bool CUISkinSelectorWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 		return false;
 	}
 
-	if (dik == DIK_TAB)
+	if (dik == SDL_SCANCODE_TAB)
 	{
         ShowChildren(false);
 		game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
@@ -246,9 +245,9 @@ bool CUISkinSelectorWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	if (right_border > 9)
 		right_border = 9;
 
-	if (dik >= DIK_1 && dik < (int)right_border + DIK_1)
+	if (dik >= SDL_SCANCODE_1 && dik < (int)right_border + SDL_SCANCODE_1)
 	{
-		int NewIndex = dik - DIK_1;
+		int NewIndex = dik - SDL_SCANCODE_1;
 //		Msg("Selected %d", NewIndex);
 //		for (u32 i=0; i<m_skinsEnabled.size(); i++)
 //			Msg("Enabled - %d", m_skinsEnabled[i]);
@@ -264,20 +263,20 @@ bool CUISkinSelectorWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 //	game_cl_Deathmatch * dm = smart_cast<game_cl_Deathmatch *>(&(Game()));
 
 	switch (dik){
-		case DIK_ESCAPE:
+		case SDL_SCANCODE_ESCAPE:
 //			Game().StartStopMenu(this,true);
 //			dm->OnSkinMenuBack();
 			OnBtnCancel();
 			return true;
-		case DIK_SPACE: // do autoselect
+		case SDL_SCANCODE_SPACE: // do autoselect
 			m_iActiveIndex = -1;
-		case DIK_RETURN:	
+		case SDL_SCANCODE_RETURN:	
 			OnBtnOK();
 			return true;
-		case DIK_LEFT:
+		case SDL_SCANCODE_LEFT:
 			OnKeyLeft();
 			return true;
-		case DIK_RIGHT:
+		case SDL_SCANCODE_RIGHT:
 			OnKeyRight();
 			return true;
 	}

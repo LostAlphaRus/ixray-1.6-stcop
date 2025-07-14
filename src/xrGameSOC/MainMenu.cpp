@@ -8,7 +8,6 @@
 #include "../xrEngine/xr_level_controller.h"
 #include "ui\UITextureMaster.h"
 #include "ui\UIXmlInit.h"
-#include <dinput.h>
 #include "ui\UIBtnHint.h"
 #include "UICursor.h"
 #include "gamespy/GameSpy_Full.h"
@@ -315,7 +314,7 @@ void	CMainMenu::IR_OnKeyboardPress(int dik)
 		Console->Show();
 		return;
 	}
-	if (DIK_F12 == dik){
+	if (SDL_SCANCODE_F12 == dik){
 		Render->Screenshot();
 		return;
 	}
@@ -535,7 +534,7 @@ void CMainMenu::OnNewPatchFound(LPCSTR VersionName, LPCSTR URL)
 		INIT_MSGBOX(m_pMB_ErrDlgs[NewPatchFound], "msg_box_new_patch");
 
 		shared_str tmpText;
-		tmpText.sprintf(m_pMB_ErrDlgs[NewPatchFound]->GetText(), VersionName, URL);
+		tmpText.printf(m_pMB_ErrDlgs[NewPatchFound]->GetText(), VersionName, URL);
 		m_pMB_ErrDlgs[NewPatchFound]->SetText(*tmpText);		
 	}
 	m_sPatchURL = URL;
@@ -566,7 +565,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 
 	string4096 FilePath = "";
 	char* FileName = NULL;
-	GetFullPathName(fileName, 4096, FilePath, &FileName);
+	GetFullPathNameA(fileName, 4096, FilePath, &FileName);
 
 	string_path		fname;
 	if (FS.path_exist("$downloads$"))
@@ -575,7 +574,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 		m_sPatchFileName = fname;
 	}
 	else
-		m_sPatchFileName.sprintf	("downloads\\%s", FileName);	
+		m_sPatchFileName.printf	("downloads\\%s", FileName);	
 	
 	m_sPDProgress.IsInProgress	= true;
 	m_sPDProgress.Progress		= 0;
