@@ -1356,11 +1356,12 @@ void CInventoryItem::OnRender()
 }
 #endif
 
-DLL_Pure *CInventoryItem::_construct	()
+DLL_Pure *CInventoryItem::_construct()
 {
-	m_object	= smart_cast<CPhysicsShellHolder*>(this);
-	VERIFY		(m_object);
-	return		(inherited::_construct());
+	m_object = cast_physics_shell_holder();
+	VERIFY(m_object);
+
+	return inherited::_construct();
 }
 
 void CInventoryItem::modify_holder_params	(float &range, float &fov) const
