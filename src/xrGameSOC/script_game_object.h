@@ -10,7 +10,7 @@
 
 #include "script_space_forward.h"
 #include "script_bind_macroses.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "xr_time.h"
 #include "character_info_defs.h"
 
@@ -245,17 +245,17 @@ public:
 	// CProjector
 			Fvector				GetCurrentDirection		();
 			bool				IsInvBoxEmpty			();
-	//передача порции информации InventoryOwner
+	//РїРµСЂРµРґР°С‡Р° РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё InventoryOwner
 			bool				GiveInfoPortion		(LPCSTR info_id);
 			bool				DisableInfoPortion	(LPCSTR info_id);
 			bool				GiveGameNews		(LPCSTR news, LPCSTR texture_name, Frect tex_rect, int delay, int show_time);
 
 			void				AddIconedTalkMessage(LPCSTR text, LPCSTR texture_name, Frect tex_rect, LPCSTR templ_name);
-	//предикаты наличия/отсутствия порции информации у персонажа
+	//РїСЂРµРґРёРєР°С‚С‹ РЅР°Р»РёС‡РёСЏ/РѕС‚СЃСѓС‚СЃС‚РІРёСЏ РїРѕСЂС†РёРё РёРЅС„РѕСЂРјР°С†РёРё Сѓ РїРµСЂСЃРѕРЅР°Р¶Р°
 			bool				HasInfo				(LPCSTR info_id);
 			bool				DontHasInfo			(LPCSTR info_id);
 			xrTime				GetInfoTime			(LPCSTR info_id);
-	//работа с заданиями
+	//СЂР°Р±РѕС‚Р° СЃ Р·Р°РґР°РЅРёСЏРјРё
 			ETaskState			GetGameTaskState	(LPCSTR task_id, int objective_num);
 			void				SetGameTaskState	(ETaskState state, LPCSTR task_id, int objective_num);
 			void				GiveTaskToActor		(CGameTask* t, u32 dt, bool bCheckExisting);
@@ -559,9 +559,6 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CScriptGameObject)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptGameObject)
 
 extern void sell_condition	(CScriptIniFile *ini_file, LPCSTR section);
 extern void sell_condition	(float friend_factor, float enemy_factor);

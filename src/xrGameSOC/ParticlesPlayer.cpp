@@ -1,11 +1,11 @@
 ///////////////////////////////////////////////////////////////
 // ParticlesPlayer.cpp
-// интерфейс для проигрывания партиклов на объекте
+// РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ РїР°СЂС‚РёРєР»РѕРІ РЅР° РѕР±СЉРµРєС‚Рµ
 ///////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "ParticlesPlayer.h"
 #include "../xrEngine/xr_object.h"
-#include "../xrEngine/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 //-------------------------------------------------------------------------------------
 static void generate_orthonormal_basis(const Fvector& dir,Fmatrix &result)
 {
@@ -68,15 +68,15 @@ CParticlesPlayer::~CParticlesPlayer ()
 	VERIFY				(!m_self_object);
 }
 
-void CParticlesPlayer::LoadParticles(CKinematics* K)
+void CParticlesPlayer::LoadParticles(IKinematics* K)
 {
 	VERIFY				(K);
 
 	m_Bones.clear();
 	
 
-	//считать список косточек и соответствующих
-	//офсетов  куда можно вешать партиклы
+	//СЃС‡РёС‚Р°С‚СЊ СЃРїРёСЃРѕРє РєРѕСЃС‚РѕС‡РµРє Рё СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёС…
+	//РѕС„СЃРµС‚РѕРІ  РєСѓРґР° РјРѕР¶РЅРѕ РІРµС€Р°С‚СЊ РїР°СЂС‚РёРєР»С‹
 	CInifile* ini		= K->LL_UserData();
 	if(ini&&ini->section_exist("particle_bones")){
 		bone_mask		= 0;
@@ -97,7 +97,7 @@ void CParticlesPlayer::LoadParticles(CKinematics* K)
 		m_Bones.push_back	(SBoneInfo(K->LL_GetBoneRoot(),Fvector().set(0,0,0)));
 	}
 }
-//уничтожение партиклов на net_Destroy
+//СѓРЅРёС‡С‚РѕР¶РµРЅРёРµ РїР°СЂС‚РёРєР»РѕРІ РЅР° net_Destroy
 void	CParticlesPlayer::net_DestroyParticles	()
 {
 	VERIFY(m_self_object);
@@ -117,7 +117,7 @@ void	CParticlesPlayer::net_DestroyParticles	()
 	m_self_object	= 0;
 }
 
-CParticlesPlayer::SBoneInfo* CParticlesPlayer::get_nearest_bone_info(CKinematics* K, u16 bone_index)
+CParticlesPlayer::SBoneInfo* CParticlesPlayer::get_nearest_bone_info(IKinematics* K, u16 bone_index)
 {
 	u16 play_bone	= bone_index;
 	while((BI_NONE!=play_bone)&&!(bone_mask&(u64(1)<<u64(play_bone))))
@@ -142,7 +142,7 @@ void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone
 	CObject* object					= m_self_object;
 	VERIFY(object);
 
-	SBoneInfo* pBoneInfo			=  get_nearest_bone_info(smart_cast<CKinematics*>(object->Visual()),bone_num);
+	SBoneInfo* pBoneInfo			=  get_nearest_bone_info(smart_cast<IKinematics*>(object->Visual()),bone_num);
 	if(!pBoneInfo) return;
 
 	SParticlesInfo &particles_info	=*pBoneInfo->AppendParticles(object,particles_name);
@@ -172,7 +172,7 @@ void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& 
 
 		particles_info.life_time=auto_stop ? life_time : u32(-1);
 		xform.getHPB(particles_info.angles);
-		//начать играть партиклы
+		//РЅР°С‡Р°С‚СЊ РёРіСЂР°С‚СЊ РїР°СЂС‚РёРєР»С‹
 
 		Fmatrix m;m.set(xform);
 		GetBonePos(object,it->index,it->offset,m.c);
@@ -216,7 +216,7 @@ void CParticlesPlayer::StopParticles(const shared_str& ps_name, u16 bone_id, boo
 	UpdateParticles();
 }
 
-//остановка партиклов, по истечении их времени жизни
+//РѕСЃС‚Р°РЅРѕРІРєР° РїР°СЂС‚РёРєР»РѕРІ, РїРѕ РёСЃС‚РµС‡РµРЅРёРё РёС… РІСЂРµРјРµРЅРё Р¶РёР·РЅРё
 void CParticlesPlayer::AutoStopParticles(const shared_str& ps_name, u16 bone_id,u32 life_time)
 {
 	if (BI_NONE==bone_id){
@@ -252,13 +252,13 @@ void CParticlesPlayer::UpdateParticles()
 		for (auto p_it=b_info.particles.begin(); p_it!=b_info.particles.end(); p_it++){
 			SParticlesInfo& p_info	= *p_it;
 			if(!p_info.ps) continue;
-			//обновить позицию партиклов
+			//РѕР±РЅРѕРІРёС‚СЊ РїРѕР·РёС†РёСЋ РїР°СЂС‚РёРєР»РѕРІ
 			Fmatrix xform;
 			xform.setHPB(p_info.angles.x,p_info.angles.y,p_info.angles.z);
 			GetBonePos(object,b_info.index,b_info.offset,xform.c);
 			p_info.ps->UpdateParent(xform, parent_vel);
 
-			//обновить время существования
+			//РѕР±РЅРѕРІРёС‚СЊ РІСЂРµРјСЏ СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ
 			if(p_info.life_time!=u32(-1))
 			{
 				if(p_info.life_time>Device.dwTimeDelta)	p_info.life_time-=Device.dwTimeDelta;
@@ -286,7 +286,7 @@ void CParticlesPlayer::UpdateParticles()
 void CParticlesPlayer::GetBonePos	(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result)
 {
 	VERIFY(pObject);
-	CKinematics* pKinematics = smart_cast<CKinematics*>(pObject->Visual()); VERIFY(pKinematics);
+	IKinematics* pKinematics = smart_cast<IKinematics*>(pObject->Visual()); VERIFY(pKinematics);
 	CBoneInstance&		l_tBoneInstance = pKinematics->LL_GetBoneInstance(bone_id);
 
 	result = offset;
@@ -300,7 +300,7 @@ void CParticlesPlayer::MakeXFORM	(CObject* pObject, u16 bone_id, const Fvector& 
 	GetBonePos(pObject, bone_id, offset, result.c);
 }
 
-u16 CParticlesPlayer::GetNearestBone	(CKinematics* K, u16 bone_id)
+u16 CParticlesPlayer::GetNearestBone	(IKinematics* K, u16 bone_id)
 {
 	u16 play_bone	= bone_id;
 

@@ -3,7 +3,7 @@
 #include "hud_item_object.h"
 #include "hit_immunity.h"
 #include "PHObject.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 
 struct SArtefactActivation;
 
@@ -48,9 +48,9 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	//	Lights
 	//////////////////////////////////////////////////////////////////////////
-	//флаг, что подсветка может быть включена
+	//С„Р»Р°Рі, С‡С‚Рѕ РїРѕРґСЃРІРµС‚РєР° РјРѕР¶РµС‚ Р±С‹С‚СЊ РІРєР»СЋС‡РµРЅР°
 	bool							m_bLightsEnabled;
-	//подсветка во время полета и работы двигателя
+	//РїРѕРґСЃРІРµС‚РєР° РІРѕ РІСЂРµРјСЏ РїРѕР»РµС‚Р° Рё СЂР°Р±РѕС‚С‹ РґРІРёРіР°С‚РµР»СЏ
 	ref_light						m_pTrailLight;
 	Fcolor							m_TrailLightColor;
 	float							m_fTrailLightRange;
@@ -117,7 +117,3 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(CArtefact)
-#undef script_type_list
-#define script_type_list save_type_list(CArtefact)
-

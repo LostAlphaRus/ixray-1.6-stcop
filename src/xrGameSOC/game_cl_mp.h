@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game_cl_base.h"
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "game_cl_mp_snd_messages.h"
 #include "../../../xrSound/Sound.h"
 #include "ui/UISpeechMenu.h"
@@ -234,6 +234,3 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(game_cl_mp)
-#undef script_type_list
-#define script_type_list save_type_list(game_cl_mp)

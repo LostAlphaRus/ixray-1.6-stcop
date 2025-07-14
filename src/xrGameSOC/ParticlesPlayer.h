@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////
 // ParticlesPlayer.h
-// интерфейс для проигрывания партиклов на объекте
+// РёРЅС‚РµСЂС„РµР№СЃ РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ РїР°СЂС‚РёРєР»РѕРІ РЅР° РѕР±СЉРµРєС‚Рµ
 ///////////////////////////////////////////////////////////////
 
 #pragma once
@@ -17,24 +17,24 @@ class CParticlesPlayer
 {
 
 public:
-	//структура с внутренней информацией о партикле
+	//СЃС‚СЂСѓРєС‚СѓСЂР° СЃ РІРЅСѓС‚СЂРµРЅРЅРµР№ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ РїР°СЂС‚РёРєР»Рµ
 	struct SParticlesInfo
 	{
 		CParticlesObject*	ps;
 		//Fvector				dir;
 		//Fmatrix				x_form;
 		Fvector				angles;
-		u16					sender_id;	//id - объекта, который запустил партиклы
-		u32					life_time;	//время жизни партикла (-1) - бесконечно
+		u16					sender_id;	//id - РѕР±СЉРµРєС‚Р°, РєРѕС‚РѕСЂС‹Р№ Р·Р°РїСѓСЃС‚РёР» РїР°СЂС‚РёРєР»С‹
+		u32					life_time;	//РІСЂРµРјСЏ Р¶РёР·РЅРё РїР°СЂС‚РёРєР»Р° (-1) - Р±РµСЃРєРѕРЅРµС‡РЅРѕ
 		
-		//int					cur_time;	//текущее время существования партикла
-		//bool				auto_stop;	//автоматическая остановка партиклов, когда закончится время
+		//int					cur_time;	//С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РїР°СЂС‚РёРєР»Р°
+		//bool				auto_stop;	//Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєР°СЏ РѕСЃС‚Р°РЅРѕРІРєР° РїР°СЂС‚РёРєР»РѕРІ, РєРѕРіРґР° Р·Р°РєРѕРЅС‡РёС‚СЃСЏ РІСЂРµРјСЏ
 	};
 
 	using ParticlesInfoList = xr_vector<SParticlesInfo>;
 	using ParticlesInfoListIt = ParticlesInfoList::iterator;
 
-	//структура для косточки с списком запущенных партиклов
+	//СЃС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РєРѕСЃС‚РѕС‡РєРё СЃ СЃРїРёСЃРєРѕРј Р·Р°РїСѓС‰РµРЅРЅС‹С… РїР°СЂС‚РёРєР»РѕРІ
 	struct SBoneInfo
 	{
 		u16					index;
@@ -52,13 +52,13 @@ public:
 	using BoneInfoVecIt = BoneInfoVec::iterator;
 
 private:
-	// список костей
-	u64						bone_mask; // используемые кости
+	// СЃРїРёСЃРѕРє РєРѕСЃС‚РµР№
+	u64						bone_mask; // РёСЃРїРѕР»СЊР·СѓРµРјС‹Рµ РєРѕСЃС‚Рё
 	BoneInfoVec				m_Bones;	
 	CObject					*m_self_object;
 
 protected :
-	bool					m_bActiveBones;	//есть ли косточки на которых играются партиклы
+	bool					m_bActiveBones;	//РµСЃС‚СЊ Р»Рё РєРѕСЃС‚РѕС‡РєРё РЅР° РєРѕС‚РѕСЂС‹С… РёРіСЂР°СЋС‚СЃСЏ РїР°СЂС‚РёРєР»С‹
 
 public:
 	IC SBoneInfo*			get_bone_info			(u16 bone_index)
@@ -68,12 +68,12 @@ public:
 			if (it->index==bone_index) return &(*it);
 		return 0;
 	}
-	SBoneInfo*				get_nearest_bone_info	(CKinematics* K, u16 bone_index);
+	SBoneInfo*				get_nearest_bone_info	(IKinematics* K, u16 bone_index);
 	Fvector					parent_vel;
 public:
 							CParticlesPlayer		(void);
 	virtual					~CParticlesPlayer		(void);
-	void					LoadParticles			(CKinematics* K);
+	void					LoadParticles			(IKinematics* K);
 
 	void					net_DestroyParticles	();
 	void					net_SpawnParticles		();
@@ -93,7 +93,7 @@ public:
 
 	static void				MakeXFORM				(CObject* pObject, u16 bone_id, const Fvector& dir, const Fvector& offset, Fmatrix& result);
 	static void				GetBonePos				(CObject* pObject, u16 bone_id, const Fvector& offset, Fvector& result);
-	u16						GetNearestBone			(CKinematics* K, u16 bone_id);
+	u16						GetNearestBone			(IKinematics* K, u16 bone_id);
 	IC u16					GetRandomBone			(){ u16 l_PBCount=u16(m_Bones.size()); if(l_PBCount) return m_Bones[(u16)Random.randI(l_PBCount)].index; else return BI_NONE;}
 
 	void					SetParentVel			(const Fvector& vel) {parent_vel = vel;}

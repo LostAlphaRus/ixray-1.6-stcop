@@ -1,6 +1,6 @@
 #pragma once
 
-#include "script_export_space.h"
+#include "../xrScripts/script_export_space.h"
 #include "ui\xrUIXmlParser.h"
 
 class CUIWindow;
@@ -72,7 +72,3 @@ public:
 protected:
 	CUIXml	m_xml;
 };
-
-add_to_type_list(CScriptXmlInit)
-#undef script_type_list
-#define script_type_list save_type_list(CScriptXmlInit)

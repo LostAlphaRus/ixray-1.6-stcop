@@ -22,7 +22,7 @@ public:
 
 
 	virtual		void				OnPlayerKillPlayer		(ClientID id_killer, ClientID id_killed){};
-	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P){}; //игрок получил Hit
+	virtual		void				OnPlayerHitPlayer		(u16 id_hitter, u16 id_hitted, NET_Packet& P){}; //РёРіСЂРѕРє РїРѕР»СѓС‡РёР» Hit
 	virtual		BOOL				OnTouch					(u16 eid_who, u16 eid_target, BOOL bForced = FALSE){return true;};			// TRUE=allow ownership, FALSE=denied
 	virtual		void				OnDetach				(u16 eid_who, u16 eid_target){};
 
@@ -36,7 +36,3 @@ virtual		void				switch_Phase			(u32 new_phase);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
-add_to_type_list(game_sv_mp_script)
-#undef script_type_list
-#define script_type_list save_type_list(game_sv_mp_script)
-

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UIWindow.h"
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 
 class CUIScrollView;
 
@@ -18,6 +18,3 @@ protected:
 	shared_str		m_large_desc;
 };
 
-add_to_type_list(CUIMapInfo)
-#undef script_type_list
-#define script_type_list save_type_list(CUIMapInfo)

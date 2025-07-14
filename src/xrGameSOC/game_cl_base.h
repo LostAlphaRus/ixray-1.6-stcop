@@ -1,7 +1,7 @@
 #pragma once
 
 #include "game_base.h"
-#include "../xrNetServer/client_id.h"
+#include "../xrCore/client_id.h"
 #include "WeaponAmmo.h"
 //#include "Level_Bullet_Manager.h"
 
@@ -17,9 +17,6 @@ struct SZoneMapEntityData{
 	SZoneMapEntityData(){pos.set(.0f,.0f,.0f);color = 0xff00ff00;}
 	DECLARE_SCRIPT_REGISTER_FUNCTION_STRUCT
 };
-add_to_type_list(SZoneMapEntityData)
-#undef script_type_list
-#define script_type_list save_type_list(SZoneMapEntityData)
 
 //#include "game_cl_base_weapon_usage_statistic.h"
 
@@ -29,7 +26,7 @@ class	game_cl_GameState	: public game_GameState, public ISheduled
 {
 	typedef game_GameState	inherited;
 	shared_str							m_game_type_name;
-//	bool								m_bCrosshair;	//был ли показан прицел-курсор HUD перед вызовом меню
+//	bool								m_bCrosshair;	//Р±С‹Р» Р»Рё РїРѕРєР°Р·Р°РЅ РїСЂРёС†РµР»-РєСѓСЂСЃРѕСЂ HUD РїРµСЂРµРґ РІС‹Р·РѕРІРѕРј РјРµРЅСЋ
 protected:
 	CUIGameCustom*						m_game_ui_custom;
 	u16									m_u16VotingEnabled;	

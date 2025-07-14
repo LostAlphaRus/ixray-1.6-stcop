@@ -2,7 +2,7 @@
 
 
 #include "UIStatic.h"
-#include "../script_export_space.h"
+#include "../../xrScripts/script_export_space.h"
 
 class CUI3tButton;
 class CUIEditBox;
@@ -15,7 +15,7 @@ public:
 				CUIMessageBox		();
 	virtual		~CUIMessageBox		();
 
-	//разновидности MessageBox
+	//СЂР°Р·РЅРѕРІРёРґРЅРѕСЃС‚Рё MessageBox
 	typedef enum {		
 		MESSAGEBOX_OK, 
 		MESSAGEBOX_INFO,
@@ -60,6 +60,3 @@ protected:
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
-add_to_type_list(CUIMessageBox)
-#undef script_type_list
-#define script_type_list save_type_list(CUIMessageBox)

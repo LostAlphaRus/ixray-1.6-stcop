@@ -1,36 +1,48 @@
 #pragma once
 
-#pragma warning(disable:4995)
-#include "../xrEngine/stdafx.h"
-#pragma warning(default:4995)
 #pragma warning( 4 : 4018 )
 #pragma warning( 4 : 4244 )
 #pragma warning(disable:4505)
 
-// this include MUST be here, since smart_cast is used >1800 times in the project
-#include "smart_cast.h"
-
-
 #if XRAY_EXCEPTIONS
-IC	xr_string	string2xr_string(LPCSTR s) {return *shared_str(s ? s : "");}
-IC	void		throw_and_log(const xr_string &s) {Msg("! %s",s.c_str()); throw *shared_str(s.c_str());}
-#	define		THROW(xpr)				if (!(xpr)) {throw_and_log (__FILE__LINE__" Expression \""#xpr"\"");}
-#	define		THROW2(xpr,msg0)		if (!(xpr)) {throw *shared_str(xr_string(__FILE__LINE__).append(" \"").append(#xpr).append(string2xr_string(msg0)).c_str());}
-#	define		THROW3(xpr,msg0,msg1)	if (!(xpr)) {throw *shared_str(xr_string(__FILE__LINE__).append(" \"").append(#xpr).append(string2xr_string(msg0)).append(", ").append(string2xr_string(msg1)).c_str());}
+#	define	THROW(expr)				do {if (!(expr)) {string4096	assertion_info; ::Debug.gather_info(_TRE(#expr),   0,   0,0,DEBUG_INFO,assertion_info); throw assertion_info;}} while(0)
+#	define	THROW2(expr,msg0)		do {if (!(expr)) {string4096	assertion_info; ::Debug.gather_info(_TRE(#expr),msg0,   0,0,DEBUG_INFO,assertion_info); throw assertion_info;}} while(0)
+#	define	THROW3(expr,msg0,msg1)	do {if (!(expr)) {string4096	assertion_info; ::Debug.gather_info(_TRE(#expr),msg0,msg1,0,DEBUG_INFO,assertion_info); throw assertion_info;}} while(0)
 #else
-#	define		THROW					VERIFY
-#	define		THROW2					VERIFY2
-#	define		THROW3					VERIFY3
+#	define	THROW					VERIFY
+#	define	THROW2					VERIFY2
+#	define	THROW3					VERIFY3
 #endif
 
-#include "../xrEngine/gamefont.h"
+#ifndef _PP_EDITOR_
+#pragma warning(disable:4995)
+#include "../xrScripts/stdafx.h"
+#pragma warning(default:4995)
+
+#include "../xrEngine/GameFont.h"
 #include "../xrEngine/xr_object.h"
-#include "../xrEngine/igame_level.h"
+#include "../xrEngine/IGame_Level.h"
+#include "../xrPhysics/xrPhysics.h"
+#include "smart_cast.h"
+#else
+#include "../Editors/ActorEditor/stdafx.h"
+#endif
 
-#define REGISTRY_VALUE_GSCDKEY	"InstallCDKEY"
-#define REGISTRY_VALUE_VERSION	"InstallVers"
-#define REGISTRY_VALUE_USERNAME	"InstallUserName"
+#include "../xrEngine/Editor/XrEditorSceneInterface.h"
+#include "../xrEngine/AI/game_graph.h"
+#include "../xrEngine/AI/game_level_cross_table.h"
+#include "../xrEngine/AI/level_graph.h"
 
-#ifndef DEBUG
-#	define MASTER_GOLD
-#endif // DEBUG
+#ifndef _EDITOR
+#	include "pch_script.h"
+//extern CInifile* pGameGlobals;
+
+//void LoadCallbackGlobals(bool& flag, const char*& value, const char* section);
+#endif
+
+//extern void DestroyImGuiInGame();
+
+#undef min
+#undef max
+
+//#define USE_OLD_OBJECT_PLANNER 0

@@ -5,16 +5,13 @@
 //	Author		: Dmitriy Iassenev
 //	Description : precompiled header for lua and luabind users
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef PCH_SCRIPT_H
-#define PCH_SCRIPT_H
-
+#pragma once
 #include "stdafx.h"
 
 extern "C" {
-	#include <lua/lua.h>
-	#include <lua/lualib.h>
-	#include <lua/lauxlib.h>
+#include <lua/lua.h>
+#include <lua/lualib.h>
+#include <lua/lauxlib.h>
 };
 
 #pragma warning(push)
@@ -29,5 +26,3 @@ extern "C" {
 #include <luabind/return_reference_to_policy.hpp>
 #include <luabind/out_value_policy.hpp>
 #include <luabind/iterator_policy.hpp>
-
-#endif // PCH_SCRIPT_H
