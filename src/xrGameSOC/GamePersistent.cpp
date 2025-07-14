@@ -625,8 +625,7 @@ void CGamePersistent::OnRenderPPUI_PP()
 void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
 	pApp->LoadStage();
-	// TODO: Implement later
-/*	const static bool disableLoadScreenTips = EngineExternal()[EEngineExternalRender::DisableLoadScreenTips];
+	const static bool disableLoadScreenTips = EngineExternal()[EEngineExternalRender::DisableLoadScreenTips];
 	if(change_tip && !disableLoadScreenTips)
 	{
 		string512				buff;
@@ -653,7 +652,7 @@ void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 			xr_sprintf			(buff, "ls_mp_tip_%d", tip_num);
 
 		pApp->LoadTitleInt		(g_pStringTable->translate("ls_header").c_str(), tmp.c_str(), g_pStringTable->translate(buff).c_str());
-	}*/
+	}
 }
 
 void CGamePersistent::SetLoadStageTitle(pcstr ls_title)
