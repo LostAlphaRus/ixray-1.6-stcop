@@ -37,7 +37,6 @@ public:
 
 	virtual void		HideShownDialogs		();
 
-	CUITalkWnd*			TalkMenu;
 	CUICarBodyWnd*		UICarBodyMenu;
 	CChangeLevelWnd*	UIChangeLevelWnd;
 };

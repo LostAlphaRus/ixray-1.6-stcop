@@ -22,7 +22,6 @@ CUIGameSP::CUIGameSP()
 {
 	m_game			= NULL;
 	
-	TalkMenu		= new CUITalkWnd		();
 	UICarBodyMenu	= new CUICarBodyWnd		();
 	UIChangeLevelWnd= new CChangeLevelWnd		();
 }

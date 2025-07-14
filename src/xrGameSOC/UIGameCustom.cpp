@@ -16,6 +16,7 @@
 #include "../Inventory.h"
 #include "../huditem.h"
 #include "ui/UIPdaWnd.h"
+#include "ui/UITalkWnd.h"
 
 struct predicate_remove_stat {
 	bool	operator() (SDrawStaticStruct& s) {
@@ -31,6 +32,7 @@ CUIGameCustom::CUIGameCustom()
 	m_pMessagesWnd			= nullptr;
 	InventoryMenu			= nullptr;
 	m_PdaMenu				= nullptr;
+	TalkMenu				= nullptr;
 
 	m_pgameCaptions			= new CUICaption();
 
@@ -183,6 +185,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(UIMainIngameWnd);
 	xr_delete					(InventoryMenu);
 	xr_delete					(m_PdaMenu);
+	xr_delete					(TalkMenu);
 	xr_delete					(m_pMessagesWnd);
 }
 
@@ -206,6 +209,9 @@ void CUIGameCustom::Load()
 
 		R_ASSERT				(!m_PdaMenu);
 		m_PdaMenu				= new CUIPdaWnd();
+
+		R_ASSERT				(!TalkMenu);
+		TalkMenu				= new CUITalkWnd();
 
 
 		Init					();

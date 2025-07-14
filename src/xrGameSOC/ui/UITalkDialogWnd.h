@@ -40,6 +40,8 @@ public:
 	//список вопросов, которые мы можем задавать персонажу
 
 	//элементы интерфейса диалога
+	CUIStatic*			UIDialogFrameTop;
+	CUIStatic*			UIDialogFrameBottom;
 	CUIFrameLineWnd		UIDialogFrame;
 	CUIFrameLineWnd		UIOurPhrasesFrame;
 

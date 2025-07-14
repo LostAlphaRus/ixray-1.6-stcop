@@ -18,6 +18,7 @@ class CUIMainIngameWnd;
 class CUIMessagesWindow;
 class CUIInventoryWnd;
 class CUIPdaWnd;
+class CUITalkWnd;
 
 struct SDrawStaticStruct :public IPureDestroyableObject{
 	SDrawStaticStruct	();
@@ -94,6 +95,7 @@ public:
 	CUIMainIngameWnd*	UIMainIngameWnd;
 	CUIMessagesWindow*	m_pMessagesWnd;
 	CUIInventoryWnd*	InventoryMenu;
+	CUITalkWnd*			TalkMenu;
 
 	virtual void		SetClGame				(game_cl_GameState* g);
 	

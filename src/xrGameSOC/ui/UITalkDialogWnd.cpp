@@ -5,7 +5,7 @@
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
-
+#include "../../xrUI/UIHelper.h"
 
 #define				TALK_XML				"talk.xml"
 #define				TRADE_CHARACTER_XML		"trade_character.xml"
@@ -16,6 +16,8 @@ CUITalkDialogWnd::CUITalkDialogWnd()
 	:	m_pNameTextFont		(NULL)
 {
 	m_ClickedQuestionID = "";
+	UIDialogFrameBottom = nullptr;
+	UIDialogFrameTop = nullptr;
 }
 
 CUITalkDialogWnd::~CUITalkDialogWnd()
@@ -47,24 +49,45 @@ void CUITalkDialogWnd::InitTalkDialogWnd()
 	UIOthersIcon.AttachChild	(&UICharacterInfoRight);
 	UICharacterInfoRight.Init	(0.0f, 0.0f, UIOthersIcon.GetWidth(), UIOthersIcon.GetHeight(), TRADE_CHARACTER_XML);
 
-	//основной фрейм диалога
-	AttachChild					(&UIDialogFrame);
-	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 0, &UIDialogFrame);
-	// Фрейм с нащими фразами
-	AttachChild					(&UIOurPhrasesFrame);
-	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 1, &UIOurPhrasesFrame);
+	CUIWindow* answersParent = this;
+	CUIWindow* questionsParent = this;
 
+	// Фрейм с нащими фразами
+	if (m_uiXml->NavigateToNode("frame_bottom"))
+	{
+		UIDialogFrameBottom = UIHelper::CreateStatic(*m_uiXml, "frame_bottom", this);
+		questionsParent = UIDialogFrameBottom;
+	}
+
+	//основной фрейм диалога
+	if (m_uiXml->NavigateToNode("frame_top"))
+	{
+		UIDialogFrameTop = UIHelper::CreateStatic(*m_uiXml, "frame_top", this);
+		answersParent = UIDialogFrameTop;
+	}
+	if (m_uiXml->NavigateToNode("frame_line_window"))
+	{
+		//основной фрейм диалога
+		AttachChild(&UIDialogFrame);
+		CUIXmlInit::InitFrameLine(*m_uiXml, "frame_line_window", 0, &UIDialogFrame);
+		answersParent = &UIDialogFrame;
+
+		// Фрейм с нащими фразами
+		AttachChild(&UIOurPhrasesFrame);
+		CUIXmlInit::InitFrameLine(*m_uiXml, "frame_line_window", 1, &UIOurPhrasesFrame);
+		questionsParent = &UIOurPhrasesFrame;
+	}
 	//Ответы
 	UIAnswersList				= new CUIScrollView();
 	UIAnswersList->SetAutoDelete(true);
-	UIDialogFrame.AttachChild	(UIAnswersList);
+	answersParent->AttachChild	(UIAnswersList);
 	CUIXmlInit::InitScrollView	(*m_uiXml, "answers_list", 0, UIAnswersList);
 	UIAnswersList->SetWindowName("---UIAnswersList");
 
 	//Вопросы
 	UIQuestionsList				= new CUIScrollView();
 	UIQuestionsList->SetAutoDelete(true);
-	UIOurPhrasesFrame.AttachChild(UIQuestionsList);
+	questionsParent->AttachChild(UIQuestionsList);
 	CUIXmlInit::InitScrollView	(*m_uiXml, "questions_list", 0, UIQuestionsList);
 	UIQuestionsList->SetWindowName("---UIQuestionsList");
 
@@ -186,7 +209,11 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
 	UIOthersIcon.Show	(!b);
 
 	UIAnswersList->Show	(!b);
-	UIDialogFrame.Show (!b);
+
+	if (UIDialogFrameTop)
+		UIDialogFrameTop->Show(!b);
+	else
+		UIDialogFrame.Show (!b);
 
 	UIToTradeButton.Show(!b);
 }
