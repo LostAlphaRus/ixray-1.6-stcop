@@ -16,7 +16,6 @@
 #include "ai_debug.h"
 
 class CServerEntityWrapper;
-class CGameGraph;
 
 class CALifeSpawnRegistry : CRandom {
 public:

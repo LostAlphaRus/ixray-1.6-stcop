@@ -60,7 +60,6 @@ class CEnemyLocationPredictor;
 class CPatrolPathManager;
 class CDetailPathManager;
 class CPHMovementControl;
-class CGameGraph;
 class CLevelGraph;
 class CRestrictedObject;
 class CLocationManager;

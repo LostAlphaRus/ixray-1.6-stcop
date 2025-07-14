@@ -727,19 +727,19 @@ void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
 	};
 
 	xrClientData *pStartedPlayer = NULL;
-	u32	cnt = get_players_count();	
-	for(u32 it=0; it<cnt; it++)	
-	{
-		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
-		if (!l_pC) continue;
-		if (l_pC->ID == sender)
+	auto ForEach = [&](IClient* client)
 		{
-			l_pC->ps->m_bCurrentVoteAgreed = 1;
-			pStartedPlayer = l_pC;
-		}
-		else
-			l_pC->ps->m_bCurrentVoteAgreed = 2;
-	};
+			xrClientData* l_pC = (xrClientData*)client;
+			if (!l_pC) return;
+			if (l_pC->ID == sender)
+			{
+				l_pC->ps->m_bCurrentVoteAgreed = 1;
+				pStartedPlayer = l_pC;
+			}
+			else
+				l_pC->ps->m_bCurrentVoteAgreed = 2;
+		};
+	m_server->ForEachClientDo(ForEach);
 
 	signal_Syncronize();
 	//-----------------------------------------------------------------------------
@@ -764,16 +764,16 @@ void		game_sv_mp::UpdateVote				()
 	u32 NumAgreed = 0;
 	u32 NumParticipated = 0;
 	u32 NumToCount = 0;
-	u32	cnt = get_players_count();	
-	for(u32 it=0; it<cnt; it++)	
-	{
-		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
-		game_PlayerState* ps	= l_pC->ps;
-		if (!l_pC || !l_pC->net_Ready || !ps || ps->IsSkip()) continue;
-		if (ps->m_bCurrentVoteAgreed != 2) NumParticipated++;
-		if (ps->m_bCurrentVoteAgreed == 1) NumAgreed++;
-		NumToCount++;
-	};
+	auto ForEach = [&](IClient* client)
+		{
+			xrClientData* l_pC = (xrClientData*)client;
+			game_PlayerState* ps = l_pC->ps;
+			if (!l_pC || !l_pC->net_Ready || !ps || ps->IsSkip()) return;
+			if (ps->m_bCurrentVoteAgreed != 2) NumParticipated++;
+			if (ps->m_bCurrentVoteAgreed == 1) NumAgreed++;
+			NumToCount++;
+		};
+	m_server->ForEachClientDo(ForEach);
 
 	bool VoteSucceed = false;
 	u32 CurTime = Level().timeServer();
@@ -1014,14 +1014,14 @@ void	game_sv_mp::SendPlayerKilledMessage	(u16 KilledID, KILL_TYPE KillType, u16 
 	P.w_u16	(WeaponID);
 	P.w_u8	(u8(SpecialKill));
 
-	u32	cnt = get_players_count();	
-	for( u32 it = 0; it < cnt; it++ )
-	{
-		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
-		game_PlayerState* ps	= l_pC->ps;
-		if (!l_pC || !l_pC->net_Ready || !ps) continue;
-		m_server->SendTo(l_pC->ID, P);
-	};
+	auto ForEach = [&](IClient* client)
+		{
+			xrClientData* l_pC = (xrClientData*)client;
+			game_PlayerState* ps = l_pC->ps;
+			if (!l_pC || !l_pC->net_Ready || !ps) return;
+			m_server->SendTo(l_pC->ID, P);
+		};
+	m_server->ForEachClientDo(ForEach);
 };
 
 void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)
@@ -1060,15 +1060,15 @@ void	game_sv_mp::OnPlayerChangeName		(NET_Packet& P, ClientID sender)
 		P.w_s16(ps->team);
 		P.w_stringZ(ps->getName());
 		P.w_stringZ(NewName);
-		//---------------------------------------------------		
-		u32	cnt = get_players_count();	
-		for(u32 it=0; it<cnt; it++)	
+		//---------------------------------------------------
+		auto ForEach = [&](IClient* client)
 		{
-			xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
-			game_PlayerState* ps	= l_pC->ps;
-			if (!l_pC || !l_pC->net_Ready || !ps) continue;
-			m_server->SendTo(l_pC->ID, P);
+				xrClientData* l_pC = (xrClientData*)client;
+				game_PlayerState* ps = l_pC->ps;
+				if (!l_pC || !l_pC->net_Ready || !ps) return;
+				m_server->SendTo(l_pC->ID, P);
 		};
+		m_server->ForEachClientDo(ForEach);
 		//---------------------------------------------------
 		pClient->owner->set_name_replace(NewName);
 		NewPlayerName_Replace(pClient, NewName);
@@ -1097,15 +1097,15 @@ void		game_sv_mp::OnPlayerSpeechMessage	(NET_Packet& P, ClientID sender)
 		NP.w_u8(P.r_u8());
 		NP.w_u8(P.r_u8());
 		NP.w_u8(P.r_u8());		
-		//---------------------------------------------------		
-		u32	cnt = get_players_count();	
-		for(u32 it=0; it<cnt; it++)	
-		{
-			xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
-			game_PlayerState* ps	= l_pC->ps;
-			if (!l_pC || !l_pC->net_Ready || !ps) continue;
-			m_server->SendTo(l_pC->ID, NP, net_flags(TRUE, TRUE, TRUE));
-		};
+		//---------------------------------------------------	
+		auto ForEach = [&](IClient* client)
+			{
+				xrClientData* l_pC = (xrClientData*)client;
+				game_PlayerState* ps = l_pC->ps;
+				if (!l_pC || !l_pC->net_Ready || !ps) return;
+				m_server->SendTo(l_pC->ID, NP, net_flags(TRUE, TRUE, TRUE));
+			};
+		m_server->ForEachClientDo(ForEach);
 	};
 };
 
@@ -1403,22 +1403,23 @@ void game_sv_mp::DumpOnlineStatistic()
 		sprintf_s					(str_buff,"\"%s\"", CStringTable().translate((*it).c_str()).c_str());
 		ini.w_string				("map_rotation", num_buf, str_buff);
 	}
+	int idx = 0;
+	auto ForEach = [&](IClient* client)
+		{
+			xrClientData* l_pC = (xrClientData*)client;
 
-	for(u32 idx=0; idx<m_server->GetClientsCount(); ++idx)
-	{
-		xrClientData *l_pC			= (xrClientData*)m_server->GetClientByID(idx);
-		
-		if(m_server->GetServerClient()==l_pC && g_dedicated_server) 
-			continue;
-		
-		if(!l_pC->net_Ready)
-			continue;
+			if (m_server->GetServerClient() == l_pC && g_dedicated_server)
+				return;
 
-		string16					num_buf;
-		sprintf_s					(num_buf,"player_%d",idx);
+			if (!l_pC->net_Ready)
+				return;
 
-		WritePlayerStats			(ini,num_buf,l_pC);
-	}
+			string16					num_buf;
+			sprintf_s(num_buf, "player_%d", idx++);
+
+			WritePlayerStats(ini, num_buf, l_pC);
+		};
+	m_server->ForEachClientDo(ForEach);
 	WriteGameState				(ini, current_section.c_str(), false);
 }
 
@@ -1489,17 +1490,19 @@ void game_sv_mp::DumpRoundStatistics()
 	sprintf_s					(str_buff,"\"%s\"",Level().name().c_str());
 	ini.w_string				(current_section.c_str(), "current_map_name_internal", str_buff);
 
-	for(u32 idx=0; idx<m_server->GetClientsCount(); ++idx)
-	{
-		xrClientData *l_pC			= (xrClientData*)m_server->GetClientByID(idx);
-		if(m_server->GetServerClient()==l_pC && g_dedicated_server) 
-			continue;
+	int idx = 0;
+	auto ForEach = [&](IClient* client)
+		{
+			xrClientData* l_pC = (xrClientData*)client;
+			if (m_server->GetServerClient() == l_pC && g_dedicated_server)
+				return;
 
-		string16					num_buf;
-		sprintf_s					(num_buf,"player_%d",idx);
+			string16					num_buf;
+			sprintf_s(num_buf, "player_%d", idx++);
 
-		WritePlayerStats			(ini,num_buf,l_pC);
-	}
+			WritePlayerStats(ini, num_buf, l_pC);
+		};
+	m_server->ForEachClientDo(ForEach);
 	WriteGameState					(ini,current_section.c_str(), true);
 
 	Game().m_WeaponUsageStatistic->SaveDataLtx(ini);

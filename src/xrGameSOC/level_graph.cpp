@@ -121,23 +121,38 @@ CLevelGraph::CLevelGraph()
 	m_header					= (CHeader*)m_reader->pointer();
 	R_ASSERT					(header().version() == XRAI_SOC_CURRENT_VERSION);
 	m_reader->advance			(sizeof(CHeader));
-	m_nodes = xr_alloc<CVertex>(m_header->vertex_count());
+
+
+	// St4lker0k765: лютейшие костыли
+	// сначала ТЧ формат (SOCNodeCompressed) перегоняем в
+	// ЗП легаси (21 бит) формат (NodeCompressed10),
+	// а потом ЗП легаси перегоняем в 
+	// 25-бит формат (NodeCompressed).
+	// По крайней мере оно работает :)
+	CVertex* temp_nodes = new CVertex[m_header->vertex_count()];
+	NodeCompressed10* Dst = (NodeCompressed10*)temp_nodes;
+	SOCNodeCompressed* Src = (SOCNodeCompressed*)m_reader->pointer();
+	NodeCompressed10 Temp;
+	m_nodes = new CVertex[m_header->vertex_count()];
+	for (size_t i =0;i< m_header->vertex_count(); i++)
 	{
-		NodeCompressed* Dst = (NodeCompressed*)m_nodes;
-		SOCNodeCompressed* Src = (SOCNodeCompressed*)m_reader->pointer();
-		for (size_t i =0;i< m_header->vertex_count(); i++)
+		memcpy(Temp.data ,Src[i].data,12);
+		Temp.high.cover0 = Src[i].cover0;
+		Temp.high.cover1 = Src[i].cover1;
+		Temp.high.cover2 = Src[i].cover2;
+		Temp.high.cover3 = Src[i].cover3;
+		Temp.low = Temp.high;
+		Temp.p = Src[i].p;
+		Temp.plane = Src[i].plane;
+		Dst[i] = Temp;
+
+		std::memcpy(&m_nodes[i].high, &Dst[i].high, sizeof(Dst[i].high) + sizeof(Dst[i].low) + sizeof(Dst[i].plane) + sizeof(Dst[i].p));
+
+		for (u8 j = 0; j < 4; ++j)
 		{
-			NodeCompressed Temp;
-			memcpy(Temp.data ,Src[i].data,12);
-			Temp.high.cover0 = Src[i].cover0;
-			Temp.high.cover1 = Src[i].cover1;
-			Temp.high.cover2 = Src[i].cover2;
-			Temp.high.cover3 = Src[i].cover3;
-			Temp.low = Temp.high;
-			Temp.p = Src[i].p;
-			Temp.plane = Src[i].plane;
-			Dst[i] = Temp;
+			m_nodes[i].link(j, Dst[i].link(j));
 		}
+		m_nodes[i].light(Dst[i].light());
 	}
 
 	m_row_length				= iFloor((header().box().max.z - header().box().min.z)/header().cell_size() + EPS_L + 1.5f);
@@ -157,7 +172,7 @@ CLevelGraph::CLevelGraph()
 
 CLevelGraph::~CLevelGraph()
 {
-		VERIFY(Device.IsEditorMode() == false);
+	xr_delete(m_nodes);
+	VERIFY(Device.IsEditorMode() == false);
 	FS.r_close(m_reader);
-	xr_free(m_nodes);
 }

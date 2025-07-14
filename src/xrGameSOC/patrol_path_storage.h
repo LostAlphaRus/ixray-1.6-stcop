@@ -11,7 +11,6 @@
 class CPatrolPath;
 class CLevelGraph;
 class CGameLevelCrossTable;
-class CGameGraph;
 
 #include "../xrCore/object_interfaces.h"
 #include "../xrCore/associative_vector.h"

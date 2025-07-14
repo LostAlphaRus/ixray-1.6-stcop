@@ -11,7 +11,6 @@
 class CPatrolPath;
 class CLevelGraph;
 class CGameLevelCrossTable;
-class CGameGraph;
 
 #include "../xrCore/object_interfaces.h"
 #include "game_graph_space.h"
