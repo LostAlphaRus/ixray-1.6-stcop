@@ -191,9 +191,3 @@ void CUIGameTDM::SetFraglimit(int local_frags, int fraglimit)
 
 	m_pFragLimitIndicator->SetText(str);
 }
-
-void CUIGameTDM::reset_ui				()
-{
-	inherited::reset_ui();
-	m_pUITeamSelectWnd->Reset();
-}

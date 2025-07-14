@@ -390,17 +390,3 @@ void game_cl_GameState::set_type_name(LPCSTR s)
 		g_pGamePersistent->OnGameStart();
 	}
 };
-void game_cl_GameState::reset_ui()
-{
-	if(g_dedicated_server)	return;
-
-	if(!m_game_ui_custom)
-		m_game_ui_custom = CurrentGameUI();
-
-	m_game_ui_custom->reset_ui					();
-
-	CurrentGameUI()->UIMainIngameWnd->reset_ui	();
-
-	if (CurrentGameUI()->TopInputReceiver())
-		CurrentGameUI()->StartStopMenu			(CurrentGameUI()->TopInputReceiver(),true);
-}

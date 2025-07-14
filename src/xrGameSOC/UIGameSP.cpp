@@ -22,7 +22,6 @@ CUIGameSP::CUIGameSP()
 {
 	m_game			= NULL;
 	
-	PdaMenu			= new CUIPdaWnd			();
 	TalkMenu		= new CUITalkWnd		();
 	UICarBodyMenu	= new CUICarBodyWnd		();
 	UIChangeLevelWnd= new CChangeLevelWnd		();
@@ -30,7 +29,6 @@ CUIGameSP::CUIGameSP()
 
 CUIGameSP::~CUIGameSP() 
 {
-	delete_data(PdaMenu);	
 	delete_data(TalkMenu);
 	delete_data(UICarBodyMenu);
 	delete_data(UIChangeLevelWnd);
@@ -41,7 +39,7 @@ void CUIGameSP::HideShownDialogs()
 	CUIDialogWnd* mir				= TopInputReceiver();
 	if( mir			&&
 			(	mir==InventoryMenu	||
-				mir==PdaMenu		||
+				mir==m_PdaMenu		||
 				mir==TalkMenu		||
 				mir==UICarBodyMenu
 			)
@@ -77,23 +75,23 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		}break;
 
 	case kACTIVE_JOBS:
-		if( !TopInputReceiver() || TopInputReceiver()==PdaMenu){
-			PdaMenu->SetActiveSubdialog(eptQuests);
-			m_game->StartStopMenu(PdaMenu,true);
+		if( !TopInputReceiver() || TopInputReceiver()==m_PdaMenu){
+			PdaMenu().SetActiveSubdialog(eptQuests);
+			m_game->StartStopMenu(m_PdaMenu, true);
 			return true;
 		}break;
 
 	case kMAP:
-		if( !TopInputReceiver() || TopInputReceiver()==PdaMenu){
-			PdaMenu->SetActiveSubdialog(eptMap);
-			m_game->StartStopMenu(PdaMenu,true);
+		if( !TopInputReceiver() || TopInputReceiver()==m_PdaMenu){
+			PdaMenu().SetActiveSubdialog(eptMap);
+			m_game->StartStopMenu(m_PdaMenu,true);
 			return true;
 		}break;
 
 	case kCONTACTS:
-		if( !TopInputReceiver() || TopInputReceiver()==PdaMenu){
-			PdaMenu->SetActiveSubdialog(eptContacts);
-			m_game->StartStopMenu(PdaMenu,true);
+		if( !TopInputReceiver() || TopInputReceiver()==m_PdaMenu){
+			PdaMenu().SetActiveSubdialog(eptContacts);
+			m_game->StartStopMenu(m_PdaMenu,true);
 			return true;
 		}break;
 
@@ -164,16 +162,6 @@ void CUIGameSP::ChangeLevel				(GameGraph::_GRAPH_ID game_vert_id, u32 level_ver
 		UIChangeLevelWnd->m_b_position_cancel	= b;
 		m_game->StartStopMenu					(UIChangeLevelWnd,true);
 	}
-}
-
-void CUIGameSP::reset_ui()
-{
-	inherited::reset_ui				();
-	InventoryMenu->Reset			();
-	PdaMenu->Reset					();
-	TalkMenu->Reset					();
-	UICarBodyMenu->Reset			();
-	UIChangeLevelWnd->Reset			();
 }
 
 CChangeLevelWnd::CChangeLevelWnd		()

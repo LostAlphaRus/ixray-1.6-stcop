@@ -23,6 +23,8 @@
 #include "../xrEngine/string_table.h"
 #include "../xrEngine/CameraManager.h"
 #include "actor.h"
+#include "ui/UIMainIngameWnd.h"
+#include "ui/uipdawnd.h"
 
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
@@ -544,8 +546,18 @@ void CGamePersistent::OnEvent(EVENT E, u64 P1, u64 P2)
 			Device.Pause		(FALSE, TRUE, TRUE, "eQuickLoad");
 		
 		if(CurrentGameUI())
+		{
 			CurrentGameUI()->HideShownDialogs();
-		
+			CurrentGameUI()->UIMainIngameWnd->reset_ui();
+			CurrentGameUI()->PdaMenu().Reset();
+		}
+
+		if (g_tutorial)
+			g_tutorial->Stop();
+
+		if (g_tutorial2)
+			g_tutorial2->Stop();
+
 		LPSTR		saved_name	= (LPSTR)(P1);
 
 		Level().remove_objects	();

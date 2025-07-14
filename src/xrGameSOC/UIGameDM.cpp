@@ -84,9 +84,7 @@ CUIGameDM::CUIGameDM()
 //.	m_voteStatusWnd->Show			(false);
 	m_voteStatusWnd					= NULL;
 
-	m_pPdaMenu			= new CUIPdaWnd			();
 	m_pMapDesc			= NULL;//new CUIMapDesc		();
-
 }
 //--------------------------------------------------------------------
 void CUIGameDM::SetClGame (game_cl_GameState* g)
@@ -165,7 +163,6 @@ CUIGameDM::~CUIGameDM()
 	xr_delete					(m_pFragLimitIndicator);
 	xr_delete					(m_voteStatusWnd);
 	//---------------------------------------------------
-	delete_data(m_pPdaMenu);	
 	delete_data(m_pMapDesc);	
 }
 
@@ -345,11 +342,4 @@ void CUIGameDM::SetFraglimit(int local_frags, int fraglimit)
 		sprintf_s(str,"%d", local_frags);
 
 	m_pFragLimitIndicator->SetText(str);
-}
-
-void CUIGameDM::reset_ui				()
-{
-	inherited::reset_ui		();
-	InventoryMenu->Reset	();
-	m_pPdaMenu->Reset		();
 }

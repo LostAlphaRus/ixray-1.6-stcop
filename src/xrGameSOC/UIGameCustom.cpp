@@ -15,6 +15,7 @@
 #include "../actor.h"
 #include "../Inventory.h"
 #include "../huditem.h"
+#include "ui/UIPdaWnd.h"
 
 struct predicate_remove_stat {
 	bool	operator() (SDrawStaticStruct& s) {
@@ -29,6 +30,7 @@ CUIGameCustom::CUIGameCustom()
 	UIMainIngameWnd			= nullptr;
 	m_pMessagesWnd			= nullptr;
 	InventoryMenu			= nullptr;
+	m_PdaMenu				= nullptr;
 
 	m_pgameCaptions			= new CUICaption();
 
@@ -180,6 +182,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(m_msgs_xml);
 	xr_delete					(UIMainIngameWnd);
 	xr_delete					(InventoryMenu);
+	xr_delete					(m_PdaMenu);
 	xr_delete					(m_pMessagesWnd);
 }
 
@@ -201,6 +204,10 @@ void CUIGameCustom::Load()
 		R_ASSERT				(!m_pMessagesWnd);
 		m_pMessagesWnd			= new CUIMessagesWindow();
 
+		R_ASSERT				(!m_PdaMenu);
+		m_PdaMenu				= new CUIPdaWnd();
+
+
 		Init					();
 	}
 }
@@ -216,20 +223,6 @@ void CUIGameCustom::OnConnected()
 	}
 }
 
-void CUIGameCustom::reset_ui()
-{
-	if(g_tutorial2)
-	{ 
-		g_tutorial2->Destroy	();
-		xr_delete				(g_tutorial2);
-	}
-
-	if(g_tutorial)
-	{
-		g_tutorial->Destroy	();
-		xr_delete(g_tutorial);
-	}
-}
 SDrawStaticStruct::SDrawStaticStruct	()
 {
 	m_static	= NULL;

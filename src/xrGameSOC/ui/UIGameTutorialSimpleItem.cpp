@@ -146,7 +146,7 @@ void CUISequenceSimpleItem::Update			()
 	if(ui_game_sp)
 	{
 		if(!m_pda_section || 0 == xr_strlen(m_pda_section) )
-			if ( ui_game_sp->PdaMenu->IsShown()			||
+			if ( ui_game_sp->PdaMenu().IsShown()			||
 				ui_game_sp->InventoryMenu->IsShown()	||
 				ui_game_sp->TalkMenu->IsShown()			||
 				ui_game_sp->UICarBodyMenu->IsShown()	||
@@ -184,34 +184,34 @@ void CUISequenceSimpleItem::Start()
 			bool bShowPda			= false;
 			CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
 			if(!_stricmp(m_pda_section,"pda_contacts")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptContacts);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptContacts);
 				bShowPda = true;
 			}else{
 			if(!_stricmp(m_pda_section,"pda_map")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptMap);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptMap);
 				bShowPda = true;
 			}else if(!_stricmp(m_pda_section,"pda_quests")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptQuests);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptQuests);
 				bShowPda = true;
 			}else if(!_stricmp(m_pda_section,"pda_diary")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptDiary);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptDiary);
 				bShowPda = true;
 			}else if(!_stricmp(m_pda_section,"pda_ranking")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptRanking);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptRanking);
 				bShowPda = true;
 			}else if(!_stricmp(m_pda_section,"pda_statistics")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptActorStatistic);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptActorStatistic);
 				bShowPda = true;
 			}else if(!_stricmp(m_pda_section,"pda_encyclopedia")){
-				ui_game_sp->PdaMenu->SetActiveSubdialog(eptEncyclopedia);
+				ui_game_sp->PdaMenu().SetActiveSubdialog(eptEncyclopedia);
 				bShowPda = true;
 			}
 		}
 		if(ui_game_sp)
 		{
-		if( (!ui_game_sp->PdaMenu->IsShown() && bShowPda) || 
-			(ui_game_sp->PdaMenu->IsShown() && !bShowPda))
-			CurrentGameUI()->StartStopMenu			(ui_game_sp->PdaMenu,true);
+		if( (!ui_game_sp->PdaMenu().IsShown() && bShowPda) ||
+			(ui_game_sp->PdaMenu().IsShown() && !bShowPda))
+			CurrentGameUI()->StartStopMenu			(&ui_game_sp->PdaMenu(), true);
 		}
 	}
 }
@@ -235,8 +235,8 @@ bool CUISequenceSimpleItem::Stop			(bool bForce)
 
 	if (g_pGameLevel){
 		CUIGameSP* ui_game_sp	= smart_cast<CUIGameSP*>(CurrentGameUI());
-		if( ui_game_sp && ui_game_sp->PdaMenu->IsShown() ) 
-			CurrentGameUI()->StartStopMenu			(ui_game_sp->PdaMenu, true);
+		if( ui_game_sp && ui_game_sp->PdaMenu().IsShown() ) 
+			CurrentGameUI()->StartStopMenu			(&ui_game_sp->PdaMenu(), true);
 	}
 	inherited::Stop				();
 	return true;

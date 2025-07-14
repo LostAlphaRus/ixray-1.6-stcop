@@ -25,7 +25,6 @@ public:
 	CUIGameSP									();
 	virtual				~CUIGameSP				();
 
-	virtual	void		reset_ui				();
 	virtual void		SetClGame				(game_cl_GameState* g);
 	virtual bool		IR_UIOnKeyboardPress	(int dik);
 	virtual bool		IR_UIOnKeyboardRelease	(int dik);
@@ -38,7 +37,6 @@ public:
 
 	virtual void		HideShownDialogs		();
 
-	CUIPdaWnd*			PdaMenu;
 	CUITalkWnd*			TalkMenu;
 	CUICarBodyWnd*		UICarBodyMenu;
 	CChangeLevelWnd*	UIChangeLevelWnd;

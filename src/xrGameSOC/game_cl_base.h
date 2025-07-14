@@ -44,7 +44,6 @@ public:
 
 
 	WeaponUsageStatistic				*m_WeaponUsageStatistic;	
-	virtual		void				reset_ui				();
 	virtual		void				CommonMessageOut		(LPCSTR msg);
 
 private:

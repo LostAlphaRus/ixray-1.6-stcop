@@ -43,5 +43,4 @@ public:
 	
 	virtual	bool		IR_UIOnKeyboardPress		( int dik );
 	virtual bool		IR_UIOnKeyboardRelease	( int dik );
-	virtual	void		reset_ui				();
 };

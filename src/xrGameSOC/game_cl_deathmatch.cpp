@@ -716,12 +716,12 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 	{
 		if (m_game_ui)
 		{
-			if (m_game_ui->m_pPdaMenu && m_game_ui->m_pPdaMenu->IsShown())
-				StartStopMenu(m_game_ui->m_pPdaMenu,true);
+			if (m_game_ui->PdaMenu().IsShown())
+				StartStopMenu(&m_game_ui->PdaMenu(), true);
 			else
 			{
-				m_game_ui->m_pPdaMenu->SetActiveSubdialog(eptMap);
-				StartStopMenu(m_game_ui->m_pPdaMenu,true);
+				m_game_ui->PdaMenu().SetActiveSubdialog(eptMap);
+				StartStopMenu(&m_game_ui->PdaMenu(), true);
 			};		
 			return true;
 		}

@@ -17,6 +17,7 @@ class CUIXml;
 class CUIMainIngameWnd;
 class CUIMessagesWindow;
 class CUIInventoryWnd;
+class CUIPdaWnd;
 
 struct SDrawStaticStruct :public IPureDestroyableObject{
 	SDrawStaticStruct	();
@@ -86,6 +87,7 @@ protected:
 	CUICaption*			m_pgameCaptions;
 	CUIXml*				m_msgs_xml;
 	st_vec										m_custom_statics;
+	CUIPdaWnd*			m_PdaMenu;
 
 	bool				m_bShowGameIndicators;
 public:
@@ -102,9 +104,8 @@ public:
 	
 	virtual void		Render					();
 	virtual void		OnFrame					();
-	virtual	void		reset_ui				();
 
-
+	IC CUIPdaWnd&		PdaMenu					() const { return *m_PdaMenu;   }
 	virtual void		ShowGameIndicators		(bool b) override {m_bShowGameIndicators	= b;};
 	virtual bool		GameIndicatorsShown		() const override {return m_bShowGameIndicators;};
 	virtual CDialogHolder* GetDialogHolder		() { return this; };

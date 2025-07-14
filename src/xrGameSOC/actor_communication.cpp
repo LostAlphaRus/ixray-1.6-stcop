@@ -66,7 +66,7 @@ void CActor::AddEncyclopediaArticle	 (const CInfoPortion* info_portion) const
 		callback(GameObject::eArticleInfo)(lua_game_object(), g, n, _atype);
 
 		if( CurrentGameUI() ){
-			CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
+			CUIGameCustom* pGameSP = CurrentGameUI();
 			pda_section::part p = pda_section::encyclopedia;
 			switch (article.data()->articleType){
 				case ARTICLE_DATA::eEncyclopediaArticle:	p = pda_section::encyclopedia;	break;
@@ -75,7 +75,7 @@ void CActor::AddEncyclopediaArticle	 (const CInfoPortion* info_portion) const
 				case ARTICLE_DATA::eTaskArticle:			p = pda_section::quests;		break;
 				default: NODEFAULT;
 			};
-			pGameSP->PdaMenu->PdaContentsChanged			(p);
+			pGameSP->PdaMenu().PdaContentsChanged(p);
 		}
 
 	}
@@ -107,7 +107,7 @@ void  CActor::AddGameNews			 (GAME_NEWS_DATA& news_data)
 		CurrentGameUI()->UIMainIngameWnd->ReceiveNews(&news_data);
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 		if(pGameSP) 
-			pGameSP->PdaMenu->PdaContentsChanged	(pda_section::news);
+			pGameSP->PdaMenu().PdaContentsChanged	(pda_section::news);
 	}
 }
 
@@ -264,7 +264,7 @@ void CActor::NewPdaContact		(CInventoryOwner* pInvOwner)
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 
 		if(pGameSP)
-			pGameSP->PdaMenu->PdaContentsChanged	(pda_section::contacts);
+			pGameSP->PdaMenu().PdaContentsChanged	(pda_section::contacts);
 	}
 }
 
@@ -283,7 +283,7 @@ void CActor::LostPdaContact		(CInventoryOwner* pInvOwner)
 	if( CurrentGameUI() ){
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 		if(pGameSP){
-			pGameSP->PdaMenu->PdaContentsChanged	(pda_section::contacts);
+			pGameSP->PdaMenu().PdaContentsChanged	(pda_section::contacts);
 		}
 	}
 

@@ -141,9 +141,3 @@ void CUIGameAHunt::OnFrame()
 	inherited::OnFrame();
 	m_pReinforcementInidcator->Update();
 }
-
-void CUIGameAHunt::reset_ui()
-{
-	inherited::reset_ui();
-	m_pBuySpawnMsgBox->Reset();
-}

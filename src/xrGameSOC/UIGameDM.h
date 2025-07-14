@@ -23,7 +23,6 @@ private:
 	typedef CUIGameCustom inherited;
 
 public:
-	CUIPdaWnd*			m_pPdaMenu;
 	CUIMapDesc*			m_pMapDesc;
 
 protected:
@@ -97,5 +96,4 @@ public:
 			void					ShowPlayersList			(bool bShow);
 			void					ShowStatistic			(bool bShow);
 	virtual void					ReInitShownUI		(); 
-	virtual	void					reset_ui				();
 };
