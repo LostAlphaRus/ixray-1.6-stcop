@@ -214,7 +214,7 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 				SetCondition(0);
 		}
 
-		if (CurrentGameUI())
+		if (&CurrentGameUI()->ActorMenu())
 		{
 			CurrentGameUI()->ActorMenu().RefreshCurrentItemCell();
 		}

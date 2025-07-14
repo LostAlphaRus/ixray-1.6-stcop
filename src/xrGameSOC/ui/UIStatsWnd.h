@@ -6,7 +6,7 @@
 #include "../../xrUI/Widgets/UIListItem.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UIButton.h"
-#include "UIMultiTextStatic.h"
+#include "../../xrUI/Widgets/UIMultiTextStatic.h"
 
 using FIELDS_VECTOR = xr_vector<CUIButton*>;
 using FIELDS_VECTOR_it = FIELDS_VECTOR::iterator;

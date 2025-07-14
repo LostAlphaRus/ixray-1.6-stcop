@@ -35,6 +35,8 @@ class UIHintWindow;
 class CUILines;
 class CUITextWnd;
 class CUILoadingScreenProgress;
+class CUIMultiTextStatic;
+class CUITextBanner;
 
 class UI_API CUIXmlInit
 {
@@ -77,6 +79,8 @@ public:
 	static Frect	GetFRect				(CUIXml& xml_doc, LPCSTR path, int index);
 	static u32		GetColor				(CUIXml& xml_doc, LPCSTR path, int index, u32 def_clr);
 	static u32		GetGradientColor		(CUIXml& xml_doc, LPCSTR path, int index, u32 def_clr);
+	static bool		InitMultiTextStatic		(CUIXml& xml_doc, LPCSTR path, int index, CUIMultiTextStatic* pWnd);
+	static bool		InitTextBanner			(CUIXml& xml_doc, LPCSTR path, int index, CUITextBanner* pBnr);
 public:
 
 	static bool		InitAlignment(CUIXml &xml_doc, const char *path,

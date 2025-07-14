@@ -2,7 +2,7 @@
 #include "UIGameCustom.h"
 #include "level.h"
 #include "hudmanager.h"
-#include "ui/UIMultiTextStatic.h"
+#include "../xrUI/Widgets/UIMultiTextStatic.h"
 #include "../xrUI/UIXmlInit.h"
 #include "../xrCore/object_broker.h"
 #include "../xrEngine/string_table.h"

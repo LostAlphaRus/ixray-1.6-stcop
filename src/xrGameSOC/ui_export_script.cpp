@@ -1,7 +1,7 @@
 #include "pch_script.h"
 
 #include "script_ui_registrator.h"
-#include "UI\UIMultiTextStatic.h"
+#include "../xrUI/Widgets/UIMultiTextStatic.h"
 #include "MainMenu.h"
 
 #include "../xrUI/Widgets/uiwindow.h"

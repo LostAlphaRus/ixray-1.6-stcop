@@ -14,11 +14,11 @@
 
 #include "UITextBanner.h"
 
-class CUIMultiTextStatic: public CUIStatic
+class UI_API CUIMultiTextStatic: public CUIStatic
 {
 	typedef CUIStatic inherited;
 public:
-	typedef struct SPh
+	typedef struct UI_API SPh
 	{
 		float						outX;
 		float						outY;
@@ -52,7 +52,7 @@ public:
 	void			RemovePhraseByIndex(u32 idx);
 };
 
-class CUICaption :protected CUIMultiTextStatic
+class UI_API CUICaption :protected CUIMultiTextStatic
 {
 	typedef CUIMultiTextStatic inherited;
 

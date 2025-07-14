@@ -9,8 +9,6 @@
 #include "../xrUI/UIHelper.h"
 
 class CUILabel;
-class CUIMultiTextStatic;
-class CUITextBanner;
 
 class UIHelperGame: 
 	public UIHelper
@@ -27,6 +25,4 @@ public:
 
 	static bool InitDragDropListEx(CUIXml& xml_doc, LPCSTR path, int index, CUIDragDropListEx* pWnd);
 	static bool InitLabel(CUIXml& xml_doc, LPCSTR path, int index, CUILabel* pWnd);
-	static bool InitMultiTextStatic(CUIXml& xml_doc, LPCSTR path, int index, CUIMultiTextStatic* pWnd);
-	static bool InitTextBanner(CUIXml& xml_doc, LPCSTR path, int index, CUITextBanner *pBnr);
 };

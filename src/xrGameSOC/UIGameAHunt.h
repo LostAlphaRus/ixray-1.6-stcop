@@ -7,7 +7,7 @@
 #include "ui/UIInventoryWnd.h"
 #include "ui/UISpawnWnd.h"
 
-#include "ui/UITextBanner.h"
+#include "../xrUI/Widgets//UITextBanner.h"
 
 // refs 
 class CUIAHuntFragList;

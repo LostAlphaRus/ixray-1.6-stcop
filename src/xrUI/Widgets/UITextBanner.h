@@ -41,7 +41,7 @@ private:
 //  Класс анимироанного баннера
 //-----------------------------------------------------------------------------/
 
-class CUITextBanner
+class UI_API CUITextBanner
 {
 public:
 	enum TextBannerStyles

@@ -9,18 +9,18 @@
 #include "../WeaponAmmo.h"
 #include "../Actor.h"
 #include "../Trade.h"
-#include "../UIGameSP.h"
+#include "UIGameCustom.h"
 #include "UIInventoryUtilities.h"
 #include "../inventoryowner.h"
 #include "../eatable_item.h"
 #include "../inventory.h"
 #include "../level.h"
 #include "../../xrEngine/string_table.h"
-#include "../character_info.h"
+#include "character_info.h"
 #include "../../xrUI/Widgets/UIMultiTextStatic.h"
 #include "../../xrUI/Widgets/ui3tbutton.h"
 #include "UIItemInfo.h"
-#include "../UIHelperGame.h"
+#include "UIHelperGame.h"
 
 #include "UICharacterInfo.h"
 #include "UIDragDropListEx.h"
@@ -109,9 +109,9 @@ void CUITradeWnd::Init()
 	AttachChild							(&m_uidata->UIOthersIcon);
 	xml_init.InitStatic					(uiXml, "static_icon", 1, &m_uidata->UIOthersIcon);
 	m_uidata->UIOurIcon.AttachChild		(&m_uidata->UICharacterInfoLeft);
-	m_uidata->UICharacterInfoLeft.Init	(0,0, m_uidata->UIOurIcon.GetWidth(), m_uidata->UIOurIcon.GetHeight(), TRADE_CHARACTER_XML);
+	m_uidata->UICharacterInfoLeft.InitCharacterInfo	(Fvector2().set(0,0), Fvector2().set(m_uidata->UIOurIcon.GetWidth(), m_uidata->UIOurIcon.GetHeight()), TRADE_CHARACTER_XML);
 	m_uidata->UIOthersIcon.AttachChild	(&m_uidata->UICharacterInfoRight);
-	m_uidata->UICharacterInfoRight.Init	(0,0, m_uidata->UIOthersIcon.GetWidth(), m_uidata->UIOthersIcon.GetHeight(), TRADE_CHARACTER_XML);
+	m_uidata->UICharacterInfoRight.InitCharacterInfo(Fvector2().set(0,0), Fvector2().set(m_uidata->UIOthersIcon.GetWidth(), m_uidata->UIOthersIcon.GetHeight()), TRADE_CHARACTER_XML);
 
 
 	//Списки торговли
@@ -154,7 +154,7 @@ void CUITradeWnd::Init()
 	AttachChild							(&m_uidata->UIDescWnd);
 	xml_init.InitStatic					(uiXml, "desc_static", 0, &m_uidata->UIDescWnd);
 	m_uidata->UIDescWnd.AttachChild		(&m_uidata->UIItemInfo);
-	m_uidata->UIItemInfo.Init			(0,0, m_uidata->UIDescWnd.GetWidth(), m_uidata->UIDescWnd.GetHeight(), TRADE_ITEM_XML);
+	m_uidata->UIItemInfo.InitItemInfo			(Fvector2().set(0,0), Fvector2().set(m_uidata->UIDescWnd.GetWidth(), m_uidata->UIDescWnd.GetHeight()), TRADE_ITEM_XML);
 
 
 	AttachChild							(&m_uidata->UIPerformTradeButton);
@@ -180,15 +180,18 @@ void CUITradeWnd::InitTrade(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 	m_pOthersInvOwner					= pOthers;
 	m_uidata->UIOthersPriceCaption.GetPhraseByIndex(0)->SetText(*g_pStringTable->translate("ui_st_opponent_items"));
 
-	m_uidata->UICharacterInfoLeft.InitCharacter(m_pInvOwner->object_id());
-	m_uidata->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner->object_id());
+	m_uidata->UICharacterInfoLeft.InitCharacter(m_pInvOwner);
+	m_uidata->UICharacterInfoRight.InitCharacter(m_pOthersInvOwner);
 
 	m_pInv								= &m_pInvOwner->inventory();
-	m_pOthersInv						= pOur->GetTrade()->GetPartnerInventory();
+	m_pOthersInv						= &m_pOthersInvOwner->inventory();
 		
 	m_pTrade							= pOur->GetTrade();
-	m_pOthersTrade						= pOur->GetTrade()->GetPartnerTrade();
-    	
+	m_pOthersTrade						= pOthers->GetTrade();
+
+   	m_pTrade->StartTradeEx				(pOthers);
+	m_pOthersTrade->StartTradeEx		(pOur);
+	
 	EnableAll							();
 
 	UpdateLists							(eBoth);
@@ -215,7 +218,7 @@ void CUITradeWnd::Draw()
 
 }
 
-extern void UpdateCameraDirection(CGameObject* pTo);
+extern void UpdateCameraDirection(CGameObject* pTo, bool isFocus);
 
 void CUITradeWnd::Update()
 {
@@ -232,7 +235,7 @@ void CUITradeWnd::Update()
 		UpdateLists					(et);
 
 	inherited::Update				();
-	UpdateCameraDirection			(smart_cast<CGameObject*>(m_pOthersInvOwner));
+	UpdateCameraDirection			(smart_cast<CGameObject*>(m_pOthersInvOwner), m_pOthersInvOwner->GetFocusingOnNpc());
 
 	if(m_uidata->UIDealMsg){
 		m_uidata->UIDealMsg->Update();
@@ -594,7 +597,7 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 {
 	if(m_pCurrentCellItem == itm) return;
 	m_pCurrentCellItem				= itm;
-	m_uidata->UIItemInfo.InitItem	(CurrentIItem());
+	m_uidata->UIItemInfo.InitItem	(CurrentItem());
 	
 	if(!m_pCurrentCellItem)		return;
 
@@ -617,11 +620,11 @@ void CUITradeWnd::SwitchToTalk()
 
 void CUITradeWnd::BindDragDropListEnents(CUIDragDropListEx* lst)
 {
-	lst->m_f_item_drop				= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUITradeWnd::OnItemDrop);
-	lst->m_f_item_start_drag		= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUITradeWnd::OnItemStartDrag);
-	lst->m_f_item_db_click			= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUITradeWnd::OnItemDbClick);
-	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUITradeWnd::OnItemSelected);
-	lst->m_f_item_rbutton_click		= CUIDragDropListEx::DRAG_DROP_EVENT(this,&CUITradeWnd::OnItemRButtonClick);
+	lst->m_f_item_drop				= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemDrop);
+	lst->m_f_item_start_drag		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemStartDrag);
+	lst->m_f_item_db_click			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemDbClick);
+	lst->m_f_item_selected			= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemSelected);
+	lst->m_f_item_rbutton_click		= CUIDragDropListEx::DRAG_CELL_EVENT(this,&CUITradeWnd::OnItemRButtonClick);
 }
 
 void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool b)
