@@ -128,6 +128,16 @@ void CUIMessagesWindow::AddIconedPdaMessage(GAME_NEWS_DATA* news)
 	pItem->UIMsgText.AdjustHeightToText	();
 	
     pItem->SetColorAnimation			("ui_main_msgs_short", LA_ONLYALPHA|LA_TEXTCOLOR|LA_TEXTURECOLOR, float(news->show_time));
+	
+	if (!news->tex_rect.is_empty())
+	{
+		Frect texture_rect;
+		texture_rect.lt.set(news->tex_rect.x1, news->tex_rect.y1);
+		texture_rect.rb.set(news->tex_rect.x2, news->tex_rect.y2);
+		texture_rect.rb.add(texture_rect.lt);
+		pItem->UIIcon.GetUIStaticItem().SetTextureRect(texture_rect);
+	}
+
 	pItem->UIIcon.InitTexture			(news->texture_name.c_str());
 	
 	float h1 = _max( pItem->UIIcon.GetHeight(), pItem->UIMsgText.GetWndPos().y + pItem->UIMsgText.GetHeight() );

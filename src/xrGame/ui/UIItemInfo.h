@@ -72,6 +72,10 @@ public:
 	UIInvUpgPropertiesWnd*	UIProperties;
 	CUIOutfitInfo*			UIOutfitInfo;
 	CUIBoosterInfo*			UIBoosterInfo;
+	// legacy
+	CUIStatic*				UICondition;
+	CUIProgressBar*			UICondProgresBar;
+
 
 	Fvector2			UIItemImageSize; 
 	CUIStatic*			UIItemImage;

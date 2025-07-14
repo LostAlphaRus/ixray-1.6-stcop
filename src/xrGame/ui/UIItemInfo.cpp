@@ -52,6 +52,8 @@ CUIItemInfo::CUIItemInfo()
 	UIBackpackParams			= nullptr;
 	UIName						= nullptr;
 	UIBackground				= nullptr;
+	UICondition					= nullptr;
+	UICondProgresBar			= nullptr;
 	m_pInvItem					= nullptr;
 	m_b_FitToHeight				= false;
 	m_complex_desc				= false;
@@ -124,6 +126,20 @@ bool CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 		AttachChild				(UICost);
 		UICost->SetAutoDelete	(true);
 		xml_init.InitTextWnd		(uiXml, "static_cost", 0,			UICost);
+	}
+	
+	if(uiXml.NavigateToNode("static_condition",0)) // for SoC
+	{
+		UICondition					= new CUIStatic();	 
+		AttachChild					(UICondition);
+		UICondition->SetAutoDelete	(true);
+		xml_init.InitStatic			(uiXml, "static_condition", 0,		UICondition);
+	}
+	
+	if(uiXml.NavigateToNode("condition_progress",0))
+	{
+		UICondProgresBar			= new CUIProgressBar(); AttachChild(UICondProgresBar);UICondProgresBar->SetAutoDelete(true);
+		xml_init.InitProgressBar	(uiXml, "condition_progress", 0, UICondProgresBar);
 	}
 
 	if(uiXml.NavigateToNode("static_no_trade",0))
@@ -278,7 +294,14 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 			UICost->Show(false);
 		}
 	}
-	
+
+	if (UICondProgresBar)
+	{
+		float cond = pInvItem->GetConditionToShow();
+		UICondProgresBar->Show(true);
+		UICondProgresBar->SetProgressPos(cond * 100.0f + 1.0f - EPS);
+	}
+
 	if ( UITradeTip && IsGameTypeSingleCompatible())
 	{
 		pos.y = UITradeTip->GetWndPos().y;

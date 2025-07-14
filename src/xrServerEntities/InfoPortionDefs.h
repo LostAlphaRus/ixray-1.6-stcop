@@ -1,14 +1,15 @@
 #pragma once
 
 #include "alife_space.h"
+#include "../xrCore/object_interfaces.h"
 
-struct INFO_DATA
+struct INFO_DATA : public IPureSerializeObject<IReader, IWriter>
 {
     INFO_DATA() :info_id(nullptr), receive_time(0) {};
     INFO_DATA(shared_str id, ALife::_TIME_ID time) : info_id(id), receive_time(time) {};
 
-    void load(IReader& stream);
-    void save(IWriter&);
+	virtual void		load			(IReader& stream);
+	virtual void		save			(IWriter&);
 
     shared_str info_id;
     //время получения нужно порции информации
