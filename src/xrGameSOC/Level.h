@@ -308,8 +308,6 @@ public:
 	
 	//возвращает время в милисекундах относительно начала игры
 	ALife::_TIME_ID		GetGameTime				();
-	//возвращает время для энвайронмента в милисекундах относительно начала игры
-	ALife::_TIME_ID		GetEnvironmentGameTime	();
 	//игровое время в отформатированном виде
 	void				GetGameDateTime			(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs);
 
@@ -327,6 +325,7 @@ public:
 	virtual float		GetEnvironmentTimeFactor() const override;
 	virtual void		SetEnvironmentTimeFactor(const float fTimeFactor) override;
     virtual void        SetEnvironmentGameTimeFactor(u64 const &GameTime, float const &fTimeFactor) override;
+	//возвращает время для энвайронмента в милисекундах относительно начала игры
 	virtual u64			GetEnvironmentGameTime() const override;
 
 protected:

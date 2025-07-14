@@ -101,6 +101,9 @@ BOOL CLevel::Load_GameSpecific_After()
 	}
 		
 	BlockCheatLoad();
+
+	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+
 	return TRUE;
 }
 

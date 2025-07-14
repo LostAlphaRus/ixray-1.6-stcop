@@ -11,7 +11,7 @@ class CTextureDescrMngr
 	struct texture_assoc
 	{
 		shared_str			detail_name;
-		//R_constant_setup*	cs;
+		R_constant_setup*	cs;
 		u8					usage;
         texture_assoc       () : /*cs(NULL),*/ usage(0) {}
 		~texture_assoc		() { /*xr_delete(cs);*/ }
@@ -27,7 +27,10 @@ class CTextureDescrMngr
 	struct texture_desc{
 		texture_assoc*		m_assoc;
 		texture_spec*		m_spec;
-        texture_desc            ():m_assoc(NULL),m_spec(NULL){}
+#ifdef _EDITOR
+		STextureParams::ETType	m_type;
+#endif
+		texture_desc            ():m_assoc(NULL),m_spec(NULL){}
 	};
 
 	using map_TD = xr_map<shared_str, texture_desc>;
@@ -40,6 +43,7 @@ class CTextureDescrMngr
 	map_CS									m_detail_scalers;
 
 	void		LoadTHM		(LPCSTR initial);
+	void		LoadLTX		();
 
 public:
 				~CTextureDescrMngr();
