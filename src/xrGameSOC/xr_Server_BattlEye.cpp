@@ -56,7 +56,7 @@ BattlEyeServer::BattlEyeServer( xrServer* Server )
 	}
 
 	string64 game_version;
-	strcpy_s( game_version, GAME_VERSION );
+	strcpy_s( game_version, GAME_VERSION_SOC);
 
 	m_succefull = Init(
 		game_version,

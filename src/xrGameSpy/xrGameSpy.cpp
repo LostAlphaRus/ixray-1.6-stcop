@@ -51,8 +51,12 @@ const char* GetGameVersion	()
 	{
 		return GAME_VERSION;
 	};*/
-//	return KeyValue;	
-	return GAME_VERSION;
+//	return KeyValue;
+    // Romann:
+    // Здесь поставить условие под соответствующую версию игры,
+    // Когда будет готова система запуска движка в режимах ТЧ/ЧН/ЗП
+    // return GAME_VERSION; // cop
+    return GAME_VERSION_SOC;
 }
 
 XRGAMESPY_API const char* xrGS_GetGameVersion	()
