@@ -221,8 +221,10 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	if (visual) {
 		cNameVisual_set				(visual_name(E));
 		if (visual->flags.test(CSE_Visual::flObstacle)) {
-			ISpatial				*self = smart_cast<ISpatial*>(this);
-			self->spatial.type		|=	STYPE_OBSTACLE;
+			//хуйня какая-то
+			//ISpatial				*self = smart_cast<ISpatial*>(this);
+			//self->spatial.type		|=	STYPE_OBSTACLE;
+			SpatialComponent->spatial.type |= STYPE_OBSTACLE;
 		}
 	}
 
