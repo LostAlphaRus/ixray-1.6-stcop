@@ -28,7 +28,7 @@
 #include "map_manager.h"
 #include "map_location.h"
 #include "physics_world_scripted.h"
-
+#include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_time_manager.h"
 
@@ -569,6 +569,34 @@ void g_change_community_goodwill(LPCSTR _community, int _entity_id, int val)
 	 CHARACTER_COMMUNITY	c;
 	 c.set					(_community);
 	RELATION_REGISTRY().ChangeCommunityGoodwill(c.index(), u16(_entity_id), val);
+}
+
+void RefreshNamesNPC()
+{
+	for (auto& [id, pointer] : ai().alife().objects().objects())
+	{
+		auto trader = pointer->cast_trader_abstract();
+		if (trader == nullptr)
+		{
+			continue;
+		}
+
+		trader->m_character_name = TranslateName(trader->m_character_name_raw.c_str());
+		if (g_pGameLevel == nullptr)
+		{
+			continue;
+		}
+
+		const auto obj = g_pGameLevel->Objects.net_Find(id);
+		if (obj != nullptr)
+		{
+			CInventoryOwner* owner = obj->cast_inventory_owner();
+			if (owner)
+			{
+				owner->RefreshNamesNPC();
+			}
+		}
+	}
 }
 
 #pragma optimize("s",on)

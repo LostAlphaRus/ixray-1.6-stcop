@@ -11,6 +11,8 @@
 #include "character_info.h"
 #include "inventory_space.h"
 
+extern xr_string TranslateName(LPCSTR nameStr);
+
 class CSE_Abstract;
 class CInventory;
 class CInventoryItem;
@@ -49,6 +51,7 @@ public:
 	//serialization
 	virtual void	save						(NET_Packet &output_packet);
 	virtual void	load						(IReader &input_packet);
+	void	RefreshNamesNPC();
 
 	
 	//обновление
@@ -58,6 +61,10 @@ public:
 
 	CPda* GetPDA		() const;
 
+	void ChangeName(LPCSTR name) {
+		m_game_name_str = name;
+		m_game_name = TranslateName(name);
+	}
 
 	// инвентарь
 	CInventory	*m_inventory;			
@@ -158,6 +165,7 @@ public:
 protected:
 	CCharacterInfo*			m_pCharacterInfo;
 	xr_string				m_game_name;
+	xr_string				m_game_name_str;
 
 public:
 	virtual void			renderable_Render		();

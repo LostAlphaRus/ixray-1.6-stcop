@@ -137,6 +137,7 @@ BOOL CInventoryOwner::net_Spawn		(CSE_Abstract* DC)
 			dialog_manager->SetStartDialog(CharacterInfo().StartDialog());
 			dialog_manager->SetDefaultStartDialog(CharacterInfo().StartDialog());
 		}
+		m_game_name_str		= pTrader->m_character_name_raw;
 		m_game_name			= pTrader->m_character_name;
 	}
 	else
@@ -171,7 +172,7 @@ void	CInventoryOwner::save	(NET_Packet &output_packet)
 		output_packet.w_u8((u8)inventory().GetActiveSlot());
 
 	CharacterInfo().save(output_packet);
-	save_data	(m_game_name, output_packet);
+	save_data	(m_game_name_str, output_packet);
 	save_data	(m_money,	output_packet);
 }
 void	CInventoryOwner::load	(IReader &input_packet)
@@ -185,8 +186,10 @@ void	CInventoryOwner::load	(IReader &input_packet)
 	m_tmp_active_slot_num		 = active_slot;
 
 	CharacterInfo().load(input_packet);
-	load_data		(m_game_name, input_packet);
+	load_data		(m_game_name_str, input_packet);
 	load_data		(m_money,	input_packet);
+	if (g_actor != nullptr && this->object_id() != Actor()->object_id())
+		m_game_name = TranslateName(m_game_name_str.c_str());
 }
 
 
@@ -555,4 +558,9 @@ float CInventoryOwner::missile_throw_force		()
 bool CInventoryOwner::use_throw_randomness		()
 {
 	return						(true);
+}
+
+void CInventoryOwner::RefreshNamesNPC()
+{
+	m_game_name = TranslateName(m_game_name_str.c_str());
 }

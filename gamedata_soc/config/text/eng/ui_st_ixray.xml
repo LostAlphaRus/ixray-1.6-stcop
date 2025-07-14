@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
     <string id="st_ixray_title">
-        <text>S.T.A.L.K.E.R.: Тень Чернобыля</text>
+        <text>S.T.A.L.K.E.R.: Shadow of Chernobyl</text>
     </string>
     <string id="st_discord_menu">
-        <text>Главное меню</text>
+        <text>Main menu</text>
     </string>
     <string id="st_discord_level">
-        <text>Уровень:</text>
+        <text>Level:</text>
     </string>
     <string id="quicksave">
-        <text>быстрое сохранение</text>
+        <text>quick save</text>
     </string>
     <string id="autosave">
-        <text>автоматическое сохранение</text>
+        <text>auto save</text>
     </string>
-
     <string id="ui_mm_r_actor_shadow">
-        <text>Тень от протагониста</text>
+        <text>Protagonist Shadow</text>
     </string>
     <string id="ui_mm_r2_details_shadows">
-        <text>Тень от травы</text>
+        <text>Grass Shadows</text>
     </string>
     <string id="ui_mm_r4_hud_shadows">
-        <text>Тени на руках</text>
+        <text>Hud Shadows</text>
     </string>
     <string id="ui_mm_r2_cloud_shadows">
-        <text>Тени от облаков</text>
+        <text>Cloud Shadows</text>
     </string>
     <string id="ui_mm_vid_scale">
-        <text>Масштаб визуализации</text>
+        <text>Rendering Scale</text>
     </string>
     <string id="fxaa">
         <text>FXAA</text>
@@ -41,13 +40,13 @@
         <text>TAA</text>
     </string>
     <string id="ui_mm_r_scale_mode">
-        <text>Масштабирование</text>
+        <text>Scaling</text>
     </string>
     <string id="st_filter_linear">
-        <text>Стандарное (Линейное)</text>
+        <text>Standard (Linear)</text>
     </string>
     <string id="st_filter_point">
-        <text>Целочисленное</text>
+        <text>Point</text>
     </string>
     <string id="st_filter_dlss">
         <text>DLSS</text>
@@ -55,15 +54,14 @@
     <string id="st_filter_fsr">
         <text>FSR2</text>
     </string>
-
     <string id="st_freemp">
-        <text>Свободный</text>
+        <text>Freeplay</text>
     </string>
     <string id="ui_mm_mt_tex_load">
-        <text>Многопот. загрузка текстур</text>
+        <text>Multithreaded Texture Loading</text>
     </string>
     <string id="ui_mm_r__smap_size">
-        <text>Карта теней</text>
+        <text>Shadow Map</text>
     </string>
     <string id="1024">
         <text>1024x1024</text>
@@ -81,118 +79,115 @@
         <text>Always Active</text>
     </string>
     <string id="car_trunk_use">
-        <text>Открыть багажник ($$ACTION_USE$$)</text>
+        <text>Open trunk ($$ACTION_USE$$)</text>
     </string>
     <string id="car_use">
-        <text>Использовать ($$ACTION_USE$$)</text>
+        <text>Use ($$ACTION_USE$$)</text>
     </string>
     <string id="st_m">
-        <text>м</text>
+        <text>m</text>
     </string>
     <string id="ui_inv_dist">
-        <text>Дистанция удара</text>
+        <text>Hit Distance</text>
     </string>
     <string id="ui_mm_dof_reload">
-        <text>DoF при перезарядке</text>
+        <text>DoF on Reload</text>
     </string>
     <string id="ui_mm_dof_talk">
-        <text>DoF при диалоге</text>
+        <text>DoF on Talk</text>
     </string>
     <string id="ui_rs_fps_show">
-        <text>Счетчик фпс</text>
+        <text>FPS Counter</text>
     </string>
     <string id="ui_mm_cas_sharpening">
-        <text>Резкость</text>
+        <text>Sharpness</text>
     </string>
     <string id="ui_mm_hashed_alpha_test">
-        <text>Фильтр. прозрачности</text>
+        <text>Alpha Testing</text>
     </string>
     <string id="ui_mm_gtao">
         <text>GTAO</text>
     </string>
     <string id="ui_mm_vignette">
-        <text>Виньетка</text>
+        <text>Vignette</text>
     </string>
     <string id="ui_mm_aberration">
-        <text>Хромат. аберрация</text>
+        <text>Chromatic aberr.</text>
     </string>
     <string id="ui_mm_sslr_water">
-        <text>Отражения на воде</text>
+        <text>Water refl.</text>
     </string>
     <string id="ui_mm_r_scale_preset">
-        <text>Качество масштаб.</text>
+        <text>Scaling Quality</text>
     </string>
     <string id="st_scale_native">
-        <text>Сглаживание</text>
+        <text>Anti-Aliasing</text>
     </string>
     <string id="st_scale_quality">
-        <text>Качество</text>
+        <text>Quality</text>
     </string>
     <string id="st_scale_balanced">
-        <text>Сбалансированное</text>
+        <text>Balanced</text>
     </string>
     <string id="st_scale_performance">
-        <text>Производительность</text>
+        <text>Performance</text>
     </string>
     <string id="st_scale_ultraperformance">
-        <text>Ультрапроизводительность</text>
+        <text>Ultra Performance</text>
     </string>
     <string id="st_scale_custom">
-        <text>Пользовательское</text>
+        <text>Custom</text>
     </string>
     <string id="st_common_settings">
-        <text>Общие настройки</text>
+        <text>General Settings</text>
     </string>
     <string id="st_surface_options">
-        <text>Настройки поверхностей</text>
+        <text>Surface Settings</text>
     </string>
     <string id="st_aa_options">
-        <text>Настройки сглаживания и масштабирования</text>
+        <text>Anti-Aliasing and Scaling Settings</text>
     </string>
     <string id="st_lights_options">
-        <text>Настройки освещения</text>
+        <text>Lighting Settings</text>
     </string>
     <string id="st_sunlight_options">
-        <text>Настройки солнечного света</text>
+        <text>Sunlight Settings</text>
     </string>
     <string id="st_effects_options">
-        <text>Эффекты</text>
+        <text>Effects</text>
     </string>
     <string id="st_postprocess_options">
-        <text>Постобработка</text>
+        <text>Postprocessing</text>
     </string>
     <string id="ui_mm_saturation">
-        <text>Насыщенность</text>
+        <text>Saturation</text>
     </string>
     <string id="st_take_to">
-        <text>взять</text>
+        <text>take</text>
     </string>
     <string id="st_take_all">
-        <text>взять все</text>
+        <text>take all</text>
     </string>
     <string id="ui_st_put_all">
-        <text>Сложить все</text>
+        <text>Stash all</text>
     </string>
     <string id="ui_st_put_all_hint">
-        <text>Переместить все вещи</text>
+        <text>Stash all items</text>
     </string>
     <string id="st_move_to">
-        <text>переместить</text>
+        <text>move</text>
     </string>
     <string id="st_move_all">
-        <text>переместить всё</text>
+        <text>move all</text>
     </string>
     <string id="renderer_r4_dx10">
-        <text>Ул. полное освещение (DX10)</text>
+        <text>Enhanced full dyn. lighting (DX10)</text>
     </string>
     <string id="Ultra">
-        <text>ультра</text>
+        <text>ultra</text>
     </string>
     <string id="st_proc">
         <text>%</text>
-    </string>
-    <string id="st_parse">
-        <text>разобрать</text>
     </string>
     <string id="WP_BINOC">
         <text>Binocular</text>
@@ -341,17 +336,9 @@
     <string id="SO_HLAMP">
         <text>Hanging lamp</text>
     </string>
-    <string id="ui_mm_lights_details">
-        <text>Расширенные тени травы</text>
-    </string>
-    <string id="ui_mm_puddles">
-        <text>Объёмные лужи</text>
-    </string>
-    <string id="ui_mm_grass_distance">
-        <text>Дальность видимости травы</text>
-    </string>
+
     <string id="ui_mm_screenshot_format">
-        <text>Формат скриншотов</text>
+        <text>Screenshot format</text>
     </string>
     <string id="ss_jpg">
         <text>.jpg</text>
@@ -363,21 +350,15 @@
         <text>.png</text>
     </string>
 	<string id="ui_mm_lang">
-		<text>Язык</text>
+		<text>Language</text>
 	</string>
     <string id="rus">
-		<text>Русский</text>
+		<text>Russian</text>
 	</string>
 	<string id="eng">
 		<text>English</text>
 	</string>
 	<string id="ui_inv_max_weight">
-		<text>макс.</text>
-	</string>
-	<string id="st_track_opt_off">
-		<text>выкл.</text>
-	</string>
-	<string id="st_track_opt_on">
-		<text>вкл.</text>
+		<text>max</text>
 	</string>
 </string_table>

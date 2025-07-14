@@ -18,6 +18,8 @@ class CALifeMonsterBrain;
 class CALifeHumanBrain;
 class CALifeOnlineOfflineGroupBrain;
 
+xr_string TranslateName(LPCSTR nameStr);
+
 #pragma warning(push)
 #pragma warning(disable:4005)
 
@@ -45,7 +47,8 @@ SERVER_ENTITY_DECLARE_BEGIN0(CSE_ALifeTraderAbstract)
 	CHARACTER_REPUTATION_VALUE		m_reputation;
 	CHARACTER_RANK_VALUE			m_rank;
 	xr_string						m_character_name;
-		
+	xr_string						m_character_name_raw;
+
 #ifdef XRGAME_EXPORTS
 	//для работы с relation system
 	u16								object_id				() const;
