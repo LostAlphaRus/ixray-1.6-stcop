@@ -22,7 +22,7 @@ public:
 	CGameSpy_Browser*	GetGameSpyBrowser	() const { return m_pGS_SB; };
 
 	void		Update			();
-	const char*	GetGameVersion	();
+	const char*	GetGameVersion	(int PlatformID);
 	
 	void		CoreThink		(gsi_time theMs)	{ xrGS_gsCoreThink(theMs);	};
 private:
@@ -33,7 +33,7 @@ private:
 
 	void		CoreInitialize	()					{ xrGS_gsCoreInitialize();	};
 	void		CoreShutdown	()					{ xrGS_gsCoreShutdown();	};
-	GAMESPY_FN_VAR_DECL(const char*, GetGameVersion,());
+	GAMESPY_FN_VAR_DECL(const char*, GetGameVersion,(int PlatformID));
 	
 	GAMESPY_FN_VAR_DECL(void,	gsCoreInitialize,	());
 	GAMESPY_FN_VAR_DECL(void,	gsCoreThink,		(gsi_time theMs));

@@ -69,7 +69,7 @@ void CGameSpy_Full::Update()
 	CoreThink			(15);
 };
 
-const char* CGameSpy_Full::GetGameVersion()
+const char* CGameSpy_Full::GetGameVersion(int PlatformID)
 {
-	return xrGS_GetGameVersion();
+	return xrGS_GetGameVersion(PlatformID);
 };
