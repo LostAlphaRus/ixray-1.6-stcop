@@ -2,6 +2,7 @@
 
 #include "control_combase.h"
 #include "../../../include/xrRender/KinematicsAnimated.h"
+#include "../../../include/xrRender/rendervisual.h"
 
 struct SAnimationPart {
 	MotionID		motion;
@@ -101,7 +102,7 @@ public:
 // get motion time, when just MotionID available
 IC float CControlAnimation::motion_time(MotionID motion_id, IRenderVisual *visual)
 {
-	IKinematicsAnimated	*skeleton_animated	= smart_cast<IKinematicsAnimated*>(visual);
+	IKinematicsAnimated	*skeleton_animated	= visual->dcast_PKinematicsAnimated();
 	VERIFY				(skeleton_animated);
 	CMotionDef			*motion_def			= skeleton_animated->LL_GetMotionDef(motion_id);
 	VERIFY				(motion_def);

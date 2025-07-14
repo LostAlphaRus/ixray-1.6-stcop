@@ -103,7 +103,7 @@ void CPHObject::Collide()
 				qResultVec& result=ph_world->r_spatial;
 				qResultIt i=result.begin(),e=result.end();
 				for(;i!=e;++i)	{
-					CPHObject* obj2=smart_cast<CPHObject*>(*i);
+					CPHObject* obj2= (*i)->dcast_CPHObject();
 					if(obj2==this || !obj2->m_flags.test(st_dirty))		continue;
 					dGeomID	motion_ray=ph_world->GetMotionRayGeom();
 					dGeomRayMotionSetGeom(motion_ray,I.dGeom());
@@ -123,7 +123,7 @@ void	CPHObject::		CollideDynamics					()
 	qResultVec& result=ph_world->r_spatial	;
 	qResultIt i=result.begin(),e=result.end();
 	for(;i!=e;++i)	{
-		CPHObject* obj2=smart_cast<CPHObject*>(*i);
+		CPHObject* obj2= (*i)->dcast_CPHObject();
 		if(obj2==this || !obj2->m_flags.test(st_dirty))		continue;
 		if(CPHCollideValidator::DoCollide(*this,*obj2)) NearCallback(this,obj2,dSpacedGeom(),obj2->dSpacedGeom());
 	}
@@ -135,7 +135,7 @@ void	CPHObject::reinit_single()
 	qResultIt i=result.begin(),e=result.end();
 	for(;i!=e;++i)	
 	{
-		CPHObject* obj= smart_cast<CPHObject*>(*i);
+		CPHObject* obj= (*i)->dcast_CPHObject();
 		obj->IslandReinit();
 	}
 	dJointGroupEmpty(ContactGroup);

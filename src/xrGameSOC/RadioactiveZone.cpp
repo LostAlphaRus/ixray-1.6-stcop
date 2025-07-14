@@ -7,7 +7,7 @@
 #include "clsid_game.h"
 #include "game_base_space.h"
 #include "Hit.h"
-
+#include "../xrEngine/xr_collide_form.h"
 
 CRadioactiveZone::CRadioactiveZone(void) 
 {}
@@ -29,7 +29,7 @@ bool  CRadioactiveZone::BlowoutState	()
 
 void CRadioactiveZone::Affect(SZoneObjectInfo* O) 
 {
-	// вермя срабатывания не чаще, чем заданный период
+	// РІРµСЂРјСЏ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ РЅРµ С‡Р°С‰Рµ, С‡РµРј Р·Р°РґР°РЅРЅС‹Р№ РїРµСЂРёРѕРґ
 	if(m_dwDeltaTime < m_dwPeriod) return;
 //.	m_dwDeltaTime = 0;
 	

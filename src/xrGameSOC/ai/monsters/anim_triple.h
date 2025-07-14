@@ -1,7 +1,7 @@
 #pragma once
 
 #include "control_combase.h"
-#include "../../../include/xrRender/Kinematics.h"
+#include "../../../include/xrRender/KinematicsAnimated.h"
 
 enum EStateAnimTriple {
 	eStatePrepare,

@@ -119,6 +119,7 @@ IC			_flags<CLClassBits>&		collide_class_bits	()										{return m_collide_clas
 IC			const CLBits&				collide_bits		()const 								{return m_collide_bits;}
 IC			const _flags<CLClassBits>&	collide_class_bits 	()const 								{return m_collide_class_bits;}
 			void			CollideDynamics					()										;
+			virtual CPHObject* dcast_CPHObject() override { return this; }
 };
 
 

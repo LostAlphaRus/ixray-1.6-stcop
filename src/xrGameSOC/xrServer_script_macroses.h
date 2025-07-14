@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "script_export_macroses.h"
+#include "../xrScripts/script_export_macroses.h"
 #include "../Editors/Public/xrEProps.h"
 #include "../xrCore/net_utils.h"
 #include "ai_space.h"
