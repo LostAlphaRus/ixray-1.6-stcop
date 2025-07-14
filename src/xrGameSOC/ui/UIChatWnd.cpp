@@ -11,7 +11,7 @@
 CUIChatWnd::CUIChatWnd(CUIGameLog *pList)
 	:	pUILogList				(pList),
 		sendNextMessageToTeam	(false),
-		pOwner					(NULL)
+		pOwner					(nullptr)
 {
 	R_ASSERT(pUILogList);
 }

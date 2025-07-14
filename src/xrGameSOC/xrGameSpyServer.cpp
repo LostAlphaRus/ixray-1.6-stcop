@@ -58,17 +58,17 @@ xrGameSpyServer::EConnect xrGameSpyServer::Connect(shared_str &session_name)
 	EConnect res = inherited::Connect(session_name);
 	if (res!=ErrNoError) return res;
 
-	if ( 0 == *(game->get_option_s		(*session_name,"hname",NULL)))
+	if ( 0 == *(game->get_option_s		(*session_name,"hname",nullptr)))
 	{
 		string1024	CompName;
 		DWORD		CompNameSize = 1024;
 		if (GetComputerNameA(CompName, &CompNameSize)) HostName._set(CompName);
 	}
 	else
-		HostName._set(game->get_option_s		(*session_name,"hname",NULL));
+		HostName._set(game->get_option_s		(*session_name,"hname",nullptr));
 	
-	if (0 != *(game->get_option_s		(*session_name,"psw",NULL)))
-		Password._set(game->get_option_s		(*session_name,"psw",NULL));
+	if (0 != *(game->get_option_s		(*session_name,"psw",nullptr)))
+		Password._set(game->get_option_s		(*session_name,"psw",nullptr));
 
 	string4096	tMapName = "";
 	const char* SName = *session_name;
@@ -111,7 +111,7 @@ void			xrGameSpyServer::Update				()
 
 	if (m_bQR2_Initialized)
 	{
-		m_QR2.Think(NULL);
+		m_QR2.Think(nullptr);
 	};
 
 	if (m_bCDKey_Initialized)
@@ -204,7 +204,7 @@ bool xrGameSpyServer::Check_ServerAccess( IClient* CL, string512& reason )
 
 	string_path		fn;
 	FS.update_path( fn, "$app_data_root$", "server_users.ltx" );
-	if( FS.exist(fn) == NULL )
+	if( FS.exist(fn) == nullptr )
 	{
 		strcpy_s( reason, "Access denied by server. " );
 		return false;
@@ -223,7 +223,7 @@ bool xrGameSpyServer::Check_ServerAccess( IClient* CL, string512& reason )
 		return false;
 	}
 	
-	if( CL != NULL && inif.line_exist( "users", CL->name ) )
+	if( CL != nullptr && inif.line_exist( "users", CL->name ) )
 	{
 		if( game->NewPlayerName_Exists( CL, CL->name.c_str() ) )
 		{

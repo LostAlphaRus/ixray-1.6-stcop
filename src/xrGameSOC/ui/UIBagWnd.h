@@ -15,7 +15,7 @@ class CUITabButtonMP;
 #define SET_EXTERNAL_COLOR(x)		x->SetTextureColor(0xff9696ff)
 
 #define HIGHTLIGHT_ITEM(x)			x->SetColorAnimation("ui_slow_blinking", LA_CYCLIC|LA_ONLYALPHA|LA_TEXTURECOLOR)
-#define UNHIGHTLIGHT_ITEM(x)		x->SetColorAnimation(NULL, LA_CYCLIC|LA_ONLYALPHA|LA_TEXTURECOLOR); \
+#define UNHIGHTLIGHT_ITEM(x)		x->SetColorAnimation(nullptr, LA_CYCLIC|LA_ONLYALPHA|LA_TEXTURECOLOR); \
 									x->SetTextureColor(0xffffffff)
 
 

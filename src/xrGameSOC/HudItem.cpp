@@ -20,7 +20,7 @@
 ENGINE_API extern float psHUD_FOV_def;
 CHudItem::CHudItem(void)
 {
-	m_pHUD				= NULL;
+	m_pHUD				= nullptr;
 	SetHUDmode			(FALSE);
 	m_dwStateTime		= 0;
 	m_bRenderHud		= true;
@@ -65,7 +65,7 @@ void CHudItem::Load(LPCSTR section)
 
 		m_fHudFov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
 	}else{
-		m_pHUD = NULL;
+		m_pHUD = nullptr;
 		//если hud не задан, но задан слот, то ошибка
 		R_ASSERT2(item().GetSlot() == NO_ACTIVE_SLOT, "active slot is set, but hud for food item is not available");
 	}

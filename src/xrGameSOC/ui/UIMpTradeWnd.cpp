@@ -161,7 +161,7 @@ void CUIMpTradeWnd::UpdateShop()
 		m_root_tab_control->ResetTab	();
 
 	Msg									("current level=[%s]",m_store_hierarchy->CurrentLevel().m_name.c_str());
-	SetCurrentItem						(NULL);
+	SetCurrentItem						(nullptr);
 	if(m_store_hierarchy->CurrentIsRoot())	return;
 
 	if(m_store_hierarchy->CurrentLevel().HasSubLevels())
@@ -215,7 +215,7 @@ void CUIMpTradeWnd::Show(bool status)
 	inherited::Show			(status);
 	if (status)
 	{
-		m_pMouseCapturer = NULL;
+		m_pMouseCapturer = nullptr;
 
 
 		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());

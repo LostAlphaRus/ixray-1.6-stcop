@@ -137,7 +137,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 		}
 	};
 	
-	xr_vector<CCartridge>* pM = NULL;
+	xr_vector<CCartridge>* pM = nullptr;
 	bool b_if_grenade_mode	= (m_bGrenadeMode && iAmmoElapsed && !getRocketCount());
 	if(b_if_grenade_mode)
 		pM = &m_magazine;
@@ -281,7 +281,7 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
 		if(H_Parent())
 		{ 
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-			if(NULL == io->inventory().ActiveItem())
+			if(nullptr == io->inventory().ActiveItem())
 			{
 			Msg("current_state %s", GetState() );
 			Msg("next_state %s", GetNextState());
@@ -336,7 +336,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
 
 		if (E){
 			CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
-			if(NULL == io->inventory().ActiveItem())
+			if(nullptr == io->inventory().ActiveItem())
 			{
 			Msg("current_state %s", GetState() );
 			Msg("next_state %s", GetNextState());
@@ -650,16 +650,16 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 		if(m_bGrenadeMode)
 		{
 			if(IsZoomed())
-				m_pHUD->animPlay(random_anim(mhud_idle_g_aim), FALSE, NULL, GetState());
+				m_pHUD->animPlay(random_anim(mhud_idle_g_aim), FALSE, nullptr, GetState());
 			else
-				m_pHUD->animPlay(random_anim(mhud_idle_g), FALSE, NULL, GetState());
+				m_pHUD->animPlay(random_anim(mhud_idle_g), FALSE, nullptr, GetState());
 		}
 		else
 		{
 			if(IsZoomed())
-				m_pHUD->animPlay(random_anim(mhud_idle_w_gl_aim), TRUE, NULL, GetState());
+				m_pHUD->animPlay(random_anim(mhud_idle_w_gl_aim), TRUE, nullptr, GetState());
 			else
-				m_pHUD->animPlay(random_anim(mhud_idle_w_gl), TRUE, NULL, GetState());
+				m_pHUD->animPlay(random_anim(mhud_idle_w_gl), TRUE, nullptr, GetState());
 				
 		}
 	}

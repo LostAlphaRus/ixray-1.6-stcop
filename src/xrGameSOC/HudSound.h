@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// HudSound.h:		структура для работы со звуками применяемыми в 
-//					HUD-объектах (обычные звуки, но с доп. параметрами)
+// HudSound.h:		СЃС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ Р·РІСѓРєР°РјРё РїСЂРёРјРµРЅСЏРµРјС‹РјРё РІ 
+//					HUD-РѕР±СЉРµРєС‚Р°С… (РѕР±С‹С‡РЅС‹Рµ Р·РІСѓРєРё, РЅРѕ СЃ РґРѕРї. РїР°СЂР°РјРµС‚СЂР°РјРё)
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -8,17 +8,17 @@
 
 struct HUD_SOUND
 {
-	HUD_SOUND()		{ m_activeSnd=NULL; }
-	~HUD_SOUND()	{ m_activeSnd=NULL; }
+	HUD_SOUND()		{ m_activeSnd=nullptr; }
+	~HUD_SOUND()	{ m_activeSnd=nullptr; }
 
 	////////////////////////////////////
-	// работа со звуками
+	// СЂР°Р±РѕС‚Р° СЃРѕ Р·РІСѓРєР°РјРё
 	/////////////////////////////////////
 	static void		LoadSound		(	LPCSTR section, LPCSTR line,
 		ref_sound& hud_snd,
 		int type = sg_SourceType,
-		float* volume = NULL,
-		float* delay = NULL);
+		float* volume = nullptr,
+		float* delay = nullptr);
 
 	static void		LoadSound		(	LPCSTR section, LPCSTR line,
 		HUD_SOUND& hud_snd,  int type = sg_SourceType);
@@ -44,14 +44,14 @@ struct HUD_SOUND
 		if(m_activeSnd)	{ 
 			if (m_activeSnd->snd._feedback()&&!m_activeSnd->snd._feedback()->is_2D())	
 									m_activeSnd->snd.set_position	(pos);
-			else					m_activeSnd	= NULL;
+			else					m_activeSnd	= nullptr;
 		}
 	}
 
 	struct SSnd		{
 		ref_sound	snd;
-		float		delay;		//задержка перед проигрыванием
-		float		volume;		//громкость
+		float		delay;		//Р·Р°РґРµСЂР¶РєР° РїРµСЂРµРґ РїСЂРѕРёРіСЂС‹РІР°РЅРёРµРј
+		float		volume;		//РіСЂРѕРјРєРѕСЃС‚СЊ
 	};
 	SSnd*			m_activeSnd;
 	xr_vector<SSnd> sounds;

@@ -54,7 +54,7 @@ bool	CLevel::net_start_client2				()
 bool	CLevel::net_start_client3				()
 {
 	if(connected_to_server){
-		LPCSTR					level_name = NULL;
+		LPCSTR					level_name = nullptr;
 		if(psNET_direct_connect)
 		{
 			level_name	= ai().get_alife() ? *name() : Server->level_name( Server->GetConnectOptions() ).c_str();

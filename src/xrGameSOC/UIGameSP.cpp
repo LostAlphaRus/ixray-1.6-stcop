@@ -20,7 +20,7 @@
 
 CUIGameSP::CUIGameSP()
 {
-	m_game			= NULL;
+	m_game			= nullptr;
 	
 	UICarBodyMenu	= new CUICarBodyWnd		();
 	UIChangeLevelWnd= new CChangeLevelWnd		();

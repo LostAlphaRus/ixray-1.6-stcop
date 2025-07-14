@@ -42,7 +42,7 @@ const shared_str game_cl_TeamDeathmatch::GetTeamMenu(s16 team)
 		NODEFAULT;
 	};
 #ifdef DEBUG
-	return NULL;
+	return nullptr;
 #endif// DEBUG
 }
 
@@ -52,7 +52,7 @@ game_cl_TeamDeathmatch::game_cl_TeamDeathmatch()
 	PresetItemsTeam2.clear();
 
 	m_bTeamSelected		= FALSE;
-	m_game_ui			= NULL;	
+	m_game_ui			= nullptr;	
 
 	m_bShowPlayersNames = false;
 	m_bFriendlyIndicators = false;
@@ -372,7 +372,7 @@ char*	game_cl_TeamDeathmatch::getTeamSection(int Team)
 			return (char*)"teamdeathmatch_team2";
 		}break;
 	default:
-		return NULL;
+		return nullptr;
 	};
 };
 

@@ -10,7 +10,7 @@
 #include "hudmanager.h"
 CWeaponBinoculars::CWeaponBinoculars() : CWeaponCustomPistol("BINOCULARS")
 {
-	m_binoc_vision	= NULL;
+	m_binoc_vision	= nullptr;
 	m_bVision		= false;
 }
 

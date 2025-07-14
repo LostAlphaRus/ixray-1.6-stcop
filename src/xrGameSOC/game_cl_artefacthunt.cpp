@@ -36,7 +36,7 @@
 
 game_cl_ArtefactHunt::game_cl_ArtefactHunt()
 {
-	m_game_ui = NULL;
+	m_game_ui = nullptr;
 		
 	m_bBuyEnabled	= FALSE;
 	//---------------------------------
@@ -216,7 +216,7 @@ void game_cl_ArtefactHunt::TranslateGameMessage	(u32 msg, NET_Packet& P)
 				Color_Artefact);
 			CommonMessageOut(Text);
 
-//			pMessageSounds[0].play_at_pos(NULL, Fvector().set(0,0,0), sm_2D, 0);
+//			pMessageSounds[0].play_at_pos(nullptr, Fvector().set(0,0,0), sm_2D, 0);
 			PlaySndMessage(ID_AF_LOST);
 		}break;
 	case GAME_EVENT_ARTEFACT_ONBASE: //ahunt
@@ -594,7 +594,7 @@ char*	game_cl_ArtefactHunt::getTeamSection(int Team)
 		NODEFAULT;
 	};
 #ifdef DEBUG
-	return NULL;
+	return nullptr;
 #endif
 };
 

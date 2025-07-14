@@ -560,7 +560,7 @@ void game_sv_ArtefactHunt::OnDetach(u16 eid_who, u16 eid_what)
 void game_sv_ArtefactHunt::OnObjectEnterTeamBase	(u16 id, u16 zone_team)
 {
 	CSE_Abstract*		e_who	= m_server->ID_to_entity(id);
-	if(e_who==NULL)		return;
+	if(e_who==nullptr)		return;
 
 	CSE_ALifeCreatureActor* eActor = smart_cast<CSE_ALifeCreatureActor*> (e_who);
 	if (eActor)
@@ -699,7 +699,7 @@ void game_sv_ArtefactHunt::SpawnArtefact()
 {
 //	if (OnClient()) return;
 
-	CSE_Abstract			*E = NULL;
+	CSE_Abstract			*E = nullptr;
 	if (pSettings->line_exist("artefacthunt_gamedata", "artefact"))
 		E	=	spawn_begin	(pSettings->r_string("artefacthunt_gamedata", "artefact"));
 	else

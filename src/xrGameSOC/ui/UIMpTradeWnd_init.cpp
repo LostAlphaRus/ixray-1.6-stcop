@@ -224,5 +224,5 @@ void CUIMpTradeWnd::Init(const shared_str& sectionName, const shared_str& sectio
 	m_item_mngr->Dump					();
 	SetRank								(0);
 	UpdateShop							();
-	SetCurrentItem						(NULL);
+	SetCurrentItem						(nullptr);
 }

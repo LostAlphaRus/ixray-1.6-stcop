@@ -371,9 +371,9 @@ void CUIMainIngameWnd::Update()
 	m_pActor = smart_cast<CActor*>(Level().CurrentViewEntity());
 	if (!m_pActor) 
 	{
-		m_pItem					= NULL;
-		m_pWeapon				= NULL;
-		m_pGrenade				= NULL;
+		m_pItem					= nullptr;
+		m_pWeapon				= nullptr;
+		m_pGrenade				= nullptr;
 		CUIWindow::Update		();
 		return;
 	}
@@ -407,7 +407,7 @@ void CUIMainIngameWnd::Update()
 		}
 		// ewiArtefact
 		if( (GameID() == GAME_ARTEFACTHUNT) && !(Device.dwFrame%30) ){
-			bool b_Artefact = (NULL != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
+			bool b_Artefact = (nullptr != m_pActor->inventory().ItemFromSlot(ARTEFACT_SLOT));
 			if(b_Artefact)
 				SetWarningIconColor	(ewiArtefact,0xffffffff);
 			else
@@ -507,7 +507,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 	bool flag = false;
 	if (g_bHudAdjustMode)
 	{
-		CWeaponHUD *pWpnHud = NULL;
+		CWeaponHUD *pWpnHud = nullptr;
 		if (m_pWeapon)
 		{
 			pWpnHud = m_pWeapon->GetHUD();
@@ -915,11 +915,11 @@ void CUIMainIngameWnd::RenderQuickInfos()
 	if (!m_pActor)
 		return;
 
-	static CGameObject *pObject			= NULL;
+	static CGameObject *pObject			= nullptr;
 	LPCSTR actor_action					= m_pActor->GetDefaultActionForObject();
-	UIStaticQuickHelp.Show				(NULL!=actor_action);
+	UIStaticQuickHelp.Show				(nullptr!=actor_action);
 
-	if(NULL!=actor_action){
+	if(nullptr!=actor_action){
 		if(_stricmp(actor_action,UIStaticQuickHelp.GetText()))
 			UIStaticQuickHelp.SetTextST				(actor_action);
 	}
@@ -1015,7 +1015,7 @@ void CUIMainIngameWnd::InitFlashingIcons(CUIXml* node)
 	int staticsCount = node->GetNodesNum("", 0, flashingIconNodeName);
 
 	CUIXmlInit xml_init;
-	CUIStatic *pIcon = NULL;
+	CUIStatic *pIcon = nullptr;
 	// Пробегаемся по всем нодам и инициализируем из них статики
 	for (int i = 0; i < staticsCount; ++i)
 	{
@@ -1146,7 +1146,7 @@ void CUIMainIngameWnd::UpdateActiveItemInfo()
 		UIWeaponIcon.Show			(false);
 		UIWeaponSignAmmo.Show		(false);
 		UIWeaponBack.SetText		("");
-		m_pWeapon					= NULL;
+		m_pWeapon					= nullptr;
 	}
 }
 
@@ -1157,11 +1157,11 @@ void CUIMainIngameWnd::OnConnected()
 
 void CUIMainIngameWnd::reset_ui()
 {
-	m_pActor						= NULL;
-	m_pWeapon						= NULL;
-	m_pGrenade						= NULL;
-	m_pItem							= NULL;
-	m_pPickUpItem					= NULL;
+	m_pActor						= nullptr;
+	m_pWeapon						= nullptr;
+	m_pGrenade						= nullptr;
+	m_pItem							= nullptr;
+	m_pPickUpItem					= nullptr;
 	UIMotionIcon.ResetVisibility	();
 }
 
@@ -1170,24 +1170,24 @@ void CUIMainIngameWnd::reset_ui()
 #include "d3dx9core.h"
 #include "winuser.h"
 #pragma comment(lib,"d3d9.lib")
-ID3DXFont*     g_pTestFont = NULL;
-ID3DXSprite*        g_pTextSprite = NULL;   // Sprite for batching draw text calls
+ID3DXFont*     g_pTestFont = nullptr;
+ID3DXSprite*        g_pTextSprite = nullptr;   // Sprite for batching draw text calls
 */
 
 /*
 #include "UIGameTutorial.h"
 #include "../actor_statistic_mgr.h"
-CUIGameTutorial* g_tut = NULL;
+CUIGameTutorial* g_tut = nullptr;
 */
 //#include "../postprocessanimator.h"
-//CPostprocessAnimator* pp = NULL;
+//CPostprocessAnimator* pp = nullptr;
 //extern void create_force_progress();
 
 //#include "UIVotingCategory.h"
 
-//CUIVotingCategory* v = NULL;
+//CUIVotingCategory* v = nullptr;
 #include "../../xrUI/Widgets/UIFrameWindow.h"
-CUIFrameWindow*		pUIFrame = NULL;
+CUIFrameWindow*		pUIFrame = nullptr;
 
 void test_update()
 {
@@ -1215,7 +1215,7 @@ void test_key	(int dik)
 	if(dik==SDL_SCANCODE_K){
 		if(g_pTestFont){
 			g_pTestFont->Release();
-			g_pTestFont = NULL;
+			g_pTestFont = nullptr;
 			
 			g_pTextSprite->Release();
 			return;
@@ -1326,7 +1326,7 @@ void CUIMainIngameWnd::draw_adjust_mode()
 
 		if(bCamFirstEye)
 		{
-			CWeaponHUD *pWpnHud = NULL;
+			CWeaponHUD *pWpnHud = nullptr;
 			pWpnHud = m_pWeapon->GetHUD();
 
 			Fvector FP,SP,FP2;

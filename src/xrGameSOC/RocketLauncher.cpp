@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// RocketLauncher.cpp:	èíòåðôåéñ äëÿ ñåìåéñòâà îáúåêòîâ 
-//						ñòðåëÿþùèõ ãðàíàòàìè è ðàêåòàìè
+// RocketLauncher.cpp:	Ð¸Ð½Ñ‚ÐµÑ€Ñ„ÐµÐ¹Ñ Ð´Ð»Ñ ÑÐµÐ¼ÐµÐ¹ÑÑ‚Ð²Ð° Ð¾Ð±ÑŠÐµÐºÑ‚Ð¾Ð² 
+//						ÑÑ‚Ñ€ÐµÐ»ÑÑŽÑ‰Ð¸Ñ… Ð³Ñ€Ð°Ð½Ð°Ñ‚Ð°Ð¼Ð¸ Ð¸ Ñ€Ð°ÐºÐµÑ‚Ð°Ð¼Ð¸
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -13,7 +13,7 @@
 
 CRocketLauncher::CRocketLauncher()
 {
-//	m_pRocket =  NULL;
+//	m_pRocket =  nullptr;
 }
 CRocketLauncher::~CRocketLauncher()
 {
@@ -25,7 +25,7 @@ void  CRocketLauncher::Load	(LPCSTR section)
 
 void CRocketLauncher::SpawnRocket(LPCSTR rocket_section, CGameObject* parent_rocket_launcher)
 {
-//	VERIFY(m_pRocket == NULL);
+//	VERIFY(m_pRocket == nullptr);
 	if (OnClient()) return;
 
 	CSE_Abstract*		D	= F_entity_Create(rocket_section);
@@ -80,14 +80,14 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 	if( It != m_rockets.end() )
 	{
 		(*It)->m_bLaunched	= bLaunch;
-		(*It)->H_SetParent	(NULL);
+		(*It)->H_SetParent	(nullptr);
 		m_rockets.erase		(It);
 	};
 
 	if( It_l != m_launched_rockets.end() )
 	{
 		(*It)->m_bLaunched			= bLaunch;
-		(*It_l)->H_SetParent		(NULL);
+		(*It_l)->H_SetParent		(nullptr);
 		m_launched_rockets.erase	(It_l);
 	}
 }
@@ -99,14 +99,14 @@ void CRocketLauncher::LaunchRocket(const Fmatrix& xform,
 								   const Fvector& vel, 
 								   const Fvector& angular_vel)
 {
-/*	VERIFY(m_pRocket != NULL);
+/*	VERIFY(m_pRocket != nullptr);
 	m_pRocket->SetLaunchParams(xform, vel, angular_vel);
-	m_pRocket->H_SetParent(NULL);
+	m_pRocket->H_SetParent(nullptr);
 */
 	VERIFY2(_valid(xform),"CRocketLauncher::LaunchRocket. Invalid xform argument!");
 	getCurrentRocket()->SetLaunchParams(xform, vel, angular_vel);
 //	Msg("---------Launched rocket [%d] frame [%d]",getCurrentRocket()->ID(), Device.dwFrame);
-//	getCurrentRocket()->H_SetParent(NULL);
+//	getCurrentRocket()->H_SetParent(nullptr);
 	m_launched_rockets.push_back( getCurrentRocket() );
 	//m_rockets.pop_back();
 }

@@ -184,7 +184,7 @@ virtual void ApplyDamage			(u16 level);
 		{
 			bone_id=BI_NONE;
 			car=acar;
-			joint=NULL;
+			joint=nullptr;
 			inited=false;
 		}
 	};
@@ -246,8 +246,8 @@ virtual void ApplyDamage			(u16 level);
 		{
 			bone_id=BI_NONE;
 			pcar=acar;
-			p_pgobject=NULL;
-			pelement=NULL;
+			p_pgobject=nullptr;
+			pelement=nullptr;
 		}
 		~SExhaust();
 	};
@@ -321,7 +321,7 @@ virtual void ApplyDamage(u16 level);
 		{
 			bone_id=BI_NONE;
 			pcar=acar;
-			joint=NULL;
+			joint=nullptr;
 			state=closed;
 			torque=500.f;
 			a_vel=M_PI;

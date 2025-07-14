@@ -42,9 +42,9 @@
 game_cl_mp::game_cl_mp()
 {
 	m_bVotingActive = false;
-	m_pVoteStartWindow = NULL;
-	m_pVoteRespondWindow = NULL;
-	m_pMessageBox = NULL;
+	m_pVoteStartWindow = nullptr;
+	m_pVoteRespondWindow = nullptr;
+	m_pMessageBox = nullptr;
 	
 	m_pSndMessages.clear();
 	LoadSndMessages();
@@ -88,7 +88,7 @@ CUIGameCustom*		game_cl_mp::createGameUI			()
 //	m_pSpeechMenu = new CUISpeechMenu("test_speech_section");
 	CurrentGameUI()->m_pMessagesWnd->SetChatOwner(this);
 		
-	return NULL;
+	return nullptr;
 };
 
 bool game_cl_mp::CanBeReady	()
@@ -696,7 +696,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 	KMS.m_victim.m_name = pPlayer->name;
 	KMS.m_victim.m_color = Color_Teams_u32[pPlayer->team];
 
-	KMS.m_killer.m_name = NULL;
+	KMS.m_killer.m_name = nullptr;
 	KMS.m_killer.m_color = color_rgba(255,255,255,255);
 
 	switch (KillType)
@@ -806,7 +806,7 @@ void game_cl_mp::OnPlayerKilled			(NET_Packet& P)
 			//suicide
 			if (KilledID == KillerID)
 			{
-				KMS.m_victim.m_name = NULL;
+				KMS.m_victim.m_name = nullptr;
 
 				KMS.m_ext_info.m_shader = GetKillEventIconsShader();
 				KMS.m_ext_info.m_rect.x1 = 32;

@@ -41,7 +41,7 @@ CUIGameAHunt::CUIGameAHunt()
 
 	CUIXmlInit::InitProgressShape	(uiXml, "reinforcement", 0, m_pReinforcementInidcator);			
 	//-------------------------------------------------------------
-	m_pBuySpawnMsgBox	= NULL;
+	m_pBuySpawnMsgBox	= nullptr;
 }
 //--------------------------------------------------------------------
 void CUIGameAHunt::SetClGame (game_cl_GameState* g)

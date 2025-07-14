@@ -32,10 +32,10 @@ private:
 
 	string1024	XML_NAME;
 public:
-	CUIStatsWnd(LPCSTR XML = NULL);
+	CUIStatsWnd(LPCSTR XML = nullptr);
 	virtual ~CUIStatsWnd();
 
-	virtual void Init(LPCSTR XML = NULL);
+	virtual void Init(LPCSTR XML = nullptr);
 //	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData);
 
 	// Добавить 1 элемент. Заполнить поля необходимо самостоятельно. Возвращает указатель 

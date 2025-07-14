@@ -15,25 +15,25 @@ struct SInfoPortionData : CSharedResource
 						SInfoPortionData ();
 	virtual				~SInfoPortionData ();
 
-	//массив с именами диалогов, которые могут быть инициированы
-	//из этого InfoPortion
+	//РјР°СЃСЃРёРІ СЃ РёРјРµРЅР°РјРё РґРёР°Р»РѕРіРѕРІ, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РёРЅРёС†РёРёСЂРѕРІР°РЅС‹
+	//РёР· СЌС‚РѕРіРѕ InfoPortion
 	DIALOG_ID_VECTOR	m_DialogNames;
 
-	//список статей в энциклопедии, которые становятся известными 
+	//СЃРїРёСЃРѕРє СЃС‚Р°С‚РµР№ РІ СЌРЅС†РёРєР»РѕРїРµРґРёРё, РєРѕС‚РѕСЂС‹Рµ СЃС‚Р°РЅРѕРІСЏС‚СЃСЏ РёР·РІРµСЃС‚РЅС‹РјРё 
 	ARTICLE_ID_VECTOR	m_Articles;
-	//список статей в энциклопедии, которые становятся неизвестными (на тот случай если
-	//нужно заменить одну статью другой)
+	//СЃРїРёСЃРѕРє СЃС‚Р°С‚РµР№ РІ СЌРЅС†РёРєР»РѕРїРµРґРёРё, РєРѕС‚РѕСЂС‹Рµ СЃС‚Р°РЅРѕРІСЏС‚СЃСЏ РЅРµРёР·РІРµСЃС‚РЅС‹РјРё (РЅР° С‚РѕС‚ СЃР»СѓС‡Р°Р№ РµСЃР»Рё
+	//РЅСѓР¶РЅРѕ Р·Р°РјРµРЅРёС‚СЊ РѕРґРЅСѓ СЃС‚Р°С‚СЊСЋ РґСЂСѓРіРѕР№)
 	ARTICLE_ID_VECTOR	m_ArticlesDisable;
     	
-	//присоединенные задания
+	//РїСЂРёСЃРѕРµРґРёРЅРµРЅРЅС‹Рµ Р·Р°РґР°РЅРёСЏ
 	TASK_ID_VECTOR		m_GameTasks;
 
-	//скриптовые действия, которые активируется после того как 
-	//информацию получает персонаж
+	//СЃРєСЂРёРїС‚РѕРІС‹Рµ РґРµР№СЃС‚РІРёСЏ, РєРѕС‚РѕСЂС‹Рµ Р°РєС‚РёРІРёСЂСѓРµС‚СЃСЏ РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє 
+	//РёРЅС„РѕСЂРјР°С†РёСЋ РїРѕР»СѓС‡Р°РµС‚ РїРµСЂСЃРѕРЅР°Р¶
 	CPhraseScript		m_PhraseScript;
 
-	//массив с индексами тех порций информации, которые
-	//исчезнут, после получения этой info_portion
+	//РјР°СЃСЃРёРІ СЃ РёРЅРґРµРєСЃР°РјРё С‚РµС… РїРѕСЂС†РёР№ РёРЅС„РѕСЂРјР°С†РёРё, РєРѕС‚РѕСЂС‹Рµ
+	//РёСЃС‡РµР·РЅСѓС‚, РїРѕСЃР»Рµ РїРѕР»СѓС‡РµРЅРёСЏ СЌС‚РѕР№ info_portion
 	using INFO_ID_VECTOR = xr_vector<shared_str>;
 	using INFO_ID_VECTOR_IT = INFO_ID_VECTOR::iterator;
 
@@ -43,7 +43,7 @@ struct SInfoPortionData : CSharedResource
 
 class CInfoPortion;
 
-//квант  - порция информации
+//РєРІР°РЅС‚  - РїРѕСЂС†РёСЏ РёРЅС„РѕСЂРјР°С†РёРё
 class CInfoPortion : public CSharedClass<SInfoPortionData, shared_str, false>,
 					 public CXML_IdToIndex<CInfoPortion>
 {
@@ -56,9 +56,9 @@ public:
 				CInfoPortion	(void);
 	virtual		~CInfoPortion	(void);
 
-	//инициализация info данными
-	//если info с таким id раньше не использовался
-	//он будет загружен из файла
+	//РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ info РґР°РЅРЅС‹РјРё
+	//РµСЃР»Рё info СЃ С‚Р°РєРёРј id СЂР°РЅСЊС€Рµ РЅРµ РёСЃРїРѕР»СЊР·РѕРІР°Р»СЃСЏ
+	//РѕРЅ Р±СѓРґРµС‚ Р·Р°РіСЂСѓР¶РµРЅ РёР· С„Р°Р№Р»Р°
 	virtual void Load	(shared_str info_str_id);
 //	virtual void Load	(INFO_INDEX info_index);
 
@@ -69,9 +69,9 @@ public:
 	const DIALOG_ID_VECTOR&							DialogNames	()	const {return info_data()->m_DialogNames;}
 	const SInfoPortionData::INFO_ID_VECTOR&			DisableInfos()	const {return info_data()->m_DisableInfo;}
 	
-			void									RunScriptActions		(const CGameObject* pOwner)	{info_data()->m_PhraseScript.Action(pOwner, NULL, NULL);}
+			void									RunScriptActions		(const CGameObject* pOwner)	{info_data()->m_PhraseScript.Action(pOwner, nullptr, nullptr);}
 
-	//текстовое представление информации
+	//С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё
 			shared_str								GetText () const ;
 
 protected:

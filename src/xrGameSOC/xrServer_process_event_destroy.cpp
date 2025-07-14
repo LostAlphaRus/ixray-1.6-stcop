@@ -29,7 +29,7 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	Msg								("sv destroy object %s [%d]", ent_name_safe(id_dest).c_str(), Device.dwFrame);
 #endif
 
-	CSE_Abstract*					e_dest = game->get_entity_from_eid	(id_dest);	// êòî äîëæåí áûòü óíè÷òîæåí
+	CSE_Abstract*					e_dest = game->get_entity_from_eid	(id_dest);	// ÐºÑ‚Ð¾ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ ÑƒÐ½Ð¸Ñ‡Ñ‚Ð¾Ð¶ÐµÐ½
 	if (!e_dest) 
 	{
 		Msg							("!SV:ge_destroy: [%d] not found on server",id_dest);
@@ -37,9 +37,9 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 	};
 
 	R_ASSERT						(e_dest);
-	xrClientData					*c_dest = e_dest->owner;				// êëèåíò, ÷åé þíèò
+	xrClientData					*c_dest = e_dest->owner;				// ÐºÐ»Ð¸ÐµÐ½Ñ‚, Ñ‡ÐµÐ¹ ÑŽÐ½Ð¸Ñ‚
 	R_ASSERT						(c_dest);
-	xrClientData					*c_from = ID_to_client(sender);	// êëèåíò, êòî ïðèñëàë
+	xrClientData					*c_from = ID_to_client(sender);	// ÐºÐ»Ð¸ÐµÐ½Ñ‚, ÐºÑ‚Ð¾ Ð¿Ñ€Ð¸ÑÐ»Ð°Ð»
 	R_ASSERT						(c_from);
 	R_ASSERT						(c_dest==c_from || GetServerClient()==c_from);
 	u16								parent_id = e_dest->ID_Parent;
@@ -56,7 +56,7 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 			Process_event_destroy		(P,sender,time,*e_dest->children.begin(), pEventPack);
 	};
 
-	if (0xffff == parent_id && NULL == pEventPack) 
+	if (0xffff == parent_id && nullptr == pEventPack) 
 	{
 		SendBroadcast				(BroadcastCID,P,MODE);
 	}
@@ -81,7 +81,7 @@ void xrServer::Process_event_destroy	(NET_Packet& P, ClientID sender, u32 time, 
 		pEventPack->w(&tmpP.B.data, tmpP.B.count);
 	};
 
-	if (NULL == pEPack && NULL != pEventPack)
+	if (nullptr == pEPack && nullptr != pEventPack)
 	{
 		SendBroadcast				(BroadcastCID, *pEventPack, MODE);
 	}

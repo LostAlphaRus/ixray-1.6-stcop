@@ -103,7 +103,7 @@ CHUDTarget::CHUDTarget	()
 	//	hGeom.create		(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
 	hShader->create("hud\\cursor", "ui\\cursor");
 
-	RQ.set(NULL, 0.f, -1);
+	RQ.set(nullptr, 0.f, -1);
 
 	Load();
 	m_bShowCrosshair = false;
@@ -112,7 +112,7 @@ CHUDTarget::CHUDTarget	()
 void CHUDTarget::net_Relcase(CObject* O)
 {
 	if(RQ.O == O)
-		RQ.O = NULL;
+		RQ.O = nullptr;
 
 	RQR.r_clear	();
 }
@@ -154,7 +154,7 @@ void CHUDTarget::CursorOnFrame ()
 		collide::ray_defs	RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
 		RQR.r_clear			();
 		VERIFY				(!fis_zero(RD.dir.square_magnitude()));
-		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &RQ, NULL, Level().CurrentEntity()))
+		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &RQ, nullptr, Level().CurrentEntity()))
 			clamp			(RQ.range,NEAR_LIM,RQ.range);
 	}
 

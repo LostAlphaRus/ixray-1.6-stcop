@@ -460,8 +460,8 @@ void CUIBagWnd::PutItemToGroup(CUICellItem* pItem, int iGroup)
 	{
 		if (m_info[pItem->m_index].short_cut >= 6)
 		{
-            m_info[pItem->m_index].short_cut	= NULL; // no shortcut
-			pItem->SetCustomDraw				(NULL);
+            m_info[pItem->m_index].short_cut	= 0; // no shortcut
+			pItem->SetCustomDraw				(nullptr);
 		}
 	}
 }
@@ -510,7 +510,7 @@ bool CUIBagWnd::SetMenuLevel(MENU_LEVELS level)
 
 	m_mlCurrLevel = level;	
 
-	GetMessageTarget()->SendMessage(this, XR_MENU_LEVEL_CHANGED, NULL);
+	GetMessageTarget()->SendMessage(this, XR_MENU_LEVEL_CHANGED, nullptr);
 
 	return true;
 }
@@ -593,7 +593,7 @@ bool CUIBagWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 		{
 			CUICellItem* itm = GetItemByKey(dik,GetCurrentGroupIndex());
 			if (itm && IsInBag(itm))
-                itm->GetMessageTarget()->SendMessage(itm, DRAG_DROP_ITEM_DB_CLICK, NULL);
+                itm->GetMessageTarget()->SendMessage(itm, DRAG_DROP_ITEM_DB_CLICK, nullptr);
 		}
 		break;
 	default:
@@ -716,7 +716,7 @@ CUICellItem* CUIBagWnd::GetItemByKey(int dik, int section){
 			return m_allItems[i];
 		}		
 	}
-	return NULL;
+	return nullptr;
 }
 
 void CUIBagWnd::ShowSectionEx(int iSection){
@@ -905,7 +905,7 @@ void CUIBagWnd::ClearExternalStatus(){
 void CUIBagWnd::AttachAddon(CUICellItem* itm, CSE_ALifeItemWeapon::EWeaponAddonState add_on, bool external){
 	R_ASSERT(itm);
 	CWeapon* wpn = (CWeapon*)itm->m_pData;	
-	CUICellItem* add_itm = NULL;
+	CUICellItem* add_itm = nullptr;
 	CUIWeaponCellItem* wpn_itm = smart_cast<CUIWeaponCellItem*>(itm);
 	R_ASSERT(wpn_itm);
 
@@ -961,7 +961,7 @@ CUICellItem* CUIBagWnd::GetItemBySectoin(const shared_str& sectionName, bool bCr
                 return m_allItems[i];
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 CUICellItem* CUIBagWnd::GetItemBySectoin(const u8 grpNum, u8 uIndexInSlot)
@@ -980,7 +980,7 @@ CUICellItem* CUIBagWnd::GetItemBySectoin(const u8 grpNum, u8 uIndexInSlot)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 CUICellItem* CUIBagWnd::CreateNewItem(const u8 grpNum, u8 uIndexInSlot)
@@ -988,7 +988,7 @@ CUICellItem* CUIBagWnd::CreateNewItem(const u8 grpNum, u8 uIndexInSlot)
 	u32			 sz = m_allItems.size();
 	VERIFY		 (sz);
 	CUICellItem* item;
-	PIItem		 iitem = NULL;
+	PIItem		 iitem = nullptr;
 	CUICellItem* new_item;
 
 	for (u32 i = 0; i < sz; i++){
@@ -1011,7 +1011,7 @@ CUICellItem* CUIBagWnd::CreateNewItem(const u8 grpNum, u8 uIndexInSlot)
 	ii.price				= pSettings->r_s32(*m_sectionPrice, m_wpnSectStorage[grpNum][uIndexInSlot].c_str());
 	m_info.push_back		(ii);
 
-	m_info[new_item->m_index].short_cut = NULL;
+	m_info[new_item->m_index].short_cut = 0;
 	m_info[new_item->m_index].active = true;
 	m_info[new_item->m_index].bought = false;
 	m_info[new_item->m_index].section = grpNum;

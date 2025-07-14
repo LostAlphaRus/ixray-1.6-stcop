@@ -9,9 +9,9 @@
 
 CUICellItem::CUICellItem()
 {
-	m_pParentList		= NULL;
-	m_pData				= NULL;
-	m_custom_draw		= NULL;
+	m_pParentList		= nullptr;
+	m_pData				= nullptr;
+	m_custom_draw		= nullptr;
 	m_b_already_drawn	= false;
 	SetAccelerator		(0);
 	m_b_destroy_childs	= true;
@@ -37,19 +37,19 @@ void CUICellItem::Draw()
 bool CUICellItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	if(mouse_action == WINDOW_LBUTTON_DOWN){
-		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_SELECTED, NULL);
+		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_SELECTED, nullptr);
 		return false;
 	}else
 	if(mouse_action == WINDOW_MOUSE_MOVE && pInput->iGetAsyncBtnState(0)){
-		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DRAG, NULL);
+		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DRAG, nullptr);
 		return true;
 	}else
 	if(mouse_action==WINDOW_LBUTTON_DB_CLICK){
-		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, NULL);
+		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, nullptr);
 		return true;
 	}else
 	if(mouse_action==WINDOW_RBUTTON_DOWN){
-		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_RBUTTON_CLICK, NULL);
+		GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_RBUTTON_CLICK, nullptr);
 		return true;
 	}
 	
@@ -62,7 +62,7 @@ bool CUICellItem::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 	{
 		if (GetAccelerator() == dik)
 		{
-			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, NULL);
+			GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DB_CLICK, nullptr);
 			return		true;
 		}
 	}
@@ -109,7 +109,7 @@ CUICellItem* CUICellItem::PopChild()
 	std::swap			(itm->m_pData, m_pData);
 	UpdateItemText		();
 	R_ASSERT			(itm->ChildsCount()==0);
-	itm->SetOwnerList	(NULL);
+	itm->SetOwnerList	(nullptr);
 	return				itm;
 }
 
@@ -137,7 +137,7 @@ void CUICellItem::SetCustomDraw			(ICustomDrawCell* c){
 
 CUIDragItem::CUIDragItem(CUICellItem* parent)
 {
-	m_back_list						= NULL;
+	m_back_list						= nullptr;
 	m_pParent						= parent;
 	AttachChild						(&m_static);
 	Device.seqRender.Add			(this, REG_PRIORITY_LOW-5000);
@@ -168,7 +168,7 @@ bool CUIDragItem::OnMouseAction(float x, float y, EUIMessages mouse_action)
 {
 	if(mouse_action == WINDOW_LBUTTON_UP)
 	{
-		m_pParent->GetMessageTarget()->SendMessage(m_pParent,DRAG_DROP_ITEM_DROP,NULL);
+		m_pParent->GetMessageTarget()->SendMessage(m_pParent,DRAG_DROP_ITEM_DROP,nullptr);
 		return true;
 	}
 	return false;

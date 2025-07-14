@@ -17,8 +17,8 @@ CUIFrags2::~CUIFrags2(){
 void CUIFrags2::Init(CUIXml& xml_doc, LPCSTR path, LPCSTR backgrnd_path){
 	InitBackground(xml_doc, backgrnd_path);
 
-	CUIWindow* pTeam1 = NULL;
-	CUIWindow* pTeam2 = NULL;
+	CUIWindow* pTeam1 = nullptr;
+	CUIWindow* pTeam2 = nullptr;
 	Fvector2 pos;
 
 	pTeam1 = m_pStats->Init(xml_doc, path, 1);

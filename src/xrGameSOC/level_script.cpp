@@ -85,7 +85,7 @@ CScriptGameObject *get_object_by_id(u32 id)
 {
 	CGameObject* pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(id));
 	if(!pGameObject)
-		return NULL;
+		return nullptr;
 
 	return pGameObject->lua_game_object();
 }

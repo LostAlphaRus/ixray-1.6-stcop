@@ -54,18 +54,18 @@ CMainMenu::CMainMenu	()
 	pCGameFont = g_FontManager->GetFont("ui_font_console");
 
 	m_Flags.zero					();
-	m_startDialog					= NULL;
+	m_startDialog					= nullptr;
 	m_screenshotFrame				= u32(-1);
 	g_pGamePersistent->m_pMainMenu	= this;
 	if (Device.b_is_Ready)			OnDeviceCreate();  	
 	ReadTextureInfo					();
 	CUIXmlInit::InitColorDefs		();
-	g_btnHint						= NULL;
-	g_statHint						= NULL;
+	g_btnHint						= nullptr;
+	g_statHint						= nullptr;
 	m_deactivated_frame				= 0;	
 	
 	m_sPatchURL						= "";
-	m_pGameSpyFull					= NULL;
+	m_pGameSpyFull					= nullptr;
 
 	m_sPDProgress.IsInProgress		= false;
 
@@ -99,7 +99,7 @@ CMainMenu::~CMainMenu	()
 	xr_delete						(g_btnHint);
 	xr_delete						(g_statHint);
 	xr_delete						(m_startDialog);
-	g_pGamePersistent->m_pMainMenu	= NULL;
+	g_pGamePersistent->m_pMainMenu	= nullptr;
 	xr_delete						(m_pGameSpyFull);
 	delete_data						(m_pMB_ErrDlgs);	
 }
@@ -533,7 +533,7 @@ void CMainMenu::OnNewPatchFound(LPCSTR VersionName, LPCSTR URL)
 	if (m_pMB_ErrDlgs[NewPatchFound])	
 	{
 		delete_data(m_pMB_ErrDlgs[NewPatchFound]);
-		m_pMB_ErrDlgs[NewPatchFound] = NULL;
+		m_pMB_ErrDlgs[NewPatchFound] = nullptr;
 	}
 	if (!m_pMB_ErrDlgs[NewPatchFound])
 	{
@@ -569,7 +569,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 	if (!fileName) return;
 
 	string4096 FilePath = "";
-	char* FileName = NULL;
+	char* FileName = nullptr;
 	GetFullPathNameA(fileName, 4096, FilePath, &FileName);
 
 	string_path		fname;

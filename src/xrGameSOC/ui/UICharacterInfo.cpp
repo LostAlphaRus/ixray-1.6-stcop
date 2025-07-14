@@ -35,7 +35,7 @@ CSE_ALifeTraderAbstract* ch_info_get_from_id (u16 id)
 }
 
 CUICharacterInfo::CUICharacterInfo()
-:m_ownerID(u16(-1)),pUIBio(NULL)
+:m_ownerID(u16(-1)),pUIBio(nullptr)
 {
 	ZeroMemory			(m_icons,sizeof(m_icons));
 	m_bForceUpdate		= false;
@@ -48,7 +48,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 {
 	CUIXmlInit xml_init;
 
-	CUIStatic*	pItem = NULL;
+	CUIStatic*	pItem = nullptr;
 
 	if(xml_doc->NavigateToNode("icon_static",0))	
 	{
@@ -271,7 +271,7 @@ void CUICharacterInfo::Update()
 	if(hasOwner() && (m_bForceUpdate||(Device.dwFrame%100==0))  ){
 		m_bForceUpdate = false;
 		CSE_ALifeTraderAbstract* T = ch_info_get_from_id	(m_ownerID);
-		if (NULL==T){
+		if (nullptr==T){
 			m_ownerID = u16(-1);
 			return;
 		}else

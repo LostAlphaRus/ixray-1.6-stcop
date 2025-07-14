@@ -133,7 +133,7 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 	if(!g_actor)				return;
 	GameTasks& tasks			= Actor()->GameTaskManager().GameTasks();
 	GameTasks::iterator it		= tasks.begin();
-	CGameTask* task				= NULL;
+	CGameTask* task				= nullptr;
 	
 	for(;it!=tasks.end();++it)
 	{
@@ -142,7 +142,7 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 		R_ASSERT				(task->m_Objectives.size() > 0);
 
 		if( !Filter(task) )		continue;
-		CUITaskItem* pTaskItem	= NULL;
+		CUITaskItem* pTaskItem	= nullptr;
 /*
 		if(task->m_Objectives[0].TaskState()==eTaskUserDefined)
 		{
@@ -295,7 +295,7 @@ bool CUIEventsWnd::ItemHasDescription(CUITaskItem* itm)
 	{
 		SGameTaskObjective	*obj				= itm->Objective();
 		CMapLocation* ml						= obj->LinkedMapLocation();
-		bool bHasLocation						= (NULL != ml);
+		bool bHasLocation						= (nullptr != ml);
 		bool bIsMapMode							= GetDescriptionMode(); 
 		bool b									= (bIsMapMode&&bHasLocation&&ml->SpotEnabled());
 		return b;

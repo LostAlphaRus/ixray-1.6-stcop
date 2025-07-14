@@ -46,7 +46,7 @@ float CEntityAlive::m_fStartBurnWoundSize = 0.3f;
 //размер раны, чтоб остановить партиклы
 float CEntityAlive::m_fStopBurnWoundSize = 0.1f;
 
-STR_VECTOR* CEntityAlive::m_pFireParticlesVector = NULL;
+STR_VECTOR* CEntityAlive::m_pFireParticlesVector = nullptr;
 
 /////////////////////////////////////////////
 // CEntityAlive
@@ -665,7 +665,7 @@ CIKLimbsController*	CEntityAlive::character_ik_controller()
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 CPHSoundPlayer* CEntityAlive::ph_sound_player()
@@ -676,7 +676,7 @@ CPHSoundPlayer* CEntityAlive::ph_sound_player()
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

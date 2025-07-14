@@ -101,7 +101,7 @@ void CUIOutfitInfo::SetItem(u32 hitType, bool force_add)
 
     if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
     {
-        if (_s->GetParent() != NULL)
+        if (_s->GetParent() != nullptr)
             m_listWnd->RemoveWindow(_s);
         return;
     }
@@ -118,6 +118,6 @@ void CUIOutfitInfo::SetItem(u32 hitType, bool force_add)
     }
     _s->SetText(_buff);
 
-    if (_s->GetParent() == NULL)
+    if (_s->GetParent() == nullptr)
         m_listWnd->AddWindow(_s, false);
 }

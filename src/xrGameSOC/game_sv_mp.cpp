@@ -185,7 +185,7 @@ void	game_sv_mp::KillPlayer				(ClientID id_who, u16 GameID)
 	if (xrCData) 
 	{
 		//-------------------------------------------------------
-		OnPlayerKillPlayer(xrCData->ps, xrCData->ps, KT_HIT, SKT_NONE, NULL);
+		OnPlayerKillPlayer(xrCData->ps, xrCData->ps, KT_HIT, SKT_NONE, nullptr);
 		xrCData->ps->m_bClearRun = false;
 	};
 	//-------------------------------------------------------
@@ -548,10 +548,10 @@ bool	game_sv_mp::GetPosAngleFromActor				(ClientID id, Fvector& Pos, Fvector &An
 TeamStruct* game_sv_mp::GetTeamData				(u32 Team)
 {
 	VERIFY(TeamList.size());
-	if (TeamList.empty()) return NULL;
+	if (TeamList.empty()) return nullptr;
 	
 	VERIFY(TeamList.size()>Team);
-	if (TeamList.size()<=Team) return NULL;
+	if (TeamList.size()<=Team) return nullptr;
 
 	return &(TeamList[Team]);
 };
@@ -664,7 +664,7 @@ _votecommands	votecommands[] = {
 	{ "ban",			"sv_banplayer",				flVoteBan			},
 	{ "changemap",		"sv_changelevel",			flVoteMap			},
 	{ "changeweather",	"sv_setenvtime",			flVoteWeather		},
-	{ NULL, 			NULL }
+	{ nullptr, 			nullptr }
 };
 
 void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
@@ -726,7 +726,7 @@ void game_sv_mp::OnVoteStart				(LPCSTR VoteCommand, ClientID sender)
 		m_pVoteCommand.printf("%s", VoteCommand+1);
 	};
 
-	xrClientData *pStartedPlayer = NULL;
+	xrClientData *pStartedPlayer = nullptr;
 	auto ForEach = [&](IClient* client)
 		{
 			xrClientData* l_pC = (xrClientData*)client;
@@ -891,7 +891,7 @@ void	game_sv_mp::SetPlayersDefItems		(game_PlayerState* ps)
 		for (u32 it=0; it<ps->pItemList.size(); it++)
 		{
 			u16* pItemID = &(ps->pItemList[it]);
-//			WeaponDataStruct* pWpnS = NULL;
+//			WeaponDataStruct* pWpnS = nullptr;
 //			if (!GetTeamItem_ByID(&pWpnS, &(TeamList[ps->team].aWeapons), *pItemID)) continue;
 			if (m_strWeaponsData->GetItemsCount() <= *pItemID) continue;
 			shared_str WeaponName = m_strWeaponsData->GetItemName((*pItemID) & 0x00FF);
@@ -911,7 +911,7 @@ void	game_sv_mp::SetPlayersDefItems		(game_PlayerState* ps)
 	for (u32 it=0; it<ps->pItemList.size(); it++)
 	{
 		u16* pItemID = &(ps->pItemList[it]);
-//		WeaponDataStruct* pWpnS = NULL;
+//		WeaponDataStruct* pWpnS = nullptr;
 //		if (!GetTeamItem_ByID(&pWpnS, &(TeamList[ps->team].aWeapons), *pItemID)) continue;
 		if (m_strWeaponsData->GetItemsCount() <= *pItemID) continue;
 		
@@ -926,7 +926,7 @@ void	game_sv_mp::SetPlayersDefItems		(game_PlayerState* ps)
 			AmmoID = u16(m_strWeaponsData->GetItemIdx(BaseAmmoName)&0xffff);
 		};
 //		if (!pWpnS->WeaponBaseAmmo.size()) continue;
-//		WeaponDataStruct* pWpnAmmo = NULL;
+//		WeaponDataStruct* pWpnAmmo = nullptr;
 //		if (!GetTeamItem_ByName(&pWpnAmmo, &(TeamList[ps->team].aWeapons), *(pWpnS->WeaponBaseAmmo))) continue;
 		if (AmmoID == u16(-1)) continue;
 		
@@ -974,7 +974,7 @@ void game_sv_mp::OnPlayerKilled(NET_Packet P)
 	if (!ps_killed)	
 	{
 #ifdef DEBUG
-		Msg("! ERROR: killed player [%d] state is NULL", KilledID);
+		Msg("! ERROR: killed player [%d] state is nullptr", KilledID);
 #endif
 		return;
 	}

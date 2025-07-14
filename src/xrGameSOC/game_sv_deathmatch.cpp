@@ -60,7 +60,7 @@ game_sv_Deathmatch::game_sv_Deathmatch()
 
 	m_bSpectatorMode = false;
 	m_dwSM_CurViewEntity = 0;
-	m_pSM_CurViewEntity = NULL;
+	m_pSM_CurViewEntity = nullptr;
 	m_dwSM_LastSwitchTime = 0;
 
 	//-------------------------------
@@ -580,7 +580,7 @@ void	game_sv_Deathmatch::SM_SwitchOnNextActivePlayer()
 void game_sv_Deathmatch::net_Relcase(CObject* O)
 {
 	if(m_pSM_CurViewEntity==O)
-		m_pSM_CurViewEntity = NULL;
+		m_pSM_CurViewEntity = nullptr;
 	
 }
 
@@ -896,7 +896,7 @@ void	game_sv_Deathmatch::OnPlayerBuyFinished		(ClientID id_who, NET_Packet& P)
 	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find	(ps->GameID));
 	if (pActor)
 	{
-		PIItem pItem = NULL;
+		PIItem pItem = nullptr;
 		xr_vector<u16>				ItemsToDelete;
 
 		bool ExactMatch	= true;
@@ -1832,7 +1832,7 @@ void	game_sv_Deathmatch::check_ForceRespawn		()
 INT	g_sv_Skip_Winner_Waiting = 0;
 bool	game_sv_Deathmatch::HasChampion()
 {
-	game_PlayerState* res = NULL;
+	game_PlayerState* res = nullptr;
 	s16 MaxFragsMin		= -100;
 	s16 MaxFragsCurr	= MaxFragsMin;
 

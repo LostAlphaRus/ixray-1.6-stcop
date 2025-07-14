@@ -148,7 +148,7 @@ void CUISkinSelectorWnd::Init(const char* strSectionName)
 
 void CUISkinSelectorWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 {
-	game_cl_Deathmatch * dm = NULL;
+	game_cl_Deathmatch * dm = nullptr;
 	switch (msg){
 		case BUTTON_CLICKED:
 			dm = smart_cast<game_cl_Deathmatch *>(&(Game()));

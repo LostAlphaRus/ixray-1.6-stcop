@@ -38,9 +38,9 @@ typedef				std::pair<CHARACTER_RANK_VALUE, shared_str>	CharInfoStringID;
 using CharInfoStrings = xr_map<CHARACTER_RANK_VALUE, shared_str>;
 using CharInfoStrings_it = CharInfoStrings::iterator;
 
-CharInfoStrings		*charInfoReputationStrings	= NULL;
-CharInfoStrings		*charInfoRankStrings		= NULL;
-CharInfoStrings		*charInfoGoodwillStrings	= NULL;
+CharInfoStrings		*charInfoReputationStrings	= nullptr;
+CharInfoStrings		*charInfoRankStrings		= nullptr;
+CharInfoStrings		*charInfoGoodwillStrings	= nullptr;
 
 void InventoryUtilities::CreateShaders()
 {

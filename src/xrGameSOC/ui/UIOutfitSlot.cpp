@@ -39,7 +39,7 @@ void CUIOutfitDragDropList::SetOutfit(CUICellItem* itm)
 
 	if ((GameID() != GAME_SINGLE) && !itm)
 	{
-		CObject *pActor = NULL;
+		CObject *pActor = nullptr;
 
         pActor = smart_cast<CActor*>(Level().CurrentEntity());
 
@@ -115,7 +115,7 @@ CUICellItem* CUIOutfitDragDropList::RemoveItem(CUICellItem* itm, bool force_root
 {
 	VERIFY								(!force_root);
 	CUICellItem* ci						= inherited::RemoveItem(itm, force_root);
-	SetOutfit							(NULL);
+	SetOutfit							(nullptr);
 	return								ci;
 }
 

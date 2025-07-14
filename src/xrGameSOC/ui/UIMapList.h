@@ -22,7 +22,7 @@ public:
 	virtual			~CUIMapList();
 	virtual void	Init(float x, float y, float width, float height);
 	virtual void	Update();
-	virtual void	SendMessage(CUIWindow* pWnd, s16 msg, void* pData  = NULL);
+	virtual void	SendMessage(CUIWindow* pWnd, s16 msg, void* pData  = nullptr);
 			void	InitFromXml(CUIXml& xml_doc, const char* path);	
 
 			void	SetWeatherSelector(CUIComboBox* ws);

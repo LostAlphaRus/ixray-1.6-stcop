@@ -70,14 +70,14 @@ struct CUITradeInternal{
 
 CUITradeWnd::CUITradeWnd()
 	:	m_bDealControlsVisible	(false),
-		m_pTrade(NULL),
-		m_pOthersTrade(NULL),
+		m_pTrade(nullptr),
+		m_pOthersTrade(nullptr),
 		bStarted(false)
 {
 	m_uidata = new CUITradeInternal();
 	Init();
 	Show(false);
-	SetCurrentItem			(NULL);
+	SetCurrentItem			(nullptr);
 }
 
 CUITradeWnd::~CUITradeWnd()
@@ -163,7 +163,7 @@ void CUITradeWnd::Init()
 	AttachChild							(&m_uidata->UIToTalkButton);
 	xml_init.Init3tButton					(uiXml, "button", 1, &m_uidata->UIToTalkButton);
 
-	m_uidata->UIDealMsg					= NULL;
+	m_uidata->UIDealMsg					= nullptr;
 
 	BindDragDropListEnents				(&m_uidata->UIOurBagList);
 	BindDragDropListEnents				(&m_uidata->UIOthersBagList);
@@ -239,7 +239,7 @@ void CUITradeWnd::Update()
 		if( !m_uidata->UIDealMsg->IsActual()){
 			CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
 			CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
-			m_uidata->UIDealMsg			= NULL;
+			m_uidata->UIDealMsg			= nullptr;
 		}
 	}
 }
@@ -253,9 +253,9 @@ void CUITradeWnd::Show(bool status)
 	{
 		InventoryUtilities::SendInfoToActor("ui_trade");
 
-		SetCurrentItem(NULL);
+		SetCurrentItem(nullptr);
 		ResetAll();
-		m_uidata->UIDealMsg = NULL;
+		m_uidata->UIDealMsg = nullptr;
 	}
 	else
 	{
@@ -263,7 +263,7 @@ void CUITradeWnd::Show(bool status)
 		if (bStarted)
 			StopTrade();
 
-		m_uidata->UIDealMsg = NULL;
+		m_uidata->UIDealMsg = nullptr;
 
 		if (CurrentGameUI()) {
 			CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
@@ -420,7 +420,7 @@ void CUITradeWnd::PerformTrade()
 
 		m_uidata->UIDealMsg->m_endTime	= Device.fTimeGlobal+2.0f;// sec
 	}
-	SetCurrentItem			(NULL);
+	SetCurrentItem			(nullptr);
 }
 
 void CUITradeWnd::DisableAll()
@@ -587,7 +587,7 @@ CUICellItem* CUITradeWnd::CurrentItem()
 
 PIItem CUITradeWnd::CurrentIItem()
 {
-	return	(m_pCurrentCellItem)?(PIItem)m_pCurrentCellItem->m_pData : NULL;
+	return	(m_pCurrentCellItem)?(PIItem)m_pCurrentCellItem->m_pData : nullptr;
 }
 
 void CUITradeWnd::SetCurrentItem(CUICellItem* itm)

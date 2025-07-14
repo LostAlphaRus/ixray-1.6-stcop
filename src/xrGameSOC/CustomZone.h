@@ -14,7 +14,7 @@ class CZoneEffector;
 //информация о объекте, находящемся в зоне
 struct SZoneObjectInfo
 {
-	SZoneObjectInfo():object(NULL),zone_ignore(false),time_in_zone(0),hit_num(0),total_damage(0),small_object(false),nonalive_object(false) {}
+	SZoneObjectInfo():object(nullptr),zone_ignore(false),time_in_zone(0),hit_num(0),total_damage(0),small_object(false),nonalive_object(false) {}
 	CGameObject*			object; 
 	bool					small_object;
 	bool					nonalive_object;

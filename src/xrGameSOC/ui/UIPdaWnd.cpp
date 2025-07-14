@@ -35,15 +35,15 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 
 CUIPdaWnd::CUIPdaWnd()
 {
-	UIMapWnd				= NULL;
-	UIPdaContactsWnd		= NULL;
-	UIEncyclopediaWnd		= NULL;
-	UIDiaryWnd				= NULL;
-	UIActorInfo				= NULL;
-	UIStalkersRanking		= NULL;
-	UIEventsWnd				= NULL;
-	m_updatedSectionImage	= NULL;
-	m_oldSectionImage		= NULL;
+	UIMapWnd				= nullptr;
+	UIPdaContactsWnd		= nullptr;
+	UIEncyclopediaWnd		= nullptr;
+	UIDiaryWnd				= nullptr;
+	UIActorInfo				= nullptr;
+	UIStalkersRanking		= nullptr;
+	UIEventsWnd				= nullptr;
+	m_updatedSectionImage	= nullptr;
+	m_oldSectionImage		= nullptr;
 	Init					();
 }
 
@@ -69,7 +69,7 @@ void CUIPdaWnd::Init()
 
 	CUIXmlInit xml_init;
 	
-	m_pActiveDialog			= NULL;
+	m_pActiveDialog			= nullptr;
 
 
 	xml_init.InitWindow		(uiXml, "main", 0, this);
@@ -370,7 +370,7 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 	sign_sz.set					(9.0f+3.0f, 11.0f);
 	u32 idx						= 0;
 	float	btn_text_len		= 0.0f;
-	CUIStatic* st				= NULL;
+	CUIStatic* st				= nullptr;
 
 	for(;it!=it_e;++it,++idx)
 	{

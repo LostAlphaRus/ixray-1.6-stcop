@@ -47,7 +47,7 @@ CSpectator::CSpectator() : CGameObject()
 //	cam_active				= eacFreeFly;
 	cam_active				= eacFreeLook;
 	look_idx				= 0;
-	m_pActorToLookAt			= NULL;
+	m_pActorToLookAt			= nullptr;
 }
 
 CSpectator::~CSpectator()
@@ -147,7 +147,7 @@ void CSpectator::IR_OnKeyboardPress(int cmd)
 		}break;
 	case kCAM_2:	if (cam_active == eacFreeFly && SelectNextPlayerToLook())	cam_Set			(eacLookAt);		break;
 	case kCAM_3:	if (cam_active == eacFreeFly && SelectNextPlayerToLook())	cam_Set			(eacFreeLook);		break;
-	//case kCAM_4:	cam_Set			(eacFreeFly);	m_pActorToLookAt = NULL;	break;
+	//case kCAM_4:	cam_Set			(eacFreeFly);	m_pActorToLookAt = nullptr;	break;
 	case kWPN_FIRE:	
 		{
 			if (cam_active != eacFreeFly)
@@ -178,7 +178,7 @@ void CSpectator::IR_OnKeyboardPress(int cmd)
 			if (new_camera == eacFreeFly)
 			{
 				cam_Set			(eacFreeFly);	
-				m_pActorToLookAt = NULL;
+				m_pActorToLookAt = nullptr;
 			}
 			else
 			{
@@ -408,7 +408,7 @@ bool			CSpectator::SelectNextPlayerToLook	()
 	
 	game_PlayerState* PS = Game().local_player;
 	if (!PS) return false;
-	m_pActorToLookAt = NULL;
+	m_pActorToLookAt = nullptr;
 
 	game_cl_mp* pMPGame = smart_cast<game_cl_mp*> (&Game());
 
@@ -442,7 +442,7 @@ bool			CSpectator::SelectNextPlayerToLook	()
 void			CSpectator::net_Relcase				(CObject *O)
 {
 	if (O != m_pActorToLookAt) return;
-	m_pActorToLookAt = NULL;
+	m_pActorToLookAt = nullptr;
 	if (cam_active != eacFreeFly) SelectNextPlayerToLook();
 	if (!m_pActorToLookAt) cam_Set(eacFreeFly);
 };

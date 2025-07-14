@@ -82,7 +82,7 @@ CUIStatsListItem * CUIStatsWnd::FindFrom(const u32 beg_pos, const char *strCapti
 			}
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////

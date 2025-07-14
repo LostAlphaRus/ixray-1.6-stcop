@@ -31,7 +31,7 @@ xrClientData::xrClientData	():IClient(Device.GetTimerGlobal())
 
 void	xrClientData::Clear()
 {
-	owner									= NULL;
+	owner									= nullptr;
 	net_Ready								= FALSE;
 	net_Accepted							= FALSE;
 	net_PassUpdates							= TRUE;
@@ -326,7 +326,7 @@ void xrServer::SendUpdatesToAll()
 			if (ToSend.B.count>2)
 			{
 				//.#ifdef DEBUG
-				if (g_Dump_Update_Write && Client->ps != NULL) 
+				if (g_Dump_Update_Write && Client->ps != nullptr) 
 				{
 					Msg ("- Server Update[%d] to Client[%s]  : %d", 
 						*((u16*)ToSend.B.data), 
@@ -664,9 +664,9 @@ void			xrServer::entity_Destroy	(CSE_Abstract *&P)
 	m_tID_Generator.vfFreeID	(P->ID,Device.TimerAsync());
 
 	if(P->owner && P->owner->owner==P)
-		P->owner->owner		= NULL;
+		P->owner->owner		= nullptr;
 
-	P->owner = NULL;
+	P->owner = nullptr;
 	if (!ai().get_alife() || !P->m_bALifeControl)
 	{
 		F_entity_Destroy		(P);
@@ -680,7 +680,7 @@ void			xrServer::Server_Client_Check	( IClient* CL )
 	{
 		if (!CL->flags.bConnected)
 		{
-			SV_Client = NULL;
+			SV_Client = nullptr;
 		};
 		return;
 	};
@@ -721,7 +721,7 @@ CSE_Abstract*	xrServer::GetEntity			(u32 Num)
 	{
 		if (C == Num) return I->second;
 	};
-	return NULL;
+	return nullptr;
 };
 
 

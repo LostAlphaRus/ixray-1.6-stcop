@@ -70,9 +70,9 @@ void CUIDMStatisticWnd::Update				()
 		if (!pItem) continue;
 		if (SetItemData(&(pPS->aWeaponStats[i]), pItem)) continue;
 
-		pItem->FieldsVector[0]->SetText(NULL);
-		pItem->FieldsVector[1]->SetText(NULL);
-		pItem->FieldsVector[2]->SetText(NULL);
+		pItem->FieldsVector[0]->SetText(nullptr);
+		pItem->FieldsVector[1]->SetText(nullptr);
+		pItem->FieldsVector[2]->SetText(nullptr);
 	};
 };
 

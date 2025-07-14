@@ -61,7 +61,7 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 
 				inventory().Take(_GO, false, true);
 
-				CUIGameCustom* pGameSP = NULL;
+				CUIGameCustom* pGameSP = nullptr;
 				if( CurrentGameUI() )
 				{
 					pGameSP = CurrentGameUI();
@@ -210,7 +210,7 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 				Msg("! Error: No object to attach holder [%d]", id);
 				break;
 			}
-			VERIFY(m_holder==NULL);
+			VERIFY(m_holder==nullptr);
 			CHolderCustom*	holder = smart_cast<CHolderCustom*>(O);
 			if(!holder->Engaged())	use_Holder		(holder);
 
@@ -221,7 +221,7 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 			u32 id			= P.r_u32();
 			CGameObject*	GO	= smart_cast<CGameObject*>(m_holder);
 			VERIFY			(id==GO->ID());
-			use_Holder		(NULL);
+			use_Holder		(nullptr);
 		}break;
 	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
 		{

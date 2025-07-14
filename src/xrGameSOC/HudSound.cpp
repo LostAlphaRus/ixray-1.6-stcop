@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// HudSound.cpp:	ñòðóêòóðà äëÿ ðàáîòû ñî çâóêàìè ïðèìåíÿåìûìè â 
-//					HUD-îáúåêòàõ (îáû÷íûå çâóêè, íî ñ äîï. ïàðàìåòðàìè)
+// HudSound.cpp:	ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð° Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ ÑÐ¾ Ð·Ð²ÑƒÐºÐ°Ð¼Ð¸ Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼Ñ‹Ð¼Ð¸ Ð² 
+//					HUD-Ð¾Ð±ÑŠÐµÐºÑ‚Ð°Ñ… (Ð¾Ð±Ñ‹Ñ‡Ð½Ñ‹Ðµ Ð·Ð²ÑƒÐºÐ¸, Ð½Ð¾ Ñ Ð´Ð¾Ð¿. Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸)
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@
 void HUD_SOUND::LoadSound(	LPCSTR section, LPCSTR line, 
 							HUD_SOUND& hud_snd, int type)
 {
-	hud_snd.m_activeSnd		= NULL;
+	hud_snd.m_activeSnd		= nullptr;
 	hud_snd.sounds.clear	();
 
 	string256	sound_line;
@@ -44,7 +44,7 @@ void  HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line,
 	snd.create(buf_str, st_Effect,type);
 
 
-	if(volume != NULL)
+	if(volume != nullptr)
 	{
 		*volume = 1.f;
 		if(count>1)
@@ -55,7 +55,7 @@ void  HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line,
 		}
 	}
 
-	if(delay != NULL)
+	if(delay != nullptr)
 	{
 		*delay = 0;
 		if(count>2)
@@ -74,7 +74,7 @@ void HUD_SOUND::DestroySound	(HUD_SOUND& hud_snd)
 		(*it).snd.destroy();
 	hud_snd.sounds.clear	();
 	
-	hud_snd.m_activeSnd		= NULL;
+	hud_snd.m_activeSnd		= nullptr;
 }
 
 void HUD_SOUND::PlaySound	(	HUD_SOUND&		hud_snd,
@@ -85,7 +85,7 @@ void HUD_SOUND::PlaySound	(	HUD_SOUND&		hud_snd,
 {
 	if (hud_snd.sounds.empty())	return;
 
-	hud_snd.m_activeSnd			= NULL;
+	hud_snd.m_activeSnd			= nullptr;
 	StopSound					(hud_snd);
 
 	u32 flags = b_hud_mode?sm_2D:0;
@@ -109,5 +109,5 @@ void HUD_SOUND::StopSound	(HUD_SOUND& hud_snd)
 //.		VERIFY2					((*it).snd._handle(),"Trying to stop non-existant or destroyed sound");
 		(*it).snd.stop		();
 	}
-	hud_snd.m_activeSnd		= NULL;
+	hud_snd.m_activeSnd		= nullptr;
 }

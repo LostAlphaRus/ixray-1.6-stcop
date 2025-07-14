@@ -427,7 +427,7 @@ public:
 
 	virtual void			OnMagazineEmpty		();
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
-													LPCSTR ammoSect = NULL, 
+													LPCSTR ammoSect = nullptr, 
 													u32 ParentID = 0xffffffff);
 
 	//  [8/3/2005]

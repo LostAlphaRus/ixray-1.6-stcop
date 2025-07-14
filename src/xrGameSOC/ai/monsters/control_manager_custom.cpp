@@ -425,7 +425,7 @@ void CControlManagerCustom::check_jump_over_physics()
 
 		// получить список объектов вокруг врага
 		m_nearest.resize(0);
-		Level().ObjectSpace.GetNearest	(m_nearest,travel_point.position, m_object->Radius(), NULL);
+		Level().ObjectSpace.GetNearest	(m_nearest,travel_point.position, m_object->Radius(), nullptr);
 
 		for (u32 k=0;k<m_nearest.size();k++) {
 			CPhysicsShellHolder *obj = smart_cast<CPhysicsShellHolder *>(m_nearest[k]);

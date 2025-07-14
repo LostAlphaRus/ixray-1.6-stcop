@@ -33,7 +33,7 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	IKinematicsAnimated* VA		= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(V);
 	
 	if(!m_holder->attach_Actor(this)){
-		m_holder=NULL;
+		m_holder=nullptr;
 		return;
 	}
 	// temp play animation
@@ -116,7 +116,7 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 				if (pCamBobbing)
 				{
 					Cameras().RemoveCamEffector(eCEBobbing);
-					pCamBobbing = NULL;
+					pCamBobbing = nullptr;
 				}
 
 				attach_Vehicle(vehicle);

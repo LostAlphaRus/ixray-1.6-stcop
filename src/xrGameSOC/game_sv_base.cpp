@@ -44,7 +44,7 @@ xr_token	round_end_result_str[]=
 game_PlayerState*	game_sv_GameState::get_id					(ClientID id)							
 {
 	xrClientData*	C	= (xrClientData*)m_server->ID_to_client	(id);
-	if (0==C)			return NULL;
+	if (0==C)			return nullptr;
 	else				return C->ps;
 }
 
@@ -111,7 +111,7 @@ game_PlayerState*	game_sv_GameState::get_eid (u16 id) //if exist
 		m_server->FindClient(tmp_predicate));
 	if (tmp_client)
 		return tmp_client->ps;
-	return NULL;
+	return nullptr;
 }
 
 void* game_sv_GameState::get_client (u16 id) //if exist
@@ -732,7 +732,7 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 	case GAME_EVENT_CREATE_CLIENT:
 		{
 			IClient* CL					= (IClient*)m_server->ID_to_client(sender);
-			if ( CL == NULL ) { break; }
+			if ( CL == nullptr ) { break; }
 			
 			CL->flags.bConnected		= TRUE;
 			m_server->AttachNewClient	(CL);
@@ -769,7 +769,7 @@ bool game_sv_GameState::NewPlayerName_Exists( void* pClient, LPCSTR NewName )
 	tmp_predicate.NewName = NewName;
 	if ( !tmp_predicate.CL->name || xr_strlen( tmp_predicate.CL->name.c_str() ) == 0 ) return false;
 	IClient* ret_client = m_server->FindClient(tmp_predicate);
-	return (ret_client != NULL);
+	return (ret_client != nullptr);
 }
 
 void game_sv_GameState::NewPlayerName_Generate( void* pClient, LPSTR NewPlayerName )
@@ -817,7 +817,7 @@ void game_sv_GameState::AddDelayedEvent(NET_Packet &tNetPacket, u16 type, u32 ti
 
 void game_sv_GameState::ProcessDelayedEvent		()
 {
-	GameEvent* ge = NULL;
+	GameEvent* ge = nullptr;
 	while ((ge = m_event_queue->Retreive()) != 0) {
 		OnEvent(ge->P,ge->type,ge->time,ge->sender);
 		m_event_queue->Release();

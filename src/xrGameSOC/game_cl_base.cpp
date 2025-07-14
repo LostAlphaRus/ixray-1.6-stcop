@@ -242,7 +242,7 @@ game_PlayerState* game_cl_GameState::GetPlayerByGameID(u32 GameID)
 		game_PlayerState* P = I->second;
 		if (P->GameID == GameID) return P;
 	};
-	return NULL;
+	return nullptr;
 };
 
 game_PlayerState* game_cl_GameState::GetPlayerByOrderID		(u32 idx)

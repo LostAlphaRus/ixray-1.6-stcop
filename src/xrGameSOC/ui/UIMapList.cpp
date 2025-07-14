@@ -161,7 +161,7 @@ const char* CUIMapList::GetCommandLine(LPCSTR player_name){
 
 	CUIListBoxItem* itm				= m_pList2->GetItemByIDX(0);
 	if (!itm)	
-		return						NULL;
+		return						nullptr;
 
 	u32 _idx						= (u32)(__int64)(itm->GetData());
 	const shared_str& _map_name		= GetMapNameInt	(GetCurGameType(), _idx);
@@ -184,7 +184,7 @@ const char* CUIMapList::GetCommandLine(LPCSTR player_name){
 
 
 	m_command +=" client(localhost/name=";
-	if (player_name == NULL || 0 == xr_strlen(player_name))
+	if (player_name == nullptr || 0 == xr_strlen(player_name))
 		m_command += Core.UserName;
 	else
 		m_command +=player_name;
@@ -263,7 +263,7 @@ void CUIMapList::SetServerParams(LPCSTR params){
 #include "../../xrUI/Widgets/UIListBoxItem.h"
 void CUIMapList::AddWeather(const shared_str& WeatherType, const shared_str& WeatherTime, u32 _id)
 {
-	R_ASSERT2					(m_pWeatherSelector, "m_pWeatherSelector == NULL");
+	R_ASSERT2					(m_pWeatherSelector, "m_pWeatherSelector == nullptr");
 	m_pWeatherSelector->AddItem_	(*WeatherType, 0)->SetTAG(_id);
 
 	int	w_time;

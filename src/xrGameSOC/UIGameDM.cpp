@@ -45,7 +45,7 @@
 //--------------------------------------------------------------------
 CUIGameDM::CUIGameDM()
 {
-	m_game			= NULL; 
+	m_game			= nullptr; 
 	m_pFragLists					= new CUIWindow();
 	m_pPlayerLists					= new CUIWindow();
 	m_pStatisticWnds					= new CUIWindow();
@@ -82,9 +82,9 @@ CUIGameDM::CUIGameDM()
 //.	m_voteStatusWnd					= new UIVoteStatusWnd();
 //.	m_voteStatusWnd->InitFromXML	(uiXml);
 //.	m_voteStatusWnd->Show			(false);
-	m_voteStatusWnd					= NULL;
+	m_voteStatusWnd					= nullptr;
 
-	m_pMapDesc			= NULL;//new CUIMapDesc		();
+	m_pMapDesc			= nullptr;//new CUIMapDesc		();
 }
 //--------------------------------------------------------------------
 void CUIGameDM::SetClGame (game_cl_GameState* g)

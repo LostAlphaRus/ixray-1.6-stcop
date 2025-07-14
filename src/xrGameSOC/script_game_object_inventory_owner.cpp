@@ -299,7 +299,7 @@ void CScriptGameObject::DropItemAndTeleport	(CScriptGameObject* pItem, Fvector p
 void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject* pForWho)
 {
 	if (!pItem || !pForWho) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"cannot transfer NULL item");
+		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"cannot transfer nullptr item");
 		return;
 	}
 
@@ -331,7 +331,7 @@ u32 CScriptGameObject::Money	()
 void CScriptGameObject::TransferMoney(int money, CScriptGameObject* pForWho)
 {
 	if (!pForWho) {
-		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"cannot transfer money for NULL object");
+		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"cannot transfer money for nullptr object");
 		return;
 	}
 	CInventoryOwner* pOurOwner		= smart_cast<CInventoryOwner*>(&object()); VERIFY(pOurOwner);
@@ -426,12 +426,12 @@ LPCSTR CScriptGameObject::ProfileName			()
 	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
 	if (!pInventoryOwner) {
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"ProfileName available only for InventoryOwner");
-		return NULL;
+		return nullptr;
 	}
 	
 	shared_str profile_id =  pInventoryOwner->CharacterInfo().Profile();
 	if(!profile_id || !profile_id.size() )
-		return NULL;
+		return nullptr;
 	else
 		return *profile_id;
 }
@@ -443,7 +443,7 @@ LPCSTR CScriptGameObject::CharacterName			()
 
 	if (!pInventoryOwner) {
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CharacterName available only for InventoryOwner");
-		return NULL;
+		return nullptr;
 	}
 	return pInventoryOwner->Name();
 }
@@ -512,7 +512,7 @@ LPCSTR CScriptGameObject::CharacterCommunity	()
 
 	if (!pInventoryOwner) {
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"CharacterCommunity available only for InventoryOwner");
-		return NULL;
+		return nullptr;
 	}
 	return *pInventoryOwner->CharacterInfo().Community().id();
 }
@@ -537,7 +537,7 @@ LPCSTR CScriptGameObject::sound_voice_prefix () const
 	CInventoryOwner* pInventoryOwner = smart_cast<CInventoryOwner*>(&object());
 	if (!pInventoryOwner) {
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"sound_voice_prefix available only for InventoryOwner");
-		return NULL;
+		return nullptr;
 	}
 
 	return pInventoryOwner->SpecificCharacter().sound_voice_prefix();
@@ -554,7 +554,7 @@ ETaskState CScriptGameObject::GetGameTaskState	(LPCSTR task_id, int objective_nu
 */
 	shared_str shared_name = task_id;
 	CGameTask* t= Actor()->GameTaskManager().HasGameTask(shared_name);
-	if(NULL==t) return eTaskStateDummy;
+	if(nullptr==t) return eTaskStateDummy;
 
 	if ((std::size_t)objective_num >= t->m_Objectives.size()) {
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"wrong objective num", task_id);

@@ -554,7 +554,7 @@ void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &dire
 	
 	ray_query_param_stalker			params(this,memory().visual().transparency_threshold(),distance);
 
-	Level().ObjectSpace.RayQuery	(rq_storage,ray_defs,ray_query_callback,&params,NULL,this);
+	Level().ObjectSpace.RayQuery	(rq_storage,ray_defs,ray_query_callback,&params,nullptr,this);
 	m_can_kill_enemy				= m_can_kill_enemy  || params.m_can_kill_enemy;
 	m_can_kill_member				= m_can_kill_member || params.m_can_kill_member;
 	m_pick_distance					= _max(m_pick_distance,params.m_pick_distance);
