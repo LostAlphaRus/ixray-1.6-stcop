@@ -79,7 +79,6 @@ void CUISequencer::Start(LPCSTR tutor_name)
 {
 	VERIFY(m_items.size()==0);
 	Device.seqFrame.Add			(this, REG_PRIORITY_LOW-10000);
-	Device.seqRender.Add		(this, 3);
 	
 	m_UIWindow					= new CUIWindow();
 
@@ -90,6 +89,7 @@ void CUISequencer::Start(LPCSTR tutor_name)
 	uiXml.SetLocalRoot			(uiXml.NavigateToNode(tutor_name,0));
 
 	m_bPlayEachItem				= !!uiXml.ReadInt("play_each_item",0,0);
+	int render_prio = uiXml.ReadInt("render_prio", 0, -2);
 
 	CUIXmlInit xml_init;
 	xml_init.InitWindow			(uiXml, "global_wnd", 0,	m_UIWindow);
@@ -104,6 +104,8 @@ void CUISequencer::Start(LPCSTR tutor_name)
 		m_items.push_back		(pItem);
 		pItem->Load				(&uiXml,i);
 	}
+
+	Device.seqRender.Add		(this, render_prio);
 
 	CUISequenceItem* pCurrItem	= m_items.front();
 	pCurrItem->Start			();
