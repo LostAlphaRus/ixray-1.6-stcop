@@ -93,6 +93,7 @@ public:
 	void					animGet		(MotionSVec& lst, LPCSTR prefix);
 
 	CWeaponHUD*		GetHUD				() {return m_pHUD;}
+	virtual float GetHudFov();
 
 protected:
 	//TRUE - оружие занято, выполнением некоторого действия
@@ -113,6 +114,13 @@ protected:
 	//вкл/выкл инерции (временное, с плавным возвращением оружия в состояние без инерции)
 	void					StartHudInertion();
 	void					StopHudInertion();
+
+	float						m_nearwall_dist_max;
+	float						m_nearwall_dist_min;
+	float						m_nearwall_last_hud_fov;
+	float						m_nearwall_target_hud_fov;
+	float						m_nearwall_speed_mod;
+	float						m_fHudFov;
 private:
 	bool					m_bInertionEnable;
 	bool					m_bInertionAllow;

@@ -1617,3 +1617,10 @@ const float &CWeapon::hit_probability	() const
 	VERIFY					((g_SingleGameDifficulty >= egdNovice) && (g_SingleGameDifficulty <= egdMaster)); 
 	return					(m_hit_probability[egdNovice]);
 }
+
+float CWeapon::GetHudFov() {
+	auto base = inherited::GetHudFov();
+	auto zoom = /* m_HudFovZoom ? m_HudFovZoom : */(base * Device.fFOV / g_fov);
+	base += (zoom - base) * m_fZoomRotationFactor;
+	return base;
+}

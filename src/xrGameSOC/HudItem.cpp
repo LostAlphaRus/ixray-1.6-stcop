@@ -14,8 +14,10 @@
 #include "level.h"
 #include "inventory.h"
 #include "../xrEngine/CameraBase.h"
+#include "HUDManager.h"
 
 
+ENGINE_API extern float psHUD_FOV_def;
 CHudItem::CHudItem(void)
 {
 	m_pHUD				= NULL;
@@ -25,6 +27,7 @@ CHudItem::CHudItem(void)
 
 	m_bInertionEnable	= true;
 	m_bInertionAllow	= true;
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 CHudItem::~CHudItem(void)
@@ -54,11 +57,19 @@ void CHudItem::Load(LPCSTR section)
 		m_pHUD->Load	(*hud_sect);
 		if(pSettings->line_exist(*hud_sect, "allow_inertion")) 
 			m_bInertionAllow = !!pSettings->r_bool(*hud_sect, "allow_inertion");
+
+		m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", .2f);
+		m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);
+		m_nearwall_target_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_hud_fov", 0.27f);
+		m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
+
+		m_fHudFov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
 	}else{
 		m_pHUD = NULL;
 		//если hud не задан, но задан слот, то ошибка
 		R_ASSERT2(item().GetSlot() == NO_ACTIVE_SLOT, "active slot is set, but hud for food item is not available");
 	}
+
 
 	m_animation_slot	= pSettings->r_u32(section,"animation_slot");
 }
@@ -293,4 +304,32 @@ void CHudItem::animGet	(MotionSVec& lst, LPCSTR prefix)
 		if (M)			lst.push_back(M);
 	}
 	R_ASSERT2			(!lst.empty(),prefix);
+}
+
+float CHudItem::GetHudFov()
+{
+	if (Level().CurrentViewEntity() == object().H_Parent())
+	{
+		float dist = HUD().GetCurrentRayQuery().range;
+
+		clamp(dist, m_nearwall_dist_min, m_nearwall_dist_max);
+		float fDistanceMod = ((dist - m_nearwall_dist_min) / (m_nearwall_dist_max - m_nearwall_dist_min));
+
+		float fBaseFov = m_fHudFov ? m_fHudFov : psHUD_FOV_def;
+		clamp(fBaseFov, 5.f, 180.f);
+		const static bool isCollision = EngineExternal()[EEngineExternalGame::EnableWeaponCollision];
+		if (isCollision)
+		{
+
+			float src = m_nearwall_speed_mod * Device.fTimeDelta;
+			clamp(src, 0.f, 1.f);
+
+			float fTrgFov = m_nearwall_target_hud_fov + fDistanceMod * (fBaseFov - m_nearwall_target_hud_fov);
+			m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1.f - src) + fTrgFov * src;
+		}
+		else
+			m_nearwall_last_hud_fov = fBaseFov;
+	}
+
+	return m_nearwall_last_hud_fov;
 }

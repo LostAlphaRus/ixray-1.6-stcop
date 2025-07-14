@@ -89,6 +89,7 @@ public:
 	virtual bool			ready_to_kill		() const;
 	virtual bool			NeedToDestroyObject	() const; 
 	virtual ALife::_TIME_ID	TimePassedAfterIndependant() const;
+	virtual float GetHudFov();
 protected:
 	//время удаления оружия
 	ALife::_TIME_ID			m_dwWeaponRemoveTime;
