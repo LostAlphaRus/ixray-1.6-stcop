@@ -281,8 +281,13 @@ CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 void CUIAnswerItemIconed::Init		(LPCSTR text, LPCSTR texture_name, Frect texture_rect)
 {
 	inherited::Init					(text,"");
+	m_icon->CreateShader			(texture_name,"hud\\default");
+	Frect texture_rect_;
 
-	m_icon->InitTexture				(texture_name);
+	texture_rect_.lt.set(texture_rect.x1, texture_rect.y1);
+	texture_rect_.rb.set(texture_rect.x2, texture_rect.y2);
+	texture_rect_.rb.add(texture_rect_.lt);
+	m_icon->GetUIStaticItem().SetTextureRect(texture_rect_);
 	m_icon->TextureOn				();
 	m_icon->SetStretchTexture		(true);
 }

@@ -101,7 +101,12 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	m_taskImage->InitTexture		(*obj->icon_texture_name);
 
 	Frect r							= obj->icon_rect;
-	m_taskImage->SetTextureRect		(Frect().set(r.x1, r.y1, r.x2, r.y2));
+	Frect texture_rect;
+
+	texture_rect.lt.set					(r.x1, r.y1);
+	texture_rect.rb.set					(r.x2, r.y2);
+	texture_rect.rb.add					(texture_rect.lt);
+	m_taskImage->SetTextureRect	(texture_rect);
 	m_taskImage->SetStretchTexture	(true);
 
 	m_captionStatic->SetText		(*stbl.translate(m_GameTask->m_Title));
