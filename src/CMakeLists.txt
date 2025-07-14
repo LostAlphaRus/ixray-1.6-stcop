@@ -32,7 +32,6 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
     if(IXR_TEST_CI)
         add_subdirectory("Layers/xrRenderPC_R4")
         add_subdirectory("xrGame")
-        add_subdirectory("xrGameSOC")
     endif()
 endif()
 
@@ -59,7 +58,6 @@ if(NOT IXRAY_COMPRESSOR_ONLY)
 
     if(IXR_TEST_CI)
         set_target_properties(xrGame PROPERTIES ${IXRAY_FOLDER_GAME})
-        set_target_properties(xrGameSOC PROPERTIES ${IXRAY_FOLDER_GAME})
     endif()
     
     if(IXRAY_MP)
