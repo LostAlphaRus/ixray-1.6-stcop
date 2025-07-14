@@ -50,7 +50,7 @@ CUIInventoryWnd::CUIInventoryWnd()
 
 	g_pInvWnd							= this;	
 	m_b_need_reinit						= false;
-	Hide								();	
+	Show								(false);	
 }
 
 void CUIInventoryWnd::Init()
@@ -282,64 +282,65 @@ void CUIInventoryWnd::Update()
 	CUIWindow::Update					();
 }
 
-void CUIInventoryWnd::Show() 
+void CUIInventoryWnd::Show(bool status) 
 { 
-	InitInventory			();
-	inherited::Show			(true);
-
-	if (!IsGameTypeSingle())
+	inherited::Show			(status);
+	if (status)
 	{
-		CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor) return;
+		InitInventory();
 
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, true);
-
-		//rank icon		
-		int team = Game().local_player->team;
-		int rank = Game().local_player->rank;
-		string256 _path;		
-		if (GameID() != GAME_DEATHMATCH){
-			if (1==team)
-		        sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
-			else
-				sprintf_s(_path, "ui_hud_status_blue_0%d", rank+1);
-		}
-		else
+		if (!IsGameTypeSingle())
 		{
-			sprintf_s(_path, "ui_hud_status_green_0%d", rank+1);
+			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+			if (!pActor) return;
+
+			pActor->SetWeaponHideState(INV_STATE_INV_WND, true);
+
+			//rank icon		
+			int team = Game().local_player->team;
+			int rank = Game().local_player->rank;
+			string256 _path;
+			if (GameID() != GAME_DEATHMATCH) {
+				if (1 == team)
+					sprintf_s(_path, "ui_hud_status_green_0%d", rank + 1);
+				else
+					sprintf_s(_path, "ui_hud_status_blue_0%d", rank + 1);
+			}
+			else
+			{
+				sprintf_s(_path, "ui_hud_status_green_0%d", rank + 1);
+			}
+			UIRank->InitTexture(_path);
 		}
-		UIRank->InitTexture(_path);
+
+		SendInfoToActor("ui_inventory");
+
+		Update();
+		PlaySnd(eInvSndOpen);
 	}
-
-	SendInfoToActor						("ui_inventory");
-
-	Update								();
-	PlaySnd								(eInvSndOpen);
-}
-
-void CUIInventoryWnd::Hide()
-{
-	PlaySnd								(eInvSndClose);
-	inherited::Show						(false);
-
-	SendInfoToActor						("ui_inventory_hide");
-	ClearAllLists						();
-
-	//достать вещь в активный слот
-	CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
-	if(pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT && 
-		pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
+	else
 	{
-		pActor->inventory().Activate(m_iCurrentActiveSlot);
-		m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
-	}
+		PlaySnd(eInvSndClose);
 
-	if (!IsGameTypeSingle())
-	{
-		CActor *pActor		= smart_cast<CActor*>(Level().CurrentEntity());
-		if(!pActor)			return;
+		SendInfoToActor("ui_inventory_hide");
+		ClearAllLists();
 
-		pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
+		//достать вещь в активный слот
+		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (pActor && m_iCurrentActiveSlot != NO_ACTIVE_SLOT &&
+			pActor->inventory().m_slots[m_iCurrentActiveSlot].m_pIItem)
+		{
+			pActor->inventory().Activate(m_iCurrentActiveSlot);
+			m_iCurrentActiveSlot = NO_ACTIVE_SLOT;
+		}
+
+		if (!IsGameTypeSingle())
+		{
+			CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+			if (!pActor)			return;
+
+			pActor->SetWeaponHideState(INV_STATE_INV_WND, false);
+		}
 	}
 }
 

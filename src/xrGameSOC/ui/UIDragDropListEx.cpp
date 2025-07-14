@@ -82,7 +82,8 @@ void CUIDragDropListEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIDragDropListEx::Init(float x, float y, float w, float h)
 {
-	inherited::SetWndRect				(Frect().set(x,y,w,h));
+	inherited::SetWndPos				(Fvector2().set(x,y));
+	inherited::SetWndSize				(Fvector2().set(w,h));
 	m_vScrollBar->InitScrollBar			(Fvector2().set(w, 0.f), h, false);
 	m_vScrollBar->SetWndPos				(Fvector2().set(m_vScrollBar->GetWndPos().x - m_vScrollBar->GetWidth(), m_vScrollBar->GetWndPos().y));
 /*

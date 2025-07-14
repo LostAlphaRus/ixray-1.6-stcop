@@ -26,8 +26,7 @@ public:
 	
 	virtual void 		Draw						();
 	virtual void 		Update						();
-	virtual void 		Show						();
-	virtual void 		Hide						();
+	virtual void 		Show						(bool status);
 
 	void 				DisableAll					();
 	void 				EnableAll					();

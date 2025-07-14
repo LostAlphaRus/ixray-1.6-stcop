@@ -76,7 +76,7 @@ CUITradeWnd::CUITradeWnd()
 {
 	m_uidata = new CUITradeInternal();
 	Init();
-	Hide();
+	Show(false);
 	SetCurrentItem			(NULL);
 }
 
@@ -245,36 +245,36 @@ void CUITradeWnd::Update()
 }
 
 #include "UIInventoryUtilities.h"
-void CUITradeWnd::Show()
+void CUITradeWnd::Show(bool status)
 {
-	InventoryUtilities::SendInfoToActor("ui_trade");
-	inherited::Show					(true);
-	inherited::Enable				(true);
+	inherited::Show					(status);
+	inherited::Enable				(status);
+	if (status)
+	{
+		InventoryUtilities::SendInfoToActor("ui_trade");
 
-	SetCurrentItem					(NULL);
-	ResetAll						();
-	m_uidata->UIDealMsg				= NULL;
-}
-
-void CUITradeWnd::Hide()
-{
-	InventoryUtilities::SendInfoToActor("ui_trade_hide");
-	inherited::Show					(false);
-	inherited::Enable				(false);
-	if(bStarted)
-		StopTrade					();
-	
-	m_uidata->UIDealMsg				= NULL;
-
-	if(CurrentGameUI()){
-		CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
-		CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
+		SetCurrentItem(NULL);
+		ResetAll();
+		m_uidata->UIDealMsg = NULL;
 	}
+	else
+	{
+		InventoryUtilities::SendInfoToActor("ui_trade_hide");
+		if (bStarted)
+			StopTrade();
 
-	m_uidata->UIOurBagList.ClearAll		(true);
-	m_uidata->UIOurTradeList.ClearAll	(true);
-	m_uidata->UIOthersBagList.ClearAll	(true);
-	m_uidata->UIOthersTradeList.ClearAll(true);
+		m_uidata->UIDealMsg = NULL;
+
+		if (CurrentGameUI()) {
+			CurrentGameUI()->RemoveCustomStatic("not_enough_money_mine");
+			CurrentGameUI()->RemoveCustomStatic("not_enough_money_other");
+		}
+
+		m_uidata->UIOurBagList.ClearAll(true);
+		m_uidata->UIOurTradeList.ClearAll(true);
+		m_uidata->UIOthersBagList.ClearAll(true);
+		m_uidata->UIOthersTradeList.ClearAll(true);
+	}
 }
 
 void CUITradeWnd::StartTrade()

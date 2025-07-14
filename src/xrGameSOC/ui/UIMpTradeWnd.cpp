@@ -210,30 +210,31 @@ void CUIMpTradeWnd::FillUpSubLevelItems()
 }
 
 #include "../actor.h"
-void CUIMpTradeWnd::Show()
+void CUIMpTradeWnd::Show(bool status)
 {
-	m_pMouseCapturer		= NULL;
-	inherited::Show			(true);
+	inherited::Show			(status);
+	if (status)
+	{
+		m_pMouseCapturer = NULL;
 
 
-	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
-	if(pActor) 
-		pActor->SetWeaponHideState(INV_STATE_BUY_MENU, true);
+		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (pActor)
+			pActor->SetWeaponHideState(INV_STATE_BUY_MENU, true);
 
-	m_static_information->SetText("");
-	m_static_money_change->SetText("");
-}
+		m_static_information->SetText("");
+		m_static_money_change->SetText("");
+	}
+	else
+	{
+		CheckDragItemToDestroy();
 
-void CUIMpTradeWnd::Hide()
-{
-	CheckDragItemToDestroy	();
-	inherited::Show			(false);
+		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (pActor)
+			pActor->SetWeaponHideState(INV_STATE_BUY_MENU, false);
 
-	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
-	if(pActor)
-		pActor->SetWeaponHideState(INV_STATE_BUY_MENU, false);
-
-	CleanUserItems			();
+		CleanUserItems();
+	}
 }
 
 bool	CUIMpTradeWnd::IsIgnoreMoneyAndRank			()

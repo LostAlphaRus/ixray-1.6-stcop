@@ -7,6 +7,7 @@
 #include "entity_alive.h"
 #include "ui/UIInventoryUtilities.h"
 #include "../xrUI/UIXmlInit.h"
+#include "../xrUI/UItextureMaster.h"
 
 #include "InfoPortion.h"
 #include "PhraseDialog.h"
@@ -123,4 +124,5 @@ void clean_game_globals()
 	DestroyUIGeom									();
 	if (EngineExternal()[EEngineExternalGame::UseNewScopeSystem])
 		xr_delete										(pWpnScopeXml);
+	CUITextureMaster::FreeTexInfo					();
 }

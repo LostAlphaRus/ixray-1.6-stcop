@@ -81,29 +81,23 @@ void CUIBuyWnd::ResetItems()
 	m_bag.ReloadItemsPrices	();
 }
 
-void CUIBuyWnd::Show()
+void CUIBuyWnd::Show(bool status)
 {
-	m_pMouseCapturer		= NULL;
-	inherited::Show			(true);
+	inherited::Show			(status);
 
 	
 	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
 	if(pActor) 
-        pActor->SetWeaponHideState(INV_STATE_BUY_MENU, true);
+        pActor->SetWeaponHideState(INV_STATE_BUY_MENU, status);
 
-	m_tab.SetActiveState	();
+	if (status)
+	{
+		m_pMouseCapturer = NULL;
+		m_tab.SetActiveState();
 
-	CUIOutfitDragDropList* lst = (CUIOutfitDragDropList*)m_list[MP_SLOT_OUTFIT];
-	lst->SetItem			(NULL);
-}
-
-void CUIBuyWnd::Hide()
-{
-	inherited::Show			(false);
-
-	CActor *pActor			= smart_cast<CActor*>(Level().CurrentEntity());
-	if(pActor)
-        pActor->SetWeaponHideState(INV_STATE_BUY_MENU, false);
+		CUIOutfitDragDropList* lst = (CUIOutfitDragDropList*)m_list[MP_SLOT_OUTFIT];
+		lst->SetItem(NULL);
+	}
 }
 
 void CUIBuyWnd::DestroyAllItems()

@@ -44,8 +44,7 @@ public:
 	virtual void			Update						();
 	virtual void			Draw						();
 
-	virtual void			Show						();
-	virtual void			Hide						();
+	virtual void			Show						(bool status);
 
 	void					AddItemToBag				(PIItem pItem);
 

@@ -13,8 +13,7 @@ class CUIChatWnd: public CUIDialogWnd
 public:
 						CUIChatWnd			(CUIGameLog *pList);
 	virtual				~CUIChatWnd			();
-	virtual void		Show				();
-	virtual void		Hide				();
+	virtual void		Show				(bool status);
 	virtual void		SetKeyboardCapture	(CUIWindow* pChildWindow, bool capture_status);
 	virtual bool		NeedCursor			() {return false;}
 	void				Init				(CUIXml& uiXml);

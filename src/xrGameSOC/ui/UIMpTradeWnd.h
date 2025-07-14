@@ -124,8 +124,7 @@ public:
 	virtual u32					GetPresetCost				(ETradePreset idx);
 	virtual	void				ClearPreset					(ETradePreset idx);
 	virtual	void				TryUsePreset				(ETradePreset idx);
-	virtual void 	Show						();
-	virtual void 	Hide						();
+	virtual void 	Show						(bool status);
 	virtual bool	IsIgnoreMoneyAndRank		();
 
 

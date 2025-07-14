@@ -33,7 +33,7 @@ CUITalkWnd::CUITalkWnd()
 	ToTopicMode				();
 
 	Init					();
-	Hide					();
+	Show					(false);
 //.	SetFont					(UI().Font().pFontHeaderRussian);
 
 	m_bNeedToUpdateQuestions = false;
@@ -61,7 +61,7 @@ void CUITalkWnd::Init()
 	//Меню торговли
 	UITradeWnd = new CUITradeWnd();UITradeWnd->SetAutoDelete(true);
 	AttachChild(UITradeWnd);
-	UITradeWnd->Hide();
+	UITradeWnd->Show(false);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,9 +91,9 @@ void CUITalkWnd::InitTalkDialog()
 	Update									();
 
 	UITalkDialogWnd->SetOsoznanieMode		(m_pOthersInvOwner->NeedOsoznanieMode());
-	UITalkDialogWnd->Show					();
+	UITalkDialogWnd->Show					(true);
 
-	UITradeWnd->Hide							();
+	UITradeWnd->Show						(false);
 }
 
 void CUITalkWnd::InitOthersStartDialog()
@@ -178,8 +178,8 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	}
 	else if(pWnd == UITradeWnd && msg == TRADE_WND_CLOSED)
 	{
-		UITalkDialogWnd->Show();
-		UITradeWnd->Hide();
+		UITalkDialogWnd->Show(true);
+		UITradeWnd->Show(false);
 	}
 
 	inherited::SendMessage(pWnd, msg, pData);
@@ -188,6 +188,9 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 //////////////////////////////////////////////////////////////////////////
 void UpdateCameraDirection(CGameObject* pTo)
 {
+	if (!pTo)
+		return;
+
 	CCameraBase* cam = Actor()->cam_Active();
 
 	Fvector des_dir; 
@@ -214,13 +217,15 @@ void CUITalkWnd::Update()
 	//остановить разговор, если нужно
 	if (g_actor && m_pActor && !m_pActor->IsTalking() )
 	{
-		Game().StartStopMenu(this,true);
-	}else{
+		HideDialog();
+	}
+	else
+	{
 		CGameObject* pOurGO = smart_cast<CGameObject*>(m_pOurInvOwner);
 		CGameObject* pOtherGO = smart_cast<CGameObject*>(m_pOthersInvOwner);
 	
 		if(NULL==pOurGO || NULL==pOtherGO || ((pOurGO->Position().distance_to(pOtherGO->Position())>3.0f)&&!m_pOthersInvOwner->NeedOsoznanieMode()) )
-			Game().StartStopMenu(this,true);
+			HideDialog();
 	}
 
 	if(m_bNeedToUpdateQuestions)
@@ -241,26 +246,24 @@ void CUITalkWnd::Draw()
 
 //////////////////////////////////////////////////////////////////////////
 
-void CUITalkWnd::Show()
+void CUITalkWnd::Show(bool status)
 {
-	InitTalkDialog				();
-	inherited::Show				(true);
-}
+	inherited::Show				(status);
+	if (status)
+		InitTalkDialog				();
+	else
+	{
+		StopSnd();
 
-//////////////////////////////////////////////////////////////////////////
+		inherited::Show(false);
+		UITradeWnd->Show(false);
+		if (!m_pActor)				return;
 
-void CUITalkWnd::Hide()
-{
-	StopSnd						();
+		ToTopicMode();
 
-	inherited::Show				(false);
-	UITradeWnd->Hide				();
-	if(!m_pActor)				return;
-	
-	ToTopicMode					();
-
-	if (m_pActor->IsTalking()) m_pActor->StopTalk();
-	m_pActor = NULL;
+		if (m_pActor->IsTalking()) m_pActor->StopTalk();
+		m_pActor = NULL;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -352,37 +355,35 @@ void CUITalkWnd::SwitchToTrade()
 {
 	if(m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled() ){
 
-		UITalkDialogWnd->Hide		();
+		UITalkDialogWnd->Show		(false);
 
 		UITradeWnd->InitTrade		(m_pOurInvOwner, m_pOthersInvOwner);
-		UITradeWnd->Show				();
+		UITradeWnd->Show			(true);
 		UITradeWnd->StartTrade		();
 		StopSnd						();
 	}
 }
 
-bool CUITalkWnd::IR_OnKeyboardPress(int dik)
-{
-//.	StopSnd						();
-	EGameActions cmd = get_binded_action(dik);
-	if(cmd==kUSE)
-	{
-		if (m_pOthersInvOwner&&m_pOthersInvOwner->NeedOsoznanieMode())
-		{
-			return true;
-		}
-		GetHolder()->StartStopMenu(this, true);
-		return true;
-	}
-	//return inherited::IR_OnKeyboardPress(dik);
-}
-
 bool CUITalkWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if (m_pOthersInvOwner&&m_pOthersInvOwner->NeedOsoznanieMode())
+
+	if (keyboard_action==WINDOW_KEY_PRESSED)
 	{
-		return true;
+		if(is_binded(kUSE, dik) || is_binded(kQUIT, dik))
+		{
+			HideDialog();
+			return true;
+		}
+		else if(is_binded(kSPRINT_TOGGLE, dik))
+		{
+            if (!m_pOthersInvOwner->NeedOsoznanieMode())
+            {
+                SwitchToTrade();
+                return true;
+            }
+		}
 	}
+
 	return inherited::OnKeyboardAction(dik,keyboard_action);
 }
 

@@ -87,20 +87,17 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 
 #include "UIInventoryUtilities.h"
 	
-void CUITalkDialogWnd::Show()
+void CUITalkDialogWnd::Show(bool status)
 {
-	InventoryUtilities::SendInfoToActor				("ui_talk");
-	inherited::Show(true);
-	inherited::Enable(true);
-
-	ResetAll();
-}
-
-void CUITalkDialogWnd::Hide()
-{
-	InventoryUtilities::SendInfoToActor				("ui_talk_hide");
-	inherited::Show(false);
-	inherited::Enable(false);
+	inherited::Show(status);
+	inherited::Enable(status);
+	if (status)
+	{
+		InventoryUtilities::SendInfoToActor("ui_talk");
+		ResetAll();
+	}
+	else
+		InventoryUtilities::SendInfoToActor("ui_talk_hide");
 }
 
 void CUITalkDialogWnd::OnQuestionClicked(CUIWindow* w, void*)

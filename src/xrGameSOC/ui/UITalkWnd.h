@@ -38,8 +38,7 @@ public:
 	virtual void		Draw();
 	virtual void		Update();
 		
-	virtual void		Show();
-	virtual void		Hide();
+	virtual void		Show(bool status);
 	
 	void				Stop();					//deffered
 
@@ -47,7 +46,6 @@ public:
 	void				NeedUpdateQuestions();
 	//инициализации начального диалога собеседника
 	void				InitOthersStartDialog();
-	virtual bool		IR_OnKeyboardPress(int dik);
 	virtual bool		OnKeyboardAction(int dik, EUIMessages keyboard_action);
 	void				SwitchToTrade();
 	void				AddIconedMessage(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);

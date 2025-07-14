@@ -45,19 +45,12 @@ void CUIChatWnd::SetEditBoxPrefix(const shared_str &prefix)
 	UIEditBox.SetWndPos			(_pos);
 }
 
-void CUIChatWnd::Show()
+void CUIChatWnd::Show(bool status)
 {
-	UIEditBox.CaptureFocus(true);
-	inherited::Show(true);
+	UIEditBox.CaptureFocus(status);
+	inherited::Show(status);
 }
 
-//////////////////////////////////////////////////////////////////////////
-
-void CUIChatWnd::Hide()
-{
-	UIEditBox.CaptureFocus(false);
-	inherited::Show(false);
-}
 
 //////////////////////////////////////////////////////////////////////////
 

@@ -78,8 +78,7 @@ public:
 	virtual bool 	OnKeyboardAction					(int dik, EUIMessages keyboard_action);
 	virtual void 	SendMessage					(CUIWindow* pWnd, s16 msg, void* pData = 0);
 	virtual void 	Update						();
-	virtual void 	Show						();
-	virtual void 	Hide						();
+	virtual void 	Show						(bool status);
 
 	// drag drop handlers
 	bool		OnItemDrop				(CUICellItem* itm);

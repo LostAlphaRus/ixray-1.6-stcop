@@ -65,8 +65,7 @@ public:
 
 	virtual void 			Draw				();
 	virtual void 			Update				();
-	virtual void 			Show				();
-	virtual void 			Hide				();
+	virtual void 			Show				(bool status);
 	virtual bool			OnMouseAction				(float x, float y, EUIMessages mouse_action) {CUIDialogWnd::OnMouseAction(x,y,mouse_action);return true;} //always true because StopAnyMove() == false
 	
 	void					SetActiveSubdialog	(EPdaTabs section);

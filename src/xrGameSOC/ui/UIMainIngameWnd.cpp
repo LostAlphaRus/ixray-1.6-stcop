@@ -316,41 +316,45 @@ void CUIMainIngameWnd::SetMPChatLog(CUIWindow* pChat, CUIWindow* pLog){
 
 void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 {
-	if ( !sect_name.size() )
+	if (!sect_name.size())
 	{
-		UIWeaponIcon.Show			(false);
+		UIWeaponIcon.Show(false);
 		return;
-	};
+	}
+	UIWeaponIcon.Show(true);
 
-	UIWeaponIcon.Show			(true);
-	//properties used by inventory menu
-	float iGridWidth			= pSettings->r_float(sect_name, "inv_grid_width");
-	float iGridHeight			= pSettings->r_float(sect_name, "inv_grid_height");
-
-	float iXPos				= pSettings->r_float(sect_name, "inv_grid_x");
-	float iYPos				= pSettings->r_float(sect_name, "inv_grid_y");
-	int UseHQ				= EngineExternal()[EEngineExternalUI::HQIcons];
-
-	UIWeaponIcon.GetUIStaticItem().SetTextureRect(Frect().set(	(iXPos		 *(1 + UseHQ)*INV_GRID_WIDTH),
-													(iYPos		 *(1 + UseHQ)*INV_GRID_HEIGHT),
-													(iGridWidth	 *(1 + UseHQ)*INV_GRID_WIDTH),
-													(iGridHeight *(1 + UseHQ)*INV_GRID_HEIGHT)));
+	Frect texture_rect;
+	texture_rect.x1 = pSettings->r_float(sect_name,  "inv_grid_x")		*INV_GRID_WIDTH * 1 + isHQIcons;
+	texture_rect.y1 = pSettings->r_float(sect_name,  "inv_grid_y")		*INV_GRID_HEIGHT * 1 + isHQIcons;
+	texture_rect.x2 = pSettings->r_float( sect_name, "inv_grid_width")	*INV_GRID_WIDTH * 1 + isHQIcons;
+	texture_rect.y2 = pSettings->r_float( sect_name, "inv_grid_height")	*INV_GRID_HEIGHT * 1 + isHQIcons;
+	texture_rect.rb.add				(texture_rect.lt);
+	UIWeaponIcon.GetUIStaticItem().SetTextureRect(texture_rect);
 	UIWeaponIcon.SetStretchTexture(true);
 
+	UIWeaponIcon.SetShader(InventoryUtilities::GetEquipmentIconsShader());
+
+	float h = texture_rect.height() * EngineExternal().GetWeaponIconScaling();
+	float w = texture_rect.width() * EngineExternal().GetWeaponIconScaling();
+
 	// now perform only width scale for ammo, which (W)size >2
-	// all others ammo (1x1, 1x2) will be not scaled (original picture)
-	float w = ((iGridWidth>2)?1.6f:iGridWidth)*INV_GRID_WIDTH*0.9f;
-	float h = INV_GRID_HEIGHT*0.9f;//1 cell
+	if (isHQIcons)
+	{
+		if (texture_rect.width() > 2.01f * INV_GRID_WIDTH * 1 + isHQIcons)
+			w = INV_GRID_WIDTH * 1 + isHQIcons * 1.5f;
 
-	float x = UIWeaponIcon_rect.x1;
-	if	(iGridWidth<2)
-		x	+= ( UIWeaponIcon_rect.width() - w) / 2.0f;
+		UIWeaponIcon.SetWidth(w * UI().get_current_kx() / 2);
+		UIWeaponIcon.SetHeight(h / 2);
+	}
+	else
+	{
+		if (texture_rect.width() > 2.01f * INV_GRID_WIDTH * 1 + isHQIcons)
+			w = INV_GRID_WIDTH * 1 + isHQIcons * 1.5f;
 
-	UIWeaponIcon.SetWndPos	(Fvector2().set(x, UIWeaponIcon_rect.y1));
-	
-	UIWeaponIcon.SetWidth	(w*UI().get_current_kx());
-	UIWeaponIcon.SetHeight	(h);
-};
+		UIWeaponIcon.SetWidth(w * UI().get_current_kx());
+		UIWeaponIcon.SetHeight(h);
+	}
+}
 
 void CUIMainIngameWnd::Update()
 {

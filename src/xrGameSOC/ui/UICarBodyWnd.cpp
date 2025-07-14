@@ -37,7 +37,7 @@ CUICarBodyWnd::CUICarBodyWnd()
 {
 	m_pInventoryBox		= NULL;
 	Init				();
-	Hide				();
+	Show				(false);
 	m_b_need_update		= false;
 }
 
@@ -212,16 +212,6 @@ void CUICarBodyWnd::UpdateLists_delayed()
 
 #include "UIInventoryUtilities.h"
 
-void CUICarBodyWnd::Hide()
-{
-	InventoryUtilities::SendInfoToActor			("ui_car_body_hide");
-	m_pUIOurBagList->ClearAll					(true);
-	m_pUIOthersBagList->ClearAll				(true);
-	inherited::Show								(false);
-	if(m_pInventoryBox)
-		m_pInventoryBox->m_in_use				= false;
-}
-
 void CUICarBodyWnd::UpdateLists()
 {
 	TIItemContainer								ruck_list;
@@ -315,12 +305,23 @@ void CUICarBodyWnd::Update()
 }
 
 
-void CUICarBodyWnd::Show() 
+void CUICarBodyWnd::Show(bool status) 
 { 
-	InventoryUtilities::SendInfoToActor		("ui_car_body");
-	inherited::Show							(true);
-	SetCurrentItem							(NULL);
-	InventoryUtilities::UpdateWeight		(*m_pUIOurBagWnd);
+	inherited::Show(status);
+	if (status)
+	{
+		InventoryUtilities::SendInfoToActor("ui_car_body");
+		SetCurrentItem(NULL);
+		InventoryUtilities::UpdateWeight(*m_pUIOurBagWnd);
+	}
+	else
+	{
+		InventoryUtilities::SendInfoToActor("ui_car_body_hide");
+		m_pUIOurBagList->ClearAll(true);
+		m_pUIOthersBagList->ClearAll(true);
+		if (m_pInventoryBox)
+			m_pInventoryBox->m_in_use = false;
+	}
 }
 
 void CUICarBodyWnd::DisableAll()
@@ -392,7 +393,7 @@ bool CUICarBodyWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
 	if( inherited::OnKeyboardAction(dik,keyboard_action) )return true;
 
-	if(keyboard_action==WINDOW_KEY_PRESSED && is_binded(kUSE, dik)) 
+	if(keyboard_action==WINDOW_KEY_PRESSED && (is_binded(kUSE, dik) || is_binded(kQUIT, dik))) 
 	{
 			GetHolder()->StartStopMenu(this,true);
 			return true;

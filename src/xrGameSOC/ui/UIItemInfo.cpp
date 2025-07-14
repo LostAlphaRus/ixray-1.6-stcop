@@ -184,18 +184,15 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		int iYPos							= pInvItem->GetYPos();
 		int UseHQ							= EngineExternal()[EEngineExternalUI::HQIcons];
 
-		UIItemImage->GetUIStaticItem().SetTextureRect(	Frect().set(float(iXPos*(1 + UseHQ)*INV_GRID_WIDTH), float(iYPos*(1 + UseHQ)*INV_GRID_HEIGHT),
-														float(iGridWidth*(1 + UseHQ)*INV_GRID_WIDTH),	float(iGridHeight*(1 + UseHQ)*INV_GRID_HEIGHT)));
 		UIItemImage->TextureOn				();
 		UIItemImage->SetStretchTexture		(true);
-		Frect v_r							= {	0.0f, 
-												0.0f, 
-												float(iGridWidth*INV_GRID_WIDTH),	
-												float(iGridHeight*INV_GRID_HEIGHT)};
-		v_r.x2 *= UI().get_current_kx();
+		Frect v_r							= { float(iXPos * (1 + UseHQ) * INV_GRID_WIDTH),
+												float(iYPos * (1 + UseHQ) * INV_GRID_HEIGHT),
+												float(iGridWidth * (1 + UseHQ) * INV_GRID_WIDTH),
+												float(iGridHeight * (1 + UseHQ) * INV_GRID_HEIGHT) };
 
 		UIItemImage->GetUIStaticItem().SetTextureRect	(v_r);
-		UIItemImage->SetWidth					(_min(v_r.width(),	UIItemImageSize.x));
+		UIItemImage->SetWidth					(_min(v_r.width()*UI().get_current_kx(), UIItemImageSize.x));
 		UIItemImage->SetHeight					(_min(v_r.height(),	UIItemImageSize.y));
 	}
 }

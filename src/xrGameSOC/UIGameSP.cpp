@@ -231,16 +231,18 @@ bool CChangeLevelWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 }
 
 bool g_block_pause	= false;
-void CChangeLevelWnd::Show()
+void CChangeLevelWnd::Show(bool status)
 {
-	g_block_pause							= true;
-	Device.Pause							(TRUE, TRUE, TRUE, "CChangeLevelWnd_show");
-	bShowPauseString						= FALSE;
+	inherited::Show(status);
+	if (status)
+	{
+		g_block_pause = true;
+		Device.Pause(TRUE, TRUE, TRUE, "CChangeLevelWnd_show");
+		bShowPauseString = FALSE;
+	}
+	else
+	{
+		g_block_pause = false;
+		Device.Pause(FALSE, TRUE, TRUE, "CChangeLevelWnd_hide");
+	}
 }
-
-void CChangeLevelWnd::Hide()
-{
-	g_block_pause							= false;
-	Device.Pause							(FALSE, TRUE, TRUE, "CChangeLevelWnd_hide");
-}
-
