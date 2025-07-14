@@ -1,6 +1,5 @@
-#ifndef PH_ACTIVATION_SHAPE
-#define PH_ACTIVATION_SHAPE
-#endif
+#pragma once
+
 #include "MathUtils.h"
 #include "phvalidevalues.h"
 class CPHActivationShape : public CPHObject

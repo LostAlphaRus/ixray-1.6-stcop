@@ -331,17 +331,17 @@ u32 CParticleManager::LoadActions(int alist_id, IReader& R)
 	return pa->size();
 }
 
-void CParticleManager::SaveActions(int alist_id, IWriter& W)
+void CParticleManager::SaveActions(int alist_id, IWriter& Writer)
 {
 	// Execute the specified action list.
 	SharedParticleActions pa = GetActionListPtr(alist_id);
 	if (!pa)
 		return;
 
-	W.w_u32(pa->size());
+	Writer.w_u32(pa->size());
 
 	for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
-		(*it)->Save(W);
+		(*it)->Save(Writer);
 }
 
 void PAPI::CParticleManager::OnFrame()

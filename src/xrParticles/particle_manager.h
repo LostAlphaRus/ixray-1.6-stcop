@@ -58,7 +58,7 @@ namespace PAPI
         // action
         virtual ParticleAction*		CreateAction		(PActionEnum action_id);
         virtual u32					LoadActions			(int alist_id, IReader& R);
-        virtual void				SaveActions			(int alist_id, IWriter& W);
+        virtual void				SaveActions			(int alist_id, IWriter& Writer);
         virtual void                OnFrame             () override;
     };
 };

@@ -1394,8 +1394,8 @@ void game_sv_mp::DumpOnlineStatistic()
 	sprintf_s					(str_buff,"%s",g_pStringTable->translate(type_name()).c_str() );
 	ini.w_string				(current_section.c_str(), "game_mode", str_buff);
 
-	MAP_ROTATION_LIST_it it		= m_pMapRotation_List.begin();
-	MAP_ROTATION_LIST_it it_e	= m_pMapRotation_List.end();
+	auto it		= m_pMapRotation_List.begin();
+	auto it_e	= m_pMapRotation_List.end();
 	for(u32 idx=0;it!=it_e;++it,++idx)
 	{
 		string16					num_buf;

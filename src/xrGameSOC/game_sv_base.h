@@ -45,15 +45,12 @@ protected:
 	virtual		void				ConsoleCommands_Create	();
 	virtual		void				ConsoleCommands_Clear	();
 
-	using MAP_ROTATION_LIST = xr_deque<xr_string>;
-	using MAP_ROTATION_LIST_it = MAP_ROTATION_LIST::iterator;
-
 	bool							m_bMapRotation;
 	bool							m_bMapNeedRotation;
 	bool							m_bMapSwitched;
 	bool							m_bFastRestart;
 
-	MAP_ROTATION_LIST				m_pMapRotation_List;
+	xr_deque<xr_string>				m_pMapRotation_List;
 
 public:
 #define		TEAM_COUNT 4

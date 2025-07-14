@@ -163,7 +163,7 @@ namespace PAPI{
         // action
         virtual ParticleAction*		CreateAction		(PActionEnum type)=0;
         virtual u32					LoadActions			(int alist_id, IReader& R)=0;
-        virtual void				SaveActions			(int alist_id, IWriter& W)=0;
+        virtual void				SaveActions			(int alist_id, IWriter& Writer)=0;
     };
 
     PARTICLES_API IParticleManager* ParticleManager		();

@@ -3,6 +3,11 @@
 #include "dTriColliderMath.h"
 #include "dTriSphere.h"
 #include "dctrilistcollider.h"
+
+#ifndef byte // St4lker0k765: костыль для Unity Build. НЕ УДАЛЯТЬ
+#define byte char
+#endif
+
 ////////////////////////////////////////////////////////////////////////////
 IC dReal dcTriListCollider::PointSphereTest(const dReal* center, const dReal radius,
 							 const dReal* pt,dReal* norm)

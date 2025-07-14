@@ -24,7 +24,7 @@
 	>
 
 #define _detail \
-	detail<\
+	detail_<\
 		yaw_factor_non_fire,\
 		pitch_factor_non_fire,\
 		yaw_factor_fire,\
@@ -32,13 +32,13 @@
 	>
 
 TEMPLATE_SPECIALIZATION
-struct detail {
+struct detail_ {
 	static void callback	(CBoneInstance *B);
 };
 
-typedef detail	<  25,   0,  50,  50>	spine;
-typedef detail	<  25,   0,  50,  50>	shoulder;
-typedef detail	<  50, 100,   0,   0>	head;
+typedef detail_	<  25,   0,  50,  50>	spine;
+typedef detail_	<  25,   0,  50,  50>	shoulder;
+typedef detail_	<  50, 100,   0,   0>	head;
 
 TEMPLATE_SPECIALIZATION
 void _detail::callback		(CBoneInstance *B)

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "game_sv_mp_script.h"
 #include "xrServer_script_macroses.h"
@@ -159,9 +160,9 @@ void game_sv_mp_script::OnPlayerDisconnect (ClientID id_who, LPSTR Name, u16 Gam
 #pragma warning(disable:4709)
 
 template <typename T>
-struct CWrapperBase : public T, public luabind::wrap_base {
+struct CWrapperBase_sv_mp : public T, public luabind::wrap_base {
 	typedef T inherited;
-	typedef CWrapperBase<T>	self_type;
+	typedef CWrapperBase_sv_mp<T>	self_type;
 	DEFINE_LUA_WRAPPER_CONST_METHOD_0(type_name, LPCSTR)
 
 	DEFINE_LUA_WRAPPER_METHOD_V0(Update)
@@ -199,7 +200,7 @@ void game_sv_mp::script_register(lua_State *L)
 
 void game_sv_mp_script::script_register(lua_State *L)
 {
-	typedef CWrapperBase<game_sv_mp_script> WrapType;
+	typedef CWrapperBase_sv_mp<game_sv_mp_script> WrapType;
 	typedef game_sv_mp_script BaseType;
 
 

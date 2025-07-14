@@ -23,7 +23,7 @@ class CDUInterface;
     #endif
 #endif
 
-#include "../Editors/Public/xrEProps.h"
+#include "xrEProps.h"
 #include "DrawUtils.h"
 
 #pragma warning(push)

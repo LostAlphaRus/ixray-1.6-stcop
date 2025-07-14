@@ -19,7 +19,7 @@
 #include "PHDynamicData.h"
 #include "PHSynchronize.h"
 #include "phnetstate.h"
-static	float max_depth			=0.f;
+static	float max_activation_depth			=0.f;
 static	float friction_factor	=0.f;
 static	float cfm				=1.e-10f;
 static	float erp				=1.f;
@@ -36,7 +36,7 @@ void	ActivateTestDepthCallback (bool& do_colide,bool bo1,dContact& c,SGameMtl* m
 	{
 		float& depth=c.geom.depth;
 		float test_depth=depth;
-		save_max(max_depth,test_depth);
+		save_max(max_activation_depth,test_depth);
 		c.surface.mu*=friction_factor;
  
 		c.surface.soft_cfm=cfm;
@@ -68,8 +68,7 @@ void  GetMaxDepthCallback (bool& do_colide,bool bo1,dContact& c,SGameMtl* materi
 	{
 		float& depth=c.geom.depth;
 		float test_depth=depth;
-		//save_max(max_depth,test_depth);
-		max_depth+=test_depth;
+		max_activation_depth +=test_depth;
 	}
 	//do_colide=false;
 }
@@ -158,7 +157,7 @@ bool	CPHActivationShape::	Activate							(const Fvector need_size,u16 steps,floa
 	CPHObject::activate();
 	ph_world->Freeze();
 	UnFreeze();
-	max_depth=0.f;
+	max_activation_depth =0.f;
 
 	dGeomUserDataSetObjectContactCallback(m_geom,GetMaxDepthCallback)			;
 	//ph_world->Step();
@@ -168,7 +167,7 @@ bool	CPHActivationShape::	Activate							(const Fvector need_size,u16 steps,floa
 	float	fnum_steps=float(steps);
 	float	fnum_steps_r=1.f/fnum_steps;
 	float	resolve_depth=0.01f;
-	float	max_vel=max_depth/fnum_it*fnum_steps_r/fixed_step;
+	float	max_vel= max_activation_depth /fnum_it*fnum_steps_r/fixed_step;
 	float	limit_l_vel=_max(_max(need_size.x,need_size.y),need_size.z)/fnum_it*fnum_steps_r/fixed_step;
 	if(limit_l_vel>default_l_limit)limit_l_vel=default_l_limit;
 	if(max_vel>limit_l_vel)
@@ -181,7 +180,7 @@ bool	CPHActivationShape::	Activate							(const Fvector need_size,u16 steps,floa
 	dGeomUserDataSetCallbackData(m_geom,this);
 	dGeomUserDataSetObjectContactCallback(m_geom,ActivateTestDepthCallback)			;
 	if(m_flags.test(flStaticEnvironment))dGeomUserDataAddObjectContactCallback(m_geom,StaticEnvironment);
-	max_depth=0.f;
+	max_activation_depth =0.f;
 	
 	Fvector from_size;
 	Fvector step_size,size;
@@ -204,13 +203,13 @@ bool	CPHActivationShape::	Activate							(const Fvector need_size,u16 steps,floa
 			ret=false;
 			for(int i=0;num_it>i;++i)
 			{
-				max_depth=0.f;
+				max_activation_depth =0.f;
 				ph_world->Step();
 				CHECK_POS(Position(),"pos after ph_world->Step()",false);
 				ph_world->CutVelocity(max_vel,max_a_vel);
 				CHECK_POS(Position(),"pos after CutVelocity",true);
 				//if(m==0&&i==0)ph_world->GetState(temp_state);
-				if(max_depth	<	resolve_depth) 
+				if(max_activation_depth <	resolve_depth)
 				{
 						ret=true;
 						break;
