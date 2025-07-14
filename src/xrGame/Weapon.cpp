@@ -2885,9 +2885,9 @@ const CameraRecoil& CWeapon::getCameraZoomRecoil(void) const
 	return zoom_cam_recoil;
 }
 
-bool CWeapon::IsUIForceHiding() const
+bool CWeapon::IsUIForceHiding()
 {
-	auto bino = smart_cast<CWeaponBinoculars*>(this);
+	CWeaponBinoculars* bino = cast_weapon_binoculars();
 
 	if (bino && IsZoomed())
 		return READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "zoom_hide_ui", true);
