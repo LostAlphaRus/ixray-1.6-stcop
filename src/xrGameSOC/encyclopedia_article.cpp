@@ -77,12 +77,13 @@ void CEncyclopediaArticle::load_shared	(LPCSTR)
 		data()->image.SetShader(InventoryUtilities::GetEquipmentIconsShader());
 
 		int UseHQ = EngineExternal()[EEngineExternalUI::HQIcons];
-		float x			= float(pSettings->r_u32(ltx, "inv_grid_x") * INV_GRID_WIDTH * (1 + UseHQ));
-		float y			= float(pSettings->r_u32(ltx, "inv_grid_y") * INV_GRID_HEIGHT * (1 + UseHQ));
-		float width		= float(pSettings->r_u32(ltx, "inv_grid_width") * INV_GRID_WIDTH * (1 + UseHQ));
-		float height	= float(pSettings->r_u32(ltx, "inv_grid_height") * INV_GRID_HEIGHT * (1 + UseHQ));
-
-		data()->image.GetUIStaticItem().SetTextureRect(Frect().set(x, y, width, height));
+		Frect				tex_rect;
+		tex_rect.x1			= float(pSettings->r_u32(ltx, "inv_grid_x") * INV_GRID_WIDTH * (1 + UseHQ));
+		tex_rect.y1			= float(pSettings->r_u32(ltx, "inv_grid_y") * INV_GRID_HEIGHT * (1 + UseHQ));
+		tex_rect.x2			= float(pSettings->r_u32(ltx, "inv_grid_width") * INV_GRID_WIDTH * (1 + UseHQ));
+		tex_rect.y2			= float(pSettings->r_u32(ltx, "inv_grid_height") * INV_GRID_HEIGHT * (1 + UseHQ));
+		tex_rect.rb.add(tex_rect.lt);
+		data()->image.GetUIStaticItem().SetTextureRect(tex_rect);
 	}
 	else 
 	{
