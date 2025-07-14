@@ -114,3 +114,6 @@ set(REDIMAGE_BIN  ${CMAKE_BINARY_DIR}/packages/IXRay.RedImage.0.1.1/bin/RedImage
 
 # MySQL Connector
 set(MYSQLCONNECTOR ${CMAKE_BINARY_DIR}/packages/IXRay.MySQLConnector.8.0.33/)
+
+# DLSS
+set(NVIDIA_DLSS ${CMAKE_BINARY_DIR}/packages/IXRay.DLSS.310.2.0/)
