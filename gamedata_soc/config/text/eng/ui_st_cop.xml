@@ -39,4 +39,7 @@
 	<string id="ui_ammo_types">
 		<text>Ammo</text>
 	</string>
+	<string id="st_kg">
+		<text>kg</text>
+	</string>
 </string_table>

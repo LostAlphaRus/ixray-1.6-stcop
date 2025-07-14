@@ -276,7 +276,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 		}
 	}
 
-	if (UICost != nullptr)
+	if (UICost)
 	{
 		if (IsGameTypeSingleCompatible() && item_price != u32(-1))
 		{
