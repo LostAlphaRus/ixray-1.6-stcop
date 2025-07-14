@@ -1200,7 +1200,7 @@ void CWeapon::UpdateAddonsVisibility()
 	
 
 	pWeaponVisual->CalculateBones_Invalidate				();
-	pWeaponVisual->CalculateBones							();
+	pWeaponVisual->CalculateBones							(TRUE);
 }
 
 bool CWeapon::Activate() 

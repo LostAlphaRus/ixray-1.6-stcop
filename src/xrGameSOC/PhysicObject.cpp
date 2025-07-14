@@ -82,7 +82,7 @@ void CPhysicObject::RunStartupAnim(CSE_Abstract *D)
 			PKinematicsAnimated->PlayCycle(*visual->startup_animation);
 		}
 		smart_cast<IKinematics*>(Visual())->CalculateBones_Invalidate();
-		smart_cast<IKinematics*>(Visual())->CalculateBones	();
+		smart_cast<IKinematics*>(Visual())->CalculateBones	(TRUE);
 
 	}
 }

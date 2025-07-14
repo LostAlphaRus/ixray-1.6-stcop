@@ -17,7 +17,7 @@ SGameMtl* CGameMtlLibrary::GetMaterialByIdx(u16 idx)
 {
     if (idx >= materials.size())
     {
-        if (idx != 65535 && idx != 12312)
+        if (idx != 65535)
             Msg("Material [%d] not found in library! ", (int)idx);
         return materials[0];
     }

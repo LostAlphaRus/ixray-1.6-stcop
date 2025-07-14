@@ -203,7 +203,7 @@ void CCharacterPhysicsSupport::in_NetSpawn(CSE_Abstract* e)
 									  ///анимация после спона, может быть вообще не назначена
 	}
 	k->CalculateBones_Invalidate();
-	k->CalculateBones();
+	k->CalculateBones(TRUE);
 	
 	CPHSkeleton::Spawn(e);
 	movement()->EnableCharacter();
