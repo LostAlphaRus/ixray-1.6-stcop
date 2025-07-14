@@ -15,6 +15,7 @@ class CUINewsItemWnd :public CUIWindow
 	CUITextWnd*				m_UICaption;
 	CUITextWnd*				m_UIText;
 	CUIStatic*				m_UIImage;
+	bool					m_legacyMode;
 
 public:
 					CUINewsItemWnd		();

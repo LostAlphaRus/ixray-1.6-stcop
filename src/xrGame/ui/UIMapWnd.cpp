@@ -51,6 +51,7 @@ CUIMapWnd::CUIMapWnd()
 	m_scroll_mode			= false;
 	m_nav_timing			= Device.dwTimeGlobal;
 	hint_wnd				= nullptr;
+	m_text_hint				= nullptr;
 	g_map_wnd				= this;
 }
 
@@ -59,6 +60,7 @@ CUIMapWnd::~CUIMapWnd()
 	delete_data( m_ActionPlanner );
 	delete_data( m_GameMaps );
 	delete_data( m_map_location_hint );
+	delete_data( m_text_hint );
 /*
 #ifdef DEBUG
 	delete_data( m_dbg_text_hint );
@@ -113,14 +115,14 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	}
 
 	m_scroll_mode = (uiXml.ReadAttribInt(start_from, 0, "scroll_enable", 0) == 1)? true : false;
-	if ( m_scroll_mode || EngineExternal().ShadowOfChernobylMode() )
+	if ( m_scroll_mode || useShadowOfChernobylMap )
 	{
 		float dx, dy, sx, sy;
 		xr_strconcat(pth,start_from,":main_map_frame");
 		dx = uiXml.ReadAttribFlt( pth, 0, "dx", 0.0f );
 		dy = uiXml.ReadAttribFlt( pth, 0, "dy", 0.0f );
-		sx = uiXml.ReadAttribFlt( pth, 0, "sx", 0.0f );
-		sy = uiXml.ReadAttribFlt( pth, 0, "sy", 0.0f );
+		sx = uiXml.ReadAttribFlt( pth, 0, "sx", -5.0f );
+		sy = uiXml.ReadAttribFlt( pth, 0, "sy", -5.0f );
 
 		CUIWindow* rect_parent			= useShadowOfChernobylMap ? m_UILevelFrame : m_UIMainFrame;
 		Frect r							= rect_parent->GetWndRect();
@@ -161,12 +163,17 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	}
 
 	xr_strconcat(pth,start_from,":map_hint_item");
+	m_map_location_hint = new CUIMapLocationHint();
+	m_map_location_hint->Init(uiXml, pth);
+	m_map_location_hint->SetAutoDelete(false);
+
+	xr_strconcat(pth, start_from, ":main_wnd:text_hint");
 	if (uiXml.NavigateToNode(pth))
 	{
-		m_map_location_hint = new CUIMapLocationHint();
-		m_map_location_hint->Init(uiXml, pth);
-		m_map_location_hint->SetAutoDelete(false);
+		m_text_hint = new CUITextWnd();
+		xml_init.InitTextWnd(uiXml, pth, 0, m_text_hint);
 	}
+
 // Load maps
 
 	m_GlobalMap								= new CUIGlobalMap(this);
@@ -378,7 +385,9 @@ void CUIMapWnd::MoveMap( Fvector2 const& pos_delta )
 void CUIMapWnd::Draw()
 {
 	inherited::Draw();
-/*
+	if (m_text_hint)
+		m_text_hint->Draw();
+	/*
 #ifdef DEBUG
 	m_dbg_text_hint->Draw	();
 	m_dbg_info->Draw		();
@@ -390,9 +399,6 @@ void CUIMapWnd::Draw()
 
 void CUIMapWnd::MapLocationRelcase(CMapLocation* ml)
 {
-	if (!m_map_location_hint)
-		return;
-
 	CUIWindow*	owner = m_map_location_hint->GetOwner();
 	if (owner)
 	{
@@ -404,9 +410,6 @@ void CUIMapWnd::MapLocationRelcase(CMapLocation* ml)
 
 void CUIMapWnd::DrawHint()
 {
-	if (!m_map_location_hint)
-		return;
-
 	CUIWindow*	owner = m_map_location_hint->GetOwner();
 	if ( owner )
 	{
@@ -739,7 +742,7 @@ void CUIMapWnd::ViewActor()
 
 void CUIMapWnd::ShowHintStr(CUIWindow* parent, LPCSTR text) //map name
 {
-	if(!m_map_location_hint || m_map_location_hint->GetOwner())
+	if(m_map_location_hint->GetOwner())
 		return;
 
 	m_map_location_hint->SetInfoStr		(text);
@@ -749,9 +752,6 @@ void CUIMapWnd::ShowHintStr(CUIWindow* parent, LPCSTR text) //map name
 
 void CUIMapWnd::ShowHintSpot( CMapSpot* spot )
 {
-	if (!m_map_location_hint)
-		return;
-
 	CUIWindow* owner = m_map_location_hint->GetOwner();
 	if ( !owner )
 	{
@@ -785,9 +785,6 @@ void CUIMapWnd::ShowHintTask( CGameTask* task, CUIWindow* owner )
 
 void CUIMapWnd::ShowHint( bool extra )
 {
-	if (!m_map_location_hint)
-		return;
-
 	Frect vis_rect;
 	if ( extra )
 	{
@@ -807,7 +804,7 @@ void CUIMapWnd::ShowHint( bool extra )
 
 void CUIMapWnd::HideHint(CUIWindow* parent)
 {
-	if(m_map_location_hint && m_map_location_hint->GetOwner() == parent)
+	if(m_map_location_hint->GetOwner() == parent)
 	{
 		HideCurHint();
 	}
@@ -815,16 +812,13 @@ void CUIMapWnd::HideHint(CUIWindow* parent)
 
 void CUIMapWnd::HideCurHint()
 {
-	if (m_map_location_hint)
-		m_map_location_hint->SetOwner( nullptr );
+	m_map_location_hint->SetOwner( nullptr );
 }
 
 void CUIMapWnd::Hint(const shared_str& text)
 {
-	/*
-#ifdef DEBUG
-	m_dbg_text_hint->SetTextST( *text );
-#endif // DEBUG/**/
+	if (m_text_hint)
+		m_text_hint->SetTextST(*text);
 }
 
 void CUIMapWnd::Reset()

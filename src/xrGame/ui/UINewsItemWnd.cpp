@@ -8,7 +8,9 @@
 #include "../../xrUI/UIHelper.h"
 
 CUINewsItemWnd::CUINewsItemWnd()
-{}
+{
+	m_legacyMode = false;
+}
 
 CUINewsItemWnd::~CUINewsItemWnd()
 {}
@@ -22,9 +24,14 @@ void CUINewsItemWnd::Init(CUIXml& uiXml, LPCSTR start_from)
 	uiXml.SetLocalRoot			( node );
 
 	m_UIImage					= UIHelper::CreateStatic( uiXml, "image", this );
-	m_UICaption					= UIHelper::CreateTextWnd( uiXml, "caption_static", this );
-	m_UIText					= UIHelper::CreateTextWnd( uiXml, "text_static", this );
-	m_UIDate					= UIHelper::CreateTextWnd( uiXml, "date_static", this );
+
+	if (uiXml.NavigateToNode("caption_static"))
+		m_UICaption = UIHelper::CreateTextWnd(uiXml, "caption_static", this);
+	else
+		m_legacyMode = true;
+
+	m_UIText					= UIHelper::CreateTextWnd( uiXml, uiXml.NavigateToNode("text_static") ? "text_static" : "text_cont", this);
+	m_UIDate					= UIHelper::CreateTextWnd( uiXml, uiXml.NavigateToNode("date_static") ? "date_static" : "date_text_cont", this);
 
 	uiXml.SetLocalRoot( stored_root );
 }
@@ -39,12 +46,15 @@ void CUINewsItemWnd::Setup			(GAME_NEWS_DATA& news_data)
 	m_UIDate->SetText(str);
 	m_UIDate->AdjustWidthToText();
 
-	m_UICaption->SetTextST	(news_data.news_caption.c_str());
-	Fvector2 pos			= m_UICaption->GetWndPos();
-	pos.x					= m_UIDate->GetWndPos().x + m_UIDate->GetWndSize().x + 5.0f;
-	m_UICaption->SetWndPos	(pos);
-	m_UICaption->SetWidth	( _min( m_UIText->GetWidth() - m_UIDate->GetWidth() - 5.0f, m_UICaption->GetWidth() ) );
-	
+	if (m_UICaption)
+	{
+		m_UICaption->SetTextST(news_data.news_caption.c_str());
+		Fvector2 pos = m_UICaption->GetWndPos();
+		pos.x = m_UIDate->GetWndPos().x + m_UIDate->GetWndSize().x + 5.0f;
+		m_UICaption->SetWndPos(pos);
+		m_UICaption->SetWidth(_min(m_UIText->GetWidth() - m_UIDate->GetWidth() - 5.0f, m_UICaption->GetWidth()));
+	}
+
 	m_UIText->SetTextST				(news_data.news_text.c_str());
 	m_UIText->AdjustHeightToText	();
 	float h1						= m_UIText->GetWndPos().y + m_UIText->GetHeight() + 6.0f;
