@@ -421,7 +421,6 @@ void CGamePersistent::update_logo_intro			()
 
 void CGamePersistent::start_game_intro		()
 {
-	load_screen_renderer.stop();
 #if 1//def DEBUG
 	if (0!=strstr(Core.Params,"-nointro")){
 		m_intro_event			= 0;
@@ -430,6 +429,7 @@ void CGamePersistent::start_game_intro		()
 #endif
 	if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame<=2){
 		m_intro_event.bind		(this,&CGamePersistent::update_game_intro);
+		load_screen_renderer.stop();
 		if (0==_stricmp(m_game_params.m_new_or_load,"new")){
 			VERIFY				(NULL==m_intro);
 			m_intro				= new CUISequencer();

@@ -44,6 +44,9 @@ TEMPLATE_SPECIALIZATION
 void _detail::callback		(CBoneInstance *B)
 {
 	CAI_Stalker*			A = static_cast<CAI_Stalker*>(B->callback_param());
+	if (!A)
+		return;
+
 	VERIFY					(_valid(B->mTransform));
 	Fvector c				= B->mTransform.c;
 	Fmatrix					spin;

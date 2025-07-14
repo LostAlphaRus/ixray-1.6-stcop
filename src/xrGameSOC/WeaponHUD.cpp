@@ -125,11 +125,11 @@ MotionID CWeaponHUD::animGet(LPCSTR name)
 void CWeaponHUD::animDisplay(MotionID M, BOOL bMixIn)
 {
 	if(m_bVisible){
-		IKinematics* PKinematics						= smart_cast<IKinematics*>(Visual());
 		IKinematicsAnimated* PKinematicsAnimated		= smart_cast<IKinematicsAnimated*>(Visual());
 		VERIFY											(PKinematicsAnimated);
 		PKinematicsAnimated->PlayCycle					(M,bMixIn);
-		PKinematics->CalculateBones_Invalidate			();
+		PKinematicsAnimated->dcast_PKinematics()->CalculateBones_Invalidate();
+		PKinematicsAnimated->dcast_PKinematics()->CalculateBones(TRUE);
 	}
 }
 void CWeaponHUD::animPlay			(MotionID M,	BOOL bMixIn, CHudItem* W, u32 state)
@@ -155,8 +155,16 @@ void CWeaponHUD::Update				()
 {
 	if(m_bStopAtEndAnimIsRunning && Device.dwTimeGlobal > m_dwAnimEndTime)
 		StopCurrentAnim				();
-	if(m_bVisible)
-		smart_cast<IKinematicsAnimated*>(Visual())->UpdateTracks		();
+	if (m_bVisible)
+	{
+		IKinematicsAnimated* ka = Visual()->dcast_PKinematicsAnimated();
+		if (ka)
+		{
+			ka->UpdateTracks();
+			ka->dcast_PKinematics()->CalculateBones_Invalidate();
+			ka->dcast_PKinematics()->CalculateBones(TRUE);
+		}
+	}
 }
 
 void CWeaponHUD::StopCurrentAnim()
