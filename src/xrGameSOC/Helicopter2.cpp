@@ -5,12 +5,13 @@
 #include "game_object_space.h"
 #include "../include/xrRender/Kinematics.h"
 #include "../xrEngine/LightAnimLibrary.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "clsid_game.h"
 #include "../xrScripts/script_callback_ex.h"
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
+#include "physics_game.h"
 
 bool CHelicopter::isObjectVisible			(CObject* O)
 {
@@ -244,9 +245,9 @@ void	CHelicopter::Hit							(SHit* pHDS)
 
 }
 
-void CHelicopter::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
+void CHelicopter::PHHit(SHit& H)
 {
-	if(!g_Alive())inherited::PHHit(P,dir,who,element,p_in_object_space,impulse,hit_type);
+	if (!g_Alive())inherited::PHHit(H);
 }
 
 
@@ -255,7 +256,7 @@ void CHelicopter::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 
-#include "extendedgeom.h"
+#include "../xrPhysics/extendedgeom.h"
 void CollisionCallbackDead(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
 {	
 	do_colide=true; 

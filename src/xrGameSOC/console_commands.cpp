@@ -23,7 +23,7 @@
 #include "xrServer_Objects.h"
 #include "ui/UIMainIngameWnd.h"
 #include "PhysicsGamePars.h"
-#include "phworld.h"
+#include "../xrPhysics/phworld.h"
 #include "../xrEngine/string_table.h"
 #include "autosave_manager.h"
 #include "ai_space.h"
@@ -40,6 +40,7 @@
 #include "cameralook.h"
 #include "../xrUI/Widgets/UIStatic.h"
 #include "GameSpy/GameSpy_Full.h"
+#include "../xrPhysics/console_vars.h"
 
 #ifndef MASTER_GOLD
 #	include "PHDebug.h"
@@ -72,7 +73,6 @@ extern	int		g_dwInputUpdateDelta	;
 extern	BOOL	g_ShowAnimationInfo		;
 #endif // DEBUG
 extern	BOOL	g_bShowHitSectors		;
-extern	BOOL	g_bDebugDumpPhysicsStep	;
 extern	ESingleGameDifficulty g_SingleGameDifficulty;
 extern	UI_API	BOOL	g_show_wnd_rect2			;
 //-----------------------------------------------------------
@@ -1150,24 +1150,33 @@ public:
 		monster->set_show_debug_info (u8(value2));
 	}
 };
-class CCC_DbgPhTrackObj : public IConsole_Command {
-public:
-	CCC_DbgPhTrackObj(LPCSTR N) : IConsole_Command(N)  { };
-	virtual void Execute(LPCSTR args/**/) {
-			ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject,TRUE);
-			PH_DBG_SetTrackObject(args);
-			//CObject* O= Level().Objects.FindObjectByName(args);
-			//if(O)
-			//{
-			//	PH_DBG_SetTrackObject(*(O->cName()));
-			//	ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject,TRUE);
-			//}
 
+void PH_DBG_SetTrackObject();
+extern string64 s_dbg_trace_obj_name;
+class CCC_DbgPhTrackObj : public CCC_String {
+public:
+	CCC_DbgPhTrackObj(LPCSTR N) : CCC_String(N, s_dbg_trace_obj_name, sizeof(s_dbg_trace_obj_name)) { };
+	virtual void Execute(LPCSTR args/**/) {
+		CCC_String::Execute(args);
+		if (!xr_strcmp(args, "none"))
+		{
+			ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, FALSE);
+			return;
 		}
-	
+		ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject, TRUE);
+		PH_DBG_SetTrackObject();
+		//CObject* O= Level().Objects.FindObjectByName(args);
+		//if(O)
+		//{
+		//	PH_DBG_SetTrackObject(*(O->cName()));
+		//	ph_dbg_draw_mask1.set(ph_m1_DbgTrackObject,TRUE);
+		//}
+
+	}
+
 	//virtual void	Info	(TInfo& I)		
 	//{
-	//	strcpy_s(I,"restart game fast"); 
+	//	xr_strcpy(I,"restart game fast"); 
 	//}
 };
 #endif
@@ -1192,7 +1201,7 @@ public:
 		{};
 	  virtual void	Execute	(LPCSTR args)
 	  {
-		  if(!ph_world)	return;
+		  if(!physics_world())	return;
 #ifndef DEBUG
 		  if (g_pGameLevel && Level().game && GameID() != GAME_SINGLE)
 		  {
@@ -1200,12 +1209,12 @@ public:
 			  return;
 		  }
 #endif
-		  ph_world->SetGravity(float(atof(args)));
+		  physics_world()->SetGravity(float(atof(args)));
 	  }
 	  virtual void	Status	(TStatus& S)
 	{	
-		if(ph_world)
-			sprintf_s	(S,"%3.5f",ph_world->Gravity());
+		if(physics_world())
+			sprintf_s	(S,"%3.5f", physics_world()->Gravity());
 		else
 			sprintf_s	(S,"%3.5f",default_world_gravity);
 		while	(xr_strlen(S) && ('0'==S[xr_strlen(S)-1]))	S[xr_strlen(S)-1] = 0;
@@ -1220,11 +1229,17 @@ public:
 	  IConsole_Command(N)
 	  {};
 	  virtual void	Execute	(LPCSTR args)
-	  {
-		  float				step_count = (float)atof(args);
-		  clamp				(step_count,50.f,200.f);
-		  CPHWorld::SetStep(1.f/step_count);
-	  }
+	{
+		float				step_count = (float)atof(args);
+#ifndef		DEBUG
+		clamp(step_count, 50.f, 200.f);
+#endif
+		//IPHWorld::SetStep(1.f/step_count);
+		ph_console::ph_step_time = 1.f / step_count;
+		//physics_world()->SetStep(1.f/step_count);
+		if (physics_world())
+			physics_world()->SetStep(ph_console::ph_step_time);
+	}
 	  virtual void	Status	(TStatus& S)
 	  {	
 		 	sprintf_s	(S,"%3.5f",1.f/fixed_step);	  
@@ -1720,10 +1735,10 @@ void CCC_RegisterCommands()
 #ifdef DEBUG
 	CMD1(CCC_PHGravity,			"ph_gravity"																					);
 	CMD4(CCC_FloatBlock,		"ph_timefactor",				&phTimefactor				,			0.0001f	,1000.f			);
-	CMD4(CCC_FloatBlock,		"ph_break_common_factor",		&phBreakCommonFactor		,			0.f		,1000000000.f	);
-	CMD4(CCC_FloatBlock,		"ph_rigid_break_weapon_factor",	&phRigidBreakWeaponFactor	,			0.f		,1000000000.f	);
-	CMD4(CCC_Integer,			"ph_tri_clear_disable_count",	&ph_tri_clear_disable_count	,			0,		255				);
-	CMD4(CCC_FloatBlock,		"ph_tri_query_ex_aabb_rate",	&ph_tri_query_ex_aabb_rate	,			1.01f	,3.f			);
+	CMD4(CCC_FloatBlock,		"ph_break_common_factor",		&ph_console::phBreakCommonFactor		,			0.f		,1000000000.f	);
+	CMD4(CCC_FloatBlock,		"ph_rigid_break_weapon_factor",	&ph_console::phRigidBreakWeaponFactor	,			0.f		,1000000000.f	);
+	CMD4(CCC_Integer,			"ph_tri_clear_disable_count",	&ph_console::ph_tri_clear_disable_count	,			0,		255				);
+	CMD4(CCC_FloatBlock,		"ph_tri_query_ex_aabb_rate",	&ph_console::ph_tri_query_ex_aabb_rate	,			1.01f	,3.f			);
 #endif // DEBUG
 
 
@@ -1827,7 +1842,7 @@ void CCC_RegisterCommands()
 	CMD4(CCC_Integer,	"show_wnd_rect_all",			&g_show_wnd_rect2, 0, 1);
 	CMD1(CCC_Crash,		"crash"						);
 	CMD4(CCC_Integer,		"dbg_show_ani_info",	&g_ShowAnimationInfo,	0, 1)	;
-	CMD4(CCC_Integer,		"dbg_dump_physics_step", &g_bDebugDumpPhysicsStep, 0, 1);
+	CMD4(CCC_Integer,		"dbg_dump_physics_step", &ph_console::g_bDebugDumpPhysicsStep, 0, 1);
 #endif
 	CMD4(CCC_Integer, "g_actor_shadow", &g_actor_shadow, 0, 1);
 

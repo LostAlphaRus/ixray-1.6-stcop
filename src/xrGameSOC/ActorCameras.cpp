@@ -16,11 +16,11 @@
 #include "level.h"
 #include "../xrCore/Collision/cl_intersect.h"
 #include "../xrEngine/GameMtlLib.h"
-#include "elevatorstate.h"
+#include "../xrPhysics/elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
-#include "phcollidevalidator.h"
-#include "PHShell.h"
+#include "../xrPhysics/phcollidevalidator.h"
+#include "../xrPhysics/PHShell.h"
 void CActor::cam_Set	(EActorCameras style)
 {
 	CCameraBase* old_cam = cam_Active();
@@ -69,8 +69,8 @@ void CActor::camUpdateLadder(float dt)
 		cam_yaw								+= delta * _min(dt*10.f,1.f) ;
 	}
 
-	CElevatorState* es = character_physics_support()->movement()->ElevatorState();
-	if(es && es->State()==CElevatorState::clbClimbingDown)
+	IElevatorState* es = character_physics_support()->movement()->ElevatorState();
+	if(es && es->State()==clbClimbingDown)
 	{
 		float &cam_pitch					= cameras[eacFirstEye]->pitch;
 		const float ldown_pitch				= cameras[eacFirstEye]->lim_pitch.y;
@@ -126,8 +126,8 @@ ICF BOOL test_point(xrXRC& xrc, const Fmatrix& xform, const Fmatrix33& mat, cons
 	return FALSE;
 }
 
-#include "physics.h"
-#include "PHActivationShape.h"
+#include "../xrPhysics/physics.h"
+#include "../xrPhysics/PHActivationShape.h"
 #include "debug_renderer.h"
 void CActor::cam_Update(float dt, float fFOV)
 {
@@ -215,7 +215,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	float flCurrentPlayerY	= xform.c.y;
 
 	// Smooth out stair step ups
-	if ((character_physics_support()->movement()->Environment()==peOnGround) && (flCurrentPlayerY-fPrevCamPos>0)){
+	if ((character_physics_support()->movement()->Environment()==CPHMovementControl::peOnGround) && (flCurrentPlayerY-fPrevCamPos>0)){
 		fPrevCamPos			+= dt*1.5f;
 		if (fPrevCamPos > flCurrentPlayerY)
 			fPrevCamPos		= flCurrentPlayerY;

@@ -602,7 +602,7 @@ bool CScriptEntity::bfScriptAnimation()
 
 				result			= blend;
 				if (m_use_animation_movement_controller)
-					m_object->create_anim_mov_ctrl	(blend);
+					m_object->create_anim_mov_ctrl	( blend );
 			}
 
 			return				(true);

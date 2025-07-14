@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #ifdef DEBUG
-#include "ode_include.h"
+#include "../xrPhysics/ode_include.h"
 #include "../xrEngine/StatGraph.h"
 #include "PHDebug.h"
 #endif
@@ -10,7 +10,7 @@
 #include "car.h"
 #include "../xrCore/net_utils.h"
 #include "../include/xrrender/kinematics.h"
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #include "game_object_space.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
@@ -31,13 +31,19 @@ bool CCar::DoorHit(float P,s16 element,ALife::EHitType hit_type)
 void CCar::SDoor::Init()
 {
 	update=false;
-	joint=bone_map.find(bone_id)->second.joint;
-	if(!joint) return;
-	R_ASSERT2(dJointGetType(joint->GetDJoint())==dJointTypeHinge,"Wrong door joint!!! Only simple joint valid for a door and only one axis can be active, check other axes are zerro limited !!!");
+
+	if (!bone_map.contains(bone_id))
+		return;
+
+	joint = bone_map.find(bone_id)->second.joint;
+	if (!joint)
+		return;
+
+	R_ASSERT2(joint->IsHingeJoint(), "Wrong door Joint!!! Only simple Joint valid for a door and only one axis can be active, check other axes are zerro limited !!!");
 	joint->SetBackRef(&joint);
 	Fvector door_position,door_axis;
-	dJointGetHingeAnchor (joint->GetDJoint(),(float*) &door_position);
-	dJointGetHingeAxis (joint->GetDJoint(), (float*) &door_axis);
+	joint->GetAnchorDynamic(door_position);
+	joint->GetAxisDirDynamic(0, door_axis);
 	door_position.sub(pcar->XFORM().c);
 
 	Fmatrix door_transform;
@@ -300,35 +306,37 @@ default:	return;
 	}
 }
 
-void CCar::SDoor::ApplyTorque(float atorque,float aa_vel)
+void CCar::SDoor::ApplyTorque(float atorque, float aa_vel)
 {
-	if(!joint||!joint->bActive)return;
+	if (!joint || !joint->bActive)return;
 	joint->PSecond_element()->Enable();
-	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,atorque);
-	dJointSetHingeParam(joint->GetDJoint(),dParamVel,aa_vel*pos_open);
+	joint->SetForce(atorque, 0);
+	joint->SetVelocity(aa_vel * pos_open, 0);
+
 }
 void CCar::SDoor::ApplyOpenTorque()
 {
-	if(!joint->bActive)return;
+	if (!joint->bActive)return;
 	joint->PSecond_element()->Enable();
-	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,torque);
-	dJointSetHingeParam(joint->GetDJoint(),dParamVel,a_vel*pos_open);
+	joint->SetForce(torque, 0);
+	joint->SetVelocity(a_vel * pos_open, 0);
 }
 
 void CCar::SDoor::ApplyCloseTorque()
 {
-	if(!joint->bActive)return;
+	if (!joint->bActive)return;
 	joint->PSecond_element()->Enable();
-	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,torque);
-	dJointSetHingeParam(joint->GetDJoint(),dParamVel,-a_vel*pos_open);
+	joint->SetForce(torque, 0);
+	joint->SetVelocity(-a_vel * pos_open, 0);
 }
 
 void CCar::SDoor::NeutralTorque(float atorque)
 {
-	if(!joint->bActive)return;
-	//joint->PSecond_element()->Enable();
-	dJointSetHingeParam(joint->GetDJoint(),dParamFMax,atorque);
-	dJointSetHingeParam(joint->GetDJoint(),dParamVel,0);
+	if (!joint->bActive)
+		return;
+
+	joint->SetForce(atorque, 0);
+	joint->SetVelocity(0, 0);
 }
 
 
@@ -379,7 +387,7 @@ void CCar::SDoor::ClosingToClosed()
 float CCar::SDoor::GetAngle()
 {
 	if(!joint||!joint->bActive) return 0.f;
-	return dJointGetHingeAngle(joint->GetDJoint());
+	return joint->GetAxisAngle(0);
 }
 
 
@@ -639,24 +647,28 @@ void CCar::SDoor::Break()
 	}
 	if(joint)
 	{
-		dVector3 v;float sf,df;
-		dJointID dj=joint->GetDJoint();
-		dJointGetHingeAxis(dj,v);
-		v[0]+=0.1f;v[1]+=0.1f;v[2]+=0.1f;
-		dNormalize3(v);
-		dJointSetHingeAxis(dj,v[0],v[1],v[2]);
-		joint->GetJointSDfactors(sf,df);
-		sf/=30.f;df*=8.f;
-		joint->SetJointSDfactors(sf,df);
-		joint->GetAxisSDfactors(sf,df,0);
-		sf/=20.f;df*=8.f;
-		joint->SetAxisSDfactors(sf,df,0);
-		float lo,hi;
-		joint->GetLimits(lo,hi,0);
-		if(pos_open>0.f)
-			joint->SetLimits(lo+M_PI/4.f,hi,0);
+		Fvector v;
+		float sf, df;
+		joint->GetAxisDirDynamic(0, v);
+
+		v[0] += 0.1f; v[1] += 0.1f; v[2] += 0.1f;
+		VERIFY(v.magnitude() > EPS_S);
+		v.normalize();
+
+		joint->SetAxisDir(v, 0);
+
+		joint->GetJointSDfactors(sf, df);
+		sf /= 30.f; df *= 8.f;
+		joint->SetJointSDfactors(sf, df);
+		joint->GetAxisSDfactors(sf, df, 0);
+		sf /= 20.f; df *= 8.f;
+		joint->SetAxisSDfactors(sf, df, 0);
+		float lo, hi;
+		joint->GetLimits(lo, hi, 0);
+		if (pos_open > 0.f)
+			joint->SetLimits(lo + M_PI / 4.f, hi, 0);
 		else
-			joint->SetLimits(lo,hi-M_PI/4.f,0);
+			joint->SetLimits(lo, hi - M_PI / 4.f, 0);
 	}
 	//ApplyOpenTorque();
 	state=broken;

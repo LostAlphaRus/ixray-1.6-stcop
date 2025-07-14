@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../xrParticles/stdafx.h"
 #include "../xrParticles/ParticlesObject.h"
-#include "Physics.h"
+#include "../xrPhysics/Physics.h"
 
 #ifdef DEBUG
 #	include "../xrEngine/StatGraph.h"
@@ -26,15 +26,13 @@
 #include "CarWeapon.h"
 #include "game_object_space.h"
 #include "../xrEngine/GameMtlLib.h"
-#include "PHActivationShape.h"
+#include "../xrPhysics/IActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "UIGameCustom.h"
 
 BONE_P_MAP CCar::bone_map=BONE_P_MAP();
-
-extern CPHWorld*	ph_world;
 
 CCar::CCar()
 {
@@ -340,30 +338,24 @@ void CCar::RestoreNetState(CSE_PHSkeleton* po)
 	inv.set(restored_form);
 	inv.invert();
 	replace.mul(sof,inv);
-////////////////////////////////////////////////////////////////////
-	{
-		
-		PKinematics(Visual())->CalculateBones_Invalidate();
-		PKinematics(Visual())->CalculateBones(TRUE);
-		PPhysicsShell()->DisableCollision();
-		CPHActivationShape activation_shape;//Fvector start_box;m_PhysicMovementControl.Box().getsize(start_box);
 
-		Fvector center;Center(center);
-		Fvector obj_size;BoundingBox().getsize(obj_size);
-		get_box(PPhysicsShell(),restored_form,obj_size,center);
-		replace.transform(center);
-		activation_shape.Create(center,obj_size,this);
-		activation_shape.set_rotation(sof);
-		activation_shape.Activate(obj_size,1,1.f,M_PI/8.f);
-		Fvector dd;
-		dd.sub(activation_shape.Position(),center);
-		activation_shape.Destroy();
-		sof.c.add(dd);
-		PPhysicsShell()->EnableCollision();
-	}
-////////////////////////////////////////////////////////////////////
+	PKinematics(Visual())->CalculateBones_Invalidate();
+	PKinematics(Visual())->CalculateBones(TRUE);
+	m_pPhysicsShell->DisableCollision();
+
+	Fvector center; Center(center);
+	Fvector obj_size; BoundingBox().getsize(obj_size);
+
+	get_box(m_pPhysicsShell, restored_form, obj_size, center);
+
+	Fvector ap = Fvector().set(0, 0, 0);
+
+	ActivateShapePhysShellHolder(this, XFORM(), obj_size, center, ap);
+
+	m_pPhysicsShell->EnableCollision();
+
 	replace.mul(sof,inv);
-	PPhysicsShell()->TransformPosition(replace);
+	PPhysicsShell()->TransformPosition(replace, mh_clear);
 	if(enable)PPhysicsShell()->Enable();
 	else PPhysicsShell()->Disable();
 	PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
@@ -557,25 +549,26 @@ void CCar::ChangeCondition	(float fDeltaCondition)
 		CurrentGameUI()->UIMainIngameWnd->CarPanel().SetCarHealth(GetfHealth()/* /100.f */);
 }
 
-void CCar::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type)
+void CCar::PHHit(SHit& H)
 {
-	if(!m_pPhysicsShell)	return;
-	if(m_bone_steer==element) return;
-	if(CPHUpdateObject::IsActive())
+	if (!m_pPhysicsShell)	return;
+	if (m_bone_steer == H.bone()) return;
+	if (CPHUpdateObject::IsActive())
 	{
-		Fvector vimpulse;vimpulse.set(dir);
-		vimpulse.mul(impulse);
-		vimpulse.y *=GravityFactorImpulse();
-		float mag=vimpulse.magnitude();
-		if(!fis_zero(mag))
+		Fvector vimpulse; vimpulse.set(H.direction());
+		vimpulse.mul(H.phys_impulse());
+		vimpulse.y *= GravityFactorImpulse();
+		float mag = vimpulse.magnitude();
+		if (!fis_zero(mag))
 		{
-			 vimpulse.mul(1.f/mag);
-			 m_pPhysicsShell->applyHit(p_in_object_space,vimpulse,mag,element,hit_type);
+			vimpulse.mul(1.f / mag);
+			m_pPhysicsShell->applyHit(H.bone_space_position(), vimpulse, mag, H.bone(), H.type());
 		}
-		
-	} else
+
+	}
+	else
 	{
-		m_pPhysicsShell->applyHit(p_in_object_space,dir,impulse,element,hit_type);
+		m_pPhysicsShell->applyHit(H.bone_space_position(), H.direction(), H.phys_impulse(), H.bone(), H.type());
 	}
 }
 
@@ -1350,30 +1343,28 @@ void CCar::TransmissionDown()
 
 
 
-void CCar::PhTune(dReal step)
+void CCar::PhTune(float step)
 {
-	
-
-
-	for(u16 i=PPhysicsShell()->get_ElementsNumber();i!=0;i--)	
+	for (u16 i = PPhysicsShell()->get_ElementsNumber(); i != 0; i--)
 	{
-		CPhysicsElement* e=PPhysicsShell()->get_ElementByStoreOrder(i-1);
-		if(e->isActive()&&e->isEnabled())dBodyAddForce(e->get_body(),0,e->getMass()*AntiGravityAccel(),0);
+		CPhysicsElement* e = PPhysicsShell()->get_ElementByStoreOrder(i - 1);
+		if (e->isActive() && e->isEnabled())
+			e->applyForce(0, e->getMass() * AntiGravityAccel(), 0);
 	}
 }
 float CCar::EffectiveGravity()
 {
-	float g= ph_world->Gravity();
+	float g= physics_world()->Gravity();
 	if(CPHUpdateObject::IsActive())g*=0.5f;
 	return g;
 }
 float CCar::AntiGravityAccel()
 {
-	return ph_world->Gravity()-EffectiveGravity();
+	return physics_world()->Gravity() - EffectiveGravity();
 }
 float CCar::GravityFactorImpulse()
 {
-	return _sqrt(EffectiveGravity()/ph_world->Gravity());
+	return _sqrt(EffectiveGravity()/physics_world()->Gravity());
 }
 void CCar::UpdateBack()
 {
@@ -1719,7 +1710,7 @@ void CCar::ResetScriptData(void	*P)
 	CScriptEntity::ResetScriptData(P);
 }
 
-void CCar::PhDataUpdate(dReal step)
+void CCar::PhDataUpdate(float step)
 {
 		if(m_repairing)Revert();
 		LimitWheels();
@@ -2020,11 +2011,12 @@ void	CCar::		Die					(CObject* who)
 
 Fvector	CCar::		ExitVelocity				()
 {
-	CPhysicsShell		*P=PPhysicsShell();
-	if(!P||!P->isActive())return Fvector().set(0,0,0);
-	CPhysicsElement *E=P->get_ElementByStoreOrder(0);
-	Fvector v=ExitPosition();
-	dBodyGetPointVel(E->get_body(),v.x,v.y,v.z,cast_fp(v));
+	CPhysicsShell* P = PPhysicsShell();
+	if (!P || !P->isActive())return Fvector().set(0, 0, 0);
+	CPhysicsElement* E = P->get_ElementByStoreOrder(0);
+	Fvector v = ExitPosition();
+
+	E->GetPointVel(v, v);
 	return v;
 }
 

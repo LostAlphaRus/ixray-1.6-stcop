@@ -1,10 +1,11 @@
 #pragma once
 #include "entity.h"
-#include "PHDynamicData.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PHDynamicData.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/PHUpdateObject.h"
 #include "script_entity.h"
 #include "CarLights.h"
-#include "phobject.h"
+#include "../xrPhysics/phobject.h"
 #include "holder_custom.h"
 #include "PHSkeleton.h"
 #include "DamagableItem.h"
@@ -80,8 +81,8 @@ static	const u16				cAsCallsnum						=3;
 ////////////////////////////////////////////////////////////////////////
 	static	BONE_P_MAP					bone_map;					//interface for PhysicsShell
 	static	void 						ActorObstacleCallback		(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
-	virtual void						PhDataUpdate				(dReal step)			;
-	virtual void						PhTune						(dReal step)			;
+	virtual void						PhDataUpdate				(float step)			;
+	virtual void						PhTune						(float step)			;
 /////////////////////////////////////////////////////////////////////////
 	virtual void						ApplyDamage					(u16 level)				;
 	virtual	float						Health						()						{return GetfHealth();}
@@ -89,7 +90,7 @@ static	const u16				cAsCallsnum						=3;
 	virtual void						StartTimerEffects			()						{};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual CPhysicsShellHolder*		PPhysicsShellHolder			()						{return static_cast<CPhysicsShellHolder*>(this);}
-	virtual CPHCollisionDamageReceiver	*PHCollisionDamageReceiver	()						{return static_cast<CPHCollisionDamageReceiver*>(this);}
+	virtual ICollisionDamageReceiver	*PHCollisionDamageReceiver	()						{return this;}
 
 ////////////////////////////////////////////////////////////////////////
 	CCarDamageParticles					m_damage_particles;
@@ -208,10 +209,7 @@ virtual void ApplyDamage			(u16 level);
 		float steering_velocity;
 		float steering_torque;
 		bool  limited;			//zero limited for idle steering drive
-		float GetSteerAngle()
-		{
-			return -pos_right*dJointGetHinge2Angle1 (pwheel->joint->GetDJoint());
-		}
+		float GetSteerAngle();
 		void	 Init		()						;
 		void	 SteerRight	()						;
 		void	 SteerLeft	()						;
@@ -514,7 +512,7 @@ IC	size_t				CurrentTransmission					(){return m_current_transmission_num;}
 	static void				cb_Steer					(CBoneInstance* B);
 	virtual	void			Hit							(SHit* pHDS);
 	virtual void			Die							(CObject* who);
-	virtual void PHHit									(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type/* =ALife::eHitTypeWound */);
+	virtual void PHHit									(SHit &H);
 			bool WheelHit								(float P,s16 element,ALife::EHitType hit_type);
 			bool DoorHit								(float P,s16 element,ALife::EHitType hit_type);
 public:

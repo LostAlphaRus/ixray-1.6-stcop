@@ -6,11 +6,12 @@
 
 #include "explosive.h"
 
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "entity.h"
 //#include "PSObject.h"
 #include "../xrParticles/stdafx.h"
 #include "../xrParticles/ParticlesObject.h"
+#include "../xrPhysics/IActivationShape.h"
 
 //для вызова статических функций поражения осколками
 #include "Weapon.h"
@@ -26,10 +27,10 @@
 #include "../xrEngine/StatGraph.h"
 #include "PHDebug.h"
 #endif
-#include "Physics.h"
-#include "MathUtils.h"
-#include "phvalidevalues.h"
-#include "PHActivationShape.h"
+#include "../xrPhysics/Physics.h"
+#include "../xrPhysics/MathUtils.h"
+#include "../xrPhysics/phvalidevalues.h"
+#include "../xrPhysics/PHActivationShape.h"
 #include "game_base_space.h"
 #define EFFECTOR_RADIUS 30.f
 const u16	TEST_RAYS_PER_OBJECT=5;
@@ -310,7 +311,7 @@ void CExplosive::Explode()
 {
 	VERIFY(0xffff != Initiator());
 	VERIFY(m_explosion_flags.test(flReadyToExplode));//m_bReadyToExplode
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	//m_bExploding = true;
 	m_explosion_flags.set(flExploding,TRUE);
 	cast_game_object()->processing_activate();
@@ -458,7 +459,7 @@ void CExplosive::GetExplVelocity(Fvector &v)
 void CExplosive::UpdateCL() 
 {
 	//VERIFY(!this->getDestroy());
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(!m_explosion_flags.test(flExploding)) return;// !m_bExploding
 	if(m_explosion_flags.test(flExploded))
 	{
@@ -616,7 +617,7 @@ void CExplosive::FindNormal(Fvector& normal)
 void CExplosive::StartLight	()
 {
 
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(m_fLightTime>0)
 	{
 		
@@ -632,7 +633,7 @@ void CExplosive::StartLight	()
 void CExplosive::StopLight		()
 {
 	if	(m_pLight){
-		VERIFY						(!ph_world->Processing());
+		VERIFY						(!physics_world()->Processing());
 		m_pLight->set_active		(false);
 		LightDestroy				();
 	}
@@ -732,16 +733,12 @@ void CExplosive::SetExplosionSize(const Fvector	&new_size)
 }
 void CExplosive::ActivateExplosionBox(const Fvector &size,Fvector &in_out_pos)
 {
-	CPhysicsShellHolder		*self_obj=smart_cast<CPhysicsShellHolder*>(cast_game_object());
+	CPhysicsShellHolder *self_obj= cast_game_object() ? cast_game_object()->cast_physics_shell_holder() : NULL;
+	if (!self_obj) return;
 	CPhysicsShell* self_shell=self_obj->PPhysicsShell();
+	if (!self_shell) return;
 	if(self_shell&&self_shell->isActive())self_shell->DisableCollision();
-	CPHActivationShape activation_shape;//Fvector start_box;m_PhysicMovementControl.Box().getsize(start_box);
-	activation_shape.Create(in_out_pos,size,self_obj);
-	dBodySetGravityMode(activation_shape.ODEBody(),0);
-	activation_shape.Activate(size,1,1.f,M_PI/8.f);
-	in_out_pos.set(activation_shape.Position());
-	activation_shape.Size(m_vExplodeSize);
-	activation_shape.Destroy();
+	ActivateShapeExplosive( self_obj, size, m_vExplodeSize, in_out_pos );
 	if(self_shell&&self_shell->isActive())self_shell->EnableCollision();
 }
 void CExplosive::net_Relcase(CObject* O)

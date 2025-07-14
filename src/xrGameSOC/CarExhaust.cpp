@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #ifdef DEBUG
-#include "ode_include.h"
+#include "../xrPhysics/ode_include.h"
 #include "../xrEngine/StatGraph.h"
 #include "PHDebug.h"
 #endif
@@ -9,8 +9,7 @@
 #include "PHDestroyable.h"
 #include "car.h"
 #include "../include/xrrender/kinematics.h"
-#include "PHWorld.h"
-extern CPHWorld*	ph_world;
+#include "../xrPhysics/PHWorld.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 CCar::SExhaust::~SExhaust()
@@ -20,7 +19,7 @@ CCar::SExhaust::~SExhaust()
 
 void CCar::SExhaust::Init()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	pelement=(bone_map.find(bone_id))->second.element;
 	IKinematics* K=smart_cast<IKinematics*>(pcar->Visual());
 	CBoneData&	bone_data=K->LL_GetData(u16(bone_id));
@@ -39,14 +38,17 @@ void CCar::SExhaust::Init()
 
 void CCar::SExhaust::Update()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	Fmatrix global_transform;
 	pelement->InterpolateGlobalTransform(&global_transform);
 	global_transform.mulB_43(transform);
-	dVector3 res;
+
+	//dVector3 res;
+	//Fvector	 res_vel;
+	//dBodyGetPointVel(pelement->get_body(),global_transform.c.x,global_transform.c.y,global_transform.c.z,res);
+	//CopyMemory (&res_vel,res,sizeof(Fvector));
 	Fvector	 res_vel;
-	dBodyGetPointVel(pelement->get_body(),global_transform.c.x,global_transform.c.y,global_transform.c.z,res);
-	CopyMemory (&res_vel,res,sizeof(Fvector));
+	pelement->GetPointVel( res_vel, global_transform.c );
 	//velocity.mul(0.95f);
 	//res_vel.mul(0.05f);
 	//velocity.add(res_vel);
@@ -60,13 +62,13 @@ void CCar::SExhaust::Clear()
 
 void CCar::SExhaust::Play()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	p_pgobject->Play(false);
 	Update();
 }
 
 void CCar::SExhaust::Stop()
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	p_pgobject->Stop();
 }

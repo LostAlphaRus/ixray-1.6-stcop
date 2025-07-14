@@ -9,7 +9,7 @@
 #include "../include/xrRender/Kinematics.h"
 #include "../include/xrRender/KinematicsAnimated.h"
 #include "level.h"
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 weapon_hud_container* g_pWeaponHUDContainer=0;
 
 BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)

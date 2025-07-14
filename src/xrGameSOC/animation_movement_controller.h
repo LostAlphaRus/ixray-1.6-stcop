@@ -2,7 +2,8 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 
 class CBlend;
-class animation_movement_controller {
+class animation_movement_controller
+{
 	Fmatrix&		m_pObjXForm;
 	Fmatrix			m_startObjXForm;
 	Fmatrix			m_startRootXform;
@@ -17,8 +18,4 @@ public:
 			CBlend*	ControlBlend				( ) const { return m_control_blend; }
 			bool	isActive					( ) const ;
 			void	OnFrame						( );
-
-public:
-	animation_movement_controller(const animation_movement_controller& other) = delete;
-	animation_movement_controller& operator =(const animation_movement_controller& other) = delete;
 };

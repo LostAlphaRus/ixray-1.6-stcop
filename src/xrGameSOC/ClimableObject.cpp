@@ -1,18 +1,16 @@
-#include "stdafx.h"
-#include "climableobject.h "
-#include "PHStaticGeomShell.h"
+#include "StdAfx.h"
+#include "ClimableObject.h"
+#include "../xrPhysics/IPHStaticGeomShell.h"
 #include "xrServer_Objects_ALife.h"
-#include "PHCharacter.h"
-#include "MathUtils.h"
+#include "../xrPhysics/PHCharacter.h"
+#include "../xrPhysics/MathUtils.h"
+#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrEngine/GameMtlLib.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #	include "level.h"
 #	include "PHDebug.h"
-#endif
-
-#ifdef DEBUG
-#	include "debug_renderer.h"
 #endif
 
 static const float down_leader_extension_tolerance=0.2f;
@@ -46,33 +44,14 @@ IC void OrientToNorm(const Fvector& normal,Fmatrix& form,Fobb& box)
 	}
 }
 
-class CPHLeaderGeomShell: public CPHStaticGeomShell
-{
-CClimableObject		*m_pClimable;
-public:
-						CPHLeaderGeomShell		(CClimableObject* climable);
-void					near_callback			(CPHObject* obj);
-};
-
-CPHLeaderGeomShell::CPHLeaderGeomShell(CClimableObject* climable)
-{
-	m_pClimable=climable;
-}
-void CPHLeaderGeomShell::near_callback	(CPHObject* obj)
-{
-	if(obj && obj->CastType()==CPHObject::tpCharacter)
-	{
-		CPHCharacter* ch=static_cast<CPHCharacter*>(obj);
-		ch->SetElevator(m_pClimable);
-	}
-}
 
 
-	CClimableObject::CClimableObject		()
+CClimableObject::CClimableObject		():  m_pStaticShell ( nullptr ), m_material(u16(-1))
 {
-	m_pStaticShell=NULL;
+	
 }
-	CClimableObject::~CClimableObject	()
+
+CClimableObject::~CClimableObject	()
 {
 
 }
@@ -84,12 +63,17 @@ BOOL CClimableObject::	net_Spawn			( CSE_Abstract* DC)
 {
 	CSE_Abstract				*e = (CSE_Abstract*)(DC);
 	CSE_ALifeObjectClimable	*CLB=smart_cast<CSE_ALifeObjectClimable*>(e);
+	R_ASSERT( CLB );
+	m_material = GMLib.GetMaterialIdx( CLB->material.c_str() );
 	const Fmatrix& b=CLB->shapes[0].data.box;
 	m_box.m_halfsize.set(b._11,b._22,b._33);
 	m_radius=_max(_max(m_box.m_halfsize.x,m_box.m_halfsize.y),m_box.m_halfsize.z);
 
 	//m_box.m_halfsize.set(1.f,1.f,1.f);
 	BOOL ret	= inherited::net_Spawn(DC);
+
+	SpatialComponent->spatial.type &= ~STYPE_VISIBLEFORAI;
+
 	const float f_min_width=0.2f;
 	Fvector shift;shift.set(0.f,0.f,0.f);
 	SORT(b._11,m_axis.set(XFORM().i);m_axis.mul(m_box.m_halfsize.x),m_side.set(XFORM().i);m_side.mul(m_box.m_halfsize.x),m_norm.set(XFORM().i);if(m_box.m_halfsize.x<f_min_width){m_box.m_halfsize.x=f_min_width;shift.set(1.f,0.f,0.f);};m_norm.mul(m_box.m_halfsize.x),
@@ -101,9 +85,11 @@ BOOL CClimableObject::	net_Spawn			( CSE_Abstract* DC)
 	XFORM().transform_dir(shift);
 	CObject::Position().sub(shift);
 	m_box.xform_set(Fidentity);
-	m_pStaticShell=new CPHLeaderGeomShell(this);
-	P_BuildStaticGeomShell(smart_cast<CPHStaticGeomShell*>(m_pStaticShell),smart_cast<CGameObject*>(this),0,m_box);
-	m_pStaticShell->SetMaterial("materials\\fake_ladders");
+	
+	m_pStaticShell = P_BuildLeaderGeomShell(this, ObjectContactCallback, m_box );
+
+
+	
 	
 	if(m_axis.y<0.f)
 	{
@@ -113,14 +99,16 @@ BOOL CClimableObject::	net_Spawn			( CSE_Abstract* DC)
 	}
 //	shedule_unregister();
 	processing_deactivate();
-	m_pStaticShell->set_ObjectContactCallback(ObjectContactCallback);
+	//m_pStaticShell->set_ObjectContactCallback(ObjectContactCallback);
 	return ret;
 }
 void CClimableObject::	net_Destroy			()
 {
 	inherited::net_Destroy();
-	m_pStaticShell->Deactivate();
-	xr_delete(m_pStaticShell);
+	DestroyStaticGeomShell( m_pStaticShell );
+
+	//m_pStaticShell->Deactivate();
+	//xr_delete(m_pStaticShell);
 }
 void CClimableObject::	shedule_Update		( u32 dt)							// Called by shedule
 {
@@ -318,12 +306,12 @@ BOOL CClimableObject::UsedAI_Locations()
 
 void CClimableObject::ObjectContactCallback(bool&	do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
-	dxGeomUserData* usr_data_1= retrieveGeomUserData(c.geom.g1);
-	dxGeomUserData* usr_data_2=retrieveGeomUserData(c.geom.g2);
-	dxGeomUserData* usr_data_ch=NULL;
-	dxGeomUserData* usr_data_lad=NULL;
-	CClimableObject* this_object=NULL;
-	CPHCharacter* ch=NULL;
+	dxGeomUserData* usr_data_1= PHRetrieveGeomUserData(c.geom.g1);
+	dxGeomUserData* usr_data_2=PHRetrieveGeomUserData(c.geom.g2);
+	dxGeomUserData* usr_data_ch=nullptr;
+	dxGeomUserData* usr_data_lad=nullptr;
+	CClimableObject* this_object=nullptr;
+	CPHCharacter* ch=nullptr;
 	float norm_sign=0.f;
 	if(bo1) {
 			usr_data_ch=usr_data_2;
@@ -350,30 +338,34 @@ void CClimableObject::ObjectContactCallback(bool&	do_colide,bool bo1,dContact& c
 	if(!this_object->BeforeLadder(ch,-0.1f)) do_colide=false;
 	
 }
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 extern	Flags32	dbg_net_Draw_Flags;
 void CClimableObject ::OnRender()
 {
-	if (!dbg_net_Draw_Flags.test(1<<10)&&!ph_dbg_draw_mask.test(phDbgLadder)) return;
+	if (!dbg_net_Draw_Flags.test(1 << 10)
+#ifdef DEBUG
+		&&!ph_dbg_draw_mask.test(phDbgLadder)
+#endif
+		) return;
 
 	Fmatrix form;m_box.xform_get(form);
 	//form.mulA(XFORM());
-	Level().debug_renderer().draw_obb(XFORM(),m_box.m_halfsize,color_xrgb(0,0,255));
+	Level().debug_renderer().draw_obb(XFORM(), m_box.m_halfsize, color_xrgb(0, 0, 255));
 	Fvector p1,p2,d;
 	d.set(m_axis);
 	p1.add(XFORM().c,d);
 	p2.sub(XFORM().c,d);
-	Level().debug_renderer().draw_line(Fidentity,p1,p2,color_xrgb(255,0,0));
+	Level().debug_renderer().draw_line(Fidentity, p1, p2, color_xrgb(255, 0, 0));
 
 	d.set(m_side);
 	p1.add(XFORM().c,d);
 	p2.sub(XFORM().c,d);
-	Level().debug_renderer().draw_line(Fidentity,p1,p2,color_xrgb(255,0,0));
+	Level().debug_renderer().draw_line(Fidentity, p1, p2, color_xrgb(255, 0, 0));
 
 	d.set(m_norm);
 	d.mul(10.f);
 	p1.add(XFORM().c,d);
 	p2.set(XFORM().c);
-	Level().debug_renderer().draw_line(Fidentity,p1,p2,color_xrgb(0,255,0));
+	Level().debug_renderer().draw_line(Fidentity, p1, p2, color_xrgb(0, 255, 0));
 }
 #endif

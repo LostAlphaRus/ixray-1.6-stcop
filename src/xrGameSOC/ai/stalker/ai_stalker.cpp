@@ -570,9 +570,9 @@ void CAI_Stalker::update_object_handler	()
 	}
 }
 
-void CAI_Stalker::create_anim_mov_ctrl	(CBlend *b)
+void CAI_Stalker::create_anim_mov_ctrl	( CBlend *b )
 {
-	inherited::create_anim_mov_ctrl	(b);
+	inherited::create_anim_mov_ctrl	( b );
 
 	m_sight_enabled_before_animation_controller		= sight().enabled();
 	sight().enable					(false);
@@ -666,9 +666,9 @@ void CAI_Stalker::UpdateCL()
 	STOP_PROFILE
 }
 
-void CAI_Stalker ::PHHit				(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /*ALife::eHitTypeWound*/)
+void CAI_Stalker ::PHHit				(SHit &H)
 {
-	m_pPhysics_support->in_Hit(P,dir,who,element,p_in_object_space,impulse,hit_type,!g_Alive());
+	m_pPhysics_support->in_Hit(H,!g_Alive());
 }
 
 CPHDestroyable*		CAI_Stalker::		ph_destroyable	()						

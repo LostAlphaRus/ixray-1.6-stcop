@@ -11,7 +11,7 @@
 #include "inventory_item.h"
 #include "ai_sounds.h"
 #include "../xrScripts/script_export_space.h"
-#include "DamageSource.h"
+#include "../xrPhysics/DamageSource.h"
 #include "wallmark_manager.h"
 #include "../xrParticles/stdafx.h"
 #include "../xrParticles/ParticlesObject.h"

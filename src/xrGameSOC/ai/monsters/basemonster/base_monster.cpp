@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "base_monster.h"
-#include "../../../PhysicsShell.h"
+#include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../hit.h"
 #include "../../../PHDestroyable.h"
 #include "../../../CharacterPhysicsSupport.h"
@@ -15,7 +15,6 @@
 #include "../../../team_hierarchy_holder.h"
 #include "../../../squad_hierarchy_holder.h"
 #include "../../../group_hierarchy_holder.h"
-#include "../../../phdestroyable.h"
 #include "../../../../include/xrRender/kinematics.h"
 #include "../../../detail_path_manager.h"
 #include "../../../hudmanager.h"
@@ -176,9 +175,9 @@ void	CBaseMonster::Hit							(SHit* pHDS)
 	inherited::Hit(pHDS);
 }
 
-void CBaseMonster::PHHit(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /*=ALife::eHitTypeWound*/)
+void CBaseMonster::PHHit(SHit& H)
 {
-	m_pPhysics_support->in_Hit(P,dir,who,element,p_in_object_space,impulse,hit_type);
+	m_pPhysics_support->in_Hit(H);
 }
 
 CPHDestroyable*	CBaseMonster::	ph_destroyable	()

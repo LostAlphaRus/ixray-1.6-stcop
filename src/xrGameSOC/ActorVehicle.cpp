@@ -15,7 +15,7 @@
 #include "Car.h"
 #include "../include/xrRender/Kinematics.h"
 #include "../include/xrRender/KinematicsAnimated.h"
-#include "PHShellSplitter.h"
+#include "../xrPhysics/PHShellSplitter.h"
 
 #include "actor_anim_defs.h"
 #include "game_object_space.h"
@@ -61,14 +61,21 @@ void CActor::detach_Vehicle()
 	if(!m_holder) return;
 	CCar* car=smart_cast<CCar*>(m_holder);
 	if(!car)return;
-	CPHShellSplitterHolder*sh= car->PPhysicsShell()->SplitterHolder();
-	if(sh)sh->Deactivate();
+
+	//CPHShellSplitterHolder*sh= car->PPhysicsShell()->SplitterHolder();
+	//if(sh)
+	//	sh->Deactivate();
+	car->PPhysicsShell()->SplitterHolderDeactivate();
+
 	if(!character_physics_support()->movement()->ActivateBoxDynamic(0))
 	{
-		if(sh)sh->Activate();
+		//if(sh)sh->Activate();
+		car->PPhysicsShell()->SplitterHolderActivate();
 		return;
 	}
-	if(sh)sh->Activate();
+	//if(sh)
+	//	sh->Activate();
+	car->PPhysicsShell()->SplitterHolderActivate();
 	m_holder->detach_Actor();//
 
 	character_physics_support()->movement()->SetPosition(m_holder->ExitPosition());
@@ -77,7 +84,7 @@ void CActor::detach_Vehicle()
 	r_model_yaw=-m_holder->Camera()->yaw;
 	r_torso.yaw=r_model_yaw;
 	r_model_yaw_dest=r_model_yaw;
-	m_holder=NULL;
+	m_holder=nullptr;
 	SetCallbacks		();
 	IKinematicsAnimated* V= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(V);
 	V->PlayCycle		(m_anims->m_normal.legs_idle);
@@ -85,7 +92,7 @@ void CActor::detach_Vehicle()
 	m_holderID=u16(-1);
 
 //.	SetWeaponHideState(whs_CAR, FALSE);
-	SetWeaponHideState(INV_STATE_CAR, false);
+	SetWeaponHideState(INV_STATE_BLOCK_ALL, false);
 }
 
 bool CActor::use_Vehicle(CHolderCustom* object)

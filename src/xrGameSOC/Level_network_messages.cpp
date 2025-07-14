@@ -5,7 +5,7 @@
 #include "xrmessages.h"
 #include "game_cl_base.h"
 #include "net_queue.h"
-#include "Physics.h"
+#include "../xrPhysics/Physics.h"
 #include "xrServer.h"
 #include "Actor.h"
 #include "game_cl_base_weapon_usage_statistic.h"
@@ -108,7 +108,7 @@ void CLevel::ClientReceive()
 				else
 					dTime = Level().timeServer() - P->timeReceive + pStat.getPing();
 
-				u32 NumSteps = ph_world->CalcNumSteps(dTime);
+				u32 NumSteps = physics_world()->CalcNumSteps(dTime);
 				SetNumCrSteps(NumSteps);
 			}break;
 //		case M_UPDATE_OBJECTS:
@@ -141,10 +141,10 @@ void CLevel::ClientReceive()
 				}
 				else					
 					dTime = Level().timeServer() - P->timeReceive + Ping;
-				u32 NumSteps = ph_world->CalcNumSteps(dTime);
+				u32 NumSteps = physics_world()->CalcNumSteps(dTime);
 				SetNumCrSteps(NumSteps);
 
-				O->CrPr_SetActivationStep(u32(ph_world->m_steps_num) - NumSteps);
+				O->CrPr_SetActivationStep(u32(physics_world()->StepsNum()) - NumSteps);
 				AddActor_To_Actors4CrPr(O);
 
 			}break;

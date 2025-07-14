@@ -2,7 +2,7 @@
 #include "wallmark_manager.h"
 #include "Level.h"
 #include "../xrEngine/GameMtlLib.h"
-#include "CalculateTriangle.h"
+#include "../xrPhysics/CalculateTriangle.h"
 #ifdef DEBUG
 #include "phdebug.h"
 #endif

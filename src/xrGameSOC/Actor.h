@@ -8,7 +8,7 @@
 #include "actor_defs.h"
 #include "entity_alive.h"
 #include "PHMovementControl.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "InventoryOwner.h"
 #include "../xrEngine/StatGraph.h"
 #include "PhraseDialogManager.h"
@@ -182,7 +182,7 @@ public:
 
 	virtual void						Die				(CObject* who);
 	virtual	void						Hit				(SHit* pHDS);
-	virtual	void						PHHit			(float P,Fvector &dir, CObject *who,s16 element,Fvector p_in_object_space, float impulse, ALife::EHitType hit_type /* = ALife::eHitTypeWound */);
+	virtual	void						PHHit			(SHit &H);
 	virtual void						HitSignal		(float P, Fvector &vLocalDir,	CObject* who, s16 element);
 			void						HitSector		(CObject* who, CObject* weapon);
 			void						HitMark			(float P, Fvector dir,			CObject* who, s16 element, Fvector position_in_bone_space, float impulse,  ALife::EHitType hit_type);

@@ -2,7 +2,8 @@
 
 #include "hud_item_object.h"
 #include "hit_immunity.h"
-#include "PHObject.h"
+#include "../xrPhysics/PHObject.h"
+#include "../xrPhysics/PHUpdateObject.h"
 #include "../xrScripts/script_export_space.h"
 
 struct SArtefactActivation;

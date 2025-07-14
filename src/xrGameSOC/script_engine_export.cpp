@@ -237,10 +237,11 @@ void export_classes	(lua_State *L)
 	game_sv_Deathmatch::script_register(L);
 	game_sv_mp::script_register(L);
 	game_sv_mp_script::script_register(L);
-	CPHWorld::script_register(L);
-	CPhysicsElement::script_register(L);
-	CPhysicsJoint::script_register(L);
 	CSmartZone::script_register(L);
-	CPhysicsShell::script_register(L);
+	cphysics_element_scripted::script_register(L);
+	cphysics_joint_scripted::script_register(L);
+	cphysics_shell_scripted::script_register(L);
+	cphysics_world_scripted::script_register(L);
+	CPhysicsShellHolder::script_register(L);
 #endif
 }

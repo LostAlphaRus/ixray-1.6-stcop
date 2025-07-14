@@ -88,7 +88,7 @@ void CSE_ALifeInventoryItem::STATE_Read		(NET_Packet &tNetPacket, u16 size)
 	State.position				= base()->o_Position;
 }
 
-static inline bool check (const u8 &mask, const u8 &test)
+static inline bool check_itm (const u8 &mask, const u8 &test)
 {
 	return							(!!(mask & test));
 }
@@ -122,13 +122,13 @@ void CSE_ALifeInventoryItem::UPDATE_Write	(NET_Packet &tNetPacket)
 	tNetPacket.w_float_q8			(State.quaternion.z,0.f,1.f);
 	tNetPacket.w_float_q8			(State.quaternion.w,0.f,1.f);	
 
-	if (!check(num_items.mask,inventory_item_angular_null)) {
+	if (!check_itm(num_items.mask,inventory_item_angular_null)) {
 		tNetPacket.w_float_q8		(State.angular_vel.x,0.f,10*PI_MUL_2);
 		tNetPacket.w_float_q8		(State.angular_vel.y,0.f,10*PI_MUL_2);
 		tNetPacket.w_float_q8		(State.angular_vel.z,0.f,10*PI_MUL_2);
 	}
 
-	if (!check(num_items.mask,inventory_item_linear_null)) {
+	if (!check_itm(num_items.mask,inventory_item_linear_null)) {
 		tNetPacket.w_float_q8		(State.linear_vel.x,-32.f,32.f);
 		tNetPacket.w_float_q8		(State.linear_vel.y,-32.f,32.f);
 		tNetPacket.w_float_q8		(State.linear_vel.z,-32.f,32.f);
@@ -158,9 +158,9 @@ void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 	tNetPacket.r_float_q8			(State.quaternion.z,0.f,1.f);
 	tNetPacket.r_float_q8			(State.quaternion.w,0.f,1.f);	
 
-	State.enabled					= check(num_items.mask,inventory_item_state_enabled);
+	State.enabled					= check_itm(num_items.mask,inventory_item_state_enabled);
 
-	if (!check(num_items.mask,inventory_item_angular_null)) {
+	if (!check_itm(num_items.mask,inventory_item_angular_null)) {
 		tNetPacket.r_float_q8		(State.angular_vel.x,0.f,10*PI_MUL_2);
 		tNetPacket.r_float_q8		(State.angular_vel.y,0.f,10*PI_MUL_2);
 		tNetPacket.r_float_q8		(State.angular_vel.z,0.f,10*PI_MUL_2);
@@ -168,7 +168,7 @@ void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 	else
 		State.angular_vel.set		(0.f,0.f,0.f);
 
-	if (!check(num_items.mask,inventory_item_linear_null)) {
+	if (!check_itm(num_items.mask,inventory_item_linear_null)) {
 		tNetPacket.r_float_q8		(State.linear_vel.x,-32.f,32.f);
 		tNetPacket.r_float_q8		(State.linear_vel.y,-32.f,32.f);
 		tNetPacket.r_float_q8		(State.linear_vel.z,-32.f,32.f);

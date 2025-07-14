@@ -1,8 +1,12 @@
+#include "StdAfx.h"
 #include "pch_script.h"
+
 #include "PHSimpleCalls.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
+
 
 using namespace luabind;
+
 
 #pragma optimize("s",on)
 void CPHCallOnStepCondition::script_register(lua_State *L)

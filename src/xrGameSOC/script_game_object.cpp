@@ -36,6 +36,7 @@
 #include "actor_memory.h"
 #include "visual_memory_manager.h"
 #include "../xrScripts/script_callback_ex.h"
+#include "physics_shell_scripted.h"
 
 class CScriptBinderObject;
 
@@ -155,11 +156,14 @@ const CScriptEntityAction *CScriptGameObject::GetActionByIndex(u32 action_index)
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-CPhysicsShell* CScriptGameObject::get_physics_shell() const
+cphysics_shell_scripted* CScriptGameObject::get_physics_shell() const
 {
 	CPhysicsShellHolder* ph_shell_holder =smart_cast<CPhysicsShellHolder*>(&object());
-	if(! ph_shell_holder) return NULL;
-	return ph_shell_holder->PPhysicsShell();
+	if(! ph_shell_holder) 
+		return nullptr;
+	if(! ph_shell_holder->PPhysicsShell() ) 
+		return nullptr;
+	return get_script_wrapper<cphysics_shell_scripted>(*ph_shell_holder->PPhysicsShell());
 }
 
 //////////////////////////////////////////////////////////////////////////

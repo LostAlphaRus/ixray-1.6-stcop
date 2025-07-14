@@ -314,7 +314,7 @@ private:
 	bool	m_movement_enabled_before_animation_controller;
 
 public:
-	virtual	void					create_anim_mov_ctrl						(CBlend *b);
+	virtual	void					create_anim_mov_ctrl						( CBlend *b  );
 	virtual	void					destroy_anim_mov_ctrl						();
 };
 

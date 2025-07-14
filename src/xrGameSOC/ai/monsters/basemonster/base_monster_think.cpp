@@ -3,7 +3,7 @@
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
 #include "../state_manager.h"
-#include "../../../PhysicsShell.h"
+#include "../../../../xrPhysics/PhysicsShell.h"
 #include "../../../detail_path_manager.h"
 #include "../monster_velocity_space.h"
 #include "../../../level.h"

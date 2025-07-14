@@ -13,6 +13,7 @@
 #include "stalker_animation_data_storage.h"
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"
+#include "../xrPhysics/PhysicsCommon.h"
 
 ENGINE_API bool g_dedicated_server;
 
@@ -238,7 +239,6 @@ void CLevel::ClientSave	()
 	}
 }
 
-extern		float		phTimefactor;
 extern		BOOL		g_SV_Disable_Auth_Check;
 
 void CLevel::Send		(NET_Packet& P, u32 dwFlags, u32 dwTimeout)

@@ -149,11 +149,11 @@ public:
 			void			validate_ai_locations(bool decrement_reference = true);
 
 	//animation_movement_controller
-	virtual	void			create_anim_mov_ctrl			( CBlend* b );
+	virtual	void			create_anim_mov_ctrl			( CBlend *b  );
 	virtual	void			destroy_anim_mov_ctrl			( );
 			void			update_animation_movement_controller();
 	IC		bool			animation_movement_controlled	( ) const	{ return	!!animation_movement(); }
-const animation_movement_controller*animation_movement		( ) const	{ return	m_anim_mov_ctrl; }
+const animation_movement_controller* animation_movement		( ) const	{ return	m_anim_mov_ctrl; }
 	// Game-specific events
 
 	virtual BOOL			UsedAI_Locations				();

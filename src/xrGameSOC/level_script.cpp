@@ -27,7 +27,7 @@
 #include "uigamecustom.h"
 #include "map_manager.h"
 #include "map_location.h"
-#include "phworld.h"
+#include "physics_world_scripted.h"
 
 #include "alife_simulator.h"
 #include "alife_time_manager.h"
@@ -381,10 +381,11 @@ void remove_calls_for_object(const luabind::object &lua_object)
 	Level().ph_commander_scripts().remove_calls(&c);
 }
 
-CPHWorld* physics_world()
+cphysics_world_scripted* physics_world_scripted()
 {
-	return	ph_world;
+	return	get_script_wrapper<cphysics_world_scripted>(*physics_world());
 }
+
 CEnvironment *environment()
 {
 	return		(g_pGamePersistent->pEnvironment);
@@ -651,7 +652,7 @@ void CLevel::script_register(lua_State *L)
 
 		def("iterate_sounds",					&iterate_sounds1),
 		def("iterate_sounds",					&iterate_sounds2),
-		def("physics_world",					&physics_world),
+		def("physics_world",					&physics_world_scripted),
 		def("get_snd_volume",					&get_snd_volume),
 		def("set_snd_volume",					&set_snd_volume),
 		def("add_cam_effector",					&add_cam_effector),

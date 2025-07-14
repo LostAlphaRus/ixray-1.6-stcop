@@ -2,7 +2,7 @@
 #include "entity_alive.h"
 #include "inventoryowner.h"
 #include "inventory.h"
-#include "physicsshell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "../xrEngine/GameMtlLib.h"
 #include "phmovementcontrol.h"
 #include "wound.h"
@@ -679,18 +679,18 @@ CPHSoundPlayer* CEntityAlive::ph_sound_player()
 	}
 }
 
-SCollisionHitCallback*	CEntityAlive::	get_collision_hit_callback		()
+ICollisionHitCallback*	CEntityAlive::	get_collision_hit_callback		()
 {
   CCharacterPhysicsSupport *cs=character_physics_support();
   if(cs)return cs->get_collision_hit_callback();
   else return nullptr;
 }
 
-bool					CEntityAlive::	set_collision_hit_callback		(SCollisionHitCallback *cc)
+void					CEntityAlive::	set_collision_hit_callback		(ICollisionHitCallback *cc)
 {
 	CCharacterPhysicsSupport* cs=character_physics_support();
-	if(cs)return cs->set_collision_hit_callback(cc);
-	else return false;
+	if(cs)
+		cs->set_collision_hit_callback(cc);
 }
 
 void CEntityAlive::net_Relcase	(CObject *object)
@@ -699,7 +699,7 @@ void CEntityAlive::net_Relcase	(CObject *object)
 	conditions().remove_links	(object);
 }
 
-void	CEntityAlive::		create_anim_mov_ctrl	( CBlend* b )
+void	CEntityAlive::		create_anim_mov_ctrl	( CBlend *b )
 {
 	inherited::create_anim_mov_ctrl( b ); 
 	CCharacterPhysicsSupport *cs = character_physics_support( );

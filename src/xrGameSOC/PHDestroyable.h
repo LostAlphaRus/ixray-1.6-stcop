@@ -1,7 +1,7 @@
 #ifndef PH_DESTROYABLE
 #define PH_DESTROYABLE
 
-#include "hit.h"
+#include "Hit.h"
 
 class CPhysicsShellHolder;
 class CSE_Abstract;
@@ -18,8 +18,9 @@ class	CPHDestroyable :
 public  CPHDestroyableNotificator
 
 {
-			
+public:			
 			xr_vector<shared_str>						m_destroyed_obj_visual_names																											;
+private:
 			xr_vector<CPHDestroyableNotificate *>		m_notificate_objects																													;
 			u16											m_depended_objects																														;
 			Flags8										m_flags																																	;
@@ -38,9 +39,9 @@ public  CPHDestroyableNotificator
 
 /*
 					source_bone            =-1      ;-1- ref_bone
-					imp_transition_factor  =1       ; коэффициент передачи импульса     
-					lv_transition_factor   =1       ; коэффициент передачи линейной скорости 
-					av_transition_factor   =1       ; коэффициент передачи угловой скорости
+					imp_transition_factor  =1       ; РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґР°С‡Рё РёРјРїСѓР»СЊСЃР°     
+					lv_transition_factor   =1       ; РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґР°С‡Рё Р»РёРЅРµР№РЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё 
+					av_transition_factor   =1       ; РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґР°С‡Рё СѓРіР»РѕРІРѕР№ СЃРєРѕСЂРѕСЃС‚Рё
 */
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			enum

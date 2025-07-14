@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "HUDmanager.h"
-#include "PHdynamicdata.h"
-#include "Physics.h"
 #include "level.h"
 #include "../xrEngine/x_ray.h"
 #include "../xrEngine/igame_persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
+#include "../xrPhysics/IPHWorld.h"
+#include "PHCommander.h"
+#include "physics_game.h"
 
 extern	pureFrame*				g_pNetProcessor;
 
@@ -86,9 +87,15 @@ bool	CLevel::net_start_client4				()
 		g_pGamePersistent->SetLoadStageTitle("st_client_spawning");
 
 		// Send physics to single or multithreaded mode
-		LoadPhysicsGameParams				();
-		ph_world							= new CPHWorld();
-		ph_world->Create					();
+
+		create_physics_world(!!psDeviceFlags.test(mtPhysics), &ObjectSpace, &Objects);
+		R_ASSERT(physics_world());
+
+		m_ph_commander_physics_worldstep = new CPHCommander();
+		physics_world()->set_update_callback(m_ph_commander_physics_worldstep);
+
+		physics_world()->set_default_contact_shotmark(ContactShotMark);
+		physics_world()->set_default_character_contact_shotmark(CharacterContactShotMark);
 
 		// Send network to single or multithreaded mode
 		// *note: release version always has "mt_*" enabled

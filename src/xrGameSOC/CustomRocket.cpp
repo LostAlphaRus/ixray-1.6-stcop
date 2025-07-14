@@ -7,14 +7,14 @@
 #include "customrocket.h"
 #include "../xrParticles/stdafx.h"
 #include "../xrParticles/ParticlesObject.h"
-#include "PhysicsShell.h"
-#include "extendedgeom.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/extendedgeom.h"
 #include "level.h"
 #include "xrMessages.h"
 #include "../xrEngine/GameMtlLib.h"
-#include "tri-colliderknoopc/dTriList.h"
+#include "../xrPhysics/tri-colliderknoopc/dTriList.h"
 #include "../include/xrRender/rendervisual.h"
-#include "CalculateTriangle.h"
+#include "../xrPhysics/CalculateTriangle.h"
 #include "actor.h"
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -238,7 +238,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide,bool bo1,dContact& c ,
 					{	//. desync?
 						velocity.normalize();
 						Triangle neg_tri;
-						CalculateTriangle(l_pUD->neg_tri,g,neg_tri);
+						CalculateTriangle(l_pUD->neg_tri,g,neg_tri, Level().ObjectSpace.GetStaticVerts());
 						float cosinus=velocity.dotproduct(*((Fvector*)neg_tri.norm));
 						VERIFY(_valid(neg_tri.dist));
 						float dist=neg_tri.dist/cosinus;

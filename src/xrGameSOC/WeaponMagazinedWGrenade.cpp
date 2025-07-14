@@ -14,7 +14,7 @@
 #include "../include/xrRender/kinematics.h"
 #include "../xrCore/object_broker.h"
 #include "game_base_space.h"
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #include "clsid_game.h"
 #ifdef DEBUG
 #include "phdebug.h"

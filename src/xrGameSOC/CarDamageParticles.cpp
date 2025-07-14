@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "cardamageparticles.h"
 #ifdef DEBUG
-#include "ode_include.h"
+#include "../xrPhysics/ode_include.h"
 #include "../xrEngine/StatGraph.h"
 #include "PHDebug.h"
 #endif
@@ -10,8 +10,7 @@
 #include "PHDestroyable.h"
 #include "Car.h"
 #include "../include/xrrender/kinematics.h"
-#include "PHWorld.h"
-extern CPHWorld*	ph_world;
+#include "../xrPhysics/PHWorld.h"
 void read_bones(IKinematics *K, LPCSTR S , xr_vector<u16>& bones)
 {
 	string64					S1;
@@ -54,7 +53,7 @@ void CCarDamageParticles::Play1(CCar* car)
 
 void CCarDamageParticles::Play2(CCar* car)
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(*m_car_damage_particles2)
 	{
 		BIDS_I i=bones2.begin(),e=bones2.end();
@@ -64,13 +63,13 @@ void CCarDamageParticles::Play2(CCar* car)
 
 void CCarDamageParticles::PlayWheel1(CCar*car,u16 bone_id)
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(*m_wheels_damage_particles1)car->StartParticles(m_wheels_damage_particles1,bone_id,Fvector().set(0,1,0),car->ID());
 }
 
 void CCarDamageParticles::PlayWheel2(CCar*car,u16 bone_id)
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	if(*m_wheels_damage_particles2)car->StartParticles(m_wheels_damage_particles2,bone_id,Fvector().set(0,1,0),car->ID());
 }
 

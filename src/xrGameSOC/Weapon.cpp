@@ -24,7 +24,7 @@
 #include "../include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
-#include "mathutils.h"
+#include "../xrPhysics/mathutils.h"
 #include "../xrCore/object_broker.h"
 #include "../xrEngine/igame_persistent.h"
 #include "../xrUI/Widgets/UIStaticItem.h"
