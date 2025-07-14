@@ -193,50 +193,50 @@ BOOL  CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID para
 	else
 		return TRUE;
 }
-
 void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const Fvector &vEnd, collide::rq_result& R, u16 target_material, const Fvector& vNormal, bool ShowMark)
 {
 	SGameMtlPair* mtl_pair	= GMLib.GetMaterialPair(bullet->bullet_material_idx, target_material);
-	Fvector particle_dir;
+	Fvector particle_dir	= vNormal;
 
 	if (R.O)
 	{
-/*      add_SkeletonWallmark not implemented now...
+/*  add_SkeletonWallmark not implemented now...
 		particle_dir		 = vDir;
 		particle_dir.invert	();
 
 		//на текущем актере отметок не ставим
 		if(Level().CurrentEntity() && Level().CurrentEntity()->ID() == R.O->ID()) return;
 
-		ref_shader* pWallmarkShader = (!mtl_pair || mtl_pair->CollideMarks.empty())?
-						NULL:&mtl_pair->CollideMarks[::Random.randI(0,mtl_pair->CollideMarks.size())];;
-
-		if (pWallmarkShader && ShowMark)
+		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
 			Fvector p;
-			p.mad(bullet->pos,bullet->dir,R.range-0.01f);
-			::Render->add_SkeletonWallmark	(&R.O->renderable.xform, 
-							PKinematics(R.O->Visual()), *pWallmarkShader,
-							p, bullet->dir, bullet->wallmark_size);
-		}*/		
-	}  
+			p.mad(bullet->bullet_pos,bullet->dir,R.range-0.01f);
+			if(!g_dedicated_server)
+				::Render->add_SkeletonWallmark	(	&R.O->renderable.xform, 
+													PKinematics(R.O->Visual()), 
+													&*mtl_pair->m_pCollideMarks,
+													p, 
+													bullet->dir, 
+													bullet->wallmark_size);
+		}
+*/
+	} 
 	else 
 	{
 		//вычислить нормаль к пораженной поверхности
-		particle_dir		= vNormal;
 		Fvector*	pVerts	= Level().ObjectSpace.GetStaticVerts();
 		CDB::TRI*	pTri	= Level().ObjectSpace.GetStaticTris()+R.element;
 
 		if (mtl_pair && !mtl_pair->m_pCollideMarks->empty() && ShowMark)
 		{
 			//добавить отметку на материале
-			::Render->add_StaticWallmark(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
+			::Render->add_StaticWallmark	(&*mtl_pair->m_pCollideMarks, vEnd, bullet->wallmark_size, pTri, pVerts);
 		}
 	}
 
 	ref_sound* pSound = (!mtl_pair || mtl_pair->CollideSounds.empty())?
-						NULL:&mtl_pair->CollideSounds[::Random.randI(0,mtl_pair->CollideSounds.size())];
+						nullptr:&mtl_pair->CollideSounds[::Random.randI(0, (u32)mtl_pair->CollideSounds.size())];
 
 	//проиграть звук
 	if(pSound && ShowMark)
@@ -246,28 +246,35 @@ void CBulletManager::FireShotmark (SBullet* bullet, const Fvector& vDir, const F
 		bullet->m_mtl_snd.play_at_pos(O, vEnd, 0);
 	}
 
-	LPCSTR ps_name = (!mtl_pair || mtl_pair->CollideParticles.empty())?
-NULL:*mtl_pair->CollideParticles[::Random.randI(0,mtl_pair->CollideParticles.size())];
+	LPCSTR ps_name = ( !mtl_pair || mtl_pair->CollideParticles.empty() ) ? nullptr : 
+		*mtl_pair->CollideParticles[ ::Random.randI(0, (int)mtl_pair->CollideParticles.size()) ];
 
 	SGameMtl*	tgt_mtl = GMLib.GetMaterialByIdx(target_material);
 	BOOL bStatic = !tgt_mtl->Flags.test(SGameMtl::flDynamic);
 
 	if( (ps_name && ShowMark) || (bullet->flags.explosive && bStatic) )
 	{
+		//VERIFY2					(
+		//	(particle_dir.x*particle_dir.x+particle_dir.y*particle_dir.y+particle_dir.z*particle_dir.z) > flt_zero,
+		//	make_string("[%f][%f][%f]", VPUSH(particle_dir))
+		//);
 		Fmatrix pos;
 		pos.k.normalize(particle_dir);
 		Fvector::generate_orthonormal_basis(pos.k, pos.j, pos.i);
 		pos.c.set(vEnd);
-		if(ps_name && ShowMark){
+		if(ps_name && ShowMark)
+		{
 			//отыграть партиклы попадания в материал
 			xr_shared_ptr<CParticlesObject> ps = Particles::Details::Create(ps_name,TRUE);
 
-			ps->UpdateParent(pos,zero_vel);
-			GamePersistent().ps_needtoplay.push_back(ps);
+			ps->UpdateParent( pos, zero_vel );
+			GamePersistent().ps_needtoplay.push_back( ps );
 		}
 
-		if(bullet->flags.explosive&&bStatic)
-			PlayExplodePS(pos);
+		if( bullet->flags.explosive && bStatic )
+		{
+			PlayExplodePS( pos );
+		}
 	}
 }
 
