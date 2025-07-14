@@ -9,7 +9,7 @@ public:
 	CFryupZone	();
 	virtual			~CFryupZone	();
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void	OnRender				( );
 #endif
 

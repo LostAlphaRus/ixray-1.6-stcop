@@ -31,6 +31,8 @@
 #include "ai_space.h"
 #include "alife_simulator.h"
 #include "alife_time_manager.h"
+#include "alife_object_registry.h"
+#include "xrServer_Objects_ALife_Monsters.h"
 
 using namespace luabind;
 

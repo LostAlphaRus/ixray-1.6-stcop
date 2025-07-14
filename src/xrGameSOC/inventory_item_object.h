@@ -69,7 +69,7 @@ public:
 	virtual bool	NeedToDestroyObject		() const;
 
 protected:
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void	OnRender				();
 #endif
 

@@ -46,7 +46,7 @@
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #endif
 
@@ -722,7 +722,7 @@ BOOL CCustomMonster::net_Spawn	(CSE_Abstract* DC)
 	return TRUE;
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void CCustomMonster::OnHUDDraw(CCustomHUD *hud)
 {
 }
@@ -1054,7 +1054,7 @@ bool CCustomMonster::update_critical_wounded	(const u16 &bone_id, const float &p
 	return (false);
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 extern void dbg_draw_frustum (float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U);
 void draw_visiblity_rays	(CCustomMonster *self, const CObject *object, collide::rq_results& rq_storage);

@@ -23,7 +23,7 @@
 #include "../xrCore/object_broker.h"
 #include "../xrEngine/igame_persistent.h"
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #endif
 
@@ -221,7 +221,7 @@ void CInventoryItem::OnH_A_Chield()
 {
 	inherited::OnH_A_Chield		();
 }
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 extern	Flags32	dbg_net_Draw_Flags;
 #endif
 
@@ -965,7 +965,7 @@ void CInventoryItem::UpdateXForm	()
 
 
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 void CInventoryItem::OnRender()
 {

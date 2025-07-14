@@ -27,9 +27,9 @@
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
 #include "game_object_space.h"
-
-#ifdef DEBUG
 #	include "../xrEngine/xr_collide_form.h"
+
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #	include "PHDebug.h"
 #endif
@@ -689,7 +689,7 @@ void CGameObject::OnH_B_Independent(bool just_before_destroy)
 }
 
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 void CGameObject::OnRender()
 {

@@ -38,7 +38,7 @@ struct SHit;
 class CInventoryItem : 
 	public CAttachableItem,
 	public CHitImmunity
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	, public pureRender
 #endif
 {
@@ -213,7 +213,7 @@ public:
 	virtual CInventoryItem*		can_make_killing		(const CInventory *inventory) const;
 	virtual bool				ready_to_kill			() const;
 	IC		bool				useful_for_NPC			() const;
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void				OnRender					();
 #endif
 

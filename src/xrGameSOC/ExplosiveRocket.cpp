@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// ExplosiveRocket.cpp:	ракета, которой стреляет RocketLauncher 
-//						взрывается при столкновении
+// ExplosiveRocket.cpp:	СЂР°РєРµС‚Р°, РєРѕС‚РѕСЂРѕР№ СЃС‚СЂРµР»СЏРµС‚ RocketLauncher 
+//						РІР·СЂС‹РІР°РµС‚СЃСЏ РїСЂРё СЃС‚РѕР»РєРЅРѕРІРµРЅРёРё
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -114,7 +114,8 @@ void CExplosiveRocket::PH_Ch_CrPr			()
 {
 	inherited::PH_Ch_CrPr		();
 }
-
+#endif
+#ifdef DEBUG_DRAW
 void CExplosiveRocket::OnRender				()
 {
 	inherited::OnRender			();

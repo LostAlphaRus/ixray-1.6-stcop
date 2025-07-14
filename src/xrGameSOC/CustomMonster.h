@@ -154,7 +154,7 @@ public:
 	virtual void		SelectAnimation			( const Fvector& _view, const Fvector& _move, float speed ) = 0;
 
 	// debug
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	virtual void		OnRender				( );
 	virtual void		OnHUDDraw				(CCustomHUD* hud);
 #endif

@@ -371,7 +371,7 @@ void CActor::update_camera (CCameraShotEffector* effector)
 }
 
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void dbg_draw_frustum (float FOV, float _FAR, float A, Fvector &P, Fvector &D, Fvector &U);
 extern	Flags32	dbg_net_Draw_Flags;
 
@@ -382,7 +382,9 @@ void CActor::OnRender	()
 	if ((dbg_net_Draw_Flags.is_any((1<<5))))
 		character_physics_support()->movement()->dbg_Draw	();
 
+#ifdef DEBUG
 	OnRender_Network();
+#endif
 
 	inherited::OnRender();
 }

@@ -2,7 +2,7 @@
 #include "CustomZone.h"
 #include "../include/xrRender/Kinematics.h"
 #include "ZoneVisual.h"
-#include "../xrPhysics/PHObject.h"
+#include "../xrPhysics/PHUpdateObject.h"
 #include "PHMovementControl.h"
 #include "AmebaZone.h"
 #include "hudmanager.h"
@@ -75,7 +75,7 @@ void  CAmebaZone::Affect(SZoneObjectInfo* O)
 	}
 }
 
-void CAmebaZone::PhTune(dReal step)
+void CAmebaZone::PhTune(float step)
 {
 	OBJECT_INFO_VEC_IT it;
 	for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 

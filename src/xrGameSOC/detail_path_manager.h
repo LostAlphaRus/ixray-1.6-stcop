@@ -156,7 +156,7 @@ protected:
 	friend class CMovementManager;
 	friend class CPoltergeisMovementManager;
 	friend class CDetailPathBuilder;
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	friend class CLevelGraph;
 	friend class CCustomMonster;
 #endif

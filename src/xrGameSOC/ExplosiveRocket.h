@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////
-// ExplosiveRocket.h:	ракета, которой стреляет RocketLauncher 
-//						взрывается при столкновении
+// ExplosiveRocket.h:	СЂР°РєРµС‚Р°, РєРѕС‚РѕСЂРѕР№ СЃС‚СЂРµР»СЏРµС‚ RocketLauncher 
+//						РІР·СЂС‹РІР°РµС‚СЃСЏ РїСЂРё СЃС‚РѕР»РєРЅРѕРІРµРЅРёРё
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -63,6 +63,8 @@ public:
 	virtual void			PH_I_CrPr			(); // actions & operations after correction before prediction steps
 #ifdef DEBUG
 	virtual void			PH_Ch_CrPr			(); // 
+#endif
+#ifdef DEBUG_DRAW
 	virtual void			OnRender			();
 #endif
 	virtual void			PH_A_CrPr			(); // actions & operations after phisic correction-prediction steps

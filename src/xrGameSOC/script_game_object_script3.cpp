@@ -29,6 +29,7 @@
 #include "relation_registry.h"
 #include "GameTask.h"
 #include "car.h"
+#include "physics_shell_scripted.h"
 
 using namespace luabind;
 

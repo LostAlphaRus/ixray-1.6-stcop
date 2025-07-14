@@ -13,7 +13,7 @@
 
 BOOL	g_SV_Force_Artefact_Spawn = FALSE;
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 #	include "debug_renderer.h"
 #endif
 //-------------------------------------------------------
@@ -1350,7 +1350,7 @@ void game_sv_ArtefactHunt::ConsoleCommands_Clear	()
 };
 
 	//  [7/5/2005]
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 
 extern	Flags32	dbg_net_Draw_Flags;
 

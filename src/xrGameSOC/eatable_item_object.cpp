@@ -188,7 +188,7 @@ void CEatableItemObject::PH_A_CrPr		()
 	CEatableItem::PH_A_CrPr			();
 }
 
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 void CEatableItemObject::OnRender			()
 {
 	CEatableItem::OnRender			();

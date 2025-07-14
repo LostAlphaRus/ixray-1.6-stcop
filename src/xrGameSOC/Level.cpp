@@ -52,8 +52,11 @@
 #ifdef DEBUG
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
-#	include "debug_renderer.h"
 #	include "physicobject.h"
+#endif
+
+#ifdef DEBUG_DRAW
+#	include "debug_renderer.h"
 #endif
 
 ENGINE_API bool g_dedicated_server;
@@ -113,19 +116,24 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 		m_client_spawn_manager		= new CClientSpawnManager();
 		m_autosave_manager			= new CAutosaveManager();
 
-	#ifdef DEBUG
+	#ifdef DEBUG_DRAW
 		m_debug_renderer			= new CDebugRenderer();
-		m_level_debug				= new CLevelDebug();
 	#endif
 
+	#ifdef DEBUG
+		m_level_debug				= new CLevelDebug();
+	#endif
 	}else
 	{
 		m_level_sound_manager		= NULL;
 		m_client_spawn_manager		= NULL;
 		m_autosave_manager			= NULL;
 		m_space_restriction_manager = NULL;
-	#ifdef DEBUG
+	#ifdef DEBUG_DRAW
 		m_debug_renderer			= NULL;
+	#endif
+
+	#ifdef DEBUG
 		m_level_debug				= NULL;
 	#endif
 	}
@@ -239,7 +247,7 @@ CLevel::~CLevel()
 
 	xr_delete					(m_autosave_manager);
 	
-#ifdef DEBUG
+#ifdef DEBUG_DRAW
 	xr_delete					(m_debug_renderer);
 #endif
 
@@ -689,6 +697,10 @@ void CLevel::OnRender()
 	}
 #endif
 
+#ifdef DEBUG_DRAW
+	debug_renderer().render					();
+#endif
+
 #ifdef DEBUG
 	if (bDebug) {
 		DBG().draw_object_info				();
@@ -696,7 +708,6 @@ void CLevel::OnRender()
 		DBG().draw_level_info				();
 	}
 
-	debug_renderer().render					();
 
 	if (psAI_Flags.is(aiVision)) {
 		for (u32 I=0; I < Level().Objects.o_count(); I++) {

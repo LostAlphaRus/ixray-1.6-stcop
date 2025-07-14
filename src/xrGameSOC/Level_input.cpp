@@ -168,10 +168,20 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		}
 		break;
 #endif // MASTER_GOLD
-#ifdef DEBUG
+
+#ifdef DEBUG_DRAW
 	case SDL_SCANCODE_RETURN:
-			bDebug	= !bDebug;
+	{
+		if (!Console->bVisible)
+		{
+			bDebug = !bDebug;
+		}
+
 		return;
+	}
+#endif
+
+#ifdef DEBUG
 
 	case SDL_SCANCODE_BACKSPACE:
 		if (GameID() == GAME_SINGLE)
