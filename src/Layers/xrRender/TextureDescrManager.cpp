@@ -45,6 +45,7 @@ void CTextureDescrMngr::LoadLTX()
 				const CInifile::Item& item	= *I;
 
 				texture_desc& desc		= m_texture_details[item.first];
+				cl_dt_scaler*& dts = m_detail_scalers[item.first];
 				desc.m_assoc			= new texture_assoc();
 
 				string_path				T;
@@ -53,7 +54,13 @@ void CTextureDescrMngr::LoadLTX()
 				int res = sscanf					(*item.second,"%[^,],%f",T,&s);
 				R_ASSERT(res==2);
 				desc.m_assoc->detail_name = T;
-				desc.m_assoc->cs		= new cl_dt_scaler(s);
+				if (dts)
+					dts->scale = s;
+				else
+					dts = new cl_dt_scaler(s);
+
+//				desc.m_assoc->cs		= new cl_dt_scaler(s);
+
 				desc.m_assoc->usage		= 0;
 				if(strstr(item.second.c_str(),"usage[diffuse_or_bump]"))
 					desc.m_assoc->usage	= (1<<0)|(1<<1);

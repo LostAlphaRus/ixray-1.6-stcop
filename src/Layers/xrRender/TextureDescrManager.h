@@ -13,8 +13,8 @@ class CTextureDescrMngr
 		shared_str			detail_name;
 		R_constant_setup*	cs;
 		u8					usage;
-        texture_assoc       () : /*cs(NULL),*/ usage(0) {}
-		~texture_assoc		() { /*xr_delete(cs);*/ }
+        texture_assoc       () : cs(NULL), usage(0) {}
+		~texture_assoc		() { xr_delete(cs); }
 
 	};
 	struct texture_spec
