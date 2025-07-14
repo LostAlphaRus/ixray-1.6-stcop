@@ -133,7 +133,7 @@ protected:
 	void				UpdateFlashingIcons				();
 	void				UpdateActiveItemInfo			();
 
-	void				SetAmmoIcon						(const shared_str& seсt_name);
+	void				SetAmmoIcon						(const shared_str& sect_name);
 
 	// first - иконка, second - анимация
 	using FlashingIcons = xr_map<EFlashingIcons, CUIStatic*>;
