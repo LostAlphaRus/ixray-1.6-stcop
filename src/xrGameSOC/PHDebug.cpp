@@ -8,6 +8,7 @@
 #include "ExtendedGeom.h"
 #include "Level.h"
 #include "Hudmanager.h"
+#include "../xrUI/ui_base.h"
 
 #include "debug_renderer.h"
 

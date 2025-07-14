@@ -1186,7 +1186,7 @@ CUIGameTutorial* g_tut = NULL;
 //#include "UIVotingCategory.h"
 
 //CUIVotingCategory* v = NULL;
-#include "UIFrameWindow.h"
+#include "../../xrUI/Widgets/UIFrameWindow.h"
 CUIFrameWindow*		pUIFrame = NULL;
 
 void test_update()

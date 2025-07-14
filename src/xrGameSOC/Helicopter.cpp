@@ -13,6 +13,7 @@
 #include "../xrEngine/LightAnimLibrary.h"
 #include "HudManager.h"
 #include "physicscommon.h"
+#include "../xrUI/ui_base.h"
 //50fps fixed
 float STEP=0.02f;
 
@@ -406,7 +407,7 @@ void CHelicopter::UpdateCL()
 
 #ifdef DEBUG
 	if(bDebug){
-		CGameFont* F		= UI()->Font()->pFontDI;
+		CGameFont* F		= UI().Font().pFontDI;
 		F->SetAligment		(CGameFont::alCenter);
 //		F->SetSizeI			(0.02f);
 		F->OutSetI			(0.f,-0.8f);

@@ -649,7 +649,7 @@ bool	game_cl_Deathmatch::OnKeyboardPress			(int key)
 	{
 		if(m_game_ui)
 #ifndef NDEBUG
-			if (Level().IR_GetKeyState(DIK_LCONTROL))
+			if (Level().IR_GetKeyState(SDL_SCANCODE_LCTRL))
 				m_game_ui->ShowStatistic(true);
 			else
 #endif

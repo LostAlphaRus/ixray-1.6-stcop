@@ -41,6 +41,7 @@
 #include "movement_manager.h"
 #include "graph_engine.h"
 #include "debug_renderer.h"
+#include "../xrUI/ui_base.h"
 
 void CLevelGraph::draw_nodes	()
 {
