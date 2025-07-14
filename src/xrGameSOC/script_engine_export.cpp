@@ -18,6 +18,7 @@
 
 #else
 #	include "PHSimpleCalls.h"
+#	include "PhysicsShell.h"
 #	include "eatable_item.h"
 #	include "RadioactiveZone.h"
 #	include "alife_online_offline_group_brain.h"
@@ -132,7 +133,7 @@ void export_classes	(lua_State *L)
 	CExplosive::script_register(L);
 	CF1::script_register(L);
 	CBlendScript::script_register(L);
-	//IRender_VisualScript::script_register(L);
+	IRender_VisualScript::script_register(L);
 	CScriptGameDifficulty::script_register(L);
 	CHairsZone::script_register(L);
 	CHangingLamp::script_register(L);
@@ -226,7 +227,7 @@ void export_classes	(lua_State *L)
 	CGameGraph::script_register(L);
 	CCustomZone::script_register(L);
 
-	CKinematicsAnimatedScript::script_register(L);
+	IKinematicsAnimatedScript::script_register(L);
 	RPoint::script_register(L);
 	game_PlayerState::script_register(L);
 	game_GameState::script_register(L);
@@ -240,7 +241,7 @@ void export_classes	(lua_State *L)
 	CPHWorld::script_register(L);
 	CPhysicsElement::script_register(L);
 	CPhysicsJoint::script_register(L);
-	//CPhysicsShell:script_register(L);
 	CSmartZone::script_register(L);
+	CPhysicsShell::script_register(L);
 #endif
 }

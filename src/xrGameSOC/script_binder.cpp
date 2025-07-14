@@ -140,12 +140,7 @@ void CScriptBinder::set_object		(CScriptBinderObject *object)
 void CScriptBinder::shedule_Update	(u32 time_delta)
 {
 	if (m_object) {
-		try {
 			m_object->shedule_Update	(time_delta);
-		}
-		catch(...) {
-			clear			();
-		}
 	}
 }
 

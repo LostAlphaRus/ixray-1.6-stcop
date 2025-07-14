@@ -150,27 +150,26 @@ void CObjectScript::script_register		(lua_State *L)
 	];
 }
 
-/*void IRender_VisualScript::script_register(lua_State* L)
+void IRender_VisualScript::script_register(lua_State* L)
 {
 	module(L)
 	[
 		class_<IRenderVisual>("IRender_Visual")
-			.def(constructor<>())
 			.def("dcast_PKinematicsAnimated",&IRenderVisual::dcast_PKinematicsAnimated)
 	];
-}*/
+}
 
-void CKinematicsAnimated_PlayCycle(IKinematicsAnimated* sa, LPCSTR anim)
+void IKinematicsAnimated_PlayCycle(IKinematicsAnimated* sa, LPCSTR anim)
 {
 	sa->PlayCycle(anim);
 }
 
-void CKinematicsAnimatedScript::script_register		(lua_State *L)
+void IKinematicsAnimatedScript::script_register		(lua_State *L)
 {
 	module(L)
 	[
 		class_<IKinematicsAnimated>("CKinematicsAnimated")
-			.def("PlayCycle",		&CKinematicsAnimated_PlayCycle)
+			.def("PlayCycle",		&IKinematicsAnimated_PlayCycle)
 	];
 }
 
