@@ -251,8 +251,15 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
 		//v2v3v4 out
 
 		// Update occlusion
-		float occ = (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT) ? 1.0f : SoundRender->get_occlusion(p_source.position, .2f, occluder);
-		volume_lerp(occluder_volume, occ, 1.f, dt);
+		if (use_old_sound_occ)
+		{
+			volume_lerp(occluder_volume, SoundRender->get_occlusion(p_source.position, .2f, occluder), 1.f, dt);
+		}
+		else
+		{
+			float occ = (owner_data->g_type == SOUND_TYPE_WORLD_AMBIENT) ? 1.0f : SoundRender->get_occlusion(p_source.position, .2f, occluder);
+			volume_lerp(occluder_volume, occ, 1.f, dt);
+		}
 		clamp(occluder_volume, 0.f, 1.f);
 	}
 	clamp(fade_volume, 0.f, 1.f);

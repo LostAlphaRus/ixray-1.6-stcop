@@ -305,8 +305,9 @@ void CEntityAlive::Die	(CObject* who)
 	}
 
 	// disable react to sound
-	ISpatial* self	= smart_cast<ISpatial*> (this);
-	if (self)		self->spatial.type &=~STYPE_REACTTOSOUND;
+	SpatialComponent->spatial.type &= ~STYPE_REACTTOSOUND;
+	if (character_physics_support())
+		character_physics_support()->in_Die();
 }
 
 //вывзывает при подсчете хита
@@ -321,13 +322,13 @@ float CEntityAlive::CalcCondition(float /**hit/**/)
 ///////////////////////////////////////////////////////////////////////
 u16	CEntityAlive::PHGetSyncItemsNumber()
 {
-	if(character_physics_support()->movement()->CharacterExist()) return 1;
-	else										  return inherited::PHGetSyncItemsNumber();
+	return
+		character_physics_support()->PHGetSyncItemsNumber();
 }
 CPHSynchronize* CEntityAlive::PHGetSyncItem	(u16 item)
 {
-	if(character_physics_support()->movement()->CharacterExist()) return character_physics_support()->movement()->GetSyncItem();
-	else										 return inherited::PHGetSyncItem(item);
+	return
+		character_physics_support()->PHGetSyncItem( item );
 }
 void CEntityAlive::PHUnFreeze()
 {
