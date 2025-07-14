@@ -13,6 +13,7 @@
 #include "UIActorMenu.h"
 #include "UIPdaWnd.h"
 #include "Actor.h"
+#include "uiinventorywnd.h"
 
 extern ENGINE_API BOOL bShowPauseString;
 
@@ -430,7 +431,12 @@ void CUISequencer::IR_OnKeyboardPress	(int dik)
 
 	if(binded && CurrentGameUI())
 	{
-		if(CurrentGameUI()->ActorMenu().IsShown())
+		if(&CurrentGameUI()->ActorMenu() && CurrentGameUI()->ActorMenu().IsShown())
+		{
+			CurrentGameUI()->HideActorMenu();
+			return;
+		}
+		if (&CurrentGameUI()->InventoryWnd() && CurrentGameUI()->InventoryWnd().IsShown())
 		{
 			CurrentGameUI()->HideActorMenu();
 			return;

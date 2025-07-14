@@ -80,7 +80,7 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_HitTypeProtection[ALife::eHitTypeFireWound]	= 0.f;//pSettings->r_float(section,"fire_wound_protection");
 	m_HitTypeProtection[ALife::eHitTypePhysicStrike]= READ_IF_EXISTS(pSettings, r_float, section, "physic_strike_protection", m_HitTypeProtection[ALife::eHitTypeStrike]);
 	m_HitTypeProtection[ALife::eHitTypeLightBurn]	= m_HitTypeProtection[ALife::eHitTypeBurn];
-	m_boneProtection->m_fHitFracActor = pSettings->r_float(section, "hit_fraction_actor");
+	m_boneProtection->m_fHitFracActor = READ_IF_EXISTS(pSettings, r_float, section, "hit_fraction_actor", 0.1f);
 
 	if (pSettings->line_exist(section, "nightvision_sect"))
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
@@ -301,7 +301,7 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 			pActor->SetIcon("", true);
 			if (auto current_ui = CurrentGameUI())
 			{
-				if (current_ui->ActorMenu().IsShown())
+				if (&current_ui->ActorMenu() && current_ui->ActorMenu().IsShown())
 				{
 					current_ui->ActorMenu().ReloadActorInfo();
 				}

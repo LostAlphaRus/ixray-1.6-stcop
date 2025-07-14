@@ -110,19 +110,22 @@ void CUIInventoryCellItem::UpdateItemText()
 
 	const u32	count			=	ChildsCount() + 1 - helper_count;
 
-	string32	str;
+    string32 tempStr;
+    pcstr finalText = nullptr;
+    if (count > 1 || helper_count)
+    {
+        xr_sprintf(tempStr, "x%d", count);
+        finalText = tempStr;
+    }
 
-	if ( count > 1 || helper_count )
-	{
-		xr_sprintf						( str, "x%d", count );
-		m_text->TextItemControl()->SetText	( str );
-		m_text->Show					( true );
-	}
+    if (m_text)
+    {
+        m_text->Show(nullptr != finalText);
+        m_text->SetText(finalText);
+    }
 	else
 	{
-		xr_sprintf						( str, "");
-		m_text->TextItemControl()->SetText	( str );
-		m_text->Show					( false );
+		this->SetText(finalText);
 	}
 }
 
@@ -161,16 +164,23 @@ u32 CUIAmmoCellItem::CalculateAmmoCount()
 
 void CUIAmmoCellItem::UpdateItemText()
 {
-	m_text->Show( false );
-	if ( !m_custom_draw )
-	{
-		const u32 total = CalculateAmmoCount();
-		
-		string32			str;
-		xr_sprintf			(str, "%d", total);
-		m_text->TextItemControl()->SetText(str);
-		m_text->Show		(true);
-	}
+    string32 tempStr;
+    pcstr finalText = nullptr;
+    if (!m_custom_draw)
+    {
+        xr_sprintf(tempStr, "%d", CalculateAmmoCount());
+        finalText = tempStr;
+    }
+
+    if (m_text)
+    {
+        m_text->Show(nullptr != finalText);
+        m_text->SetText(finalText);
+    }
+    else
+    {
+        this->SetText(finalText);
+    }
 }
 
 CUIWeaponCellItem::CUIWeaponCellItem(CWeapon* itm)

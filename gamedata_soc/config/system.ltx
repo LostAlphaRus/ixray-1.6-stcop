@@ -99,22 +99,47 @@ script_func = ;trader_job.artefacts_task_list_text
 files = game_tasks
 
 [inventory]
-take_dist		= 2
-max_weight		= 50
-max_ruck		= 56
-max_belt		= 5 ;16
-slots			= 11
+take_dist   	= 2
+max_weight    	= 50
+max_ruck    	= 56
+max_belt    	= 5 ;16
+slots_count   	= 12 ; count +1 (zero)
 
-slot_persistent_1  = true		;knife
-slot_persistent_2  = false		;pistol
-slot_persistent_3  = false		;automatic
-slot_persistent_4  = true		;grenades
-slot_persistent_5  = true		;binocular
-slot_persistent_6  = true		;bolt
-slot_persistent_7  = false		;outfit
-slot_persistent_8  = true		;pda
-slot_persistent_9  = true		;detector
-slot_persistent_10  = true		;torch
+slot_persistent_1   = true   ;knife
+slot_active_1       = true
+
+slot_persistent_2   = false  ;pistol
+slot_active_2       = true
+
+slot_persistent_3   = false  ;automatic
+slot_active_3       = true
+
+slot_persistent_4   = true   ;grenades
+slot_active_4       = true
+
+slot_persistent_5   = true   ;binocular
+slot_active_5       = true
+
+slot_persistent_6   = true   ;bolt
+slot_active_6       = true
+
+slot_persistent_7   = false  ;outfit
+slot_active_7       = false
+
+slot_persistent_8   = true   ;pda
+slot_active_8       = false
+
+slot_persistent_9   = true   ;detector
+slot_active_9       = false
+
+slot_persistent_10  = true  ;torch
+slot_active_10      = false
+
+slot_persistent_11  = false ;artefact
+slot_active_11      = true
+
+slot_persistent_12  = false ;helmet
+slot_active_12      = false
 
 
 [lights_hanging_lamp]
