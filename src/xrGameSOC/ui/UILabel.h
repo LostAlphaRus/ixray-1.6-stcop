@@ -3,6 +3,7 @@
 #include "../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../xrUI/Widgets/UILines.h"
 #include "../xrUI/Widgets/UIStatic.h"
+#include "../../xrScripts/script_export_space.h"
 
 class CLAItem;
 
@@ -31,6 +32,7 @@ public:
 	CUILabel();
 			void			SetLightAnim			(LPCSTR lanim);
 	CUIStatic				m_text;
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 protected:
 	Fvector2	m_textPos;
 };

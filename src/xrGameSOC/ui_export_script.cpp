@@ -20,7 +20,7 @@
 #include "../xrUI/Widgets/UIPropertiesbox.h"
 #include "../xrUI/Widgets/UIOptionsManagerScript.h"
 #include "UIMapInfo.h"
-
+#include "UILabel.h"
 
 using namespace luabind;
 
@@ -47,6 +47,7 @@ void UIRegistrator::script_register(lua_State *L)
 	CScriptXmlInit::script_register(L);
 	CUIGameCustom::script_register(L);
 	UIGame_custom_script::script_register(L);
+	CUILabel::script_register(L);
 
 	module(L)
 	[

@@ -7,8 +7,6 @@
 #include "../xrUI/Widgets/UIEditBox.h"
 #include "../xrUI/Widgets/UI3tButton.h"
 #include "ui/uilabel.h"
-#include "../battleye.h"
-
 
 class CUIXml;
 class CGameSpy_Browser;
@@ -30,7 +28,6 @@ public:
 	bool	with_pass;
 	bool	without_pass;
 	bool	without_ff;
-	bool	with_battleye;
 	bool	listen_servers;
 };
 
