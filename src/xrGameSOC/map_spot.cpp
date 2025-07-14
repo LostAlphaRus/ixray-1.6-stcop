@@ -23,11 +23,12 @@ CMapSpot::~CMapSpot()
 void CMapSpot::Load(CUIXml* xml, LPCSTR path)
 {
 	CUIXmlInit::InitStatic(*xml,path,0,this);
-	if (!Heading())
+	if(!Heading())
 	{
-		SetWidth(GetWidth() * UI().get_current_kx());
-		SetStretchTexture(true);
+		SetWidth			(GetWidth()*UI().get_current_kx());
+		SetStretchTexture	(true);
 	}
+
 	int i = xml->ReadAttribInt(path, 0, "scale", 0);
 	m_bScale			= (i==1);
 
@@ -186,14 +187,14 @@ void CMiniMapSpot::Draw()
 
 		if(d>1.8f){
 			GetUIStaticItem().SetShader(m_icon_below);
-			GetUIStaticItem().SetTextureRect(Frect().set(m_tex_rect_below.x1,m_tex_rect_below.y1,m_tex_rect_below.width(),m_tex_rect_below.height()));
+			GetUIStaticItem().SetTextureRect(m_tex_rect_below);
 		}else
 		if(d<-1.8f){
 			GetUIStaticItem().SetShader(m_icon_above);
-			GetUIStaticItem().SetTextureRect(Frect().set(m_tex_rect_above.x1,m_tex_rect_above.y1,m_tex_rect_above.width(),m_tex_rect_above.height()));
+			GetUIStaticItem().SetTextureRect(m_tex_rect_above);
 		}else{
 			GetUIStaticItem().SetShader(m_icon_normal);
-			GetUIStaticItem().SetTextureRect(Frect().set(m_tex_rect_normal.x1,m_tex_rect_normal.y1,m_tex_rect_normal.width(),m_tex_rect_normal.height()));
+			GetUIStaticItem().SetTextureRect(m_tex_rect_normal);
 		}
 	};
 

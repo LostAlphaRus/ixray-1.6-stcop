@@ -12,6 +12,9 @@
 #include "ui/UIMessagesWindow.h"
 #include "../entity.h"
 #include "ui/UIInventoryWnd.h"
+#include "../actor.h"
+#include "../Inventory.h"
+#include "../huditem.h"
 
 struct predicate_remove_stat {
 	bool	operator() (SDrawStaticStruct& s) {
@@ -82,6 +85,14 @@ void CUIGameCustom::Render()
 	CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
 	if (pEntity)
 	{
+		CActor* pActor = smart_cast<CActor*>(pEntity);
+		if (pActor)
+		{
+			PIItem item = pActor->inventory().ActiveItem();
+			if (item && pActor->HUDview() && smart_cast<CHudItem*>(item))
+				(smart_cast<CHudItem*>(item))->OnDrawUI();
+		}
+
 		if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
 			UIMainIngameWnd->Draw();
 	}

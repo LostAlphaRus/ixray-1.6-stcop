@@ -187,8 +187,8 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	m_UILevelFrame->AttachChild				(m_GlobalMap);
 	m_GlobalMap->OptimalFit					(m_UILevelFrame->GetWndRect());
-	m_GlobalMap->SetMinZoom					(m_GlobalMap->GetCurrentZoom());
-	m_currentZoom							= m_GlobalMap->GetCurrentZoom();
+	m_GlobalMap->SetMinZoom					(m_GlobalMap->GetCurrentZoom().x);
+	m_currentZoom							= m_GlobalMap->GetCurrentZoom().x;
 
 	// initialize local maps
 	xr_string sect_name;
@@ -326,12 +326,14 @@ void CUIMapWnd::SetTargetMap			(CUICustomMap* m, const Fvector2& pos, bool bZoom
 		Fvector2	_p;gm->GetAbsolutePos(_p);
 		m_tgtCenter.sub					(_p);
 		m_tgtCenter.div					(gm->GetCurrentZoom());
- 	}else{
+ 	}
+	else
+	{
 
-		if(bZoomIn && fsimilar(GlobalMap()->GetCurrentZoom(), GlobalMap()->GetMinZoom(),EPS_L ))
+		if(bZoomIn)
 			SetZoom(GlobalMap()->GetMaxZoom());
 
-		m_tgtCenter						= m->ConvertRealToLocalNoTransform(pos);
+		m_tgtCenter						= m->ConvertRealToLocal(pos, true);
 		m_tgtCenter.add					(m->GetWndPos()).div(GlobalMap()->GetCurrentZoom());
 	}
 	ResetActionPlanner				();

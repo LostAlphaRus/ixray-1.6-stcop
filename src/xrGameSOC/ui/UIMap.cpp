@@ -54,6 +54,13 @@ void CUICustomMap::Init	(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 		tex = "ui\\ui_nomap2";
 		tmp.set(-10000.0f,-10000.0f,10000.0f,10000.0f);
 	}
+
+	if (!Heading())
+	{
+		tmp.x *= UI().get_current_kx();
+		tmp.z *= UI().get_current_kx();
+	}
+
 	m_BoundRect.set		(tmp.x, tmp.y, tmp.z, tmp.w);
 	CUIStatic::SetWndSize	(Fvector2().set(m_BoundRect.width(), m_BoundRect.height()));
 	CUIStatic::SetWndPos	(Fvector2().set(0,0));
@@ -62,44 +69,52 @@ void CUICustomMap::Init	(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 	SetStretchTexture	(true);
 }
 
-void rotation_(float x, float y, const float angle, float& x_, float& y_)
+void rotation_(float x, float y, const float angle, float& x_, float& y_, float kx)
 {
-	float _sc = _cos(angle);
-	float _sn = _sin(angle);
-	x_= x*_sc+y*_sn;
-	y_= y*_sc-x*_sn;
+	float _sc 		= _cos(angle);
+	float _sn 		= _sin(angle);
+	x_				= x*_sc+y*_sn;
+	y_				= y*_sc-x*_sn;
+	x_				*= kx;
 }
 
-Fvector2 CUICustomMap::ConvertLocalToReal(const Fvector2& src)
+Fvector2 CUICustomMap::ConvertLocalToReal(const Fvector2& src, Frect const& bound_rect)
 {
 	Fvector2 res; 
-	res.x = m_BoundRect.lt.x + src.x/GetCurrentZoom();
-	res.y = m_BoundRect.height() + m_BoundRect.lt.y - src.y/GetCurrentZoom();
+	res.x = bound_rect.lt.x + src.x/GetCurrentZoom().x;
+	res.y = bound_rect.height() + bound_rect.lt.y - src.y/GetCurrentZoom().x;
 
 	return res;
 }
 
-Fvector2 CUICustomMap::ConvertRealToLocal  (const Fvector2& src)// meters->pixels (relatively own left-top pos)
+Fvector2 CUICustomMap::ConvertRealToLocal  (const Fvector2& src, bool for_drawing)// meters->pixels (relatively own left-top pos)
 {
 	Fvector2 res;
-	if( !Heading() ){
-		return ConvertRealToLocalNoTransform(src);
-	}else{
+	if( !Heading() )
+	{
+		Frect bound_rect	= BoundRect();
+		bound_rect.x1		/= UI().get_current_kx();
+		bound_rect.x2		/= UI().get_current_kx();
+		res					= ConvertRealToLocalNoTransform(src, bound_rect);
+		res.x				*= UI().get_current_kx();
+	}else
+	{
 		Fvector2 heading_pivot = GetStaticItem()->GetHeadingPivot();
 	
-		res = ConvertRealToLocalNoTransform(src);
-		res.sub(heading_pivot);
-		rotation_(res.x, res.y, GetHeading(), res.x, res.y);
-		res.add(heading_pivot);
-		return res;
+		res						= ConvertRealToLocalNoTransform(src, BoundRect());
+		res.sub					(heading_pivot);
+		rotation_				(res.x, res.y, GetHeading(), res.x, res.y, for_drawing?UI().get_current_kx():1.0f);
+		
+		res.add					(heading_pivot);
 	};
+	return res;
 }
 
-Fvector2 CUICustomMap::ConvertRealToLocalNoTransform  (const Fvector2& src)// meters->pixels (relatively own left-top pos)
+Fvector2 CUICustomMap::ConvertRealToLocalNoTransform  (const Fvector2& src, Frect const& bound_rect)// meters->pixels (relatively own left-top pos)
 {
 	Fvector2 res;
-	res.x = (src.x-m_BoundRect.lt.x) * GetCurrentZoom();
-	res.y = (m_BoundRect.height()-(src.y-m_BoundRect.lt.y)) * GetCurrentZoom();
+	res.x = (src.x-bound_rect.lt.x) * GetCurrentZoom().x;
+	res.y = (bound_rect.height()-(src.y-bound_rect.lt.y)) * GetCurrentZoom().x;
 
 	return res;
 }
@@ -179,7 +194,7 @@ void CUICustomMap::SetActivePoint(const Fvector &vNewPoint)
 	Frect bound = BoundRect();
 	if( FALSE==bound.in(pos) )return;
 
-	Fvector2	pos_on_map		= ConvertRealToLocalNoTransform(pos);
+	Fvector2	pos_on_map		= ConvertRealToLocalNoTransform(pos, BoundRect());
 	Frect		map_abs_rect;
 	GetAbsoluteRect(map_abs_rect);
 	Fvector2	pos_abs;
@@ -281,11 +296,11 @@ void CUIGlobalMap::ClipByVisRect()
 	SetWndPos				(Fvector2().set(r.x1,r.y1));
 }
 
-Fvector2 CUIGlobalMap::ConvertRealToLocal(const Fvector2& src)// pixels->pixels (relatively own left-top pos)
+Fvector2 CUIGlobalMap::ConvertRealToLocal(const Fvector2& src, bool for_drawing)// pixels->pixels (relatively own left-top pos)
 {
 	Fvector2 res;
-	res.x = (src.x-m_BoundRect.lt.x) * GetCurrentZoom();
-	res.y = (src.y-m_BoundRect.lt.y) * GetCurrentZoom();
+	res.x = (src.x-m_BoundRect.lt.x) * GetCurrentZoom().x;
+	res.y = (src.y-m_BoundRect.lt.y) * GetCurrentZoom().x;
 	return res;
 }
 
@@ -325,7 +340,7 @@ float CUIGlobalMap::CalcOpenRect(const Fvector2& center_point, Frect& map_desire
 	float dist					= 0.f;
 
 	Frect s_rect,t_rect;
-	s_rect.div					(GetWndRect(),GetCurrentZoom(),GetCurrentZoom());
+	s_rect.div					(GetWndRect(),GetCurrentZoom().x,GetCurrentZoom().x);
 	t_rect.div					(map_desired_rect,tgt_zoom,tgt_zoom);
 
 	Fvector2 cpS,cpT;
@@ -371,13 +386,17 @@ void CUILevelMap::Init	(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 {
 	inherited::Init(name, gameLtx, sh_name);
 	Fvector4 tmp = gameLtx.r_fvector4(MapName(),"global_rect");
+
+	tmp.x					*= UI().get_current_kx();
+	tmp.z					*= UI().get_current_kx();
 	m_GlobalRect.set(tmp.x, tmp.y, tmp.z, tmp.w);
 
 #ifdef DEBUG
 	float kw = m_GlobalRect.width	()	/	BoundRect().width		();
 	float kh = m_GlobalRect.height	()	/	BoundRect().height	();
 
-	if(FALSE==fsimilar(kw,kh,EPS_L)){
+	if(FALSE==fsimilar(kw,kh,EPS_L))
+	{
 		Msg(" --incorrect global rect definition for map [%s]  kw=%f kh=%f",*MapName(),kw,kh);
 		Msg(" --try x2=%f or  y2=%f",m_GlobalRect.x1+kh*BoundRect().width(), m_GlobalRect.y1+kw*BoundRect().height());
 	}
@@ -401,25 +420,25 @@ void CUILevelMap::Init	(shared_str name, CInifile& gameLtx, LPCSTR sh_name)
 
 void CUILevelMap::UpdateSpots		()
 {
-	DetachAll		();
-	if( fsimilar(MapWnd()->GlobalMap()->GetCurrentZoom(),MapWnd()->GlobalMap()->GetMinZoom(),EPS_L ) ) return;
-	Frect _r;
-	GetAbsoluteRect(_r);
-	if( FALSE==MapWnd()->ActiveMapRect().intersected(_r)) return;
-/*
-	if(m_anomalies_map){
-		m_anomalies_map->SetWndPos	(0.0f,0.0f);
-		m_anomalies_map->SetWndSize	(GetWndSize());
-		AttachChild					(m_anomalies_map);
-	}
+	DetachAll			();
 
-	CLevelFogOfWar* F	= Level().FogOfWarMngr().GetFogOfWar(MapName());
-	AttachChild		(F);
-*/
-	Locations& ls =Level().MapManager().Locations();
-	for(Locations_it it=ls.begin(); it!=ls.end(); ++it){
-		if ((*it).location->Update())
+//.	if( fsimilar(MapWnd()->GlobalMap()->GetCurrentZoom(),MapWnd()->GlobalMap()->GetMinZoom(),EPS_L ) ) return;
+	
+	Frect				_r;
+	GetAbsoluteRect		(_r);
+
+	if( FALSE==MapWnd()->ActiveMapRect().intersected(_r)) return;
+
+	Locations& ls		= Level().MapManager().Locations();
+	Locations_it it		= ls.begin();
+	Locations_it it_e	= ls.end();
+
+	for(u32 idx=0; it!=it_e;++it,++idx)
+	{
+		if( (*it).actual && MapName() == (*it).location->GetLevelName() )
+		{
 			(*it).location->UpdateLevelMap(this);
+		}
 	}
 }
 
@@ -428,8 +447,8 @@ Frect CUILevelMap::CalcWndRectOnGlobal	()
 	Frect res;
 	CUIGlobalMap* globalMap			= MapWnd()->GlobalMap();
 
-	res.lt							= globalMap->ConvertRealToLocal(GlobalRect().lt);
-	res.rb							= globalMap->ConvertRealToLocal(GlobalRect().rb);
+	res.lt							= globalMap->ConvertRealToLocal(GlobalRect().lt, false);
+	res.rb							= globalMap->ConvertRealToLocal(GlobalRect().rb, false);
 	res.add							(globalMap->GetWndPos().x, globalMap->GetWndPos().y);
 
 	return res;
@@ -441,27 +460,26 @@ void CUILevelMap::Update()
 	Frect			rect;
 	Fvector2		tmp;
 
-	tmp								= w->ConvertRealToLocal(GlobalRect().lt);
+	tmp								= w->ConvertRealToLocal(GlobalRect().lt, false);
 	rect.lt							= tmp;
-	tmp								= w->ConvertRealToLocal(GlobalRect().rb);
+	tmp								= w->ConvertRealToLocal(GlobalRect().rb, false);
 	rect.rb							= tmp;
 
 	SetWndRect						(rect);
 
 	inherited::Update				();
 
-	if(m_bCursorOverWindow){
+	if(m_bCursorOverWindow)
+	{
 		VERIFY(m_dwFocusReceiveTime>=0);
-		if( Device.dwTimeGlobal>(m_dwFocusReceiveTime+500) ){
-
-			if(fsimilar(MapWnd()->GlobalMap()->GetCurrentZoom(), MapWnd()->GlobalMap()->GetMinZoom(),EPS_L ))
-				MapWnd()->ShowHint(this, *MapName());
+		if( Device.dwTimeContinual>(m_dwFocusReceiveTime+500) )
+		{
+			if(fsimilar(MapWnd()->GlobalMap()->GetCurrentZoom().x, MapWnd()->GlobalMap()->GetMinZoom(),EPS_L ))
+				MapWnd()->ShowHint(this, MapName().c_str());
 			else
 				MapWnd()->HideHint(this);
-
 		}
 	}
-
 }
 
 bool CUILevelMap::OnMouseAction	(float x, float y, EUIMessages mouse_action)

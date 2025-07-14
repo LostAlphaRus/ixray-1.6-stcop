@@ -88,6 +88,7 @@ public:
 	Fvector					GetLastPosition					() {return m_position_global;};
 	bool					Serializable					() const {return !!m_flags.test(eSerailizable);}
 	void					SetSerializable					(bool b) {m_flags.set(eSerailizable,b);}
+	IC const shared_str&	GetLevelName					()	{return m_cached.m_LevelName;}
 
 	virtual void			save							(IWriter &stream);
 	virtual void			load							(IReader &stream);

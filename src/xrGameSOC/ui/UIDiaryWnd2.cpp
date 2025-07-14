@@ -113,6 +113,7 @@ void CUIDiaryWnd::Init()
 
 void	CUIDiaryWnd::SendMessage			(CUIWindow* pWnd, s16 msg, void* pData)
 {
+	inherited::SendMessage(pWnd, msg, pData);
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
 }
 

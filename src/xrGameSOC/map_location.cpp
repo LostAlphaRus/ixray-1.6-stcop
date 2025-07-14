@@ -326,7 +326,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		//update spot position
 		Fvector2 position = Position();
 
-		m_position_on_map =	map->ConvertRealToLocal(position);
+		m_position_on_map	= map->ConvertRealToLocal(position, (map->Heading())?false:true); //for visibility calculating
 
 		sp->SetWndPos(m_position_on_map);
 		Frect wnd_rect = sp->GetWndRect();
@@ -334,7 +334,8 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		if( map->IsRectVisible(wnd_rect) ) {
 
 			//update heading if needed
-			if( sp->Heading() ){
+			if (sp->Heading() && !sp->GetConstHeading())
+			{
 				Fvector2 dir_global = Direction();
 				float h = dir_global.getH();
 				float h_ = map->GetHeading()+h;
@@ -422,7 +423,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 			if(bDone){
 				Fvector2 position;
 				position.set			((*lit)->Position().x, (*lit)->Position().z);
-				m_position_on_map		= map->ConvertRealToLocal(position);
+				m_position_on_map		= map->ConvertRealToLocal(position, false);
 				UpdateSpotPointer		(map, GetSpotPointer(sp));
 			}
 		}
@@ -443,12 +444,26 @@ void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp )
 
 		map->AttachChild(sp);
 
-		Fvector2 tt = map->ConvertLocalToReal(m_position_on_map);
+		Fvector2 tt = map->ConvertLocalToReal(m_position_on_map, map->BoundRect());
 		Fvector ttt;
 		ttt.set		(tt.x, 0.0f, tt.y);
 		float dist_to_target = Level().CurrentEntity()->Position().distance_to(ttt);
 		map->SetPointerDistance	(dist_to_target);
-	}
+
+		u32 clr = sp->GetTextureColor();
+		u32 a = 0xff;
+		if (dist_to_target >= 0.0f && dist_to_target < 10.0f)
+			a = 255;
+		else
+			if (dist_to_target >= 10.0f && dist_to_target < 50.0f)
+				a = 200;
+			else
+				if (dist_to_target >= 50.0f && dist_to_target < 100.0f)
+					a = 150;
+				else
+					a = 100;
+
+		sp->SetTextureColor(subst_alpha(clr, a));	}
 }
 
 void CMapLocation::UpdateMiniMap(CUICustomMap* map)
