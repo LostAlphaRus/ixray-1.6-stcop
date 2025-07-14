@@ -13,6 +13,7 @@
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UITabControl.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
+#include "../../xrUI/Widgets/UICheckButton.h"
 #include "UIMapWndActions.h"
 #include "UIMapWndActionsSpace.h"
 #include "map_hint.h"
@@ -96,49 +97,47 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	xr_strconcat(pth,start_from,":main_wnd:map_header_frame_line");
 	xml_init.InitFrameLine			(uiXml, pth, 0, UIMainMapHeader);
 
-	ZeroMemory						(m_ToolBar,sizeof(m_ToolBar));
 	xr_string  sToolbar;
 	sToolbar	= xr_string(start_from) + ":main_wnd:map_header_frame_line:tool_bar";
 
-	EMapToolBtn		btnIndex;
-	btnIndex		= eGlobalMap;
 	xr_strconcat(pth, sToolbar.c_str(), ":global_map_btn");
 	if(uiXml.NavigateToNode(pth,0)){
-		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
-		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
-		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
-		Register						(m_ToolBar[btnIndex]);
-		AddCallbackStr					(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUIMapWnd::OnToolGlobalMapClicked));
+		m_toolbar_global_map				= new CUI3tButton(); 
+		m_toolbar_global_map->SetAutoDelete(true);
+		xml_init.Init3tButton			(uiXml, pth, 0, m_toolbar_global_map);
+		UIMainMapHeader->AttachChild	(m_toolbar_global_map);
+		Register						(m_toolbar_global_map);
+		AddCallbackStr					(*m_toolbar_global_map->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUIMapWnd::OnToolGlobalMapClicked));
 	}
 
-	btnIndex		= eActor;
 	xr_strconcat(pth, sToolbar.c_str(), ":actor_btn");
 	if(uiXml.NavigateToNode(pth,0)){
-		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
-		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
-		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
-		Register						(m_ToolBar[btnIndex]);
-		AddCallbackStr					(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUIMapWnd::OnToolActorClicked));
+		m_toolbar_actor				= new CUI3tButton(); 
+		m_toolbar_actor->SetAutoDelete(true);
+		xml_init.Init3tButton			(uiXml, pth, 0, m_toolbar_actor);
+		UIMainMapHeader->AttachChild	(m_toolbar_actor);
+		Register						(m_toolbar_actor);
+		AddCallbackStr					(*m_toolbar_actor->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUIMapWnd::OnToolActorClicked));
 	}
 
 
-	btnIndex		= eZoomIn;
 	xr_strconcat(pth, sToolbar.c_str(), ":zoom_in_btn");
 	if(uiXml.NavigateToNode(pth,0)){
-		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
-		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
-		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
-		Register						(m_ToolBar[btnIndex]);
-		AddCallbackStr					(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomInClicked));
+		m_toolbar_zoom_in = new CUICheckButton(); 
+		m_toolbar_zoom_in->SetAutoDelete(true);
+		xml_init.InitCheck			(uiXml, pth, 0, m_toolbar_zoom_in);
+		UIMainMapHeader->AttachChild	(m_toolbar_zoom_in);
+		Register						(m_toolbar_zoom_in);
+		AddCallbackStr					(*m_toolbar_zoom_in->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomInClicked));
 	}
-	btnIndex		= eZoomOut;
 	xr_strconcat(pth, sToolbar.c_str(), ":zoom_out_btn");
 	if(uiXml.NavigateToNode(pth,0)){
-		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
-		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
-		UIMainMapHeader->AttachChild	(m_ToolBar[btnIndex]);
-		Register						(m_ToolBar[btnIndex]);
-		AddCallbackStr					(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomOutClicked));
+		m_toolbar_zoom_out				= new CUICheckButton(); 
+		m_toolbar_zoom_out->SetAutoDelete(true);
+		xml_init.InitCheck			(uiXml, pth, 0, m_toolbar_zoom_out);
+		UIMainMapHeader->AttachChild	(m_toolbar_zoom_out);
+		Register						(m_toolbar_zoom_out);
+		AddCallbackStr					(*m_toolbar_zoom_out->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomOutClicked));
 	}
 /*
 	btnIndex		= eAddSpot;
@@ -648,23 +647,17 @@ void CUIMapWnd::HighlightSpot			()
 */
 void CUIMapWnd::ValidateToolBar			()
 {
-	CUI3tButton* btn	= NULL;
-	btn					= m_ToolBar[eZoomIn]; // костыли?
+	CUICheckButton* btn = NULL;
+	btn					= m_toolbar_zoom_in;
 	if (btn)
 	{
-		if (!!m_flags.test(lmZoomIn))
-			btn->SetButtonState(CUIButton::BUTTON_PUSHED);
-		else
-			btn->SetButtonState(CUIButton::BUTTON_NORMAL);
+		btn->SetCheck(!!m_flags.test(lmZoomIn));
 	}
 
-	btn					= m_ToolBar[eZoomOut];
+	btn					= m_toolbar_zoom_out;
 	if (btn)
 	{
-		if (!!m_flags.test(lmZoomOut))
-			btn->SetButtonState(CUIButton::BUTTON_PUSHED);
-		else
-			btn->SetButtonState(CUIButton::BUTTON_NORMAL);
+		btn->SetCheck(!!m_flags.test(lmZoomOut));
 	}
 /*
 	btn					= m_ToolBar[eAddSpot];

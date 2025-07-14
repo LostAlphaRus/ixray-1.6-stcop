@@ -18,5 +18,6 @@ public:
 	LPCSTR		 GetPassword		();
 
     CUIMessageBox*	m_pMessageBox;
+	virtual bool	OnKeyboardAction			(int dik, EUIMessages keyboard_action);
 	virtual bool	NeedCenterCursor	()const	 {return false;}
 };

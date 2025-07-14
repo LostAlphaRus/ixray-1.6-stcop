@@ -13,6 +13,7 @@ class CMapActionPlanner;
 class CUITabControl;
 class CUIStatic;
 class CUI3tButton;
+class CUICheckButton;
 class CUILevelMap;
 class CUIMapHint;
 class CMapLocation;
@@ -23,14 +24,14 @@ using GameMapsPairIt = GameMaps::iterator;
 class CUIMapWnd: public CUIWindow, public CUIWndCallback
 {
 	typedef CUIWindow inherited;
-	enum EMapToolBtn{	eGlobalMap=0,
+	/*enum EMapToolBtn { eGlobalMap = 0,
 						eZoomIn,
 						eZoomOut,
 //.						eAddSpot,
 //.						eRemoveSpot,
 						eActor,
 //.						eHighlightSpot,
-						eMaxBtn};
+						eMaxBtn};*/
 public:
 	enum lmFlags{	//. lmUserSpotAdd	= (1<<1),
 					//. lmUserSpotRemove= (1<<2),
@@ -51,7 +52,11 @@ private:
 	CUIWindow*					m_UILevelFrame;
 	CMapActionPlanner*			m_ActionPlanner;
 	CUIFrameLineWnd*			UIMainMapHeader;
-	CUI3tButton*				m_ToolBar[eMaxBtn];
+	//CUI3tButton*				m_ToolBar[eMaxBtn];
+	CUICheckButton*				m_toolbar_zoom_in;
+	CUICheckButton*				m_toolbar_zoom_out;
+	CUI3tButton*				m_toolbar_global_map;
+	CUI3tButton*				m_toolbar_actor;
 	CUIMapHint*					m_hint;
 //.	CMapLocation*				m_selected_location;
 	CUIStatic*					m_text_hint;

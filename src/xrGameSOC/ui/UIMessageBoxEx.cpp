@@ -4,24 +4,32 @@
 #include "UIMessageBoxEx.h"
 #include "../../xrUI/Widgets/UIDialogHolder.h"
 
-CUIMessageBoxEx::CUIMessageBoxEx(){
+CUIMessageBoxEx::CUIMessageBoxEx()
+{
 	m_pMessageBox = new CUIMessageBox();
 	m_pMessageBox->SetWindowName("msg_box");
 //	m_pMessageBox->SetAutoDelete(true);
 	AttachChild(m_pMessageBox);
 }
 
-CUIMessageBoxEx::~CUIMessageBoxEx(){
+CUIMessageBoxEx::~CUIMessageBoxEx()
+{
 	xr_delete(m_pMessageBox);
 }
 
-void CUIMessageBoxEx::Init(LPCSTR xml_template){
+void CUIMessageBoxEx::Init(LPCSTR xml_template)
+{
 	m_pMessageBox->Init(xml_template);
+
+	SetWndPos(m_pMessageBox->GetWndPos());
+	SetWndSize(m_pMessageBox->GetWndSize());
+	m_pMessageBox->SetWndPos(Fvector2().set(0, 0));
+
 }
 
-void CUIMessageBoxEx::SetText(LPCSTR text){
+void CUIMessageBoxEx::SetText(LPCSTR text)
+{
 	m_pMessageBox->SetText(text);
-
 }
 
 LPCSTR CUIMessageBoxEx::GetText ()
@@ -29,7 +37,8 @@ LPCSTR CUIMessageBoxEx::GetText ()
 	return m_pMessageBox->GetText();
 }
 
-void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = NULL */){
+void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = NULL */)
+{
 	CUIWndCallback::OnEvent(pWnd, msg, pData);
 	if (pWnd == m_pMessageBox)
 	{
@@ -40,7 +49,7 @@ void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = NUL
 			case MESSAGE_BOX_CANCEL_CLICKED:
 			case MESSAGE_BOX_QUIT_WIN_CLICKED:
 			case MESSAGE_BOX_QUIT_GAME_CLICKED:
-				GetHolder()->StartStopMenu(this, true);
+				HideDialog();
 			default:
 				break;
 		}
@@ -51,10 +60,26 @@ void CUIMessageBoxEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData /* = NUL
 	
 }
 
-LPCSTR CUIMessageBoxEx::GetHost(){
+LPCSTR CUIMessageBoxEx::GetHost()
+{
 	return m_pMessageBox->GetHost();
 }
 
-LPCSTR CUIMessageBoxEx::GetPassword(){
+LPCSTR CUIMessageBoxEx::GetPassword()
+{
 	return m_pMessageBox->GetPassword();
+}
+
+bool CUIMessageBoxEx::OnKeyboardAction(int dik, EUIMessages keyboard_action)
+{
+	if(keyboard_action==WINDOW_KEY_PRESSED)
+	{
+		if ( dik == SDL_SCANCODE_KP_ENTER || dik == SDL_SCANCODE_RETURN || dik == SDL_SCANCODE_SPACE)
+		{
+			m_pMessageBox->OnYesOk();
+			return true;
+		}else
+			return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
+	}
+	return CUIDialogWnd::OnKeyboardAction(dik, keyboard_action);
 }

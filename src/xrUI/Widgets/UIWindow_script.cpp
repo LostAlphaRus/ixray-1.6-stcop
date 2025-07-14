@@ -106,7 +106,10 @@ LPCSTR	get_texture_name(LPCSTR icon_name)
 
 TEX_INFO	get_texture_info(LPCSTR name, LPCSTR def_name)
 {
-	return CUITextureMaster::FindItem(name, def_name);
+	if (CUITextureMaster::ItemExist(name))
+		return CUITextureMaster::FindItem(name);
+	else
+		return CUITextureMaster::FindItem(def_name);
 }
 
 Fvector2 GetCursorPosition_script()

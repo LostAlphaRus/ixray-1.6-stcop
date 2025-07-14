@@ -18,7 +18,6 @@
 
 #else
 #	include "PHSimpleCalls.h"
-#	include "PhysicsShell.h"
 #	include "eatable_item.h"
 #	include "RadioactiveZone.h"
 #	include "alife_online_offline_group_brain.h"

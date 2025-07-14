@@ -39,8 +39,8 @@ void CUIEncyclopediaArticleWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 void CUIEncyclopediaArticleWnd::SetArticle(CEncyclopediaArticle* article)
 {
-//	if( article->data()->image.TextureAvailable() )
-//	{
+	if( article->data()->image.GetShader() && article->data()->image.GetShader()->inited())
+	{
 		m_UIImage->SetShader			(article->data()->image.GetShader());
 		m_UIImage->SetTextureRect		(article->data()->image.GetStaticItem()->GetTextureRect());
 		m_UIImage->SetWndSize			(article->data()->image.GetWndSize());
@@ -48,8 +48,8 @@ void CUIEncyclopediaArticleWnd::SetArticle(CEncyclopediaArticle* article)
 		float img_x						= (GetWidth()-m_UIImage->GetWidth())/2.0f;
 		img_x							= _max(0.0f, img_x);
 		m_UIImage->SetWndPos			(Fvector2().set(img_x, m_UIImage->GetWndPos().y));
-//	};
-	m_UIText->SetText					(*g_pStringTable->translate(article->data()->text.c_str()));
+	};
+	m_UIText->SetTextST					(article->data()->text.c_str());
 	m_UIText->AdjustHeightToText		();
 
 	AdjustLauout						();

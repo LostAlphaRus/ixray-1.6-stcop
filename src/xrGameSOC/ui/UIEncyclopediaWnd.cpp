@@ -129,25 +129,24 @@ void CUIEncyclopediaWnd::SendMessage(CUIWindow *pWnd, s16 msg, void* pData)
 
 void CUIEncyclopediaWnd::Draw()
 {
-	
-if(	m_flags.test(eNeedReload )){
-	if(Actor()->encyclopedia_registry->registry().objects_ptr() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount)
+	if(	m_flags.test(eNeedReload ))
 	{
-		ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
-		std::advance(it, prevArticlesCount);
-		for(; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
+		if(Actor()->encyclopedia_registry->registry().objects_ptr() && Actor()->encyclopedia_registry->registry().objects_ptr()->size() > prevArticlesCount)
 		{
-			if (ARTICLE_DATA::eEncyclopediaArticle == it->article_type)
+			ARTICLE_VECTOR::const_iterator it = Actor()->encyclopedia_registry->registry().objects_ptr()->begin();
+			std::advance(it, prevArticlesCount);
+			for(; it != Actor()->encyclopedia_registry->registry().objects_ptr()->end(); it++)
 			{
-				AddArticle(it->article_id, it->readed);
+				if (ARTICLE_DATA::eEncyclopediaArticle == it->article_type)
+				{
+					AddArticle(it->article_id, it->readed);
+				}
 			}
+			prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();
 		}
-		prevArticlesCount = Actor()->encyclopedia_registry->registry().objects_ptr()->size();
+		
+		m_flags.set(eNeedReload, FALSE);
 	}
-	
-	m_flags.set(eNeedReload, FALSE);
-	}
-
 	inherited::Draw();
 }
 
