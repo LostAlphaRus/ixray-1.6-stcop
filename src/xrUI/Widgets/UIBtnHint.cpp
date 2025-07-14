@@ -9,7 +9,7 @@ UI_API CUIButtonHint* g_btnHint = nullptr;
 UI_API CUIButtonHint* g_statHint = nullptr;
 
 CUIButtonHint::CUIButtonHint	()
-:m_ownerWnd(nullptr),m_enabledOnFrame(false)
+:m_ownerWnd(nullptr),m_enabledOnFrame(false), m_border(nullptr)
 {
 //	Device.seqRender.Add		(this, REG_PRIORITY_LOW-1000);
 
