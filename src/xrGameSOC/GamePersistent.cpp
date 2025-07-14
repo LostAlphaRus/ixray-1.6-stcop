@@ -429,7 +429,6 @@ void CGamePersistent::start_game_intro		()
 #endif
 	if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame<=2){
 		m_intro_event.bind		(this,&CGamePersistent::update_game_intro);
-		load_screen_renderer.stop();
 		if (0==_stricmp(m_game_params.m_new_or_load,"new")){
 			VERIFY				(NULL==m_intro);
 			m_intro				= new CUISequencer();
@@ -465,7 +464,7 @@ void CGamePersistent::OnFrame	()
 #endif
 	if (!g_dedicated_server && !m_intro_event.empty())	m_intro_event();
 
-	if (!g_dedicated_server && Device.dwPrecacheFrame == 0 && !m_intro && m_intro_event.empty())
+	if (!g_dedicated_server && Device.dwPrecacheFrame == 0/* && !m_intro && m_intro_event.empty()*/) // return these checks after implementing "Press any key..." prompt
 		load_screen_renderer.stop();
 
 	if( !m_pMainMenu->IsActive() )

@@ -172,6 +172,8 @@ namespace ALife {
 				return(eHitTypeExplosion);
 		else if (!_stricmp(caHitType,"wound_2"))
 				return(eHitTypeWound_2);
+		else if (!_stricmp(caHitType, "physic_strike"))
+			return eHitTypePhysicStrike;
 		else
 				FATAL	("Unsupported hit type!");
 		NODEFAULT;
