@@ -336,6 +336,7 @@ void CActor::ActorUse()
 		CGameObject::u_EventGen		(P, GEG_PLAYER_DETACH_HOLDER, ID());
 		P.w_u32						(GO->ID());
 		CGameObject::u_EventSend	(P);
+		PickupModeOff();
 		return;
 	}
 				
@@ -350,6 +351,7 @@ void CActor::ActorUse()
 	{
 		CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(CurrentGameUI());
 		if(pGameSP) pGameSP->StartCarBody(this, m_pInvBoxWeLookingAt );
+		PickupModeOff();
 		return;
 	}
 
@@ -402,6 +404,7 @@ void CActor::ActorUse()
 					CGameObject::u_EventGen		(P, GEG_PLAYER_ATTACH_HOLDER, ID());
 					P.w_u32						(object->ID());
 					CGameObject::u_EventSend	(P);
+					PickupModeOff();
 					return;
 			}
 
