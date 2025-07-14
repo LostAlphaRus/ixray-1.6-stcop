@@ -2,13 +2,13 @@
 
 #include "../xrEngine/Effector.h"
 
-// приседание после падения
+// РїСЂРёСЃРµРґР°РЅРёРµ РїРѕСЃР»Рµ РїР°РґРµРЅРёСЏ
 class CEffectorFall : public CEffectorCam
 {
 	float	fPower;
 	float	fPhase;
 public:
-	virtual	BOOL	Process(Fvector &p, Fvector &d, Fvector &n, float& fFov, float& fFar, float& fAspect);
+	virtual	BOOL	ProcessCam(SCamEffectorInfo& info);
 
 	CEffectorFall(float power, float life_time=1);
 	virtual ~CEffectorFall();
