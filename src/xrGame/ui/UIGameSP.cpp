@@ -121,6 +121,26 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 			break;
 		}
 
+	case kMAP:
+	{
+		if (!pActor->inventory_disabled())
+		{
+			PdaMenu().SetActiveSubdialog("eptMap");
+			ShowPdaMenu();
+		}
+		break;
+	}
+
+	case kCONTACTS:
+	{
+		if (!pActor->inventory_disabled())
+		{
+			PdaMenu().SetActiveSubdialog("eptContacts");
+			ShowPdaMenu();
+		}
+		break;
+	}
+
 	case kINVENTORY:
 		{
 			if ( !pActor->inventory_disabled() )

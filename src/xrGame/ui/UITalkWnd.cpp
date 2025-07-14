@@ -18,7 +18,7 @@
 #include "../../xrEngine/CameraBase.h"
 #include "../../xrUI/UIXmlInit.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
-
+#include "UITradeWnd.h"
 #include "EffectorFall.h"
 #include "ActorEffector.h"
 #include "GamePersistent.h"
@@ -34,6 +34,7 @@ CUITalkWnd::CUITalkWnd()
 
 	m_pOurDialogManager		= nullptr;
 	m_pOthersDialogManager	= nullptr;
+	UITradeWnd				= nullptr;
 
 	ToTopicMode				();
 
@@ -62,6 +63,17 @@ void CUITalkWnd::InitTalkWnd()
 	AttachChild				(UITalkDialogWnd);
 	UITalkDialogWnd->m_pParent = this;
 	UITalkDialogWnd->InitTalkDialogWnd();
+
+	/////////////////////////
+	//Меню торговли
+	CUIXml actorMenuXml;
+	if (!actorMenuXml.Load(CONFIG_PATH, UI_PATH, "actor_menu.xml"))
+	{
+		UITradeWnd = new CUITradeWnd();
+		UITradeWnd->SetAutoDelete(true);
+		AttachChild(UITradeWnd);
+		UITradeWnd->Show(false);
+	}
 }
 
 static bool useCharacterNames = EngineExternal().ShadowOfChernobylMode();
@@ -107,6 +119,8 @@ void CUITalkWnd::InitTalkDialog()
 	UITalkDialogWnd->SetOsoznanieMode(m_pOthersInvOwner->NeedOsoznanieMode());
 	UITalkDialogWnd->Show();
 	UITalkDialogWnd->UpdateButtonsLayout(b_disable_break, m_pOthersInvOwner->IsTradeEnabled());
+	if (UITradeWnd)
+		UITradeWnd->Show(false);
 }
 
 void CUITalkWnd::InitOthersStartDialog()
@@ -204,6 +218,11 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	else if(pWnd == UITalkDialogWnd && msg == TALK_DIALOG_QUESTION_CLICKED)
 	{
 		AskQuestion();
+	}
+	else if (UITradeWnd && pWnd == UITradeWnd && msg == TRADE_WND_CLOSED)
+	{
+		UITalkDialogWnd->Show();
+		UITradeWnd->Show(false);
 	}
 	inherited::SendMessage(pWnd, msg, pData);
 }
@@ -318,6 +337,8 @@ void CUITalkWnd::Show(bool status)
 	{
 		StopSnd						();
 		UITalkDialogWnd->Hide		();
+		if (UITradeWnd)
+			UITradeWnd->Show(false);
 
 		if(m_pActor)
 		{
@@ -414,10 +435,18 @@ void CUITalkWnd::SwitchToTrade()
 {
 	if ( m_pOurInvOwner->IsTradeEnabled() && m_pOthersInvOwner->IsTradeEnabled() )
 	{
-		if (CurrentGameUI())
+		UITalkDialogWnd->Hide();
+		if (&CurrentGameUI()->ActorMenu())
 		{
 			CurrentGameUI()->StartTrade	(m_pOurInvOwner, m_pOthersInvOwner);
 		}
+		else
+		{
+			UITradeWnd->InitTrade(m_pOurInvOwner, m_pOthersInvOwner);
+			UITradeWnd->Show(true);
+			UITradeWnd->StartTrade();
+		}
+		StopSnd();
 	}
 }
 

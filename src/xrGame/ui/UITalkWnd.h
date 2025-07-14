@@ -14,7 +14,7 @@ class CActor;
 class CInventoryOwner;
 class CPhraseDialogManager;
 class CUITalkDialogWnd;
-//class CUITradeWnd;
+class CUITradeWnd;
 ///////////////////////////////////////
 //
 ///////////////////////////////////////
@@ -72,6 +72,7 @@ public:
 	void				AddAnswer				(const shared_str& text, LPCSTR SpeakerName);
 	bool				b_disable_break;
 protected:
+	CUITradeWnd*		UITradeWnd;
 	CUITalkDialogWnd*	UITalkDialogWnd;
 
 	CActor*				m_pActor;

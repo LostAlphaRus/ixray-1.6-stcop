@@ -1,13 +1,13 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/Widgets/UIMultiTextStatic.h"
 #include "inventory_space.h"
+#include "UIDragDropListEx.h"
 
 class CInventoryOwner;
 class CEatableItem;
 class CTrade;
-struct CUITradeInternal;
 
-class CUIDragDropListEx;
 class CUICellItem;
 
 class CUITradeWnd: public CUIWindow
@@ -35,8 +35,38 @@ public:
 	void 				StartTrade					();
 	void 				StopTrade					();
 protected:
+	CUIStatic			UIStaticTop;
+	CUIStatic			UIStaticBottom;
 
-	CUITradeInternal*	m_uidata;
+	CUIStatic			UIOurBagWnd;
+	CUIStatic			UIOurMoneyStatic;
+	CUIStatic			UIOthersBagWnd;
+	CUIStatic			UIOtherMoneyStatic;
+	CUIDragDropListEx	UIOurBagList;
+	CUIDragDropListEx	UIOthersBagList;
+
+	CUIStatic			UIOurTradeWnd;
+	CUIStatic			UIOthersTradeWnd;
+	CUIMultiTextStatic	UIOurPriceCaption;
+	CUIMultiTextStatic	UIOthersPriceCaption;
+	CUIDragDropListEx	UIOurTradeList;
+	CUIDragDropListEx	UIOthersTradeList;
+
+	//кнопки
+	CUI3tButton			UIPerformTradeButton;
+	CUI3tButton			UIToTalkButton;
+
+	//информация о персонажах 
+	CUIStatic			UIOurIcon;
+	CUIStatic			UIOthersIcon;
+	CUICharacterInfo	UICharacterInfoLeft;
+	CUICharacterInfo	UICharacterInfoRight;
+
+	//информация о перетаскиваемом предмете
+	CUIStatic			UIDescWnd;
+	CUIItemInfo			UIItemInfo;
+
+	SDrawStaticStruct*	UIDealMsg;
 
 	bool				bStarted;
 	bool 				ToOurTrade					();
