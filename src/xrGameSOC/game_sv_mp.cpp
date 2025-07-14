@@ -121,13 +121,21 @@ void game_sv_mp::OnRoundStart()
 	timestamp			(m_round_start_time_str);
 
 	// clear "ready" flag
-	u32		cnt		= get_players_count	();
-	for		(u32 it=0; it<cnt; ++it)	
+	struct ready_clearer
 	{
-		game_PlayerState*	ps	=	get_it	(it);
-		ps->resetFlag(GAME_PLAYER_FLAG_READY+GAME_PLAYER_FLAG_VERY_VERY_DEAD);
-		ps->m_online_time = Level().timeServer();
+		void operator()(IClient* client)
+		{
+			xrClientData* tmp_client = static_cast<xrClientData*>(client);
+			game_PlayerState* tmp_ps = tmp_client->ps;
+			if (!tmp_ps)
+				return;
+			tmp_ps->resetFlag(GAME_PLAYER_FLAG_READY+GAME_PLAYER_FLAG_VERY_VERY_DEAD);
+			tmp_ps->m_online_time = Level().timeServer();
+		}
 	};
+	ready_clearer tmp_functor;
+	m_server->ForEachClientDo		(tmp_functor);
+	m_server->ClearDisconnectedPool	();
 
 	// 1. We have to destroy all player-entities and entities
 	m_server->SLS_Clear	();
@@ -1235,37 +1243,47 @@ void	game_sv_mp::Player_ExperienceFin	(game_PlayerState* ps)
 
 void	game_sv_mp::UpdatePlayersMoney		()
 {
-	u32	cnt = get_players_count();	
-	for(u32 it=0; it<cnt; it++)	
+	struct player_money_updator
 	{
-		xrClientData *l_pC = (xrClientData*)	m_server->GetClientByID	(it);
-		game_PlayerState* ps	= l_pC->ps;
-		if (!l_pC || !l_pC->net_Ready || !ps) continue;
-		if (!ps->money_added && ps->m_aBonusMoney.empty()) continue;
-		//-----------------------------------------------------------
-		NET_Packet P;
-		
-		GenerateGameMessage (P);
-		P.w_u32		(GAME_EVENT_PLAYERS_MONEY_CHANGED);
+		xrServer* m_server;
+		game_sv_mp* m_owner;
 
-		P.w_s32(ps->money_for_round);
-		P.w_s32(ps->money_added);	
-		ps->money_added = 0;
-		P.w_u8(u8(ps->m_aBonusMoney.size() & 0xff));
-		if (!ps->m_aBonusMoney.empty())
+		void operator()(IClient* client)
 		{
-			for (u32 i=0; i<ps->m_aBonusMoney.size(); i++)
-			{
-				Bonus_Money_Struct* pBMS = &(ps->m_aBonusMoney[i]);
-				P.w_s32(pBMS->Money);
-				P.w_u8(u8(pBMS->Reason & 0xff));
-				if (pBMS->Reason == SKT_KIR) P.w_u8(pBMS->Kills);
-			};
-			ps->m_aBonusMoney.clear();
-		};		
+			xrClientData* l_pC = static_cast<xrClientData*>(client);
+			game_PlayerState* ps	= l_pC->ps;
+			if (!l_pC || !l_pC->net_Ready || !ps) return;
+			if (!ps->money_added && ps->m_aBonusMoney.empty()) return;
+			//-----------------------------------------------------------
+			NET_Packet P;
+			
+			m_owner->GenerateGameMessage (P);
+			P.w_u32		(GAME_EVENT_PLAYERS_MONEY_CHANGED);
 
-		m_server->SendTo(l_pC->ID, P);
+			P.w_s32(ps->money_for_round);
+			P.w_s32(ps->money_added);	
+			ps->money_added = 0;
+			P.w_u8(u8(ps->m_aBonusMoney.size() & 0xff));
+			if (!ps->m_aBonusMoney.empty())
+			{
+				for (u32 i=0; i<ps->m_aBonusMoney.size(); i++)
+				{
+					Bonus_Money_Struct* pBMS = &(ps->m_aBonusMoney[i]);
+					P.w_s32(pBMS->Money);
+					P.w_u8(u8(pBMS->Reason & 0xff));
+					if (pBMS->Reason == SKT_KIR) P.w_u8(pBMS->Kills);
+				};
+				ps->m_aBonusMoney.clear();
+			};		
+
+			m_server->SendTo(l_pC->ID, P);
+		}
 	};
+
+	player_money_updator tmp_functor;
+	tmp_functor.m_server = m_server;
+	tmp_functor.m_owner = this;
+	m_server->ForEachClientDoSender(tmp_functor);
 };
 /*
 bool	game_sv_mp::GetTeamItem_ByID		(WeaponDataStruct** pRes, TEAM_WPN_LIST* pWpnList, u16 ItemID)

@@ -299,14 +299,14 @@ BOOL			CLevel::Connect2Server				(LPCSTR options)
 	if (!Connect(options))		return	FALSE;
 	//---------------------------------------------------------------------------
 	if(psNET_direct_connect) m_bConnectResultReceived = true;
-	u32 EndTime = GetTickCount() + ConnectionTimeOut;
+	u32 EndTime = CPU::GetTickCount() + ConnectionTimeOut;
 	while	(!m_bConnectResultReceived)		{ 
 		ClientReceive	();
 		Sleep			(5); 
 		if(Server)
 			Server->Update()	;
 		//-----------------------------------------
-		u32 CurTime = GetTickCount();
+		u32 CurTime = CPU::GetTickCount();
 		if (CurTime > EndTime)
 		{
 			NET_Packet	P;

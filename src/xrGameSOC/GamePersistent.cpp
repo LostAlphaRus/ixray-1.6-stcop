@@ -15,7 +15,7 @@
 #include "weaponhud.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
-
+#include "ai_space.h"
 #include "../xrEngine/x_ray.h"
 #include "ui/UILoadingScreen.h"
 
@@ -652,12 +652,55 @@ void CGamePersistent::OnRenderPPUI_PP()
 }
 #include "../xrEngine/string_table.h"
 #include "../xrEngine/x_ray.h"
-void CGamePersistent::LoadTitle(LPCSTR str)
+void CGamePersistent::LoadTitle(bool change_tip, shared_str map_name)
 {
-	string512			buff;
-	sprintf_s				(buff, "%s...", CStringTable().translate(str).c_str());
-	pApp->SetLoadStageTitle	(buff);
+	pApp->LoadStage();
+	// TODO: Implement later
+/*	const static bool disableLoadScreenTips = EngineExternal()[EEngineExternalRender::DisableLoadScreenTips];
+	if(change_tip && !disableLoadScreenTips)
+	{
+		string512				buff;
+		u8						tip_num;
+		luabind::functor<u8>	m_functor;
+		bool is_single = !xr_strcmp(m_game_params.m_game_type,"single");
+		if(is_single)
+		{
+			R_ASSERT( ai().script_engine().functor( "loadscreen.get_tip_number", m_functor ) );
+			tip_num				= m_functor(map_name.c_str());
+		}
+		else
+		{
+			R_ASSERT( ai().script_engine().functor( "loadscreen.get_mp_tip_number", m_functor ) );
+			tip_num				= m_functor(map_name.c_str());
+		}
+//		tip_num = 83;
+		xr_sprintf				(buff, "%s%d:", g_pStringTable->translate("ls_tip_number").c_str(), tip_num);
+		shared_str				tmp = buff;
+		
+		if(is_single)
+			xr_sprintf			(buff, "ls_tip_%d", tip_num);
+		else
+			xr_sprintf			(buff, "ls_mp_tip_%d", tip_num);
+
+		pApp->LoadTitleInt		(g_pStringTable->translate("ls_header").c_str(), tmp.c_str(), g_pStringTable->translate(buff).c_str());
+	}*/
 }
+
+void CGamePersistent::SetLoadStageTitle(pcstr ls_title)
+{
+	if (Device.IsEditorMode()) // idk why, but SDK keeps crashing here for some reason, so I decided to just turn off load stages for SDK
+		return;
+
+	string256 buff;
+	if (ls_title)
+	{
+		xr_sprintf(buff, "%s%s", g_pStringTable->translate(ls_title).c_str(), "...");
+		pApp->SetLoadStageTitle(buff);
+	}
+	else
+		pApp->SetLoadStageTitle("");
+}
+
 
 bool CGamePersistent::CanBePaused()
 {

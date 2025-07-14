@@ -53,7 +53,6 @@ protected:
 	shared_str		m_pVoteCommand;
 	
 	virtual		void				LoadRanks				();
-	virtual		void				Player_AddExperience	(game_PlayerState* ps, float Exp);
 	virtual		bool				Player_Check_Rank		(game_PlayerState* ps);
 	virtual		void				Player_Rank_Up			(game_PlayerState* ps);
 	virtual		bool				Player_RankUp_Allowed	() {return m_bRankUp_Allowed;};
@@ -68,7 +67,6 @@ protected:
 
 	virtual		void				SendPlayerKilledMessage	(u16 KilledID, KILL_TYPE KillType, u16 KillerID, u16 WeaponID, SPECIAL_KILL_TYPE SpecialKill);
 	virtual		void				RespawnPlayer			(ClientID id_who, bool NoSpectator);
-				void				SpawnPlayer				(ClientID id, LPCSTR N);
 	virtual		void				SetSkin					(CSE_Abstract* E, u16 Team, u16 ID);
 				bool				GetPosAngleFromActor	(ClientID id, Fvector& Pos, Fvector &Angle);				
 				void				AllowDeadBodyRemove		(ClientID id, u16 GameID);
@@ -95,6 +93,8 @@ public:
 	virtual		bool				CheckTeams				() { return false; };
 	virtual		void				OnPlayerHitted			(NET_Packet P);
 	virtual		void				OnPlayerEnteredGame		(ClientID id_who);
+				void				SpawnPlayer				(ClientID id, LPCSTR N);
+	virtual		void				Player_AddExperience	(game_PlayerState* ps, float Exp);
 
 	virtual		void				OnDestroyObject			(u16 eid_who);			
 

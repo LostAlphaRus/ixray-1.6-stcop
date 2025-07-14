@@ -94,7 +94,8 @@ bool CLevel::net_start1				()
 	// Start client and server if need it
 	if (m_caServerOptions.size())
 	{
-		g_pGamePersistent->LoadTitle		("st_server_starting");
+		g_pGamePersistent->LoadTitle		();
+		g_pGamePersistent->SetLoadStageTitle("st_server_starting");
 
 		typedef IGame_Persistent::params params;
 		params							&p = g_pGamePersistent->m_game_params;
@@ -295,5 +296,6 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	game->set_type_name(game_type_name);
 	game->Init();
 	m_bGameConfigStarted	= TRUE;
+	R_ASSERT(Load_GameSpecific_After());
 }
 

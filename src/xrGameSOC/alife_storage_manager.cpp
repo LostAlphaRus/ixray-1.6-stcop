@@ -144,7 +144,8 @@ bool CALifeStorageManager::load	(LPCSTR save_name)
 
 	string512					temp;
 	xr_strconcat				(temp,CStringTable().translate("st_loading_saved_game").c_str()," \"",save_name,IXRAY_DEF_SAVE_EXTENSION,"\"");
-	g_pGamePersistent->LoadTitle(temp);
+	g_pGamePersistent->LoadTitle();
+	g_pGamePersistent->SetLoadStageTitle(temp);
 
 	unload						();
 	reload						(m_section);

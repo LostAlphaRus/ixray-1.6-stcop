@@ -74,7 +74,8 @@ public:
 	virtual bool		OnRenderPPUI_query		();
 	virtual void		OnRenderPPUI_main		();
 	virtual void		OnRenderPPUI_PP			();
-	virtual	void		LoadTitle				(LPCSTR str);
+	virtual	void		LoadTitle				(bool change_tip = false, shared_str map_name = "");
+    void				SetLoadStageTitle		(pcstr ls_title = nullptr) override;
 
 	virtual bool		CanBePaused				();
 };

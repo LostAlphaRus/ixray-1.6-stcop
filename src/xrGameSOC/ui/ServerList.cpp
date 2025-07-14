@@ -63,7 +63,7 @@ CServerList::~CServerList()
 {
 	xr_delete			(m_pAnimation);
 	xr_delete			(m_message_box);
-	m_GSBrowser->Clear	();
+	//m_GSBrowser->Clear	();
 
 	DestroySrvItems		();
 };
