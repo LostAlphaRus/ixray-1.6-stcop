@@ -98,7 +98,8 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 
 	if (snd_name && snd_name[0])
 	{
-		if (FS.exist(snd_name))
+		string_path _fn;
+		if (FS.exist(_fn, "$game_sounds$", snd_name, ".ogg"))
 		{
 			m_sound.create(snd_name, st_Effect, sg_Undefined);
 			VERIFY(m_sound._handle());
@@ -110,7 +111,8 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 			xr_strconcat(_r, snd_name, "_r");
 			m_sound_mono[0].create(_l, st_Effect, sg_Undefined);
 			m_sound_mono[1].create(_r, st_Effect, sg_Undefined);
-			VERIFY(m_sound._handle());
+			VERIFY(m_sound_mono[0]._handle());
+			VERIFY(m_sound_mono[1]._handle());
 		}
 	}
 	xml->SetLocalRoot		(_stored_root);

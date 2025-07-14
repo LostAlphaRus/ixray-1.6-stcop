@@ -6,6 +6,7 @@
 #include "../../xrUI/ui_defs.h"
 
 class CUITextWnd;
+class CUIStatic;
 
 //размеры сетки в текстуре инвентаря
 #define INV_GRID_WIDTH(HQ_ICONS) ((HQ_ICONS) ? (100.0f) : (50.0f))
@@ -83,6 +84,7 @@ const shared_str Get_GameTimeAndDate_AsString();
 
 LPCSTR GetTimePeriodAsString	(LPSTR _buff, u32 buff_sz, ALife::_TIME_ID _from, ALife::_TIME_ID _to);
 // Отобразить вес, который несет (*pInvOwner)
+void UpdateWeight(CUIStatic& wnd, bool withPrefix = false);
 void UpdateWeightStr(CUITextWnd &wnd, CUITextWnd &wnd_max, CInventoryOwner *pInvOwner);
 
 // Функции получения строки-идентификатора ранга и отношения по их числовому идентификатору

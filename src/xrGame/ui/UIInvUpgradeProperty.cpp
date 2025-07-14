@@ -155,7 +155,8 @@ UIInvUpgPropertiesWnd::~UIInvUpgPropertiesWnd()
 void UIInvUpgPropertiesWnd::init_from_xml( LPCSTR xml_name )
 {
 	CUIXml ui_xml;
-	ui_xml.Load( CONFIG_PATH, UI_PATH, xml_name );
+	if (!ui_xml.Load( CONFIG_PATH, UI_PATH, xml_name ))
+		return;
 	
 	XML_NODE* stored_root = ui_xml.GetLocalRoot();
 	XML_NODE* node = ui_xml.NavigateToNode( "upgrade_info", 0 );

@@ -33,6 +33,8 @@ enum class EEngineExternalGame
 	DisableSprintWhileOverweight,
 	EnableAlternateZoomFovCalc,
 	EnableInventoryPistolSlot,
+	EnableImproveWeaponMisfire,
+	EnableDelayedWeaponActions,
 	// SoC only
 	UseNewScopeSystem,
 };
