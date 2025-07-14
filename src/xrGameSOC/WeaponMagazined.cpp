@@ -14,7 +14,7 @@
 #include "EffectorZoomInertion.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "level.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../xrEngine/string_table.h"
 #include "ui\UIXmlInit.h"
 #include "ui\UIWindow.h"

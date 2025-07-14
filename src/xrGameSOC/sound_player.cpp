@@ -15,7 +15,7 @@
 #include "../xrEngine/skeletoncustom.h"
 #include "profiler.h"
 #include "sound_collection_storage.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 CSoundPlayer::CSoundPlayer			(CObject *object)
 {

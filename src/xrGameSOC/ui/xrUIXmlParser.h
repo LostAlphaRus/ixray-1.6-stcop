@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../xrCore/XMLParser/xrXMLParser.h"
+#include "../../xrCore/FormatParsers/XML/xrXMLParser.h"
 
 class CUIXml :public CXml
 {

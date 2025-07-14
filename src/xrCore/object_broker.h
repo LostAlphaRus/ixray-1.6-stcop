@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "../xrCore/net_utils.h"
+#include "net_utils.h"
 #include <queue>
 #include "object_interfaces.h"
-#include "../xrCore/object_type_traits.h"
+#include "object_type_traits.h"
 #include "object_comparer.h"
 #include "object_cloner.h"
 #include "object_destroyer.h"

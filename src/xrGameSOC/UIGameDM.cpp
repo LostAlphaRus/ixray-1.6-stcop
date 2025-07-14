@@ -22,7 +22,7 @@
 #include "ui/UIRankIndicator.h"
 #include "ui/UIVoteStatusWnd.h"
 #include "UIFontDefines.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 
 #define MSGS_OFFS 510
 

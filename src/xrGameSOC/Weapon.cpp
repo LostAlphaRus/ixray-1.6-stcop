@@ -24,7 +24,7 @@
 #include "ai_object_location.h"
 #include "clsid_game.h"
 #include "mathutils.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../xrEngine/igame_persistent.h"
 
 #define WEAPON_REMOVE_TIME		60000
@@ -308,9 +308,9 @@ void CWeapon::Load		(LPCSTR section)
 	iMagazineSize		= pSettings->r_s32		(section,"ammo_mag_size"	);
 	
 	////////////////////////////////////////////////////
-	// äèñïåðñèÿ ñòðåëüáû
+	// Ð´Ð¸ÑÐ¿ÐµÑ€ÑÐ¸Ñ ÑÑ‚Ñ€ÐµÐ»ÑŒÐ±Ñ‹
 
-	//ïîäáðàñûâàíèå êàìåðû âî âðåìÿ îòäà÷è
+	//Ð¿Ð¾Ð´Ð±Ñ€Ð°ÑÑ‹Ð²Ð°Ð½Ð¸Ðµ ÐºÐ°Ð¼ÐµÑ€Ñ‹ Ð²Ð¾ Ð²Ñ€ÐµÐ¼Ñ Ð¾Ñ‚Ð´Ð°Ñ‡Ð¸
 	camMaxAngle			= pSettings->r_float		(section,"cam_max_angle"	); 
 	camMaxAngle			= deg2rad					(camMaxAngle);
 	camRelaxSpeed		= pSettings->r_float		(section,"cam_relax_speed"	); 
@@ -364,7 +364,7 @@ void CWeapon::Load		(LPCSTR section)
 	m_fMaxRadius		= pSettings->r_float		(section,"max_radius");
 
 
-	// èíôîðìàöèÿ î âîçìîæíûõ àïãðåéäàõ è èõ âèçóàëèçàöèè â èíâåíòàðå
+	// Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð¾ Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ñ‹Ñ… Ð°Ð¿Ð³Ñ€ÐµÐ¹Ð´Ð°Ñ… Ð¸ Ð¸Ñ… Ð²Ð¸Ð·ÑƒÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸Ð¸ Ð² Ð¸Ð½Ð²ÐµÐ½Ñ‚Ð°Ñ€Ðµ
 	m_eScopeStatus			 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"scope_status");
 	m_eSilencerStatus		 = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"silencer_status");
 	m_eGrenadeLauncherStatus = (ALife::EWeaponAddonStatus)pSettings->r_s32(section,"grenade_launcher_status");
@@ -402,7 +402,7 @@ void CWeapon::Load		(LPCSTR section)
 	InitAddons();
 
 	//////////////////////////////////////
-	//âðåìÿ óáèðàíèÿ îðóæèÿ ñ óðîâíÿ
+	//Ð²Ñ€ÐµÐ¼Ñ ÑƒÐ±Ð¸Ñ€Ð°Ð½Ð¸Ñ Ð¾Ñ€ÑƒÐ¶Ð¸Ñ Ñ ÑƒÑ€Ð¾Ð²Ð½Ñ
 	if(pSettings->line_exist(section,"weapon_remove_time"))
 		m_dwWeaponRemoveTime = pSettings->r_u32(section,"weapon_remove_time");
 	else
@@ -511,7 +511,7 @@ void CWeapon::net_Destroy	()
 {
 	inherited::net_Destroy	();
 
-	//óäàëèòü îáúåêòû ïàðòèêëîâ
+	//ÑƒÐ´Ð°Ð»Ð¸Ñ‚ÑŒ Ð¾Ð±ÑŠÐµÐºÑ‚Ñ‹ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ð¾Ð²
 	StopFlameParticles	();
 	StopFlameParticles2	();
 	StopLight			();
@@ -672,7 +672,7 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	if (m_pHUD)
 		m_pHUD->Hide			();
 
-	//çàâåðøèòü ïðèíóäèòåëüíî âñå ïðîöåññû ÷òî øëè
+	//Ð·Ð°Ð²ÐµÑ€ÑˆÐ¸Ñ‚ÑŒ Ð¿Ñ€Ð¸Ð½ÑƒÐ´Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð¾ Ð²ÑÐµ Ð¿Ñ€Ð¾Ñ†ÐµÑÑÑ‹ Ñ‡Ñ‚Ð¾ ÑˆÐ»Ð¸
 	FireEnd();
 	m_bPending = false;
 	SwitchState(eIdle);
@@ -701,7 +701,7 @@ void CWeapon::OnH_A_Chield		()
 void CWeapon::OnActiveItem ()
 {
 	inherited::OnActiveItem		();
-	//åñëè ìû çàíðóæàåìñÿ è îðóæèå áûëî â ðóêàõ
+	//ÐµÑÐ»Ð¸ Ð¼Ñ‹ Ð·Ð°Ð½Ñ€ÑƒÐ¶Ð°ÐµÐ¼ÑÑ Ð¸ Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ Ð±Ñ‹Ð»Ð¾ Ð² Ñ€ÑƒÐºÐ°Ñ…
 	SetState					(eIdle);
 	SetNextState				(eIdle);
 	if (m_pHUD) m_pHUD->Show	();
@@ -731,10 +731,10 @@ void CWeapon::UpdateCL		()
 {
 	inherited::UpdateCL		();
 	UpdateHUDAddonsVisibility();
-	//ïîäñâåòêà îò âûñòðåëà
+	//Ð¿Ð¾Ð´ÑÐ²ÐµÑ‚ÐºÐ° Ð¾Ñ‚ Ð²Ñ‹ÑÑ‚Ñ€ÐµÐ»Ð°
 	UpdateLight				();
 
-	//íàðèñîâàòü ïàðòèêëû
+	//Ð½Ð°Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ð¿Ð°Ñ€Ñ‚Ð¸ÐºÐ»Ñ‹
 	UpdateFlameParticles	();
 	UpdateFlameParticles2	();
 
@@ -749,11 +749,11 @@ void CWeapon::renderable_Render		()
 {
 	UpdateXForm				();
 
-	//íàðèñîâàòü ïîäñâåòêó
+	//Ð½Ð°Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ð¿Ð¾Ð´ÑÐ²ÐµÑ‚ÐºÑƒ
 
 	RenderLight				();	
 
-	//åñëè ìû â ðåæèìå ñíàéïåðêè, òî ñàì HUD ðèñîâàòü íå íàäî
+	//ÐµÑÐ»Ð¸ Ð¼Ñ‹ Ð² Ñ€ÐµÐ¶Ð¸Ð¼Ðµ ÑÐ½Ð°Ð¹Ð¿ÐµÑ€ÐºÐ¸, Ñ‚Ð¾ ÑÐ°Ð¼ HUD Ñ€Ð¸ÑÐ¾Ð²Ð°Ñ‚ÑŒ Ð½Ðµ Ð½Ð°Ð´Ð¾
 	if(IsZoomed() && !IsRotatingToZoom() && (ZoomTexture() || ZoomTextureNew()))
 		m_bRenderHud = false;
 	else
@@ -797,7 +797,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 	{
 		case kWPN_FIRE: 
 			{
-				//åñëè îðóæèå ÷åì-òî çàíÿòî, òî íè÷åãî íå äåëàòü
+				//ÐµÑÐ»Ð¸ Ð¾Ñ€ÑƒÐ¶Ð¸Ðµ Ñ‡ÐµÐ¼-Ñ‚Ð¾ Ð·Ð°Ð½ÑÑ‚Ð¾, Ñ‚Ð¾ Ð½Ð¸Ñ‡ÐµÐ³Ð¾ Ð½Ðµ Ð´ÐµÐ»Ð°Ñ‚ÑŒ
 				{				
 					if(flags&CMD_START) 
 					{
@@ -930,7 +930,7 @@ int CWeapon::GetAmmoCurrent(bool use_item_to_spawn) const
 	int l_count = iAmmoElapsed;
 	if(!m_pCurrentInventory) return l_count;
 
-	//÷òîá íå äåëàòü ëèøíèõ ïåðåñ÷åòîâ
+	//Ñ‡Ñ‚Ð¾Ð± Ð½Ðµ Ð´ÐµÐ»Ð°Ñ‚ÑŒ Ð»Ð¸ÑˆÐ½Ð¸Ñ… Ð¿ÐµÑ€ÐµÑÑ‡ÐµÑ‚Ð¾Ð²
 	if(m_pCurrentInventory->ModifyFrame()<=m_dwAmmoCurrentCalcFrame)
 		return l_count + iAmmoCurrent;
 

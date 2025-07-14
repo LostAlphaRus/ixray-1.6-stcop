@@ -1,7 +1,7 @@
 #pragma once
 
 #include "alife_space.h"
-#include "object_interfaces.h"
+#include "../xrCore/object_interfaces.h"
 
 #define DEFAULT_NEWS_SHOW_TIME	5000
 
@@ -26,7 +26,7 @@ struct GAME_NEWS_DATA : public IPureSerializeObject<IReader,IWriter>
 	LPCSTR				SingleLineText();
 
 private:
-	//полный текст новостей, формируется при первом обращении
+	//РїРѕР»РЅС‹Р№ С‚РµРєСЃС‚ РЅРѕРІРѕСЃС‚РµР№, С„РѕСЂРјРёСЂСѓРµС‚СЃСЏ РїСЂРё РїРµСЂРІРѕРј РѕР±СЂР°С‰РµРЅРёРё
 	xr_string full_news_text;
 
 };

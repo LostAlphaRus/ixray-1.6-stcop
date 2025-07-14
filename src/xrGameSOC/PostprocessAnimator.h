@@ -184,7 +184,7 @@ class CPostprocessAnimatorLerp :public CPostprocessAnimator
 protected:
     xr_delegate<float()>	m_get_factor_func;
 public:
-	void			SetFactorFunc				(fastdelegate::FastDelegate0<float> f)	{m_get_factor_func=f;}
+	void			SetFactorFunc				(xr_delegate<float()> f)	{m_get_factor_func=f;}
 virtual	BOOL		Process						(SPPInfo &PPInfo);
 };
 

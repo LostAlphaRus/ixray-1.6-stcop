@@ -2,7 +2,7 @@
 #include "HolderEntityObject.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrPhysics/PhysicsShell.h"
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "Actor.h"
 #include "ActorEffector.h"
 #include "CameraFirstEye.h"

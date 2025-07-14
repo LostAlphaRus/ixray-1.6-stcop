@@ -6,7 +6,7 @@
 #include "../xrUI/Widgets/UIStatic.h"
 #include "../xrUI/Widgets/UIDialogWnd.h"
 
-#include "object_broker.h"
+#include "../xrCore/object_broker.h"
 #include "../xrEngine/string_table.h"
 
 #include "InventoryOwner.h"
