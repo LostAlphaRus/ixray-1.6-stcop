@@ -581,7 +581,7 @@ void CMainMenu::OnDownloadPatch(CUIWindow*, void*)
 	m_sPDProgress.FileName		= m_sPatchFileName;
 	m_sPDProgress.Status		= "";
 
-	m_pGameSpyFull->m_pGS_HTTP->DownloadFile(*m_sPatchURL, *m_sPatchFileName);
+	m_pGameSpyFull->GetGameSpyHTTP()->DownloadFile(*m_sPatchURL, *m_sPatchFileName);
 }
 
 void	CMainMenu::OnDownloadPatchError()
@@ -635,7 +635,7 @@ void	CMainMenu::OnRunDownloadedPatch			(CUIWindow*, void*)
 
 void CMainMenu::CancelDownload()
 {
-	m_pGameSpyFull->m_pGS_HTTP->StopDownload();
+	m_pGameSpyFull->GetGameSpyHTTP()->StopDownload();
 	m_sPDProgress.IsInProgress	= false;
 }
 
@@ -655,7 +655,7 @@ extern	void	GetCDKey(char* CDKeyStr);
 
 bool CMainMenu::IsCDKeyIsValid()
 {
-	if (!m_pGameSpyFull || !m_pGameSpyFull->m_pGS_HTTP) return false;
+	if (!m_pGameSpyFull || !m_pGameSpyFull->GetGameSpyHTTP()) return false;
 	string64 CDKey = "";
 	GetCDKey(CDKey);
 
@@ -666,7 +666,7 @@ bool CMainMenu::IsCDKeyIsValid()
 	int GameID = 0;
 	for (int i=0; i<4; i++)
 	{
-		m_pGameSpyFull->m_pGS_HTTP->xrGS_GetGameID(&GameID, i);
+		m_pGameSpyFull->GetGameSpyHTTP()->xrGS_GetGameID(&GameID, i);
 		if (VerifyClientCheck(CDKey, unsigned short (GameID)) == 1)
 			return true;
 	};	
@@ -702,15 +702,14 @@ void CMainMenu::OnConnectToMasterServerOkClicked(CUIWindow*, void*)
 LPCSTR CMainMenu::GetGSVer()
 {
 	static string256	buff;
-	static string256	buff2;
-	if(m_pGameSpyFull)
+	if (m_pGameSpyFull && Engine.External.hGameSpy != 0)
 	{
-		strcpy(buff2, m_pGameSpyFull->GetGameVersion(buff));
-	}else
+		xr_strcpy(buff, m_pGameSpyFull->GetGameVersion());
+	}
+	else
 	{
-		buff[0]		= 0;
-		buff2[0]	= 0;
+		xr_strcpy(buff, "1.0007");
 	}
 
-	return buff2;
+	return buff;
 }

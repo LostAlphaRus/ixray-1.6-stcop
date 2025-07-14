@@ -19,7 +19,7 @@ CGameSpy_Browser* g_gs_browser = NULL;
 
 CServerList::CServerList()
 {
-	m_GSBrowser	= MainMenu()->GetGS()->m_pGS_SB;
+	m_GSBrowser	= MainMenu()->GetGS()->GetGameSpyBrowser();
 	m_GSBrowser->Init(this);
 
 	for (int i = 0; i<LST_COLUMN_COUNT; i++)
@@ -71,6 +71,13 @@ CServerList::~CServerList()
 void CServerList::Init(float x, float y, float width, float height)
 {
 	CUIWindow::Init(x,y,width,height);
+}
+
+void CServerList::on_game_spy_browser_destroy	(CGameSpy_Browser* browser)
+{
+	VERIFY				(m_GSBrowser);
+	VERIFY				(m_GSBrowser == browser);
+	m_GSBrowser			= 0;
 }
 
 void CServerList::Update()
@@ -213,10 +220,10 @@ void CServerList::FillUpDetailedServerInfo()
 			CUIListItemAdv* pItemAdv;
 
 			// TEAM 1
-			xr_vector<PlayerInfo>::iterator it;
+			xr_vector<BrowserPlayerInfo>::iterator it;
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
-				PlayerInfo pf = *it;
+				BrowserPlayerInfo pf = *it;
 				if (1 != pf.Team)
 					continue;
 				if (pf.Spectator)
@@ -249,7 +256,7 @@ void CServerList::FillUpDetailedServerInfo()
 			// TEAM 2
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
-				PlayerInfo pf = *it;
+				BrowserPlayerInfo pf = *it;
 				if (2 != pf.Team)
 					continue;
 				if (pf.Spectator)
@@ -280,7 +287,7 @@ void CServerList::FillUpDetailedServerInfo()
 			// SPECTATORS
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
-				PlayerInfo pf = *it;
+				BrowserPlayerInfo pf = *it;
 				if (!pf.Spectator)
 					continue;
 
@@ -309,10 +316,10 @@ void CServerList::FillUpDetailedServerInfo()
 		}
 		else
 		{
-			xr_vector<PlayerInfo>::iterator it;
+			xr_vector<BrowserPlayerInfo>::iterator it;
 			for (it = srvInfo.m_aPlayers.begin(); it != srvInfo.m_aPlayers.end(); it++)
 			{
-				PlayerInfo pf = *it;
+				BrowserPlayerInfo pf = *it;
 				CUIListItemAdv* pItemAdv = new CUIListItemAdv();
 
 				char buf[16];

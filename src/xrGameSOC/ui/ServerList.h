@@ -57,6 +57,8 @@ public:
 			void	ShowServerInfo();			
 	virtual	void	RefreshList();
 
+			void	on_game_spy_browser_destroy	(CGameSpy_Browser* browser);
+
 protected:
 			bool IsValidItem(ServerInfo& item);
 			void SrvInfo2LstSrvInfo(const ServerInfo* pSrvInfo);

@@ -5,69 +5,46 @@
 
 CGameSpy_HTTP::CGameSpy_HTTP()
 {
-	m_hGameSpyDLL = NULL;
 	m_LastRequest	= -1;
-
-	LPCSTR			g_name	= "xrGameSpy.dll";
-	Msg				("Loading DLL: %s",g_name);
-	m_hGameSpyDLL			= LoadLibraryA	(g_name);
-	if (0==m_hGameSpyDLL)	R_CHK			(GetLastError());
-	R_ASSERT2		(m_hGameSpyDLL,"GameSpy DLL raised exception during loading or there is no game DLL at all");
-
-	LoadGameSpy(m_hGameSpyDLL);
-
+	LoadGameSpy();
 	StartUp();
-};
-
-CGameSpy_HTTP::CGameSpy_HTTP(HMODULE hGameSpyDLL)
-{
-	m_hGameSpyDLL = NULL;
-	m_LastRequest	= -1;
-
-	LoadGameSpy(hGameSpyDLL);
-
-	StartUp();
-};
+}
 
 CGameSpy_HTTP::~CGameSpy_HTTP()
 {
 	CleanUp();
+}
 
-	if (m_hGameSpyDLL)
-	{
-		FreeLibrary(m_hGameSpyDLL);
-		m_hGameSpyDLL = NULL;
-	}
-};
-void	CGameSpy_HTTP::LoadGameSpy(HMODULE hGameSpyDLL)
+void CGameSpy_HTTP::LoadGameSpy()
 {
 	//-----------------------------------------------------
 	GAMESPY_LOAD_FN(xrGS_ghttpStartup);
 	GAMESPY_LOAD_FN(xrGS_ghttpCleanup);
 	GAMESPY_LOAD_FN(xrGS_ghttpThink);
 
-	GAMESPY_LOAD_FN(xrGS_ghttpSave);
-	GAMESPY_LOAD_FN(xrGS_ghttpSaveEx);
+	GAMESPY_LOAD_FN(xrGS_ghttpSaveA);
+	GAMESPY_LOAD_FN(xrGS_ghttpSaveExA);
 	GAMESPY_LOAD_FN(xrGS_ghttpCancelRequest);
 
 	GAMESPY_LOAD_FN(xrGS_GetGameID);
 
 }
 
-void		CGameSpy_HTTP::StartUp		()
+void CGameSpy_HTTP::StartUp		()
 {
 	xrGS_ghttpStartup();
 }
 
-void		CGameSpy_HTTP::CleanUp		()
+void CGameSpy_HTTP::CleanUp		()
 {
 	xrGS_ghttpCleanup();
 }
 
-void		CGameSpy_HTTP::Think		()
+void CGameSpy_HTTP::Think		()
 {
 	xrGS_ghttpThink();
 }
+
 void __cdecl ProgressCallback ( GHTTPRequest request, GHTTPState state, const char * buffer, GHTTPByteCount bufferLen, GHTTPByteCount bytesReceived, GHTTPByteCount totalSize, void * param )
 {
 	if (state == GHTTPReceivingFile && totalSize != 0)
@@ -118,10 +95,10 @@ GHTTPBool	__cdecl	CompletedCallBack	(GHTTPRequest request, GHTTPResult result, c
 void		CGameSpy_HTTP::DownloadFile(LPCSTR URL, LPCSTR FileName)
 {	
 
-//	GHTTPRequest res = xrGS_ghttpSave(URL, FileName, GHTTPFalse, CompletedCallBack, this);
+//	GHTTPRequest res = xrGS_ghttpSaveA(URL, FileName, GHTTPFalse, CompletedCallBack, this);
 	Msg		("URL:  %s",URL);
 	Msg		("File: %s",FileName);
-	m_LastRequest = xrGS_ghttpSaveEx(URL, FileName, "", NULL, GHTTPFalse, GHTTPFalse, ProgressCallback, CompletedCallBack, this);
+	m_LastRequest = xrGS_ghttpSaveExA(URL, FileName, "", nullptr, GHTTPFalse, GHTTPFalse, ProgressCallback, CompletedCallBack, this);
 	Msg		("Code: %d",m_LastRequest);
 	if (m_LastRequest < 0)
 	{

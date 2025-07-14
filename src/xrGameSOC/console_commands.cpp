@@ -40,7 +40,6 @@
 #include "cameralook.h"
 
 #include "GameSpy/GameSpy_Full.h"
-#include "GameSpy/GameSpy_Patching.h"
 
 #ifndef MASTER_GOLD
 #	include "PHDebug.h"
@@ -1610,36 +1609,6 @@ public:
 	}
 };
 
-class CCC_GSCheckForUpdates : public IConsole_Command {
-public:
-	CCC_GSCheckForUpdates(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
-	virtual void Execute(LPCSTR arguments)
-	{
-		if (!MainMenu()) return;
-		/*
-		CGameSpy_Available GSA;
-		shared_str result_string;
-		if (!GSA.CheckAvailableServices(result_string))
-		{
-			Msg(*result_string);
-//			return;
-		};
-		CGameSpy_Patching GameSpyPatching;
-		*/
-		bool InformOfNoPatch = true;
-		if (arguments && *arguments) {
-			int bInfo = 1;
-			sscanf	(arguments,"%d", &bInfo);
-			InformOfNoPatch = (bInfo != 0);
-		}
-		
-//		GameSpyPatching.CheckForPatch(InformOfNoPatch);
-		
-		MainMenu()->GetGS()->m_pGS_Patching->CheckForPatch(InformOfNoPatch);
-	}
-};
-
-
 
 class CCC_Net_SV_GuaranteedPacketMode : public CCC_Integer {
 protected:
@@ -1918,7 +1887,6 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,		"ai_use_torch_dynamic_lights",	&g_uCommonFlags, flAiUseTorchDynamicLights);
 
 
-	CMD1(CCC_GSCheckForUpdates, "check_for_updates");
 #ifdef DEBUG
 	CMD1(CCC_DumpObjects,							"dump_all_objects");
 	CMD3(CCC_String, "stalker_death_anim", dbg_stalker_death_anim, 32);

@@ -2,14 +2,17 @@
 
 #include "../xrGameSpyServer.h"
 #include "GameSpy_Keys.h"
+#include "GameSpy_GCD_Client.h"
+
 #include "../Level.h"
 
 #include "../game_sv_artefacthunt.h"
+#include "../ui/UIInventoryUtilities.h"
 //--------------------------- QR2 callbacks ---------------------------------------
 #define ADD_KEY_VAL(g, q, qf, o, gf)		{if (g) {q->qf(o, g->gf);} else q->BufferAdd(o, "");}
 #define ADD_KEY_VAL_INT(g, q, qf, o, gf)		{if (g) {q->qf(o, int(g->gf));} else q->BufferAdd(o, "");}
 extern u32 g_sv_dwMaxClientPing;
-void __cdecl callback_serverkey(int keyid, void* outbuf, void *userdata)
+void __cdecl callback_serverkey(int keyid, qr2_buffer_t outbuf, void *userdata)
 {
 	if (!userdata) return;
 	xrGameSpyServer* pServer = (xrGameSpyServer*) userdata;
@@ -24,6 +27,8 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void *userdata)
 	game_sv_TeamDeathmatch* gmTDM = smart_cast<game_sv_TeamDeathmatch*>(pServer->game);
 	game_sv_ArtefactHunt* gmAhunt = smart_cast<game_sv_ArtefactHunt*>(pServer->game);
 
+	LPCSTR time_str = InventoryUtilities::GetTimeAsString( Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay ).c_str();
+
 	string4096		game_version;
 
 	switch (keyid)
@@ -33,6 +38,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void *userdata)
 	case GAMEVER_KEY:		pQR2->BufferAdd(outbuf, pQR2->GetGameVersion(game_version)); break;
 	case NUMPLAYERS_KEY:	pQR2->BufferAdd_Int(outbuf, pServer->GetPlayersCount()); break;
 	case MAXPLAYERS_KEY:	pQR2->BufferAdd_Int(outbuf, pServer->m_iMaxPlayers); break;
+	case SERVER_UP_TIME_KEY:pQR2->BufferAdd(outbuf, time_str); break;
 	case GAMETYPE_KEY:		ADD_KEY_VAL(pServer->game, pQR2, BufferAdd, outbuf, type_name()); break; //		pQR2->BufferAdd(outbuf, pServer->game->type_name()); break;
 	case GAMEMODE_KEY:		pQR2->BufferAdd(outbuf, "openplaying"); break;
 	case PASSWORD_KEY:
@@ -56,16 +62,6 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void *userdata)
 		}
 		break;
 	case G_BATTLEYE_KEY:
-#ifdef BATTLEYE
-		if ( g_pGameLevel && Level().battleye_system.server )
-		{
-			pQR2->BufferAdd_Int( outbuf, 1 );
-		}
-		else
-		{
-			pQR2->BufferAdd_Int( outbuf, 0 );
-		}
-#endif // BATTLEYE
 		break;
 	case HOSTPORT_KEY:		pQR2->BufferAdd_Int(outbuf, pServer->GetPort()); break;
 
@@ -109,7 +105,7 @@ void __cdecl callback_serverkey(int keyid, void* outbuf, void *userdata)
 	//GSI_UNUSED(userdata);
 };
 
-void __cdecl callback_playerkey(int keyid, int index, void* outbuf, void *userdata)
+void __cdecl callback_playerkey(int keyid, int index, qr2_buffer_t outbuf, void *userdata)
 {
 	xrGameSpyServer* pServer = (xrGameSpyServer*) userdata;
 	if (!pServer) return;
@@ -117,15 +113,41 @@ void __cdecl callback_playerkey(int keyid, int index, void* outbuf, void *userda
 	CGameSpy_QR2* pQR2 = pServer->QR2();
 	if (!pQR2) return;
 
-	xrGameSpyClientData* pCD = NULL;
+	xrGameSpyClientData* pCD = nullptr;
+
+	struct index_searcher
+	{
+		u32 index;
+		u32 current;
+		explicit index_searcher(u32 i)
+		{
+			index = i;
+			current = 0;
+		}
+		bool operator()(IClient* client)
+		{
+			if (current == index)
+				return true;
+			++current;
+			return false;
+		}
+	};
 	
 	if (pServer->IsDedicated())
 	{
+		index_searcher tmp_predicate(index+1);
 		if (u32(index+1) >= pServer->GetClientsCount()) return;
-		pCD = (xrGameSpyClientData*)pServer->GetClientByID(index+1);
+		pCD = static_cast<xrGameSpyClientData*>(
+			pServer->FindClient(tmp_predicate)
+		);
 	}
 	else
-		pCD = (xrGameSpyClientData*)pServer->GetClientByID(index);
+	{
+		index_searcher tmp_predicate(index);
+		pCD = static_cast<xrGameSpyClientData*>(
+			pServer->FindClient(tmp_predicate)
+		);
+	}
 	if (!pCD || !pCD->ps) return;
 
 	switch (keyid)
@@ -148,7 +170,7 @@ void __cdecl callback_playerkey(int keyid, int index, void* outbuf, void *userda
 	}
 };
 
-void __cdecl callback_teamkey(int keyid, int index, void* outbuf, void *userdata)
+void __cdecl callback_teamkey(int keyid, int index, qr2_buffer_t outbuf, void *userdata)
 {
 	xrGameSpyServer* pServer = (xrGameSpyServer*) userdata;
 	if (!pServer) return;
@@ -169,7 +191,7 @@ void __cdecl callback_teamkey(int keyid, int index, void* outbuf, void *userdata
 	};
 };
 
-void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void *userdata)
+void __cdecl callback_keylist(qr2_key_type keytype, qr2_keybuffer_t keybuffer, void *userdata)
 {
 	if (!userdata) return;
 	xrGameSpyServer* pServer = (xrGameSpyServer*) userdata;
@@ -185,6 +207,8 @@ void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void *userd
 			pQR2->KeyBufferAdd(keybuffer, GAMEVER_KEY);
 			pQR2->KeyBufferAdd(keybuffer, NUMPLAYERS_KEY);		
 			pQR2->KeyBufferAdd(keybuffer, MAXPLAYERS_KEY);
+			pQR2->KeyBufferAdd(keybuffer, SERVER_UP_TIME_KEY);
+			
 
 			pQR2->KeyBufferAdd(keybuffer, GAMETYPE_KEY);
 			pQR2->KeyBufferAdd(keybuffer, PASSWORD_KEY);
@@ -197,9 +221,6 @@ void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void *userd
 			pQR2->KeyBufferAdd(keybuffer, GAMETYPE_NAME_KEY);
 			pQR2->KeyBufferAdd(keybuffer, NUMTEAMS_KEY);
 			pQR2->KeyBufferAdd(keybuffer, G_MAX_PING_KEY);
-#ifdef BATTLEYE
-			pQR2->KeyBufferAdd(keybuffer, G_BATTLEYE_KEY);
-#endif // BATTLEYE
 			//---- game_sv_base ---
 			pQR2->KeyBufferAdd(keybuffer, G_MAP_ROTATION_KEY);
 			pQR2->KeyBufferAdd(keybuffer, G_VOTING_ENABLED_KEY);
@@ -227,7 +248,7 @@ void __cdecl callback_keylist(qr2_key_type keytype, void* keybuffer, void *userd
 			pQR2->KeyBufferAdd(keybuffer, G_REINFORCEMENT_KEY);			
 			pQR2->KeyBufferAdd(keybuffer, G_SHIELDED_BASES_KEY);		
 			pQR2->KeyBufferAdd(keybuffer, G_RETURN_PLAYERS_KEY);		
-			pQR2->KeyBufferAdd(keybuffer, G_BEARER_CANT_SPRINT_KEY);
+			pQR2->KeyBufferAdd(keybuffer, G_BEARER_CANT_SPRINT_KEY);	
 		} break;
 	case key_player:
 		{
@@ -266,26 +287,24 @@ int __cdecl callback_count(qr2_key_type keytype, void *userdata)
 	case key_team:
 		{
 			if (!pServer->game) return 0;
-			switch (pServer->game->Type())
-			{
-			case GAME_DEATHMATCH:
-				return 1;
-			case GAME_TEAMDEATHMATCH:
-				return 2;
-			case GAME_ARTEFACTHUNT:
-				return 2;
+			switch (pServer->game->Type()) {
+				case GAME_DEATHMATCH:
+					return 1;
+				case GAME_TEAMDEATHMATCH:
+				case GAME_ARTEFACTHUNT:
+					return 2;
+				default : 
+					R_ASSERT(0);
+					return 0;
 			}
 		}break;
 	default:
 		return 0;
 	}
-
-	//GSI_UNUSED(userdata);
-
-	return 0;
+	//return 0;
 };
 
-void __cdecl callback_adderror(qr2_error_t error, char *errmsg, void *userdata)
+void __cdecl callback_adderror(qr2_error_t error, gsi_char *errmsg, void *userdata)
 {
 	Msg("! Error while adding this server to master list ->%s.", errmsg);
 	xrGameSpyServer* pServer = (xrGameSpyServer*) userdata;
@@ -300,3 +319,40 @@ void __cdecl callback_nn(int cookie, void *userdata)
 void __cdecl callback_cm(char *data, int len, void *userdata)
 {
 };
+void __cdecl callback_deny_ip(void *userdata, unsigned int sender_ip, int * result)
+{
+	*result = 0;
+	IPureServer* pServer = static_cast<IPureServer*>(userdata);
+	if (pServer && pServer->IsPlayerIPDenied(static_cast<u32>(sender_ip)))
+	{
+		*result = 1;
+	}
+};
+/*
+void __cdecl callback_public(unsigned int ip, unsigned short port, void* userdata)
+{
+	xrGameSpyServer* pServer = (xrGameSpyServer*) userdata;
+	if (!pServer)
+	{
+		VERIFY2(pServer, "xrGameSpyServer is nullptr");
+		return;
+	}
+	//authenticating the server
+	CGameSpy_GCD_Server* gcd_server = pServer->GCD_Server();
+	R_ASSERT2(gcd_server, "gcd server has no instance");
+	CGameSpy_GCD_Client gcd_client;
+	string16 challenge_string;
+	string128 response_string;
+
+	gcd_server->CreateRandomChallenge(challenge_string, 8);
+	challenge_string[8] = 0;
+	gcd_client.CreateRespond(response_string, challenge_string, 0);
+	
+	gcd_server->AuthUser(
+		pServer->GetServerClient()->ID.value(),
+		ip,
+		challenge_string,
+		response_string,
+		userdata
+	);
+}*/
