@@ -55,8 +55,6 @@ protected:
 			void 	OnSrcListItemClicked	(CUIWindow*,void*);
 			void		UnloadJournalTab		();
 			void		LoadJournalTab			(ARTICLE_DATA::EArticleType _type);
-			void		UnloadInfoTab			();
-			void		LoadInfoTab				();
 			void		UnloadNewsTab			();
 			void		LoadNewsTab				();
 			void		Reload					(EDiaryFilter new_filter);

@@ -132,9 +132,6 @@ void CUIDiaryWnd::Reload	(EDiaryFilter new_filter)
 		case eJournal:
 			UnloadJournalTab	();
 			break;
-//		case eInfo:
-//			UnloadInfoTab	();
-//			break;
 		case eNews:
 			UnloadNewsTab	();
 			break;
@@ -146,9 +143,6 @@ void CUIDiaryWnd::Reload	(EDiaryFilter new_filter)
 		case eJournal:
 			LoadJournalTab	(ARTICLE_DATA::eJournalArticle);
 			break;
-//		case eInfo:
-//			LoadInfoTab		();
-//			break;
 		case eNews:
 			LoadNewsTab	();
 			break;
@@ -209,22 +203,6 @@ void CUIDiaryWnd::LoadJournalTab			(ARTICLE_DATA::EArticleType _type)
 	g_pda_info_state	&=	!pda_section::journal;
 
 }
-
-void CUIDiaryWnd::UnloadInfoTab	()
-{
-//	m_UIRightWnd->DetachChild	(m_videoWnd);
-//	m_videoWnd->Hide			();
-	UnloadJournalTab	();
-}
-
-void CUIDiaryWnd::LoadInfoTab	()
-{
-//	m_UIRightWnd->AttachChild	(m_videoWnd);
-//	m_videoWnd->Show			();
-	LoadJournalTab				(ARTICLE_DATA::eInfoArticle);
-	g_pda_info_state			&= ~pda_section::info;
-}
-
 
 void CUIDiaryWnd::UnloadNewsTab	()
 {
