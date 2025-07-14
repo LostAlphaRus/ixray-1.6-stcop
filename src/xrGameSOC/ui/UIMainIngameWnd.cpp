@@ -110,7 +110,6 @@ void CUIMainIngameWnd::Init()
 	uiXml.Load					(CONFIG_PATH, UI_PATH, MAININGAME_XML);
 	
 	CUIXmlInit					xml_init;
-	xml_init.InitWindow			(uiXml,"main",0,this);
 
 	Enable(false);
 
@@ -257,8 +256,9 @@ void CUIMainIngameWnd::Init()
 	}
 
 	AttachChild								(&UIStaticDiskIO);
-	UIStaticDiskIO.SetWndRect				(Frect().set(1000,750,16,16));
-	UIStaticDiskIO.GetUIStaticItem().SetTextureRect(Frect().set(0,0,16,16));
+	UIStaticDiskIO.SetWndPos				(Fvector2().set(1000,750));
+	UIStaticDiskIO.SetWndSize				(Fvector2().set(16,16));
+	//UIStaticDiskIO.GetUIStaticItem().SetTextureRect(Frect().set(0,0,16,16));
 	UIStaticDiskIO.InitTexture				("ui\\ui_disk_io");
 	UIStaticDiskIO.SetTextureRect			(Frect().set(0.f / UI().get_current_kx(), 0.f, 32 / UI().get_current_kx(), 32));
 	UIStaticDiskIO.SetStretchTexture		(TRUE);

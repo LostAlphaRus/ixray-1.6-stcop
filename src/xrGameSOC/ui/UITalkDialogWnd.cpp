@@ -29,8 +29,6 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 	m_uiXml->Load(CONFIG_PATH, UI_PATH, TALK_XML);
 	CUIXmlInit					ml_init;
 
-	CUIXmlInit::InitWindow(*m_uiXml, "main", 0, this);
-
 	AttachChild					(&UIStaticTop);
 	CUIXmlInit::InitStatic		(*m_uiXml, "top_background", 0, &UIStaticTop);
 	AttachChild					(&UIStaticBottom);

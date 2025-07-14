@@ -197,11 +197,15 @@ bool CUIEventsWnd::Filter(CGameTask* t)
 void CUIEventsWnd::SetDescriptionMode		(bool bMap)
 {
 	if(bMap){
-		m_UIRightWnd->DetachChild		(m_UITaskInfoWnd);
-		m_UIRightWnd->AttachChild		(m_UIMapWnd);
+		if (m_UIRightWnd->IsChild(m_UITaskInfoWnd))
+			m_UIRightWnd->DetachChild	(m_UITaskInfoWnd);
+		if (!m_UIRightWnd->IsChild(m_UIMapWnd))
+			m_UIRightWnd->AttachChild	(m_UIMapWnd);
 	}else{
-		m_UIRightWnd->DetachChild		(m_UIMapWnd);
-		m_UIRightWnd->AttachChild		(m_UITaskInfoWnd);
+		if (m_UIRightWnd->IsChild(m_UIMapWnd))
+			m_UIRightWnd->DetachChild		(m_UIMapWnd);
+		if (!m_UIRightWnd->IsChild(m_UITaskInfoWnd))
+			m_UIRightWnd->AttachChild		(m_UITaskInfoWnd);
 	}
 	m_flags.set(flMapMode, bMap);
 }

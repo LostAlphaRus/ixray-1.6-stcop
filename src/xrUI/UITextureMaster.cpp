@@ -158,6 +158,16 @@ Frect CUITextureMaster::GetTextureRect(const shared_str&  texture_name){
 	return info.rect;
 }
 
+LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name) {
+	xr_map<shared_str, TEX_INFO>::iterator	it;
+	it = m_textures.find(texture_name);
+
+	if (it != m_textures.end())
+		return *((*it).second.file);
+	R_ASSERT3(false, "CUITextureMaster::GetTextureFileName Can't find texture", texture_name);
+	return 0;
+}
+
 float CUITextureMaster::GetTextureHeight(const shared_str&  texture_name){
 	TEX_INFO info = FindItem(texture_name);
 	return info.rect.height();
@@ -178,6 +188,19 @@ TEX_INFO CUITextureMaster::FindItem(const shared_str&  texture_name)
 		return (it->second);
 	else{
 		return TEX_INFO();
+	}
+}
+
+TEX_INFO CUITextureMaster::FindItem(LPCSTR texture_name, LPCSTR def_texture_name)
+{
+	xr_map<shared_str, TEX_INFO>::iterator	it;
+	it = m_textures.find(texture_name);
+
+	if (it != m_textures.end())
+		return (it->second);
+	else{
+		R_ASSERT2(m_textures.find(def_texture_name)!=m_textures.end(),texture_name);
+		return FindItem	(def_texture_name);
 	}
 }
 

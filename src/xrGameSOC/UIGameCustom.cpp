@@ -68,6 +68,7 @@ void CUIGameCustom::OnFrame()
 	//update windows
 	if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
 		UIMainIngameWnd->Update();
+	m_pMessagesWnd->Update();
 }
 
 void CUIGameCustom::Render()
@@ -83,6 +84,9 @@ void CUIGameCustom::Render()
 		if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
 			UIMainIngameWnd->Draw();
 	}
+
+	m_pMessagesWnd->Draw();
+
 	DoRenderDialogs();
 }
 
@@ -164,6 +168,7 @@ void CUIGameCustom::UnLoad()
 	xr_delete					(m_msgs_xml);
 	xr_delete					(UIMainIngameWnd);
 	xr_delete					(InventoryMenu);
+	xr_delete					(m_pMessagesWnd);
 }
 
 void CUIGameCustom::Load()
@@ -180,8 +185,10 @@ void CUIGameCustom::Load()
 
 		R_ASSERT				(nullptr==InventoryMenu);
 		InventoryMenu			= new CUIInventoryWnd	();
-		InventoryMenu->Init		();
-		
+
+		R_ASSERT				(!m_pMessagesWnd);
+		m_pMessagesWnd			= new CUIMessagesWindow();
+
 		Init					();
 	}
 }

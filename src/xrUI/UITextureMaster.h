@@ -44,8 +44,10 @@ public:
 	static float	GetTextureHeight	(const shared_str&  texture_name);
 	static float	GetTextureWidth		(const shared_str&  texture_name);
 	static Frect	GetTextureRect		(const shared_str&  texture_name);
+	static LPCSTR	GetTextureFileName	(LPCSTR texture_name);
 	static void		GetTextureShader	(const shared_str&  texture_name, ui_shader& sh);
 	static TEX_INFO	FindItem			(const shared_str&  texture_name);
+	static TEX_INFO	FindItem			(LPCSTR texture_name, LPCSTR def_texture_name);
 	static bool		ItemExist			(const shared_str&	texture_name);
 protected:
 	IC	static bool IsSh				(const shared_str& texture_name);

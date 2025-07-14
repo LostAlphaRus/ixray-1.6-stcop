@@ -48,7 +48,6 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
 {
 	CUIXmlInit xml_init;
 
-	xml_init.InitWindow(*xml_doc, "window", 0, this);
 	CUIStatic*	pItem = NULL;
 
 	if(xml_doc->NavigateToNode("icon_static",0))	
