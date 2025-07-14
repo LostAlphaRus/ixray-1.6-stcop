@@ -15,6 +15,7 @@ class	CMissile;
 class	CInventoryItem;
 class	CUIHudStatesWnd;
 class	CUIMotionIcon;
+class	CUIArtefactPanel;
 
 class CUIMainIngameWnd: public CUIWindow  
 {
@@ -105,6 +106,7 @@ protected:
 	// Car
 	CUICarPanel UICarPanel;
 public:
+	CUIArtefactPanel* m_artefactPanel;
 	
 	// Енумы соответсвующие предупреждающим иконкам 
 	enum EWarningIcons

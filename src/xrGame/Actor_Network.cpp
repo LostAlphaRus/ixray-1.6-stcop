@@ -11,7 +11,7 @@
 #include "CameraFirstEye.h"
 
 #include "ActorEffector.h"
-
+#include "ui/UIArtefactPanel.h"
 #include "../xrPhysics/IPHWorld.h"
 #include "../xrPhysics/ActorCameraCollision.h"
 #include "Level.h"
@@ -595,9 +595,10 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	CSE_ALifeTraderAbstract	 *pTA	= smart_cast<CSE_ALifeTraderAbstract*>(e);
 	set_money				(pTA->m_dwMoney, false);
 
+	m_ArtefactsOnBelt.clear();
 //.	if(	TRUE == E->s_flags.test(M_SPAWN_OBJECT_LOCAL) && TRUE == E->s_flags.is(M_SPAWN_OBJECT_ASPLAYER))
 //.		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
-		
+
 	if (ROS())
 	{
 		ROS()->force_mode(IRender_ObjectSpecific::TRACE_ALL);
@@ -788,7 +789,11 @@ void CActor::net_Destroy	()
 	processing_deactivate();
 	m_holder=nullptr;
 	m_holderID=u16(-1);
-	
+
+	m_ArtefactsOnBelt.clear();
+	if (CurrentGameUI()->UIMainIngameWnd->m_artefactPanel && Level().CurrentViewEntity() == this)
+		CurrentGameUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
+
 	SetDefaultVisualOutfit(nullptr);
 
 
