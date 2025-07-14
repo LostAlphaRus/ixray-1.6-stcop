@@ -45,6 +45,7 @@ export_class script_register_ui_window1(export_class &&instance)
 
 		.def("AddCallback",		(void(BaseType::*)(LPCSTR, s16, const luabind::functor<void>&, const luabind::object&))&BaseType::AddCallback)
 
+		.def("Register",		(void (BaseType::*)(CUIWindow*))&BaseType::Register)
 		.def("Register",		(void (BaseType::*)(CUIWindow*,LPCSTR))&BaseType::Register)
 		.def("GetStatic", (CUIStatic * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIStatic>)
 		.def("GetEditBox", (CUIEditBox * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIEditBox>)
@@ -53,6 +54,6 @@ export_class script_register_ui_window1(export_class &&instance)
 		.def("GetFrameLineWnd", (CUIFrameLineWnd * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIFrameLineWnd>)
 		.def("GetProgressBar", (CUIProgressBar * (BaseType::*)(pcstr)) & BaseType::GetControl<CUIProgressBar>)
 		.def("GetTabControl", (CUITabControl * (BaseType::*)(pcstr)) & BaseType::GetControl<CUITabControl>)
-		.def("GetListWnd", (CUIListBox* (BaseType::*)(pcstr)) &BaseType::GetControl<CUIListWnd>)
+		.def("GetListWnd", (CUIListWnd* (BaseType::*)(pcstr)) &BaseType::GetControl<CUIListWnd>)
 	;
 }
