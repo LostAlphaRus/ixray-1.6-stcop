@@ -42,4 +42,58 @@
 	<string id="st_kg">
 		<text>kg</text>
 	</string>
+	<string id="ui_mm_snd_device">
+		<text>Sound device</text>
+	</string>
+	<string id="ui_mm_r2_detail_bump">
+		<text>Detail bump</text>
+	</string>
+	<string id="ui_mm_r2_steep_parallax">
+		<text>Steep parallax</text>
+	</string>
+	<string id="st_opt_high">
+		<text>high</text>
+	</string>
+	<string id="st_opt_low">
+		<text>low</text>
+	</string>
+	<string id="st_opt_medium">
+		<text>medium</text>
+	</string>
+	<string id="st_opt_off">
+		<text>off</text>
+	</string>
+	<string id="st_opt_ultra">
+		<text>very high</text>
+	</string>
+	<string id="ui_mm_r4_enable_tessellation">
+		<text>Tessellation</text>
+	</string>
+	<string id="ui_mm_volumetric_light">
+		<text>Volumetric light</text>
+	</string>
+	<string id="ui_mm_r2_sun_quality">
+		<text>Sun quality</text>
+	</string>
+	<string id="ui_mm_sun_shafts">
+		<text>Sun rays</text>
+	</string>
+	<string id="ui_mm_ssao">
+		<text>default</text>
+	</string>
+	<string id="ui_mm_r3_dynamic_wet_surfaces">
+		<text>Wet surfaces</text>
+	</string>
+	<string id="ui_mm_r3_volumetric_smoke">
+		<text>Volumetric smoke</text>
+	</string>
+	<string id="ui_mm_dof">
+		<text>Depth of field</text>
+	</string>
+	<string id="ui_mm_soft_particles">
+		<text>Soft particles</text>
+	</string>
+	<string id="ui_mm_soft_water">
+		<text>Soft water</text>
+	</string>
 </string_table>

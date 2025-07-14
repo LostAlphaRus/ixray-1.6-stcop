@@ -77,10 +77,13 @@ void CUIMMShniaga::InitShniaga(CUIXml& xml_doc, LPCSTR path)
 
 	xr_strconcat(_path,path,":buttons_region");
 	CUIXmlInit::InitScrollView(xml_doc, _path,0,m_view);
+
 	xr_strconcat(_path,path,":shniaga:magnifire:y_offset");
 	m_offset = xml_doc.ReadFlt(_path,0,0);
+
+	int def_speed = EngineExternal().ShadowOfChernobylMode() ? 1000 : 300;
 	xr_strconcat(_path, path, ":shniaga:speed");
-	m_run_speed = xml_doc.ReadInt(_path, 0, 300);
+	m_run_speed = xml_doc.ReadInt(_path, 0, def_speed);
 
 	if (!g_pGameLevel || !g_pGameLevel->bReady) 
 	{
@@ -119,7 +122,6 @@ void CUIMMShniaga::CreateList(xr_vector<CUITextWnd*>& lst, CUIXml& xml_doc, LPCS
 	u32	color;
 	float button_height_legacy = xml_doc.ReadAttribFlt(path, 0, "btn_height", 30.f);
 	float button_height				= xml_doc.ReadAttribFlt("button", 0, "h", button_height_legacy);
-	R_ASSERT						(button_height);
 
 	CUIXmlInit::InitFont			(xml_doc, path, 0, color, pF);
 	if (!pF)
