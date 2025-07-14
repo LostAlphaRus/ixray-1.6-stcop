@@ -176,24 +176,35 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 	if(UIItemImage)
 	{
 		// Загружаем картинку
-		UIItemImage->SetShader				(InventoryUtilities::GetEquipmentIconsShader());
+		UIItemImage->SetShader(InventoryUtilities::GetEquipmentIconsShader());
 
-		int iGridWidth						= pInvItem->GetGridWidth();
-		int iGridHeight						= pInvItem->GetGridHeight();
-		int iXPos							= pInvItem->GetXPos();
-		int iYPos							= pInvItem->GetYPos();
-		int UseHQ							= EngineExternal()[EEngineExternalUI::HQIcons];
-
+		Irect item_grid_rect = {pInvItem->GetXPos(), pInvItem->GetYPos(), pInvItem->GetGridWidth(), pInvItem->GetGridHeight()};
+		Frect texture_rect = {};
+		texture_rect.lt.set(item_grid_rect.x1*INV_GRID_WIDTH * 1 + isHQIcons,	item_grid_rect.y1*INV_GRID_HEIGHT * 1 + isHQIcons);
+		texture_rect.rb.set(item_grid_rect.x2*INV_GRID_WIDTH * 1 + isHQIcons,	item_grid_rect.y2*INV_GRID_HEIGHT * 1 + isHQIcons);
+		texture_rect.rb.add(texture_rect.lt);
+		UIItemImage->GetUIStaticItem().SetTextureRect(texture_rect);
 		UIItemImage->TextureOn				();
 		UIItemImage->SetStretchTexture		(true);
-		Frect v_r							= { float(iXPos * (1 + UseHQ) * INV_GRID_WIDTH),
-												float(iYPos * (1 + UseHQ) * INV_GRID_HEIGHT),
-												float(iGridWidth * (1 + UseHQ) * INV_GRID_WIDTH),
-												float(iGridHeight * (1 + UseHQ) * INV_GRID_HEIGHT) };
 
-		UIItemImage->GetUIStaticItem().SetTextureRect	(v_r);
-		UIItemImage->SetWidth					(_min(v_r.width()*UI().get_current_kx(), UIItemImageSize.x));
-		UIItemImage->SetHeight					(_min(v_r.height(),	UIItemImageSize.y));
+		Fvector2 v_r = {};
+
+		if (isHQIcons)
+		{
+			v_r = { (float)item_grid_rect.x2 * INV_GRID_WIDTH * 1 + isHQIcons,
+				(float)item_grid_rect.y2 * INV_GRID_HEIGHT * 1 + isHQIcons };
+		}
+		else
+		{
+			v_r = { (float)item_grid_rect.x2 * INV_GRID_WIDTH * 1 + isHQIcons,
+				(float)item_grid_rect.y2 * INV_GRID_HEIGHT * 1 + isHQIcons };
+		}
+
+		v_r.x								*= UI().get_current_kx();
+
+		UIItemImage->GetUIStaticItem().SetSize	(v_r);
+		UIItemImage->SetWidth					(v_r.x);
+		UIItemImage->SetHeight					(v_r.y);
 	}
 }
 

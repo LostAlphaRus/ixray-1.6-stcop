@@ -82,7 +82,7 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 
 	Register					(&UIToTradeButton);
 	AddCallbackStr				("question_item",LIST_ITEM_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnQuestionClicked));
-	AddCallbackStr				("trade_btn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnTradeClicked));
+	AddCallback					(&UIToTradeButton,BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITalkDialogWnd::OnTradeClicked));
 }
 
 #include "UIInventoryUtilities.h"
@@ -210,9 +210,7 @@ CUIQuestionItem::CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path)
 	xr_strconcat					(str,path,":content_text");
 	xml_init.Init3tButton			(*xml_doc, str, 0, m_text);
 
-	Register						(m_text);
-	m_text->SetWindowName			("text_button");
-	AddCallbackStr					("text_button",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
+	AddCallback						(m_text,BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIQuestionItem::OnTextClicked));
 
 }
 

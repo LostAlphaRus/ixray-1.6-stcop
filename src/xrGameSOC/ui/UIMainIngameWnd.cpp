@@ -1104,12 +1104,12 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
-	UIPickUpItemIcon.GetUIStaticItem().SetTextureRect(Frect().set(
-		float(m_iXPos * INV_GRID_WIDTH*(1 + UseHQ)),
-		float(m_iYPos * INV_GRID_HEIGHT*(1 + UseHQ)),
-		float(m_iGridWidth * INV_GRID_WIDTH*(1 + UseHQ)),
-		float(m_iGridHeight * INV_GRID_HEIGHT)*(1 + UseHQ)));
 
+	Frect texture_rect = {};
+	texture_rect.lt.set(m_iXPos * INV_GRID_WIDTH*(1 + UseHQ), m_iYPos * INV_GRID_HEIGHT*(1 + UseHQ));
+	texture_rect.rb.set(m_iGridWidth * INV_GRID_WIDTH*(1 + UseHQ), m_iGridHeight * INV_GRID_HEIGHT*(1 + UseHQ));
+	texture_rect.rb.add(texture_rect.lt);
+	UIPickUpItemIcon.GetStaticItem()->SetTextureRect(texture_rect);
 	UIPickUpItemIcon.SetStretchTexture(true);
 
 	UIPickUpItemIcon.SetWidth(m_iGridWidth*INV_GRID_WIDTH*scale * UI().get_current_kx());
