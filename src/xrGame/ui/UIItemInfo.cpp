@@ -224,7 +224,7 @@ void CUIItemInfo::InitItemInfo(Fvector2 pos, Fvector2 size, LPCSTR xml_name)
 
 bool	IsGameTypeSingle();
 
-void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem, u32 item_price, LPCSTR trade_tip)
+void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem, u32 item_price, LPCSTR trade_tip, bool overrideCorrectionByWeight)
 {
 	if(!pCellItem)
 	{
@@ -324,7 +324,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 	if ( UIDesc )
 	{
 		pos = UIDesc->GetWndPos();
-		if ( UIWeight )
+		if ( UIWeight && !overrideCorrectionByWeight)
 			pos.y = UIWeight->GetWndPos().y + UIWeight->GetHeight() + 4.0f;
 
 		if(UITradeTip && trade_tip!=nullptr)
