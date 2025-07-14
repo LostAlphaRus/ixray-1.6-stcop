@@ -41,7 +41,7 @@ void CHUDCrosshair::Load		()
 void CHUDCrosshair::SetDispersion	(float disp)
 { 
 	Fvector4 r;
-	Fvector R			= { VIEWPORT_NEAR*_sin(disp), 0.f, VIEWPORT_NEAR };
+	Fvector R			= { Device.fViewportNear*_sin(disp), 0.f, Device.fViewportNear };
 	Device.mProject.transform	(r,R);
 
 	Fvector2		scr_size;

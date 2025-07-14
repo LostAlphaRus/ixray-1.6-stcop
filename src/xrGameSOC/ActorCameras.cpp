@@ -15,7 +15,7 @@
 #include "ActorEffector.h"
 #include "level.h"
 #include "../xrCore/Collision/cl_intersect.h"
-#include "gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
@@ -96,10 +96,10 @@ float CActor::CameraHeight()
 
 IC float viewport_near(float& w, float& h)
 {
-	w = 2.f*VIEWPORT_NEAR*tan(deg2rad(Device.fFOV)/2.f);
+	w = 2.f*Device.fViewportNear*tan(deg2rad(Device.fFOV)/2.f);
 	h = w*Device.fASPECT;
 	float	c	= _sqrt					(w*w + h*h);
-	return	_max(_max(VIEWPORT_NEAR,_max(w,h)),c);
+	return	_max(_max(Device.fViewportNear,_max(w,h)),c);
 }
 
 ICF void calc_point(Fvector& pt, float radius, float depth, float alpha)
@@ -112,7 +112,7 @@ ICF void calc_point(Fvector& pt, float radius, float depth, float alpha)
 ICF BOOL test_point(xrXRC& xrc, const Fmatrix& xform, const Fmatrix33& mat, const Fvector& ext, float radius, float angle)
 {
 	Fvector				pt;
-	calc_point			(pt,radius,VIEWPORT_NEAR/2,angle);
+	calc_point			(pt,radius,Device.fViewportNear/2,angle);
 	xform.transform_tiny(pt);
 
 	CDB::RESULT* it	=xrc.r_begin();
@@ -184,7 +184,7 @@ void CActor::cam_Update(float dt, float fFOV)
 			if (tri_count)		{
 				float da		= 0.f;
 				BOOL bIntersect	= FALSE;
-				Fvector	ext		= {w,h,VIEWPORT_NEAR/2};
+				Fvector	ext		= {w,h,Device.fViewportNear/2};
 				if (test_point(xrc,xform,mat,ext,radius,alpha)){
 					da			= PI/1000.f;
 					if (!fis_zero(r_torso.roll))
@@ -225,7 +225,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	}else{
 		fPrevCamPos			= flCurrentPlayerY;
 	}
-	float _viewport_near			= VIEWPORT_NEAR;
+	float _viewport_near			= Device.fViewportNear;
 	// calc point
 	xform.transform_tiny			(point);
 
@@ -237,7 +237,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	
 		xrXRC						xrc			;
 		xrc.box_options				(0)			;
-		xrc.box_query				(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR) );
+		xrc.box_query				(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(Device.fViewportNear, Device.fViewportNear, Device.fViewportNear) );
 		u32 tri_count				= xrc.r_count();
 		if (tri_count)
 		{
@@ -246,7 +246,7 @@ void CActor::cam_Update(float dt, float fFOV)
 		else
 		{
 			xr_vector<ISpatial*> ISpatialResult;
-			g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR));
+			g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(Device.fViewportNear, Device.fViewportNear, Device.fViewportNear));
 			for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
 			{
 				CPHShell*		pCPHS= smart_cast<CPHShell*>(ISpatialResult[o_it]);
@@ -261,7 +261,7 @@ void CActor::cam_Update(float dt, float fFOV)
 /*
 	{
 		CCameraBase* C				= cameras[eacFirstEye];
-		float oobox_size			= 2*VIEWPORT_NEAR;
+		float oobox_size			= 2*Device.fViewportNear;
 
 
 		Fmatrix						_rot;
@@ -302,14 +302,14 @@ void CActor::cam_Update(float dt, float fFOV)
 		cameras[eacFirstEye]->f_fov		= fFOV;
 	}
 	
-	Cameras().Update			(C);
+	Cameras().UpdateFromCamera			(C);
 
 	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
 	vPrevCamDir				= cameras[eacFirstEye]->vDirection;
 
 	if (Level().CurrentEntity() == this)
 	{
-		Level().Cameras().Update	(C);
+		Level().Cameras().UpdateFromCamera	(C);
 		if ((eacFirstEye == cam_active || eacLookAt == cam_active) &&
 			!Level().Cameras().GetCamEffector(cefDemo)) {
 			Cameras().ApplyDevice	(_viewport_near);

@@ -218,7 +218,7 @@ CUIQuestionItem::CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path)
 
 	m_min_height					= xml_doc->ReadAttribFlt(path,0,"min_height",15.0f);
 
-	strconcat						(sizeof(str),str,path,":content_text");
+	xr_strconcat					(str,path,":content_text");
 	xml_init.Init3tButton			(*xml_doc, str, 0, m_text);
 
 	Register						(m_text);
@@ -257,10 +257,10 @@ CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 
 	m_min_height					= xml_doc->ReadAttribFlt(path,0,"min_height",15.0f);
 	m_bottom_footer					= xml_doc->ReadAttribFlt(path,0,"bottom_footer",0.0f);
-	strconcat						(sizeof(str),str,path,":content_text");
+	xr_strconcat					(str,path,":content_text");
 	xml_init.InitStatic				(*xml_doc, str, 0, m_text);
 
-	strconcat						(sizeof(str),str,path,":name_caption");
+	xr_strconcat					(str,path,":name_caption");
 	xml_init.InitStatic				(*xml_doc, str, 0, m_name);
 	SetAutoDelete					(true);
 }
@@ -284,7 +284,7 @@ CUIAnswerItemIconed::CUIAnswerItemIconed		(CUIXml* xml_doc, LPCSTR path)
 	string512						str;
 	CUIXmlInit						xml_init;
 
-	strconcat						(sizeof(str),str,path,":msg_icon");
+	xr_strconcat					(str,path,":msg_icon");
 	xml_init.InitStatic				(*xml_doc, str, 0, m_icon);
 }
 

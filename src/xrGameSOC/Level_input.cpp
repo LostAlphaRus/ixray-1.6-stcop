@@ -75,7 +75,7 @@ void CLevel::IR_OnMouseMove( int dx, int dy )
 	}
 }
 
-// Îáðàáîòêà íàæàòèÿ êëàâèø
+// ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð½Ð°Ð¶Ð°Ñ‚Ð¸Ñ ÐºÐ»Ð°Ð²Ð¸Ñˆ
 extern bool g_block_pause;
 
 void CLevel::IR_OnKeyboardPress	(int key)
@@ -143,11 +143,11 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		FS.rescan_pathes			();
 #endif // DEBUG
 		string_path					saved_game,command;
-		strconcat					(sizeof(saved_game),saved_game,Core.UserName," - ",CStringTable().translate("quicksave").c_str());
+		xr_strconcat				(saved_game,Core.UserName," - ",CStringTable().translate("quicksave").c_str());
 		if (!CSavedGameWrapper::valid_saved_game(saved_game))
 			return;
 
-		strconcat					(sizeof(command),command,"load ",saved_game);
+		xr_strconcat				(command,"load ",saved_game);
 		Console->Execute			(command);
 		return;
 	}

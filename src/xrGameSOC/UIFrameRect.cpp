@@ -53,15 +53,15 @@ void CUIFrameRect::InitTexture(const char* texture){
 	}
 	else
 	{
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_back"),	&frame[CUIFrameRect::fmBK]);
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_l"),		&frame[CUIFrameRect::fmL]);
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_r"),		&frame[CUIFrameRect::fmR]);
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_t"),		&frame[CUIFrameRect::fmT]);
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_b"),		&frame[CUIFrameRect::fmB]);
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_lt"),		&frame[CUIFrameRect::fmLT]);
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_rt"),		&frame[CUIFrameRect::fmRT]);
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_rb"),		&frame[CUIFrameRect::fmRB]);
-		CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_lb"),		&frame[CUIFrameRect::fmLB]);		
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_back"),	&frame[CUIFrameRect::fmBK]);
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_l"),		&frame[CUIFrameRect::fmL]);
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_r"),		&frame[CUIFrameRect::fmR]);
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_t"),		&frame[CUIFrameRect::fmT]);
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_b"),		&frame[CUIFrameRect::fmB]);
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_lt"),		&frame[CUIFrameRect::fmLT]);
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_rt"),		&frame[CUIFrameRect::fmRT]);
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_rb"),		&frame[CUIFrameRect::fmRB]);
+		CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_lb"),		&frame[CUIFrameRect::fmLB]);
 	}
 }
 
@@ -96,7 +96,7 @@ void CUIFrameRect::UpdateSize()
 	float size_left		= m_wndSize.y - _lt.y - _lb.y;
 	float size_right	= m_wndSize.y - _rt.y - _rb.y;
 
-	//‘ÓÌ
+	//–§–æ–Ω
 	ts.set			(_bk.x,_bk.y);
 	rem_x  			= fmod(size_top,ts.x);
 	rem_y  			= fmod(size_left,ts.y);
@@ -106,7 +106,7 @@ void CUIFrameRect::UpdateSize()
 	frame[fmBK].SetPos	(wnd_pos.x+_lt.x, wnd_pos.y+_lt.y);
 	frame[fmBK].SetTile	(tile_x,tile_y, rem_x,rem_y);
 
-	//Œ·‡ÏÎÂÌËÂ
+	//–û–±—Ä–∞–º–ª–µ–Ω–∏–µ
 	ts.set				(_t.x,_t.y);
 	rem_x				= fmod(size_top,ts.x);
 	tile_x				= iFloor(size_top/ts.x); tile_x=_max(tile_x, 0);

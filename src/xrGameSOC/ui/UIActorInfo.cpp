@@ -149,7 +149,7 @@ void CUIActorInfoWnd::FillMasterPart(CUIXml* xml, const shared_str& key_name)
 {
 	CUIActorStaticticHeader* itm		= new CUIActorStaticticHeader(this);
 	string128							buff;
-	strconcat							(sizeof(buff), buff, "actor_stats_wnd:master_part_", key_name.c_str() );
+	xr_strconcat						(buff, "actor_stats_wnd:master_part_", key_name.c_str() );
 	itm->Init							(xml, buff, 0);
 
 	if(key_name!="foo")

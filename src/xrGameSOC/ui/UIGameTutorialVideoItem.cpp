@@ -90,8 +90,8 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 	if (m_snd_name&&m_snd_name[0])
 	{
 		string_path			_l, _r;
-		strconcat			(sizeof(_l),_l, m_snd_name, "_l");
-		strconcat			(sizeof(_r),_r, m_snd_name, "_r");
+		xr_strconcat		(_l, m_snd_name, "_l");
+		xr_strconcat		(_r, m_snd_name, "_r");
 		m_sound[0].create	(_l,st_Effect,sg_Undefined);	VERIFY(m_sound[0]._handle());
 		m_sound[1].create	(_r,st_Effect,sg_Undefined);	VERIFY(m_sound[1]._handle());
 	}

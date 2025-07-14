@@ -56,18 +56,18 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	string512	pth;
 	// load map background
 	CUIXmlInit xml_init;
-	strconcat(sizeof(pth),pth,start_from,":main_wnd");
+	xr_strconcat(pth,start_from,":main_wnd");
 	xml_init.InitWindow				(uiXml, pth, 0, this);
 
 
 
 	m_UIMainFrame					= new CUIFrameWindow(); m_UIMainFrame->SetAutoDelete(true);
 	AttachChild						(m_UIMainFrame);
-	strconcat(sizeof(pth),pth,start_from,":main_wnd:main_map_frame");
+	xr_strconcat(pth,start_from,":main_wnd:main_map_frame");
 	xml_init.InitFrameWindow		(uiXml, pth, 0, m_UIMainFrame);
 
 	m_UILevelFrame					= new CUIWindow(); m_UILevelFrame->SetAutoDelete(true);
-	strconcat(sizeof(pth),pth,start_from,":main_wnd:main_map_frame:level_frame");
+	xr_strconcat(pth,start_from,":main_wnd:main_map_frame:level_frame");
 	xml_init.InitWindow				(uiXml, pth, 0, m_UILevelFrame);
 	m_UIMainFrame->AttachChild		(m_UILevelFrame);
 
@@ -93,7 +93,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	UIMainMapHeader					= new CUIFrameLineWnd(); UIMainMapHeader->SetAutoDelete(true);
 	m_UIMainFrame->AttachChild		(UIMainMapHeader);
-	strconcat(sizeof(pth),pth,start_from,":main_wnd:map_header_frame_line");
+	xr_strconcat(pth,start_from,":main_wnd:map_header_frame_line");
 	xml_init.InitFrameLine			(uiXml, pth, 0, UIMainMapHeader);
 
 	ZeroMemory						(m_ToolBar,sizeof(m_ToolBar));
@@ -102,7 +102,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 	EMapToolBtn		btnIndex;
 	btnIndex		= eGlobalMap;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":global_map_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":global_map_btn");
 	if(uiXml.NavigateToNode(pth,0)){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -112,7 +112,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	}
 
 	btnIndex		= eActor;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":actor_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":actor_btn");
 	if(uiXml.NavigateToNode(pth,0)){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -123,7 +123,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 
 
 	btnIndex		= eZoomIn;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":zoom_in_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":zoom_in_btn");
 	if(uiXml.NavigateToNode(pth,0)){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -132,7 +132,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		AddCallback						(*m_ToolBar[btnIndex]->WindowName(),BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUIMapWnd::OnToolZoomInClicked));
 	}
 	btnIndex		= eZoomOut;
-	strconcat(sizeof(pth),pth, sToolbar.c_str(), ":zoom_out_btn");
+	xr_strconcat(pth, sToolbar.c_str(), ":zoom_out_btn");
 	if(uiXml.NavigateToNode(pth,0)){
 		m_ToolBar[btnIndex]				= new CUI3tButton(); m_ToolBar[btnIndex]->SetAutoDelete(true);
 		xml_init.Init3tButton			(uiXml, pth, 0, m_ToolBar[btnIndex]);
@@ -171,7 +171,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	}
 */
 	m_text_hint							= new CUIStatic();
-	strconcat							(sizeof(pth),pth,start_from,":main_wnd:text_hint");
+	xr_strconcat						(pth,start_from,":main_wnd:text_hint");
 	xml_init.InitStatic					(uiXml, pth, 0, m_text_hint);
 
 	m_hint								= new CUIMapHint();

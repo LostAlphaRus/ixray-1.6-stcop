@@ -3,10 +3,10 @@
 //	Created by Roman E. Marchenko, vortex@gsc-game.kiev.ua
 //	Copyright 2004. GSC Game World
 //	---------------------------------------------------------------------------
-//  Класс аналогичный UIFrameRect за исключением того, что он предназначен для
-//	отображения затекстурированного узкого прямоуголника произвольной длинны или
-//	ширины. В качестве исходных материалов необходимо 3 текстуры: правая(нижняя),
-//	левая(верхняя) и центральная
+//  РљР»Р°СЃСЃ Р°РЅР°Р»РѕРіРёС‡РЅС‹Р№ UIFrameRect Р·Р° РёСЃРєР»СЋС‡РµРЅРёРµРј С‚РѕРіРѕ, С‡С‚Рѕ РѕРЅ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ
+//	РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ Р·Р°С‚РµРєСЃС‚СѓСЂРёСЂРѕРІР°РЅРЅРѕРіРѕ СѓР·РєРѕРіРѕ РїСЂСЏРјРѕСѓРіРѕР»РЅРёРєР° РїСЂРѕРёР·РІРѕР»СЊРЅРѕР№ РґР»РёРЅРЅС‹ РёР»Рё
+//	С€РёСЂРёРЅС‹. Р’ РєР°С‡РµСЃС‚РІРµ РёСЃС…РѕРґРЅС‹С… РјР°С‚РµСЂРёР°Р»РѕРІ РЅРµРѕР±С…РѕРґРёРјРѕ 3 С‚РµРєСЃС‚СѓСЂС‹: РїСЂР°РІР°СЏ(РЅРёР¶РЅСЏСЏ),
+//	Р»РµРІР°СЏ(РІРµСЂС…РЅСЏСЏ) Рё С†РµРЅС‚СЂР°Р»СЊРЅР°СЏ
 //=============================================================================
 
 #include "stdafx.h"
@@ -41,9 +41,9 @@ void CUIFrameLine::Init(LPCSTR base_name, float x, float y, float size, bool hor
 void CUIFrameLine::InitTexture(const char* texture){
 	string256		buf;
 
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_back"),	&elements[flBack]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_b"),		&elements[flFirst]);
-	CUITextureMaster::InitTexture(strconcat(sizeof(buf),buf,texture,"_e"),		&elements[flSecond]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_back"),	&elements[flBack]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_b"),		&elements[flFirst]);
+	CUITextureMaster::InitTexture(xr_strconcat(buf,texture,"_e"),		&elements[flSecond]);
 }
 
 //////////////////////////////////////////////////////////////////////////

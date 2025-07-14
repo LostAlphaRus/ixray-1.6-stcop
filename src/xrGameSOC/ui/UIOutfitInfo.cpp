@@ -54,7 +54,7 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 
 	m_listWnd					= new CUIScrollView(); m_listWnd->SetAutoDelete(true);
 	AttachChild					(m_listWnd);
-	strconcat					(sizeof(_buff),_buff, _base, ":scroll_view");
+	xr_strconcat				(_buff, _base, ":scroll_view");
 	CUIXmlInit::InitScrollView	(xml_doc, _buff, 0, m_listWnd);
 
 	for(u32 i=ALife::eHitTypeBurn; i<= ALife::eHitTypeFireWound; ++i)
@@ -62,7 +62,7 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 		m_items[i]				= new CUIStatic();
 		CUIStatic* _s			= m_items[i];
 		_s->SetAutoDelete		(false);
-		strconcat				(sizeof(_buff),_buff, _base, ":static_", _imm_names[i]);
+		xr_strconcat			(_buff, _base, ":static_", _imm_names[i]);
 		CUIXmlInit::InitStatic	(xml_doc, _buff,	0, _s);
 	}
 

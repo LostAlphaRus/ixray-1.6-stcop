@@ -117,7 +117,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 
 	Frect _stored_rect = m_UIStaticItem.GetOriginalRect();
 
-	strconcat(sizeof(buf), buf, path, ":texture_above");
+	xr_strconcat(buf, path, ":texture_above");
 	n = xml->NavigateToNode(buf,0);
 	if(n){
 		LPCSTR texture  = xml->Read(buf, 0, NULL);
@@ -135,7 +135,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 		m_icon_above				= m_UIStaticItem.GetShader		();
 	}
 
-	strconcat(sizeof(buf),buf, path, ":texture_below");
+	xr_strconcat(buf, path, ":texture_below");
 	n = xml->NavigateToNode(buf,0);
 	if(n){
 		LPCSTR texture  = xml->Read(buf, 0, NULL);
@@ -152,7 +152,7 @@ void CMiniMapSpot::Load(CUIXml* xml, LPCSTR path)
 
 		m_icon_below				= m_UIStaticItem.GetShader		();
 	}
-	strconcat(sizeof(buf),buf, path, ":texture");
+	xr_strconcat(buf, path, ":texture");
 	n = xml->NavigateToNode(buf,0);
 	if(n){
 		LPCSTR texture  = xml->Read(buf, 0, NULL);

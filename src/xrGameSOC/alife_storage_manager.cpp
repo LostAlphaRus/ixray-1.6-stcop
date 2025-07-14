@@ -37,7 +37,7 @@ void CALifeStorageManager::save	(LPCSTR save_name, bool update_name)
 	string_path					save;
 	strcpy						(save,m_save_name);
 	if (save_name) {
-		strconcat				(sizeof(m_save_name),m_save_name,save_name,SAVE_EXTENSION);
+		xr_strconcat			(m_save_name,save_name,IXRAY_DEF_SAVE_EXTENSION);
 	}
 	else {
 		if (!xr_strlen(m_save_name)) {
@@ -128,7 +128,7 @@ bool CALifeStorageManager::load	(LPCSTR save_name)
 			R_ASSERT2			(false,"There is no file name specified!");
 	}
 	else
-		strconcat				(sizeof(m_save_name),m_save_name,save_name,SAVE_EXTENSION);
+		xr_strconcat			(m_save_name,save_name,IXRAY_DEF_SAVE_EXTENSION);
 	string_path					file_name;
 	FS.update_path				(file_name,"$game_saves$",m_save_name);
 
@@ -140,10 +140,10 @@ bool CALifeStorageManager::load	(LPCSTR save_name)
 		return					(false);
 	}
 
-	CHECK_OR_EXIT				(CSavedGameWrapper::valid_saved_game(*stream),make_string("%s\nSaved game version mismatch or saved game is corrupted",file_name));
+	CHECK_OR_EXIT				(CSavedGameWrapper::valid_saved_game(*stream),make_string<const char*>("%s\nSaved game version mismatch or saved game is corrupted",file_name));
 
 	string512					temp;
-	strconcat					(sizeof(temp),temp,CStringTable().translate("st_loading_saved_game").c_str()," \"",save_name,SAVE_EXTENSION,"\"");
+	xr_strconcat				(temp,CStringTable().translate("st_loading_saved_game").c_str()," \"",save_name,IXRAY_DEF_SAVE_EXTENSION,"\"");
 	g_pGamePersistent->LoadTitle(temp);
 
 	unload						();

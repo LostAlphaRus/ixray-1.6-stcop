@@ -7,7 +7,7 @@
 #include "Actor.h"
 #include "../xrCore/object_broker.h"
 
-#include "GameMtlLib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "CustomRocket.h"
 #include "Missile.h"
 #include "Car.h"
@@ -114,13 +114,13 @@ void CCameraLook::UpdateDistance(Fvector& point)
 	vDir.invert(vDirection);
 
 	collide::rq_result R;
-	float covariance = VIEWPORT_NEAR * 6.0f;
+	float covariance = Device.fViewportNear * 6.0f;
 	R = GetPickResult(point, vDir, dist + covariance, parent);
 	float sl_inert = 1.f-Device.fTimeDelta*10.f;
 	float d = sl_inert * prev_d + (1.0f - sl_inert) * (R.range - covariance);
 	prev_d = d;
 
-	vPosition.mul(vDirection, -d - VIEWPORT_NEAR);
+	vPosition.mul(vDirection, -d - Device.fViewportNear);
 	vPosition.add(point);
 }
 
@@ -156,7 +156,7 @@ void CCameraLook::OnActivate( CCameraBase* old_cam )
 #include "visual_memory_manager.h"
 #include "actor_memory.h"
 
-int cam_dik = DIK_LSHIFT;
+int cam_dik = SDL_SCANCODE_LSHIFT;
 
 Fvector CCameraLook2::m_cam_offset_r;
 Fvector CCameraLook2::m_cam_offset_l;
@@ -175,7 +175,7 @@ void CCameraLook2::UpdateDistance(Fvector& pivot, Fvector& correction)
 	des_dir.sub(correction, pivot);
 	des_dir.add(Fvector(vDirection).invert());
 
-	float covariance = VIEWPORT_NEAR * 6.f;
+	float covariance = Device.fViewportNear * 6.f;
 	float d;
 
 	collide::rq_result	RQ = GetPickResult(pivot, des_dir, dist + covariance, parent);
@@ -186,7 +186,7 @@ void CCameraLook2::UpdateDistance(Fvector& pivot, Fvector& correction)
 
 	Fvector next_pos;
 	next_pos.set(correction);
-	next_pos.mul(des_dir.invert(), -d - VIEWPORT_NEAR);
+	next_pos.mul(des_dir.invert(), -d - Device.fViewportNear);
 	next_pos.add(pivot);
 
 	vPosition.inertion(next_pos, 1.f-Device.fTimeDelta*15.f);

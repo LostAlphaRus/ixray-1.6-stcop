@@ -878,7 +878,7 @@ void	game_sv_mp::SetPlayersDefItems		(game_PlayerState* ps)
 	char tmp[5];
 	for (int i=1; i<=ps->rank; i++)
 	{
-		strconcat(sizeof(RankStr),RankStr,"rank_",_itoa(i,tmp,10));
+		xr_strconcat(RankStr,"rank_",_itoa(i,tmp,10));
 		if (!pSettings->section_exist(RankStr)) continue;
 		for (u32 it=0; it<ps->pItemList.size(); it++)
 		{
@@ -888,7 +888,7 @@ void	game_sv_mp::SetPlayersDefItems		(game_PlayerState* ps)
 			if (m_strWeaponsData->GetItemsCount() <= *pItemID) continue;
 			shared_str WeaponName = m_strWeaponsData->GetItemName((*pItemID) & 0x00FF);
 //			strconcat(ItemStr, "def_item_repl_", pWpnS->WeaponName.c_str());
-			strconcat(sizeof(ItemStr),ItemStr, "def_item_repl_", *WeaponName);
+			xr_strconcat(ItemStr, "def_item_repl_", *WeaponName);
 			if (!pSettings->line_exist(RankStr, ItemStr)) continue;
 			
 			strcpy_s(NewItemStr,sizeof(NewItemStr),pSettings->r_string(RankStr, ItemStr));

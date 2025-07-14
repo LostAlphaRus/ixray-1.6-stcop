@@ -8,7 +8,7 @@
 #include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
 #include "../include/xrRender/Kinematics.h"
-#include "gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "level_bullet_manager.h"
 #include "ai_sounds.h"
 #include "game_cl_single.h"
@@ -292,7 +292,7 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 	m_eHitType_1		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type"));
 
 	//fHitPower_2			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power_2"));
-	s_sHitPower_2		= pSettings->r_string_wb	(section,strconcat(sizeof(full_name),full_name, prefix, "hit_power_2"));
+	s_sHitPower_2		= pSettings->r_string_wb	(section,xr_strconcat(full_name, prefix, "hit_power_2"));
 	fvHitPower_2[egdMaster]	= (float)atof(_GetItem(*s_sHitPower_2,0,buffer));//первый параметр - это хит для уровня игры мастер
 
 	fvHitPower_2[egdVeteran]	= fvHitPower_2[egdMaster];//изначально параметры для других уровней
@@ -313,7 +313,7 @@ void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
 		fvHitPower_2[egdNovice]	= (float)atof(_GetItem(*s_sHitPower_2,3,buffer));//то вычитываем его для уровня новичка
 	}
 
-	fHitImpulse_2		= pSettings->r_float	(section,strconcat(sizeof(full_name),full_name, prefix, "hit_impulse_2"));
+	fHitImpulse_2		= pSettings->r_float	(section,xr_strconcat(full_name, prefix, "hit_impulse_2"));
 	m_eHitType_2		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type_2"));
 }
 

@@ -2,7 +2,7 @@
 #include "gamepersistent.h"
 #include "../xrEngine/fmesh.h"
 #include "../xrEngine/xr_ioconsole.h"
-#include "gamemtllib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "../include/xrRender/kinematics.h"
 #include "profiler.h"
 #include "MainMenu.h"
@@ -502,7 +502,7 @@ void CGamePersistent::OnFrame	()
 				C = Actor()->Holder()->Camera();
 
 			Actor()->Cameras().Update		(C);
-			Actor()->Cameras().ApplyDevice	(VIEWPORT_NEAR);
+			Actor()->Cameras().ApplyDevice	(Device.fViewportNear);
 		}
 #endif // MASTER_GOLD
 	}

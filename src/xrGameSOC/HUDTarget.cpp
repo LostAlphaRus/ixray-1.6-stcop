@@ -6,7 +6,7 @@
 #include "stdafx.h"
 #include "hudtarget.h"
 #include "hudmanager.h"
-#include "GameMtlLib.h"
+#include "../xrEngine/GameMtlLib.h"
 #include "UIFontDefines.h"
 #include "../xrEngine/Environment.h"
 #include "../xrEngine/CustomHUD.h"

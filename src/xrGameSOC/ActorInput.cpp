@@ -74,13 +74,13 @@ void CActor::IR_OnKeyboardPress(int cmd)
 //				u_EventSend(P);
 			}
 		}break;
-	case kCROUCH_TOGGLE:
+	/*case kCROUCH_TOGGLE:
 		{
 			g_bAutoClearCrouch = !g_bAutoClearCrouch;
 			if (!g_bAutoClearCrouch)
 				mstate_wishful |= mcCrouch;
 
-		}break;
+		}break;*/
 	case kSPRINT_TOGGLE:	
 		{
 			if (mstate_wishful & mcSprint)
@@ -153,7 +153,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
 					SDrawStaticStruct* _s		= HUD().GetUI()->UIGame()->AddCustomStatic("item_used", true);
 					_s->m_endTime				= Device.fTimeGlobal+3.0f;// 3sec
 					string1024					str;
-					strconcat					(sizeof(str),str,*CStringTable().translate("st_item_used"),": ", itm->Name());
+					xr_strconcat				(str,*CStringTable().translate("st_item_used"),": ", itm->Name());
 					_s->wnd()->SetText			(str);
 				}
 			}
@@ -369,10 +369,10 @@ void CActor::ActorUse()
 				{
 					TryToTalk();
 				}
-				//обыск трупа
+				//РѕР±С‹СЃРє С‚СЂСѓРїР°
 				else  if(!Level().IR_GetKeyState(DIK_LSHIFT))
 				{
-					//только если находимся в режиме single
+					//С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 					if(pGameSP)pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
 				}

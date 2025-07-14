@@ -354,7 +354,7 @@ void	CUIBagWnd::ReloadItemsPrices	()
 
 		m_info[itm->m_index].price		= pSettings->r_u32(m_sectionPrice, *itm_name);
 
-		strconcat						(sizeof(ItemCostStr),ItemCostStr, itm_name.c_str(), "_cost");
+		xr_strconcat					(ItemCostStr, itm_name.c_str(), "_cost");
 		if (pSettings->line_exist		(m_sectionPrice, ItemCostStr))
 			m_info[itm->m_index].price	= pSettings->r_u32(m_sectionPrice, ItemCostStr);
 

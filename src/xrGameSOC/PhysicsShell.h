@@ -6,7 +6,7 @@
 #include "PhysicsCommon.h"
 #include "alife_space.h"
 #include "../xrScripts/script_export_space.h"
-
+#include "../xrEngine/VisMask.h"
 
 class CPhysicsJoint;
 class CPhysicsElement;

@@ -1563,7 +1563,7 @@ public:
 		string_path				fn;
 
 		if (0==strext(arguments))
-			strconcat			(sizeof(name),name,arguments,".ogf");
+			xr_strconcat		(name,arguments,".ogf");
 		else
 			strcpy_s			(name,sizeof(name),arguments);
 

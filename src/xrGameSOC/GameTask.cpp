@@ -7,8 +7,8 @@
 
 #include "level.h"
 #include "actor.h"
-#include "script_engine.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_engine.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "script_game_object.h"
 #include "ai_space.h"
 #include "alife_object_registry.h"
@@ -548,7 +548,7 @@ void SScriptObjectiveHelper::init_functors(xr_vector<shared_str>& v_src, xr_vect
 	for(u32 idx=0 ;it!=it_e;++it,++idx)
 	{
 			bool functor_exists		= ai().script_engine().functor(*(*it) ,v_dest[idx]);
-			if(!functor_exists)		Log("Cannot find script function described in task objective  ", *(*it));
+			if(!functor_exists)		Msg("Cannot find script function described in task objective  %s", *(*it).c_str());
 	}
 }
 

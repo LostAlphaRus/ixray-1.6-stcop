@@ -9,11 +9,10 @@
 #include "autosave_manager.h"
 #include "xrserver.h"
 #include "ai_space.h"
-#include "script_callback_ex.h"
+#include "../xrScripts/script_callback_ex.h"
 #include "script_game_object.h"
 #include "game_object_space.h"
 #include "ui\UIVideoPlayerWnd.h"
-#include "script_callback_ex.h"
 #include "../xrCore/object_broker.h"
 #include "weapon.h"
 
@@ -159,7 +158,7 @@ void CActorCondition::UpdateCondition()
 		
 		string64			pp_sect_name;
 		shared_str ln		= Level().name();
-		strconcat			(sizeof(pp_sect_name),pp_sect_name, "effector_psy_health", "_", *ln);
+		xr_strconcat		(pp_sect_name, "effector_psy_health", "_", *ln);
 		if(!pSettings->section_exist(pp_sect_name))
 			strcpy_s			(pp_sect_name, "effector_psy_health");
 
