@@ -505,7 +505,7 @@ void CGamePersistent::OnFrame	()
 			else
 				C = Actor()->Holder()->Camera();
 
-			Actor()->Cameras().Update		(C);
+			Actor()->Cameras().UpdateFromCamera		(C);
 			Actor()->Cameras().ApplyDevice	(Device.fViewportNear);
 		}
 #endif // MASTER_GOLD
