@@ -4,6 +4,7 @@
 #include "UIColorAnimatorWrapper.h"
 #include "../../xrEngine/xr_IOConsole.h"
 #include "../RegistryFuncs.h"
+#include "../../xrGameSpy/xrGameSpy_MainDefs.h"
 
 extern string64	gsCDKey;
 

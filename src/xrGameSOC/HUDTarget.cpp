@@ -64,9 +64,9 @@ struct TL {
 	};
 };
 }
-#define C_ON_ENEMY		color_xrgb(0xff,0,0)
-#define C_ON_NEUTRAL	color_xrgb(0xff,0xff,0x80)
-#define C_ON_FRIEND		color_xrgb(0,0xff,0)
+u32 C_ON_ENEMY = color_xrgb(0xff, 0, 0);
+u32 C_ON_NEUTRAL = color_xrgb(0xff, 0xff, 0x80);
+u32 C_ON_FRIEND = color_xrgb(0, 0xff, 0);
 
 
 #define C_DEFAULT	color_xrgb(0xff,0xff,0xff)

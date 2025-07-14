@@ -85,7 +85,7 @@ void export_classes	(lua_State *L)
 	CSE_ALifeItemExplosive::script_register(L);
 	CSE_ALifeItemBolt::script_register(L);
 	CSE_ALifeItemCustomOutfit::script_register(L);
-	CSE_ALifeStationaryMgun::script_register(L);
+	//CSE_ALifeStationaryMgun::script_register(L);
 	CSE_ALifeTraderAbstract::script_register(L);
 	CSE_ALifeTrader::script_register(L);
 	CSE_ALifeCustomZone::script_register(L);

@@ -245,6 +245,10 @@ public:
 	virtual void				OnEvent					( EVENT E, u64 P1, u64 P2 );
 	virtual void				OnFrame					( void );
 	virtual void				OnRender				( );
+
+	virtual	shared_str			OpenDemoFile			(LPCSTR demo_file_name) {return (shared_str)""; };
+	virtual void				net_StartPlayDemo		() {};
+
 	void						cl_Process_Event		(u16 dest, u16 type, NET_Packet& P);
 	void						cl_Process_Spawn		(NET_Packet& P);
 	void						ProcessGameEvents		( );
@@ -312,14 +316,18 @@ public:
 	float				GetGameTimeFactor		();
 	void				SetGameTimeFactor		(const float fTimeFactor);
 	void				SetGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
-	void				SetEnvironmentGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
 //	void				SetGameTime				(ALife::_TIME_ID GameTime);
 
 	// gets current daytime [0..23]
 	u8					GetDayTime				();
 	u32					GetGameDayTimeMS		();
 	float				GetGameDayTimeSec		();
-	float				GetEnvironmentGameDayTimeSec();
+	float				GetEnvironmentGameDayTimeSec() const override;
+
+	virtual float		GetEnvironmentTimeFactor() const override;
+	virtual void		SetEnvironmentTimeFactor(const float fTimeFactor) override;
+    virtual void        SetEnvironmentGameTimeFactor(u64 const &GameTime, float const &fTimeFactor) override;
+	virtual u64			GetEnvironmentGameTime() const override;
 
 protected:
 //	CFogOfWarMngr*		m_pFogOfWarMngr;
@@ -339,6 +347,8 @@ public:
 			bool			IsServer					();
 			bool			IsClient					();
 			CSE_Abstract	*spawn_item					(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
+	virtual	void			SpawnItem(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id) override;
+	virtual IGame_Patrol*	CreatePatrol(const char* patrol) override;
 			
 protected:
 	u32		m_dwCL_PingDeltaSend;

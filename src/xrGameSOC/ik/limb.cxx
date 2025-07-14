@@ -464,7 +464,7 @@ static void init_error(char *msg)
 float Limb::PosToAngle(const float elbow[3])
 {
     if (!solve)
-		init_error("Limb::PosToAngle");
+		init_error((char*)"Limb::PosToAngle");
 
     return solver.PosToAngle(elbow);
 }
@@ -829,7 +829,7 @@ int Limb::Solve(float x[], float *new_swivel, float *new_pos)
 
 	default:
 	    f_set = 0;
-	    init_error("Limb::Solve");
+	    init_error((char*)"Limb::Solve");
 	    break;
 	}
 
@@ -927,7 +927,7 @@ int Limb::SolveByAngle(float swivel_angle, float x[7],
 
 		default:
 			f_set = 0;
-			init_error("Limb::Solve");
+			init_error((char*)"Limb::Solve");
 			break;
 		}
 		success = f_set != 0;
@@ -947,7 +947,7 @@ int Limb::SolveByAngle(float swivel_angle, float x[7],
 	    break;
 
 	default:
-	    init_error("Limb::Solve");
+	    init_error((char*)"Limb::Solve");
 	    break;
 	}
     }

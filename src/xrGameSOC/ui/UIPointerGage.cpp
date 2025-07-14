@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
-// UIPointerGage.cpp:			цифровой прибор
+// UIPointerGage.cpp:			С†РёС„СЂРѕРІРѕР№ РїСЂРёР±РѕСЂ
 //////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
@@ -19,7 +19,9 @@ void CUIPointerGage::Init    (LPCSTR tex_name,
 								 float x, float y, 
 								 float width, float height)
 {
-	inherited::Init(tex_name, x , y, width, height);
+//	inherited::Init(tex_name, x , y, width, height);
+	inherited::SetWindowName(tex_name);
+	inherited::SetWndRect(Frect().set(x , y, width, height));
 }
 
 
@@ -43,8 +45,9 @@ void CUIPointerGage::Update		()
 void CUIPointerGage::Draw		()
 {
 	inherited::Draw();
-	m_ArrowPointer.SetPos(GetAbsoluteRect().left + m_iArrowOffsetX, 
-							GetAbsoluteRect().top + m_iArrowOffsetY);
+	Frect r;
+	GetAbsoluteRect(r);
+	m_ArrowPointer.SetPos(r.left + m_iArrowOffsetX, r.top + m_iArrowOffsetY);
 	m_ArrowPointer.Render(m_fAngle);
 }
 

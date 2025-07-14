@@ -11,10 +11,97 @@
 #include "ui/xrUIXmlParser.h"
 #include "../xrEngine/xr_level_controller.h"
 
-#pragma comment(lib,"ode.lib")
-#pragma comment(lib,"xrEngine.lib")
+void CCC_RegisterCommands();
 
-extern "C" {
+static LPVOID __cdecl luabind_allocator(
+	luabind::memory_allocation_function_parameter const,
+	void const* const pointer,
+	size_t const size
+)
+{
+	if (!size)
+	{
+		LPVOID	non_const_pointer = const_cast<LPVOID>(pointer);
+		xr_free(non_const_pointer);
+		return	(0);
+	}
+
+	if (!pointer)
+	{
+		return	(Memory.mem_alloc(size));
+	}
+
+	LPVOID non_const_pointer = const_cast<LPVOID>(pointer);
+	return (Memory.mem_realloc(non_const_pointer, size));
+}
+
+void setup_luabind_allocator()
+{
+	if (!Device.IsEditorMode())
+	{
+		luabind::allocator = &luabind_allocator;
+		luabind::allocator_parameter = 0;
+	}
+}
+
+#ifdef DEBUG
+void unit_test_stack_string()
+{
+	stack_string<char, 10> str;
+
+	assert(str.empty());
+	static_assert(str.max_size() == sizeof(char[10])); // real compile-time assert ^^
+	assert(str.max_size() == sizeof(char[10]));
+	assert(str.size() == 0);
+	assert(str.c_str());
+	assert(str.data());
+
+
+	str.append("test");
+
+	for (auto it : str)
+	{
+		char a = it;
+	}
+
+	str.append("123");
+
+	auto substr = str.substr();
+	assert(substr == str);
+	auto substr2 = str.substr(3);
+	assert(substr2 == "t123");
+
+	auto index = substr2.find("12");
+	assert(index == 1);
+	index = substr2.find("3");
+	assert(index == 3);
+}
+#endif
+
+extern "C" 
+{
+	DLL_API void __cdecl xrGameInitialize()
+	{
+		// TODO: Implement commented functions later
+		CCC_RegisterCommands();
+		// keyboard binding	
+		CCC_RegisterInput();
+		setup_luabind_allocator();
+		//RegisterExpressionDelegates();
+
+#ifdef DEBUG_DRAW
+		//RegisterImGuiInGame();
+#endif
+
+#ifdef DEBUG
+		//unit_test_stack_string();
+#endif
+
+		/*string_path GameGlobals = {};
+		FS.update_path(GameGlobals, "$game_config$", "game_global.ltx");
+		pGameGlobals = new CInifile(GameGlobals);*/
+	}
+
 	DLL_API DLL_Pure*	__cdecl xrFactory_Create		(CLASS_ID clsid)
 	{
 		DLL_Pure			*object = object_factory().client_object(clsid);
@@ -31,29 +118,3 @@ extern "C" {
 		xr_delete			(O);
 	}
 };
-
-extern void CCC_RegisterCommands();
-void setup_luabind_allocator();
-
-BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
-{
-	switch (ul_reason_for_call) {
-		case DLL_PROCESS_ATTACH: {
-			// register console commands
-			CCC_RegisterCommands();
-			// keyboard binding
-			CCC_RegisterInput			();
-
-			setup_luabind_allocator();
-#ifdef DEBUG
-			g_profiler			= new CProfiler();
-#endif
-			break;
-		}
-
-		case DLL_PROCESS_DETACH: {
-			break;
-		}
-	}
-    return								(TRUE);
-}

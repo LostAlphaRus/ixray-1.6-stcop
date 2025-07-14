@@ -5,10 +5,6 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Object factory inline functions
 ////////////////////////////////////////////////////////////////////////////
-
-#ifndef object_factory_inlineH
-#define object_factory_inlineH
-
 #pragma once
 
 IC	const CObjectFactory &object_factory()
@@ -17,7 +13,7 @@ IC	const CObjectFactory &object_factory()
 		g_object_factory		= new CObjectFactory();
 		g_object_factory->init	();
 	}
-	return						(*g_object_factory);
+	return						(*(CObjectFactory*)g_object_factory);
 }
 
 IC	bool CObjectFactory::CObjectItemPredicate::operator()	(const CObjectItemAbstract *item1, const CObjectItemAbstract *item2) const
@@ -60,15 +56,15 @@ IC	const CObjectItemAbstract &CObjectFactory::item	(const CLASS_ID &clsid) const
 {
 	actualize			();
 	const_iterator		I = std::lower_bound(clsids().begin(),clsids().end(),clsid,CObjectItemPredicate());
-#ifdef DEBUG
-	if (!(I != clsids().end()) && ((*I)->clsid() == clsid))
-	{
-		string16	tmp;
-		CLSID2TEXT(clsid, tmp);
-		Debug.fatal(DEBUG_INFO, "Invalid class name:", tmp);
+
+	if (I == clsids().end() || (*I)->clsid() != clsid) {
+		string16 TextID = "";
+		CLSID2TEXT(clsid, TextID);
+
+		Msg("! [ERROR]: Invalid clsid! %s", TextID);
 	}
-#endif
-	return				(**I);
+
+	return (**I);
 }
 #else
 IC	const CObjectItemAbstract *CObjectFactory::item	(const CLASS_ID &clsid, bool no_assert) const
@@ -88,7 +84,12 @@ IC	void CObjectFactory::add	(CObjectItemAbstract *item)
 	const_iterator		I;
 
 	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateCLSID(item->clsid()));
-	VERIFY				(I == clsids().end());
+	if(I != clsids().end())
+	{
+		string16			temp;
+		CLSID2TEXT			(item->clsid(),temp);
+		VERIFY2				(0, make_string<const char*>("clsid is duplicated : %s",temp));
+	}
 	
 #ifndef NO_XR_GAME
 	I					= std::find_if(clsids().begin(),clsids().end(),CObjectItemPredicateScript(item->script_clsid()));
@@ -103,14 +104,7 @@ IC	int	CObjectFactory::script_clsid	(const CLASS_ID &clsid) const
 {
 	actualize			();
 	const_iterator		I = std::lower_bound(clsids().begin(),clsids().end(),clsid,CObjectItemPredicate());
-#ifdef DEBUG
-	if (!(I != clsids().end()) && ((*I)->clsid() == clsid))
-	{
-		string16	tmp;
-		CLSID2TEXT(clsid, tmp);
-		Debug.fatal(DEBUG_INFO, "Invalid class name:", tmp);
-	}
-#endif
+	VERIFY				((I != clsids().end()) && ((*I)->clsid() == clsid));
 	return				(int(I - clsids().begin()));
 }
 
@@ -140,5 +134,3 @@ IC	void CObjectFactory::actualize										() const
 	m_actual			= true;
 	std::sort			(m_clsids.begin(),m_clsids.end(),CObjectItemPredicate());
 }
-
-#endif

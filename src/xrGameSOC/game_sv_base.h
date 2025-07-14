@@ -7,6 +7,8 @@
 #include "game_sv_base_console_vars.h"
 #include "../xrNetServer/NET_DeprecatedConstants.h"
 
+#define MAX_PLAYERS_COUNT 32
+
 enum ERoundEnd_Result
 {
 	eRoundEnd_Finish		= u32(0),
@@ -180,6 +182,7 @@ public:
 	virtual		void				on_death				(CSE_Abstract *e_dest, CSE_Abstract *e_src);
 
 	virtual		void				DumpOnlineStatistic		(){};
+	void CleanDelayedEventFor(u16 id_entity_victim);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

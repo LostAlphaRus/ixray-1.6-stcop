@@ -95,7 +95,7 @@ CUIWeaponCellItem::CUIWeaponCellItem(CWeapon* itm)
 		m_addon_offset[eLauncher].set(object()->GetGrenadeLauncherX(), object()->GetGrenadeLauncherY());
 }
 
-#include "../object_broker.h"
+#include "../../xrCore/object_broker.h"
 CUIWeaponCellItem::~CUIWeaponCellItem()
 {
 }

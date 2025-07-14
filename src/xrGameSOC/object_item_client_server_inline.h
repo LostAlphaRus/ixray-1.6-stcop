@@ -10,6 +10,7 @@
 #define object_item_client_server_inlineH
 
 #pragma once
+#include "Level.h"
 
 #define TEMPLATE_SPECIALIZATION template <typename _client_type, typename _server_type>
 #define CSObjectItemClientServer CObjectItemClientServer<_client_type,_server_type>
@@ -24,14 +25,14 @@ IC	CSObjectItemClientServer::CObjectItemClientServer	(const CLASS_ID &clsid, LPC
 TEMPLATE_SPECIALIZATION
 ObjectFactory::CLIENT_BASE_CLASS *CSObjectItemClientServer::client_object	() const
 {
-	return				(new CLIENT_TYPE()->_construct());
+	return				((new CLIENT_TYPE())->_construct());
 }
 #endif
 
 TEMPLATE_SPECIALIZATION
 ObjectFactory::SERVER_BASE_CLASS *CSObjectItemClientServer::server_object	(LPCSTR section) const
 {
-	ObjectFactory::SERVER_BASE_CLASS * o = new SERVER_TYPE(section)->init();
+	ObjectFactory::SERVER_BASE_CLASS * o = (new SERVER_TYPE(section))->init();
 	R_ASSERT			(o);
 	return				(o);
 }

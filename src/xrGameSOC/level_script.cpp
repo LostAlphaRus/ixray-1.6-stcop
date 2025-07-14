@@ -163,12 +163,12 @@ float cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 {
 	float			y,p;
 	direction.getHP	(y,p);
-	return			(ai().level_graph().cover_in_direction(y,level_vertex_id));
+	return			(ai().level_graph().high_cover_in_direction(y,level_vertex_id));
 }
 
 float rain_factor()
 {
-	return			(g_pGamePersistent->Environment().CurrentEnv.rain_density);
+	return			(g_pGamePersistent->Environment().CurrentEnv->rain_density);
 }
 
 u32	vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
@@ -362,7 +362,7 @@ CEnvironment *environment()
 
 CEnvDescriptor *current_environment(CEnvironment *self)
 {
-	return		(&self->CurrentEnv);
+	return		(self->CurrentEnv);
 }
 extern bool g_bDisableAllInput;
 void disable_input()
@@ -389,14 +389,14 @@ void iterate_sounds					(LPCSTR prefix, u32 max_count, const CScriptCallbackEx<v
 	for (int j=0, N = _GetItemCount(prefix); j<N; ++j) {
 		string_path					fn, s;
 		LPSTR						S = (LPSTR)&s;
-		_GetItem					(prefix,j,S);
+		_GetItem					(prefix,j,s);
 		if (FS.exist(fn,"$game_sounds$",S,".ogg"))
 			callback				(prefix);
 
 		for (u32 i=0; i<max_count; ++i)
 		{
 			string_path					name;
-			sprintf_s					(name,"%s%d",S,i);
+			xr_sprintf					(name,"%s%d",S,i);
 			if (FS.exist(fn,"$game_sounds$",name,".ogg"))
 				callback			(name);
 		}

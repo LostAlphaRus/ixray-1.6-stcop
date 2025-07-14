@@ -16,6 +16,8 @@ class  GameEventQueue
 	xr_deque<GameEvent*>	ready;
 	xr_vector<GameEvent*>	unused;
 public:
+	typedef xr_delegate<bool(GameEvent*)> event_predicate;
+
 	GameEventQueue();
 	~GameEventQueue();
 
@@ -23,4 +25,6 @@ public:
 	GameEvent*			Create	(NET_Packet& P, u16 type, u32 time, ClientID clientID);
 	GameEvent*			Retreive();
 	void				Release	();
+
+	u32					EraseEvents(event_predicate to_del);
 };

@@ -4,7 +4,7 @@
 #include "../level.h"
 #include "../game_base_space.h"
 #include "../ai_space.h"
-#include "../script_engine.h"
+#include "../../xrScripts/script_engine.h"
 
 struct SLuaWpnParams{
 	luabind::functor<float>		m_functorRPM;
@@ -79,7 +79,7 @@ void CUIWpnParams::SetInfo(const shared_str& wpn_section)
 {
 
 	if(!g_lua_wpn_params)
-		g_lua_wpn_params = xr_new<SLuaWpnParams>();
+		g_lua_wpn_params = new SLuaWpnParams();
 
 	m_progressRPM.SetProgressPos		(g_lua_wpn_params->m_functorRPM(*wpn_section));
 	m_progressAccuracy.SetProgressPos	(g_lua_wpn_params->m_functorAccuracy(*wpn_section));
