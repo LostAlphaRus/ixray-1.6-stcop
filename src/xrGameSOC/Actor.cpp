@@ -65,6 +65,7 @@
 #include "InventoryBox.h"
 #include "location_manager.h"
 #include "../Include/xrRender/UIRender.h"
+#include "PickupManager.h"
 
 const u32		patch_frames	= 50;
 const float		respawn_delay	= 1.f;
@@ -148,7 +149,7 @@ CActor::CActor() : CEntityAlive()
 	m_pPersonWeLookingAt	= NULL;
 	m_pVehicleWeLookingAt	= NULL;
 	m_pObjectWeLookingAt	= NULL;
-	m_bPickupMode			= false;
+	pPickup = new CPickUpManager(this);
 
 	pStatGraph				= NULL;
 
@@ -209,6 +210,7 @@ CActor::~CActor()
 
 	xr_delete				(m_pPhysics_support);
 
+	xr_delete				(pPickup);
 	xr_delete				(m_anims);
 	xr_delete				(m_vehicle_anims);
 }
@@ -318,7 +320,7 @@ void CActor::Load	(LPCSTR section )
 	float AirControlParam		= pSettings->r_float	(section,"air_control_param"	);
 	character_physics_support()->movement()		->SetAirControlParam(AirControlParam);
 
-	m_fPickupInfoRadius	= pSettings->r_float(section,"pickup_info_radius");
+	pPickup->SetPickupRadius(pSettings->r_float(section,"pickup_info_radius"));
 	m_fSleepTimeFactor	= pSettings->r_float(section,"sleep_time_factor");
 
 	character_physics_support()->in_Load		(section);
@@ -855,6 +857,20 @@ float CActor::currentFOV()
 
 void CActor::UpdateCL	()
 {
+	if (g_Alive() && Level().CurrentViewEntity() == this)
+	{
+		if (CurrentGameUI() && NULL == CurrentGameUI()->TopInputReceiver())
+		{
+			int dik = get_action_dik(kUSE, 0);
+			if (dik && pInput->iGetAsyncKeyState(dik))
+				pPickup->SetPickupMode(true);
+
+			dik = get_action_dik(kUSE, 1);
+			if (dik && pInput->iGetAsyncKeyState(dik))
+				pPickup->SetPickupMode(true);
+		}
+	}
+
 	if(m_feel_touch_characters>0)
 	{
 		for(xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
@@ -946,6 +962,7 @@ void CActor::UpdateCL	()
 		else
 			xr_delete(m_sndShockEffector);
 	}
+	pPickup->SetPickupMode(false);
 }
 
 float	NET_Jump = 0;

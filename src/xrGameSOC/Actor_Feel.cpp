@@ -16,9 +16,7 @@
 #include "game_cl_base.h"
 #include "Level.h"
 #include "UIGameCustom.h"
-
-#define PICKUP_INFO_COLOR 0xFFDDDDDD
-//AAAAAA
+#include "PickupManager.h"
 
 void CActor::feel_touch_new				(CObject* O)
 {
@@ -63,58 +61,13 @@ BOOL CActor::feel_touch_on_contact	(CObject *O)
 	return		(FALSE);
 }
 
-void CActor::PickupModeOn()
-{
-	m_bPickupMode = true;
-}
-
-void CActor::PickupModeOff()
-{
-	m_bPickupMode = false;
-}
-
-ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
-{
-	BOOL& bOverlaped	= *(BOOL*)params;
-	if(result.O){
-		if (Level().CurrentEntity()!=result.O){	
-//			bOverlaped		= TRUE;
-			return			TRUE;//FALSE;
-		}else{
-			return			TRUE;
-		}
-	}else{
-		//получить треугольник и узнать его материал
-		CDB::TRI* T		= Level().ObjectSpace.GetStaticTris()+result.element;
-		if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable)) 
-			return TRUE;
-	}	
-	bOverlaped			= TRUE;
-	return				FALSE;
-}
-
-BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item)
-{
-	BOOL	bOverlaped		= FALSE;
-	Fvector dir,to; 
-	item->Center			(to);
-	float range				= dir.sub(to,from).magnitude();
-	if (range>0.25f){
-		if (frustum.testSphere_dirty(to,item->Radius())){
-			dir.div						(range);
-			collide::ray_defs			RD(from, dir, range, CDB::OPT_CULL, collide::rqtBoth);
-			VERIFY						(!fis_zero(RD.dir.square_magnitude()));
-			RQR.r_clear					();
-			Level().ObjectSpace.RayQuery(RQR,RD, info_trace_callback, &bOverlaped, NULL, item);
-		}
-	}
-	return !bOverlaped;
-}
-
 void CActor::PickupModeUpdate()
 {
-	if(!m_bPickupMode) return;
-	if (GameID() != GAME_SINGLE) return;
+	if (!pPickup->GetPickupMode())
+		return; // kUSE key pressed
+
+	if (!IsGameTypeSingle())
+		return;
 
 	//подбирание объекта
 	if(inventory().m_pTarget && inventory().m_pTarget->Useful() &&
@@ -127,14 +80,7 @@ void CActor::PickupModeUpdate()
 		u_EventSend(P);
 	}
 
-	//. ????? GetNearest ?????
-	feel_touch_update	(Position(), /*inventory().GetTakeDist()*/m_fPickupInfoRadius);
-	
-	CFrustum frustum;
-	frustum.CreateFromMatrix(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
-	//. slow (ray-query test)
-	for(xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
-		if (CanPickItem(frustum,Device.vCameraPosition,*it)) PickupInfoDraw(*it);
+	pPickup->RenderInfo();
 }
 
 #include "../xrEngine/CameraBase.h"
@@ -195,7 +141,7 @@ void	CActor::PickupModeUpdate_COD	()
 	{
 		CFrustum					frustum;
 		frustum.CreateFromMatrix	(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
-		if (!CanPickItem(frustum,Device.vCameraPosition,&pNearestItem->object()))
+		if (!pPickup->CanPickItem(frustum,Device.vCameraPosition,&pNearestItem->object()))
 			pNearestItem = NULL;
 	}
 
@@ -207,44 +153,12 @@ void	CActor::PickupModeUpdate_COD	()
 
 	CurrentGameUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
 
-	if (pNearestItem && m_bPickupMode)
+	if (pNearestItem && pPickup->GetPickupMode())
 	{
 		//подбирание объекта
 		Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
-		
-		PickupModeOff();
 	}
 };
-
-void CActor::PickupInfoDraw(CObject* object)
-{
-	LPCSTR draw_str = NULL;
-	
-	CInventoryItem* item = smart_cast<CInventoryItem*>(object);
-//.	CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(object);
-//.	VERIFY(item || inventory_owner);
-	if(!item)		return;
-
-	Fmatrix			res;
-	res.mul			(Device.mFullTransform,object->XFORM());
-	Fvector4		v_res;
-	Fvector			shift;
-
-	draw_str = item->Name/*Complex*/();
-	shift.set(0,0,0);
-
-	res.transform(v_res,shift);
-
-	if (v_res.z < 0 || v_res.w < 0)	return;
-	if (v_res.x < -1.f || v_res.x > 1.f || v_res.y<-1.f || v_res.y>1.f) return;
-
-	float x = (1.f + v_res.x)/2.f * (Device.TargetWidth);
-	float y = (1.f - v_res.y)/2.f * (Device.TargetHeight);
-
-	UI().Font().GetFont(LETTERICA16_FONT_NAME)->SetAligment(CGameFont::alCenter);
-	UI().Font().GetFont(LETTERICA16_FONT_NAME)->SetColor		(PICKUP_INFO_COLOR);
-	UI().Font().GetFont(LETTERICA16_FONT_NAME)->Out			(x,y,draw_str);
-}
 
 void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power)
 {

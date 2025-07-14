@@ -24,7 +24,6 @@ bool CActor::use_MountedWeapon(CHolderCustom* object)
 				if(wpn->attach_Actor(this)){
 					// destroy actor character
 					character_physics_support()->movement()->DestroyCharacter();
-					PickupModeOff();
 					m_holder=wpn;
 					if (pCamBobbing){
 						Cameras().RemoveCamEffector(eCEBobbing);

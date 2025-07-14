@@ -60,6 +60,7 @@ class CActorMemory;
 class CActorStatisticMgr;
 
 class CLocationManager;
+class CPickUpManager;
 
 class	CActor: 
 	public CEntityAlive, 
@@ -76,6 +77,7 @@ class	CActor:
 	friend class CActorCondition;
 private:
 	typedef CEntityAlive	inherited;
+	CPickUpManager* pPickup = nullptr;
 	//////////////////////////////////////////////////////////////////////////
 	// General fucntions
 	//////////////////////////////////////////////////////////////////////////
@@ -408,19 +410,11 @@ protected:
 	shared_str				m_sInventoryItemUseAction;
 	shared_str				m_sInventoryBoxUseAction;
 
-	//режим подбирания предметов
-	bool					m_bPickupMode;
-	//расстояние подсветки предметов
-	float					m_fPickupInfoRadius;
 
 	void					PickupModeUpdate	();
-	void					PickupInfoDraw		(CObject* object);
 	void					PickupModeUpdate_COD ();
 
 public:
-	void					PickupModeOn		();
-	void					PickupModeOff		();
-
 
 
 	//////////////////////////////////////////////////////////////////////////
@@ -743,8 +737,6 @@ public:
 	virtual	void				On_B_NotCurrentEntity			();
 
 private:
-	collide::rq_results			RQR;
-			BOOL				CanPickItem						(const CFrustum& frustum, const Fvector& from, CObject* item);
 	xr_vector<ISpatialShared>	ISpatialResult;
 
 private:
