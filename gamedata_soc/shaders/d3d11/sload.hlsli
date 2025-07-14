@@ -117,6 +117,10 @@ void SloadNew(inout p_bumped_new I, inout IXrayMaterial M)
 		M.Roughness *= M.Roughness;
 #endif
 
+#ifdef USE_SOC_LIGHTING	// St4lker0k765: костыль чтобы не было тёмных текстур
+		M.Roughness = def_gloss;
+#endif
+
 		M.SSS = 0.0;
 		M.AO = 1.0;
     #endif

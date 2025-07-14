@@ -113,7 +113,11 @@ void SloadNew(inout p_bumped_new I, inout XrayMaterial M)
     M.Normal = Bump.wzy + BumpX.xyz - 1.0f;
     M.Normal.z *= 0.5f;
 
+#ifdef USE_SOC_LIGHTING	// St4lker0k765: костыль чтобы не было тёмных текстур
+    M.Roughness = def_gloss;
+#else
     M.Roughness = Bump.x * Bump.x;
+#endif
     M.Metalness = 0.0f;
 
     M.SSS = 0.0;
