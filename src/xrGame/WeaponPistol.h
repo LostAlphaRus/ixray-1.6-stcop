@@ -11,6 +11,7 @@ public:
 
 	virtual void	Load			(LPCSTR section);
 	virtual void	PlayAnimHide	();
+	virtual void	PlayAnimIdle	();
 
 	virtual void	UpdateSounds	();
 protected:	

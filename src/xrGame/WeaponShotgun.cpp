@@ -259,7 +259,7 @@ void CWeaponShotgun::switch2_EndReload()
 
 shared_str CWeaponShotgun::SelectOpenWeaponAnimation()
 {
-	shared_str anim = "anm_open";
+	shared_str anim = HudAnimationExist("anm_open") ? "anm_open" : "anim_open_weapon";
 
 	if (ParentIsActor())
 	{
@@ -291,7 +291,7 @@ void CWeaponShotgun::PlayAnimOpenWeapon()
 
 shared_str CWeaponShotgun::SelectAddCartridgeWeaponAnimation()
 {
-	shared_str anim = "anm_add_cartridge";
+	shared_str anim = HudAnimationExist("anm_add_cartridge") ? "anm_add_cartridge" : "anim_add_cartridge";
 
 	if (ParentIsActor())
 	{
@@ -318,7 +318,7 @@ void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
 
 shared_str CWeaponShotgun::SelectCloseWeaponAnimation()
 {
-	shared_str anim = "anm_close";
+	shared_str anim = HudAnimationExist("anm_close") ? "anm_close" : "anim_close_weapon";
 
 	if (ParentIsActor())
 	{

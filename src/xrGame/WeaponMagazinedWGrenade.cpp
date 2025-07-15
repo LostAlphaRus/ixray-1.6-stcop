@@ -179,7 +179,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 		return inherited::SetCurrentReloadAnimation();
 	}
 
-	shared_str anim = "anm_reload";
+	shared_str anim = HudAnimationExist("anm_reload") ? "anm_reload" : "anim_reload";
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
@@ -194,7 +194,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentReloadAnimation()
 
 		int GetElapsed = m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 && GetElapsed == 0 : GetElapsed == 0;
-		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
+		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : AddSuffixName(anim, "_w_gl") ? "_w_gl" : "_gl";
 		if (IsMisfire())
 		{
 			if (IsChangeAmmoType() && (!m_bGrenadeMode || iAmmoElapsed))
@@ -270,7 +270,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentShootAnimation()
 		return inherited::SetCurrentShootAnimation();
 	}
 
-	shared_str anim = HudAnimationExist("anm_shoot") ? "anm_shoot" : "anm_shots";
+	shared_str anim = HudAnimationExist("anm_shoot") ? "anm_shoot" : HudAnimationExist("anm_shots") ? "anm_shots" : "anim_shoot";
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
@@ -316,7 +316,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentShootAnimation()
 			AddSuffixName(anim, "_l");
 		}
 
-		AddSuffixName(anim, m_bGrenadeMode ? "_g" : "_w_gl");
+		AddSuffixName(anim, m_bGrenadeMode ? "_g" : AddSuffixName(anim, "_w_gl") ? "_w_gl" : "_gl");
 	}
 
 	return anim;
@@ -796,7 +796,7 @@ float	CWeaponMagazinedWGrenade::CurrentZoomFactor()
 //виртуальные функции для проигрывания анимации HUD
 void CWeaponMagazinedWGrenade::PlayAnimModeSwitch()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_switch"), TRUE, eSwitch);
+	PlayHUDMotion(HudAnimationExist("anm_switch") ? SetCurrentStateAnimation("anm_switch") : m_bGrenadeMode ? "anim_switch_grenade_on" : "anim_switch_grenade_off", TRUE, eSwitch);
 }
 
 shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& first_name)
@@ -822,7 +822,7 @@ shared_str CWeaponMagazinedWGrenade::SetCurrentStateAnimation(const shared_str& 
 		int GetElapsed = m_bGrenadeMode ? iAmmoElapsed2 : iAmmoElapsed;
 		bool empty = m_bAmmoInChamber ? iAmmoChamberElapsed == 0 && GetElapsed == 0 : GetElapsed == 0;
 
-		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : "_w_gl";
+		LPCSTR end_suffix = m_bGrenadeMode ? "_g" : AddSuffixName(anim, "_w_gl") ?  "_w_gl" : "_gl";
 
 		if (IsZoomed() && IsMisfire())
 		{

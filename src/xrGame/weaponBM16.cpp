@@ -153,11 +153,11 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 			{
 				if ((GetAmmoElapsed() == 1 || !HaveCartridgeInInventory(2)) && (m_set_next_ammoType_on_reload == undefined_ammo_type || m_ammoType == m_set_next_ammoType_on_reload))
 				{
-					anim = "anm_reload_1";
+					anim = HudAnimationExist("anm_reload_1") ? "anm_reload_1" : "anim_reload_1";
 				}
 				else
 				{
-					anim = "anm_reload_2";
+					anim = HudAnimationExist("anm_reload_2") ? "anm_reload_2" : "anim_reload_2";
 				}
 			}
 		}
@@ -184,7 +184,7 @@ void CWeaponBM16::PlayAnimReload()
 
 shared_str CWeaponBM16::SetCurrentShootAnimation()
 {
-	shared_str anim = (HudAnimationExist("anm_shot_2") || HudAnimationExist("anm_shot_1")) ? "anm_shot" : "anm_shoot";
+	shared_str anim = (HudAnimationExist("anm_shot_2") || HudAnimationExist("anm_shot_1")) ? "anm_shot" : HudAnimationExist("anm_shoot") ? "anm_shoot" : "anim_shoot";
 	string16 new_suffix = {};
 
 	if (ParentIsActor())
@@ -212,8 +212,7 @@ shared_str CWeaponBM16::SetCurrentShootAnimation()
 	}
 	else
 	{
-		xr_sprintf(new_suffix, "%s%s", anim.c_str(), "_2");
-		anim = new_suffix;
+		AddSuffixName(anim, "_2");
 	}
 
 	return anim;
@@ -250,8 +249,7 @@ shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
 	}
 	else
 	{
-		xr_sprintf(new_suffix, "%s%s", anim.c_str(), "_2");
-		anim = new_suffix;
+		AddSuffixName(anim, "_2");
 	}
 
 	return anim;

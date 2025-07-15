@@ -35,8 +35,17 @@ CWeaponKnife::CWeaponKnife()
 	m_Hit1SplashRadius		= 1.0f;
 	m_Hit2SplashRadius		= 1.0f;
 
-	m_Hit1SpashDir.set	(0.f,0.f,1.f);
-	m_Hit2SpashDir.set	(0.f,0.f,1.f);
+	m_Hit1SpashDir.set		(0.f,-0.3f,1.f);
+	m_Hit2SpashDir.set		(0.f,0.f,1.f);
+
+    m_Splash1HitsCount		= 3;
+    m_Splash1PerVictimsHCount = 1;
+    m_Splash2HitsCount		= 2;
+
+    m_NextHitDivideFactor	= 0.75f;
+
+	oldStrikeMethod			= false;
+	attackMotionMarksAvailable = true;
 }
 
 CWeaponKnife::~CWeaponKnife()
@@ -50,24 +59,101 @@ void CWeaponKnife::Load(LPCSTR section)
 
 	fWallmarkSize = pSettings->r_float(section, "wm_size");
 
-	m_Hit1SpashDir = pSettings->r_fvector3(section, "splash1_direction");
-	m_Hit2SpashDir = pSettings->r_fvector3(section, "splash2_direction");
+    int i = 0;
+    int count = 0;
 
-	m_Hit1Distance = pSettings->r_float(section, "spash1_dist");
-	m_Hit2Distance = pSettings->r_float(section, "spash2_dist");
+    if (count++; pSettings->line_exist(section, "splash1_direction"))
+    {
+        m_Hit1SpashDir = pSettings->r_fvector3(section, "splash1_direction");
+        i++;
+    }
+    if (count++; pSettings->line_exist(section, "splash2_direction"))
+    {
+        m_Hit2SpashDir = pSettings->r_fvector3(section, "splash2_direction");
+        i++;
+    }
 
-	m_Hit1SplashRadius = pSettings->r_float(section, "spash1_radius");
-	m_Hit2SplashRadius = pSettings->r_float(section, "spash2_radius");
+    if (count++; pSettings->line_exist(section, "splash1_dist"))
+    {
+        m_Hit1Distance = pSettings->r_float(section, "splash1_dist");
+        i++;
+    }
+    else if (pSettings->line_exist(section, "spash1_dist"))
+    {
+        m_Hit1Distance = pSettings->r_float(section, "spash1_dist");
+        i++;
+    }
 
-	m_Splash1HitsCount = pSettings->r_u32(section, "splash1_hits_count");
-	m_Splash1PerVictimsHCount = pSettings->r_u32(section, "splash1_pervictim_hcount");
-	m_Splash2HitsCount = pSettings->r_u32(section, "splash2_hits_count");
+    if (count++; pSettings->line_exist(section, "splash2_dist"))
+    {
+        m_Hit2Distance = pSettings->r_float(section, "splash2_dist");
+        i++;
+    }
+    else if (pSettings->line_exist(section, "spash2_dist"))
+    {
+        m_Hit2Distance = pSettings->r_float(section, "spash2_dist");
+        i++;
+    }
+
+    if (count++; pSettings->line_exist(section, "splash1_radius"))
+    {
+        m_Hit1SplashRadius = pSettings->r_float(section, "splash1_radius");
+        i++;
+    }
+    else if (pSettings->line_exist(section, "spash1_radius"))
+    {
+        m_Hit1SplashRadius = pSettings->r_float(section, "spash1_radius");
+        i++;
+    }
+
+    if (count++; pSettings->line_exist(section, "splash2_radius"))
+    {
+        m_Hit2SplashRadius = pSettings->r_float(section, "splash2_radius");
+        i++;
+    }
+    else if (pSettings->line_exist(section, "spash2_radius"))
+    {
+        m_Hit2SplashRadius = pSettings->r_float(section, "spash2_radius");
+        i++;
+    }
+
+    if (count++; pSettings->line_exist(section, "splash1_hits_count"))
+    {
+        m_Splash1HitsCount = pSettings->r_u32(section, "splash1_hits_count");
+        i++;
+    }
+    if (count++; pSettings->line_exist(section, "splash1_pervictim_hcount"))
+    {
+        m_Splash1PerVictimsHCount = pSettings->r_u32(section, "splash1_pervictim_hcount");
+        i++;
+    }
+    if (count++; pSettings->line_exist(section, "splash2_hits_count"))
+    {
+        m_Splash2HitsCount = pSettings->r_u32(section, "splash2_hits_count");
+        i++;
+    }
+
+    if (count++; pSettings->line_exist(section, "splash_hit_divide_factor"))
+    {
+        m_NextHitDivideFactor = pSettings->r_float(section, "splash_hit_divide_factor");
+        i++;
+    }
+
+    if (i == 0)
+        oldStrikeMethod = true;
+    else
+    {
+        constexpr pcstr fields = "splash1_direction, splash2_direction, splash1_dist, splash2_dist, "
+            "splash1_radius, splash2_radius, splash1_hits_count, splash1_pervictim_hcount, "
+            "splash2_hits_count, splash_hit_divide_factor";
+        R_ASSERT3(i == count, "You need to provide all knife splash parameters or remove them all.", fields);
+    }
+
+    knife_material_idx = GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
+
 #ifdef DEBUG
-	m_dbg_data.m_pick_vectors.reserve(std::max(m_Splash1HitsCount, m_Splash2HitsCount));
+    m_dbg_data.m_pick_vectors.reserve(std::max(m_Splash1HitsCount, m_Splash2HitsCount));
 #endif
-	m_NextHitDivideFactor = pSettings->r_float(section, "splash_hit_divide_factor");
-
-	knife_material_idx = GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
 	m_bShowKnifeStats = READ_IF_EXISTS(pSettings, r_bool, section, "show_knife_stats", true);
 }
 
@@ -170,6 +256,12 @@ void CWeaponKnife::OnStateSwitch	(u32 S)
 
 void CWeaponKnife::KnifeStrike(const Fvector& pos, const Fvector& dir)
 {
+	if (oldStrikeMethod)
+	{
+		MakeShot(pos, dir);
+		return;
+	}
+
 	CObject* real_victim = TryPick(pos, dir, m_hit_dist);
 	if (real_victim)
 	{
@@ -242,38 +334,55 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	}
 }
 
-void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
+void CWeaponKnife::OnKnifeStrike(u32 state)
 {
-	inherited::OnMotionMark(state, M);
-	if (state == eFire)
+	switch (state)
 	{
-		m_hit_dist		=	m_Hit1Distance;
-		m_splash_dir	=	m_Hit1SpashDir;
-		m_splash_radius	=	m_Hit1SplashRadius;
-		m_hits_count	=	m_Splash1HitsCount;
-		m_perv_hits_count = m_Splash1PerVictimsHCount;
-	} else if (state == eFire2)
-	{
-		m_hit_dist		=	m_Hit2Distance;
-		m_splash_dir	=	m_Hit2SpashDir;
-		m_splash_radius	=	m_Hit2SplashRadius;
-		m_hits_count	=	m_Splash2HitsCount;
-		m_perv_hits_count = 0;
-	} else
-	{
-		return;
+		case eFire:
+		{
+			if (oldStrikeMethod)
+				break;
+			m_hit_dist		=	m_Hit1Distance;
+			m_splash_dir	=	m_Hit1SpashDir;
+			m_splash_radius	=	m_Hit1SplashRadius;
+			m_hits_count	=	m_Splash1HitsCount;
+			m_perv_hits_count = m_Splash1PerVictimsHCount;
+			fireDistance = m_hit_dist + m_splash_radius;
+			break;
+		} 
+		case eFire2:
+		{
+			if (oldStrikeMethod)
+				break;
+			m_hit_dist		=	m_Hit2Distance;
+			m_splash_dir	=	m_Hit2SpashDir;
+			m_splash_radius	=	m_Hit2SplashRadius;
+			m_hits_count	=	m_Splash2HitsCount;
+			m_perv_hits_count = 0;
+			fireDistance = m_hit_dist + m_splash_radius;
+			break;
+		} 
+		default:
+		{
+			return;
+		}
 	}
 
-	Fvector	p1, d; 
-	p1.set			(get_LastFP()); 
-	d.set			(get_LastFD());
-	fireDistance	= m_hit_dist + m_splash_radius;
-
-	if(H_Parent())
+    if (H_Parent())
 	{
+		Fvector	p1, d; 
+		p1.set			(get_LastFP()); 
+		d.set			(get_LastFD());
+
 		H_Parent()->cast_entity()->g_fireParams(this, p1,d);
 		KnifeStrike(p1,d);
 	}
+}
+
+void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
+{
+	inherited::OnMotionMark(state, M);
+	OnKnifeStrike(state);
 }
 
 void CWeaponKnife::OnAnimationEnd(u32 state)
@@ -283,7 +392,26 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 	case eHiding:	SwitchState(eHidden);	break;
 	
 	case eFire: 
-	case eFire2: 	SwitchState(eIdle);		break;
+    case eFire2:
+    {
+		u32 time = 0;
+		if (attackStarted)
+        {
+            attackStarted = false;
+            if (state == eFire)
+                time = PlayHUDMotion(HudAnimationExist("anm_attack_end") ? "anm_attack_end" : "anim_shoot1_end", FALSE, state);
+            else // eFire2
+                time = PlayHUDMotion(HudAnimationExist("anm_attack2_end") ? "anm_attack2_end" : "anim_shoot2_end", FALSE, state);
+
+			if (time != 0 && !attackMotionMarksAvailable)
+				OnKnifeStrike(state);
+		}
+        if (time == 0)
+        {
+            SwitchState(eIdle);
+        }
+        break;
+    }
 
 	case eShowing:
 	case eIdle:		SwitchState(eIdle);		break;	
@@ -311,7 +439,7 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 			}
 		}
 
-		PlayHUDMotion("anm_attack", FALSE, state);
+		PlayHUDMotion(HudAnimationExist("anm_attack") ? "anm_attack" : "anim_shoot1_start", FALSE, state);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
 		{
@@ -331,7 +459,7 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 			}
 		}
 
-		PlayHUDMotion("anm_attack2", FALSE, state);
+		PlayHUDMotion(HudAnimationExist("anm_attack2") ? "anm_attack2" : "anim_shoot2_start", FALSE, state);
 
 		if (m_eSoundsFlags.test(ESoundsFlags::sf_kick))
 		{
@@ -339,6 +467,8 @@ void CWeaponKnife::switch2_Attacking(u32 state)
 		}
 	}
 
+	attackMotionMarksAvailable = !m_current_motion_def->marks.empty();
+	attackStarted = true;
 	SetPending(TRUE);
 }
 
@@ -354,7 +484,7 @@ void CWeaponKnife::switch2_Hiding	()
 {
 	FireEnd					();
 	VERIFY(GetState()==eHiding);
-	PlayHUDMotion("anm_hide", TRUE, GetState());
+	PlayHUDMotion(HudAnimationExist("anm_hide") ? "anm_hide" : "anim_hide", TRUE, GetState());
 
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 	{
@@ -371,7 +501,7 @@ void CWeaponKnife::switch2_Hidden()
 void CWeaponKnife::switch2_Showing	()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anm_show", FALSE, GetState());
+	PlayHUDMotion(HudAnimationExist("anm_show") ? "anm_show" : "anim_draw", FALSE, GetState());
 
 	if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 	{
@@ -455,7 +585,7 @@ void CWeaponKnife::LoadFireParams(LPCSTR section)
 
 	//fHitPower_2			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power_2"));
 	s_sHitPower_2			= pSettings->r_string_wb	(section, "hit_power_2" );
-	s_sHitPowerCritical_2	= pSettings->r_string_wb	(section, "hit_power_critical_2" );
+	s_sHitPowerCritical_2	= READ_IF_EXISTS(pSettings, r_string_wb, section, "hit_power_critical_2", s_sHitPower_2);
 	
 	fvHitPower_2[egdMaster]			= (float)atof(_GetItem(*s_sHitPower_2,0,buffer));//первый параметр - это хит для уровня игры мастер
 	fvHitPowerCritical_2[egdMaster]	= (float)atof(_GetItem(*s_sHitPowerCritical_2,0,buffer));//первый параметр - это хит для уровня игры мастер

@@ -149,14 +149,16 @@ struct hud_item_measures
 
 	Fvector							m_hands_attach_real[2];//pos,rot
 
-	void load						(const shared_str& sect_name, IKinematics* K);
+	Fmatrix load					(const shared_str& sect_name, IKinematics* K);
+	Fmatrix load_monolithic			(const shared_str& sect_name, IKinematics* K, CHudItem* owner);
 };
 
 struct attachable_hud_item
 {
 	player_hud*						m_parent;
-	CHudItem*						m_parent_hud_item;
+	CHudItem*						m_parent_hud_item{};
 	shared_str						m_sect_name;
+	shared_str						m_visual_name;
 	IKinematics*					m_model;
 	u16								m_attach_place_idx;
 	hud_item_measures				m_measures;
@@ -166,7 +168,8 @@ struct attachable_hud_item
 	Fmatrix							m_item_transform;
 
 	player_hud_motion_container		m_hand_motions;
-			
+	bool							m_monolithic{};
+
 	u32 time_accumulator = 0;
 
 	u32 tocrouch_time_remains = 0;
@@ -184,11 +187,11 @@ struct attachable_hud_item
 	void AddOffsets(weapon_inertion::base_params& base, Fvector& pos, Fvector& rot, float koef = 1.0f);
 	void AddSuicideOffset(weapon_inertion& inertion_params, const shared_str& section, Fvector& pos, Fvector& rot);
 
-			attachable_hud_item		(player_hud* pparent):m_parent(pparent),m_upd_firedeps_frame(u32(-1)),m_parent_hud_item(NULL){}
+			attachable_hud_item(player_hud* parent, const shared_str& sect_name, IKinematicsAnimated* model);
 			~attachable_hud_item	();
-	void load						(const shared_str& sect_name);
 	void update						(bool bForce);
 	void update_hud_additional		(Fmatrix& trans);
+	void reload_measures			();
 	void setup_firedeps				(firedeps& fd);
 	void render						();	
 	void render_item_ui				();
@@ -251,7 +254,7 @@ public:
 	void			render_item_ui		();
 	bool			render_item_ui_query();
 
-	u32				anim_play			(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed);
+	u32				anim_play			(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel);
 	bool			check_anim			(const shared_str& anim_name, u16 place_idx);
 
 	bool			animator_play			(const shared_str& anim_name, u16 place_idx = u16(-1), u16 part_id = u16(-1), BOOL bMixIn = FALSE, float speed = 1.0f, u8 anm_idx = u8(0), bool impact_on_item = false, bool similar_check = false, PlayCallback Callback = PlayCallback(0), LPVOID CallbackParam = LPVOID(0), BOOL UpdateCallbackType = 0);
@@ -270,7 +273,7 @@ public:
 
 	void			calc_transform		(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
 	void			tune				(Ivector values);
-	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed);
+	u32				motion_length		(const MotionID& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel);
 	u32				motion_length		(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void			OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)	;
 	void			RestoreHandBlends(LPCSTR ignored_part);
@@ -293,6 +296,7 @@ public:
 	animator_item* GetAnimator() { return m_animator_item; }
 
 private:
+    void			load_ancors			();
 	void			update_inertion		(Fmatrix& trans);
 	void			update_additional	(Fmatrix& trans);
 private:

@@ -25,10 +25,25 @@ void CWeaponPistol::PlayAnimHide()
 	if (!iAmmoElapsed)
 	{
 		PlaySound			("sndClose", get_LastFP());
-		PlayHUDMotion		(SetCurrentStateAnimation("anm_hide"), TRUE, GetState());
+		PlayHUDMotion		(SetCurrentStateAnimation(HudAnimationExist("anm_hide") ? "anm_hide" : "anim_close"), TRUE, GetState());
 	} 
 	else 
 		inherited::PlayAnimHide();
+}
+
+void CWeaponPistol::PlayAnimIdle()
+{
+	if (TryPlayAnimIdle())
+		return;
+
+	if (!iAmmoElapsed && HudAnimationExist("anim_empty"))
+	{
+		PlayHUDMotion("anim_empty", TRUE, GetState());
+	}
+	else
+	{
+		inherited::PlayAnimIdle();
+	}
 }
 
 void CWeaponPistol::UpdateSounds()

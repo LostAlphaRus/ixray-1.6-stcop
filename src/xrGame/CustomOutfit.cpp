@@ -289,7 +289,11 @@ void CCustomOutfit::ApplySkinModel(CActor* pActor, bool bDress, bool bHUDOnly)
 				}
 			}
 
-			g_player_hud->NextHUDSect = pSettings->r_string(cNameSect(), "player_hud_section");
+			if (pSettings->line_exist(cNameSect(), "player_hud_section"))
+				g_player_hud->NextHUDSect = pSettings->r_string(cNameSect(), "player_hud_section");
+			else
+				g_player_hud->NextHUDSect = 0;
+
 			g_player_hud->m_need_reload = false;
 		}
 	}

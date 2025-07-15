@@ -29,6 +29,7 @@ class CPhysicsShellHolder;
 
 struct attachable_hud_item;
 class motion_marks;
+class CWeapon;
 
 //class HudLightTorch;
 

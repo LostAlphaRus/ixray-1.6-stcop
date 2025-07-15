@@ -77,7 +77,7 @@ void CHudItem::Load(LPCSTR section)
 
 	m_jitter_params.stop_time = floor(READ_IF_EXISTS(pSettings, r_float, hud_sect, "jitter_stop_time", 3.0f) * 1000.f);
 
-	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", false);
+	m_bDisableBore = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "disable_bore", !pSettings->line_exist(hud_sect, "anm_bore"));
 
 	m_HudLight.SetInstalled(READ_IF_EXISTS(pSettings, r_bool, section, "torch_installed", false));
 	m_HudLight.NewTorchlight(section);
@@ -620,7 +620,7 @@ void CHudItem::PlayAnimIdle()
 
 shared_str CHudItem::SetCurrentIdleAnimation()
 {
-	shared_str new_name = "anm_idle";
+	shared_str new_name = HudAnimationExist("anm_idle") ? "anm_idle" : "anim_idle";
 	if (Level().CurrentControlEntity() == nullptr)
 		return new_name;
 
@@ -706,7 +706,7 @@ bool CHudItem::TryPlayAnimIdle()
 
 void CHudItem::PlayAnimIdleMoving()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_moving"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation(HudAnimationExist("anm_idle_moving") ? "anm_idle_moving" : "anim_idle"), TRUE, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingSlow()
@@ -726,7 +726,7 @@ void CHudItem::PlayAnimIdleMovingCrouchSlow()
 
 void CHudItem::PlayAnimIdleSprint()
 {
-	PlayHUDMotion(SetCurrentStateAnimation("anm_idle_sprint"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation(HudAnimationExist("anm_idle_sprint") ? "anm_idle_sprint" : HudAnimationExist("anim_idle_sprint") ? "anim_idle_sprint" : "anim_idle"), TRUE, GetState());
 }
 
 void CHudItem::PlayAnimDeviceSwitch()

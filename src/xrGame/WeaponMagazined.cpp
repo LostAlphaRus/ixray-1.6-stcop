@@ -1972,18 +1972,18 @@ void CWeaponMagazined::ResetSilencerKoeffs()
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion(SetCurrentStateAnimation("anm_show"), FALSE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation(HudAnimationExist("anm_show") ? "anm_show" : "anim_draw"), FALSE, GetState());
 }
 
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
-	PlayHUDMotion(SetCurrentStateAnimation("anm_hide"), TRUE, GetState());
+	PlayHUDMotion(SetCurrentStateAnimation(HudAnimationExist("anm_hide") ? "anm_hide" : "anim_holster"), TRUE, GetState());
 }
 
 shared_str CWeaponMagazined::SetCurrentReloadAnimation()
 {
-	shared_str anim = "anm_reload";
+	shared_str anim = HudAnimationExist("anm_reload") ? "anm_reload" : "anim_reload";
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
@@ -2107,12 +2107,15 @@ void CWeaponMagazined::PlayAnimReload()
 
 shared_str CWeaponMagazined::SetCurrentAimAnimation()
 {
-	shared_str anim = "anm_idle_aim";
+	shared_str anim = HudAnimationExist("anm_idle_aim") ? "anm_idle_aim" : "anim_idle_aim";
 
 	if (IsGrenadeLauncherAttached())
 	{
 		//Hack for original weapon configs
-		anim = IsGrenadeMode() && HudAnimationExist("anm_idle_g_aim") ? "anm_idle_g_aim" : (HudAnimationExist("anm_idle_w_gl_aim") ? "anm_idle_w_gl_aim" : anim);
+		if (IsGrenadeMode())
+			anim = HudAnimationExist("anm_idle_g_aim") ?  "anm_idle_g_aim" : HudAnimationExist("anim_idle_g_aim") ? "anim_idle_g_aim" : anim;
+		else
+			anim = HudAnimationExist("anm_idle_w_gl_aim") ? "anm_idle_w_gl_aim" : HudAnimationExist("anim_idle_gl_aim") ? "anim_idle_gl_aim" : anim;
 	}
 
 	if (CActor* actor = H_Parent()->cast_actor())
@@ -2223,7 +2226,7 @@ void CWeaponMagazined::PlayAnimIdle()
 shared_str CWeaponMagazined::SetCurrentShootAnimation()
 {
 	bool last = m_bAmmoInChamber ? iAmmoChamberElapsed == 1 && iAmmoElapsed == 0 : iAmmoElapsed == 1;
-	shared_str anim = HudAnimationExist("anm_shoot") ? "anm_shoot" : HudAnimationExist("anm_shot_l") && last ? "anm_shot_l" : "anm_shots";
+	shared_str anim = HudAnimationExist("anm_shoot") ? "anm_shoot" : HudAnimationExist("anm_shot_l") && last ? "anm_shot_l" : HudAnimationExist("anm_shots") ? "anm_shots" : "anim_shoot";
 
 	if (H_Parent() && H_Parent() == Level().CurrentControlEntity())
 	{
