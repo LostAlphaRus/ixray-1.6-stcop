@@ -1370,15 +1370,16 @@ void CActor::UpdateCL()
 				g_player_hud->load_default();
 			}
 
-			u16 saved_old_slot = old_slot;
+			u16 saved_old_slot = NO_ACTIVE_SLOT;
 
 			if (old_slot > 0 && inventory().ItemFromSlot(old_slot) != nullptr)
 			{
+				saved_old_slot = inventory().ItemFromSlot(old_slot)->BaseSlot();
 				inventory().Activate(old_slot);
 				old_slot = 0;
 			}
 
-			bool bres = (saved_old_slot == INV_SLOT_2 || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
+			bool bres = (saved_old_slot == NO_ACTIVE_SLOT || saved_old_slot == INV_SLOT_2 || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
 
 			if (bres && need_restore_detector && GetDetector(true) != nullptr)
 			{
