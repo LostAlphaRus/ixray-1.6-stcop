@@ -85,8 +85,23 @@ void CUIEncyclopediaWnd::Init()
 	UIEncyclopediaInfoBkg->AttachChild(UIInfoList);
 	xml_init.InitScrollView(uiXml, "info_list", 0, UIInfoList);
 
-	xml_init.InitAutoStaticGroup(uiXml, "left_auto_static", 0, UIEncyclopediaInfoBkg);
-	xml_init.InitAutoStaticGroup(uiXml, "right_auto_static", 0, UIEncyclopediaIdxBkg);
+	int leftStaticCount = uiXml.GetNodesNum(uiXml.GetRoot(), "left_auto_static");
+	for (int i = 0; i < leftStaticCount; ++i)
+	{
+		CUIStatic* leftStatic = new CUIStatic();
+		leftStatic->SetAutoDelete(true);
+		UIEncyclopediaInfoBkg->AttachChild(leftStatic);
+		xml_init.InitStatic(uiXml, "left_auto_static", i, leftStatic);
+	}
+
+	int rightStaticCount = uiXml.GetNodesNum(uiXml.GetRoot(), "right_auto_static");
+	for (int i = 0; i < rightStaticCount; ++i)
+	{
+		CUIStatic* rightStatic = new CUIStatic();
+		rightStatic->SetAutoDelete(true);
+		UIEncyclopediaIdxBkg->AttachChild(rightStatic);
+		xml_init.InitStatic(uiXml, "right_auto_static", i, rightStatic);
+	}
 }
 
 #include "../../xrEngine/string_table.h"

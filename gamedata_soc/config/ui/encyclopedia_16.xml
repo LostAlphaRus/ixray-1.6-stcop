@@ -53,13 +53,13 @@
 		<texture>ui_pda_frame2</texture>		
 	</mask_frame_window>
   	
-	<left_auto_static x="8" y="41" width="4" height="430">
+	<left_auto_static x="5" y="41" width="4" height="430">
 		<texture>ui\ui_pda_vertical_line_r_l</texture>
 	</left_auto_static>
-	<left_auto_static x="416" y="41" width="4" height="430">
+	<left_auto_static x="308" y="41" width="4" height="430">
 		<texture>ui\ui_pda_vertical_line_r_r</texture>
 	</left_auto_static>
-	<left_auto_static x="14" y="40" width="405" height="2" stretch="1">
+	<left_auto_static x="5" y="40" width="307" height="2" stretch="1">
 		<texture>ui\ui_pda_horizontal_line</texture>
 	</left_auto_static>
 

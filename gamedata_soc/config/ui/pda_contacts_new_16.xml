@@ -28,23 +28,23 @@
         <texture>ui\ui_pda_anims_03</texture>
     </a_static>
 
-	<left_auto_static x="8" y="53" width="4" height="400">
+	<left_auto_static x="5" y="53" width="3" height="400">
 		<texture>ui\ui_pda_vertical_line_r_l</texture>
 	</left_auto_static>
-	<left_auto_static x="416" y="53" width="4" height="400">
+	<left_auto_static x="326" y="53" width="4" height="400">
 		<texture>ui\ui_pda_vertical_line_r_r</texture>
 	</left_auto_static>
-	<left_auto_static x="14" y="53" width="405" height="2" stretch="1">
+	<left_auto_static x="6" y="53" width="323" height="2" stretch="1">
 		<texture>ui\ui_pda_horizontal_line</texture>
 	</left_auto_static>
 
-	<right_auto_static x="8" y="52" width="4" height="420">
+	<right_auto_static x="5" y="52" width="4" height="420">
 		<texture>ui\ui_pda_vertical_line_r_l</texture>
 	</right_auto_static>
-	<right_auto_static x="269" y="52" width="4" height="420">
+	<right_auto_static x="264" y="52" width="4" height="420">
 		<texture>ui\ui_pda_vertical_line_r_r</texture>
 	</right_auto_static>
-	<right_auto_static x="8" y="48" width="262" height="2" stretch="1">
+	<right_auto_static x="5" y="48" width="262" height="2" stretch="1">
 		<texture>ui\ui_pda_horizontal_line</texture>
 	</right_auto_static>
 </window>

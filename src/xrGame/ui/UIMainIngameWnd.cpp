@@ -962,7 +962,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	// SoC variant
 	if (UIRadiaitionIcon && useLegacyIndicators)
 	{
-		if (fis_zero(radiation, EPS))
+		if (fis_zero(radiation, 0.1f))
 		{
 			SetWarningIconColor(ewiRadiation, 0x00ffffff);
 		}
