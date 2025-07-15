@@ -1015,22 +1015,23 @@ void SpawnManager_RenderTooltip(CInifile::Sect* section)
 }
 
 float SpawnManager_ParseHitPower(const shared_str& hit_str) {
+
+	Fvector4 fvHitPower{};
 	string32 buffer{};
-	float result = atof(_GetItem(*hit_str, 0, buffer));
-	int num_game_diff_param = _GetItemCount(*hit_str);
+	fvHitPower[egdNovice] = fvHitPower[egdStalker] = fvHitPower[egdVeteran] = fvHitPower[egdMaster];//изначально параметры для других уровней сложности такие же
+	int num_game_diff_param = _GetItemCount(*hit_str);//узнаём колличество параметров для хитов
+	if (num_game_diff_param > 1)//если задан второй параметр хита
+	{
+		fvHitPower[egdVeteran] = (float)atof(_GetItem(*hit_str, 1, buffer));//то вычитываем его для уровня ветерана
+	}
+	if (num_game_diff_param > 2)//если задан третий параметр хита
+	{
+		fvHitPower[egdStalker] = (float)atof(_GetItem(*hit_str, 2, buffer));//то вычитываем его для уровня сталкера
+	}
+	if (num_game_diff_param > 3)//если задан четвёртый параметр хита
+	{
+		fvHitPower[egdNovice] = (float)atof(_GetItem(*hit_str, 3, buffer));//то вычитываем его для уровня новичка
+	}
 
-	if (g_SingleGameDifficulty == egdNovice && num_game_diff_param > 2) {
-		result = atof(_GetItem(*hit_str, 3, buffer));
-	}
-	else if (g_SingleGameDifficulty == egdStalker && num_game_diff_param > 1) {
-		result = atof(_GetItem(*hit_str, 2, buffer));
-	}
-	else if (g_SingleGameDifficulty == egdVeteran && num_game_diff_param > 0) {
-		result = atof(_GetItem(*hit_str, 1, buffer));
-	}
-	else if (g_SingleGameDifficulty == egdMaster) {
-		result = atof(_GetItem(*hit_str, 0, buffer));
-	}
-
-	return result;
+	return fvHitPower[g_SingleGameDifficulty];
 }
