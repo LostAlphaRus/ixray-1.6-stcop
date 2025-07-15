@@ -1378,7 +1378,9 @@ void CActor::UpdateCL()
 				old_slot = 0;
 			}
 
-			if (saved_old_slot != INV_SLOT_3 && need_restore_detector && GetDetector(true) != nullptr)
+			bool bres = (saved_old_slot == INV_SLOT_2 || saved_old_slot == KNIFE_SLOT || saved_old_slot == BOLT_SLOT);
+
+			if (bres && need_restore_detector && GetDetector(true) != nullptr)
 			{
 				need_restore_detector = false;
 				GetDetector(true)->switch_detector();
