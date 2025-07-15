@@ -1370,13 +1370,15 @@ void CActor::UpdateCL()
 				g_player_hud->load_default();
 			}
 
+			u16 saved_old_slot = old_slot;
+
 			if (old_slot > 0 && inventory().ItemFromSlot(old_slot) != nullptr)
 			{
 				inventory().Activate(old_slot);
 				old_slot = 0;
 			}
 
-			if (need_restore_detector && GetDetector(true) != nullptr)
+			if (saved_old_slot != INV_SLOT_3 && need_restore_detector && GetDetector(true) != nullptr)
 			{
 				need_restore_detector = false;
 				GetDetector(true)->switch_detector();
