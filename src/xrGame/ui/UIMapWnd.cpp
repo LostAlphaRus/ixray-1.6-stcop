@@ -86,10 +86,10 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	AttachChild						(m_UIMainFrame);
 	xr_strconcat(pth,start_from,":main_map_frame");
 
-	bool useShadowOfChernobylMap = false;
+	m_use_legacy_map = false;
 	if (!uiXml.NavigateToNode(pth))
 	{
-		useShadowOfChernobylMap = true;
+		m_use_legacy_map = true;
 		xr_strconcat(pth, start_from, ":main_wnd:main_map_frame");
 	}
 	xml_init.InitFrameWindow		(uiXml, pth, 0, m_UIMainFrame);
@@ -99,7 +99,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	CUIWindow* levelFrameParent = this;
 	CUIWindow* scrollParent = this;
 	xr_strconcat(pth,start_from,":level_frame");
-	if (useShadowOfChernobylMap)
+	if (m_use_legacy_map)
 	{
 		xr_strconcat(pth, start_from, ":main_wnd:main_map_frame:level_frame");
 		levelFrameParent = m_UIMainFrame;
@@ -108,14 +108,15 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 	xml_init.InitWindow				(uiXml, pth, 0, m_UILevelFrame);
 	levelFrameParent->AttachChild		(m_UILevelFrame);
 
-	if (useShadowOfChernobylMap)
+	if (m_use_legacy_map)
 	{
 		xr_strconcat(pth, start_from, ":main_wnd:map_header_frame_line");
 		UIMainMapHeader = UIHelper::CreateFrameLine(uiXml, pth, m_UIMainFrame);
 	}
 
-	m_scroll_mode = (uiXml.ReadAttribInt(start_from, 0, "scroll_enable", 0) == 1)? true : false;
-	if ( m_scroll_mode || useShadowOfChernobylMap )
+	m_scroll_mode = (uiXml.ReadAttribInt(start_from, 0, "scroll_enable", 0) == 1) || m_use_legacy_map ? true : false;
+
+	if ( m_scroll_mode )
 	{
 		float dx, dy, sx, sy;
 		xr_strconcat(pth,start_from,":main_map_frame");
@@ -124,7 +125,7 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
 		sx = uiXml.ReadAttribFlt( pth, 0, "sx", -5.0f );
 		sy = uiXml.ReadAttribFlt( pth, 0, "sy", -5.0f );
 
-		CUIWindow* rect_parent			= useShadowOfChernobylMap ? m_UILevelFrame : m_UIMainFrame;
+		CUIWindow* rect_parent			= m_use_legacy_map ? m_UILevelFrame : m_UIMainFrame;
 		Frect r							= rect_parent->GetWndRect();
 
         auto tempScroll = new CUIFixedScrollBar();

@@ -41,6 +41,7 @@ private:
 	const char* m_onPropertyBoxAddProperties = {};
 
 	float						m_map_move_step;
+	bool						m_use_legacy_map;
 
 	float						m_currentZoom;
 	CUIGlobalMap*				m_GlobalMap;

@@ -209,8 +209,11 @@ void CUIEventsWnd::ShowDescription			(CGameTask* t, int idx)
 		SGameTaskObjective& o		= t->Objective(idx);
 		CMapLocation* ml			= o.LinkedMapLocation();
 
-		if(ml&&ml->SpotEnabled())
+		if (ml && ml->SpotEnabled())
+		{
+			ml->CalcPosition();
 			m_UIMapWnd->SetTargetMap(ml->GetLevelName(), ml->GetPosition(), true);
+		}
 	}
 	else
 	{//articles
