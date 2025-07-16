@@ -321,6 +321,14 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	CUICharacterInfo& ci			= bActor ? UICharacterInfoLeft : UICharacterInfoRight; 
 
 	news_data.texture_name			= ci.IconName();
+
+	Frect emptyRect = Frect().set(0.f, 0.f, 0.f, 0.f);
+	if (!news_data.tex_rect.cmp(emptyRect))
+	{
+		news_data.tex_rect = ci.UIIcon().GetUIStaticItem().GetTextureRect();
+		news_data.tex_rect.x2 = news_data.tex_rect.width();
+		news_data.tex_rect.y2 = news_data.tex_rect.height();
+	}
 	news_data.receive_time			= Level().GetGameTime();
 
 	Actor()->game_news_registry->registry().objects().push_back(news_data);

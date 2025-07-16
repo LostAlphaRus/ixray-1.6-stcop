@@ -220,7 +220,7 @@ void CGameTaskManager::SetTaskState(const shared_str& id, ETaskState state, u16 
 {
     const bool objectiveSpecified = objective_id != ROOT_TASK_OBJECTIVE;
     CGameTask* t = HasGameTask(id, objectiveSpecified);
-    if (NULL == t)
+    if (!t)
     {
         Msg("! actor does not has task [%s]%s", *id, objectiveSpecified ? "" : " or it is completed");
         return;

@@ -61,7 +61,8 @@ void CUINewsItemWnd::Setup			(GAME_NEWS_DATA& news_data)
 
 	m_UIImage->InitTexture			(news_data.texture_name.c_str());
 	
-	if (news_data.tex_rect.valide())
+	Frect emptyRect = Frect().set(0.f, 0.f, 0.f, 0.f);
+	if (!news_data.tex_rect.cmp(emptyRect))
 	{
 		Frect texture_rect;
 		texture_rect.lt.set(news_data.tex_rect.x1, news_data.tex_rect.y1);

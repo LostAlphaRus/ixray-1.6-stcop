@@ -128,6 +128,11 @@ void CUIMessagesWindow::AddIconedPdaMessage(GAME_NEWS_DATA* news)
 		pItem->UICaptionText->SetWndPos(p);
 		pItem->UICaptionText->SetTextST(news->news_caption.c_str());
 	}
+	else
+	{
+		pItem->UIMsgText.SetWndPos(Fvector2().set(pItem->UIIcon.GetWidth(), pItem->UIMsgText.GetWndPos().y));
+	}
+
 	pItem->UIMsgText.SetTextST			(news->news_text.c_str());
 	pItem->UIMsgText.AdjustHeightToText	();
 	
@@ -135,7 +140,8 @@ void CUIMessagesWindow::AddIconedPdaMessage(GAME_NEWS_DATA* news)
 	
 	pItem->UIIcon.InitTexture			(news->texture_name.c_str());
 	
-	if (news->tex_rect.valide())
+	Frect emptyRect = Frect().set(0.f, 0.f, 0.f, 0.f);
+	if (!news->tex_rect.cmp(emptyRect))
 	{
 		Frect texture_rect;
 		texture_rect.lt.set(news->tex_rect.x1, news->tex_rect.y1);
