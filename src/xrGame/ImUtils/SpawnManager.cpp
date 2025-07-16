@@ -1018,6 +1018,7 @@ float SpawnManager_ParseHitPower(const shared_str& hit_str) {
 
 	Fvector4 fvHitPower{};
 	string32 buffer{};
+	fvHitPower[egdMaster] = (float)atof(_GetItem(*hit_str, 0, buffer));//первый параметр - это хит для уровня игры мастер
 	fvHitPower[egdNovice] = fvHitPower[egdStalker] = fvHitPower[egdVeteran] = fvHitPower[egdMaster];//изначально параметры для других уровней сложности такие же
 	int num_game_diff_param = _GetItemCount(*hit_str);//узнаём колличество параметров для хитов
 	if (num_game_diff_param > 1)//если задан второй параметр хита
