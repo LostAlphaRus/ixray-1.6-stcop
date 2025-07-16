@@ -72,7 +72,7 @@ private:
 	using RANKINGCOC_VEC_IT = RANKINGCOC_VEC::iterator;
 	RANKINGCOC_VEC		m_coc_ranking_vec;
 
-	CUIRankingsCoC* m_coc_ranking_actor;
+	CUIRankingsCoC* m_coc_ranking_actor = nullptr;
 	//-Alundaio
 
 	enum { max_stat_info = 32 };
