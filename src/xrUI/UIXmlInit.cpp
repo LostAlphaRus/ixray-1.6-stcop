@@ -21,6 +21,7 @@
 #include "Widgets/UIListWnd.h"
 #include "Widgets/UITextBanner.h"
 #include "Widgets/UIMultiTextStatic.h"
+#include "Widgets/UILoadingScreenProgress.h"
 
 #include "UITextureMaster.h"
 #include "Widgets/UITabButtonMP.h"

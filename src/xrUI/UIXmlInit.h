@@ -37,6 +37,7 @@ class CUITextWnd;
 class CUILoadingScreenProgress;
 class CUIMultiTextStatic;
 class CUITextBanner;
+class CUILoadingScreenProgress;
 
 class UI_API CUIXmlInit
 {
