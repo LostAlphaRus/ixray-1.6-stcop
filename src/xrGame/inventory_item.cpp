@@ -1358,7 +1358,7 @@ void CInventoryItem::OnRender()
 
 DLL_Pure *CInventoryItem::_construct()
 {
-	m_object = cast_physics_shell_holder();
+	m_object = smart_cast<CPhysicsShellHolder*>(this);
 	VERIFY(m_object);
 
 	return inherited::_construct();
