@@ -213,7 +213,7 @@ struct attachable_hud_item
 	u32								m_upd_firedeps_frame;
 	void		tune				(Ivector values);
 	void		anim_play			(const shared_str& item_anm_name, BOOL bMixIn, float speed);
-	u32			anim_play			(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd);
+	u32			anim_play			(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd, bool disableRandom = false);
 
 };
 

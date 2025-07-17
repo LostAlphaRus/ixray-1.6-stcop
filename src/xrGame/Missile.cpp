@@ -321,7 +321,7 @@ void CMissile::State(u32 state)
 	case eShowing:
         {
 			SetPending			(TRUE);
-			PlayHUDMotion		(HudAnimationExist("anm_show") ? "anm_show" : "anim_show", FALSE, GetState());
+			PlayHUDMotion		(HudAnimationExist("anm_show") ? "anm_show" : "anim_show", FALSE, GetState(), !HudAnimationExist("anm_show"));
 
 			if (m_eSoundsFlags.test(ESoundsFlags::sf_draw))
 			{
@@ -338,7 +338,7 @@ void CMissile::State(u32 state)
 			if(H_Parent())
 			{
 				SetPending			(TRUE);
-				PlayHUDMotion		(HudAnimationExist("anm_hide") ? "anm_hide" : "anim_hide", FALSE, GetState());
+				PlayHUDMotion		(HudAnimationExist("anm_hide") ? "anm_hide" : "anim_hide", FALSE, GetState(), !HudAnimationExist("anm_hide"));
 				if (m_eSoundsFlags.test(ESoundsFlags::sf_holster))
 				{
 					PlaySound("SndHide", Position());
@@ -972,4 +972,13 @@ bool CMissile::NeedBlockSprint() const
 	}
 
 	return state == eSprintEnd;
+}
+void CMissile::PlayAnimIdle()
+{
+	if (TryPlayAnimIdle())
+	{
+		return;
+	}
+
+	PlayHUDMotion(SetCurrentIdleAnimation(), TRUE, GetState(), !HudAnimationExist("anm_idle"));
 }

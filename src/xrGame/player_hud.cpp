@@ -684,14 +684,14 @@ void attachable_hud_item::anim_play(const shared_str& item_anm_name, BOOL bMixIn
 	}
 }
 
-u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx)
+u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx, bool disableRandom)
 {
 	player_hud_motion* anm	= m_hand_motions.find_motion(anm_name_b);
 	R_ASSERT2				(anm, make_string<const char*>("model [%s] has no motion alias defined [%s]", m_sect_name.c_str(), anm_name_b));
 	R_ASSERT2				(anm->m_animations.size(), make_string<const char*>("model [%s] has no motion defined in motion_alias [%s]", m_visual_name.c_str(), anm_name_b));
 	
 	rnd_idx					= (u8)Random.randI(anm->m_animations.size()) ;
-	const motion_descr& M	= anm->m_animations[ rnd_idx ];
+	const motion_descr& M	= anm->m_animations[ disableRandom ? 0 : rnd_idx ];
 	float speed = anm->m_anim_speed;
 
 	u32 ret					= m_parent->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed, m_monolithic ? m_model->dcast_PKinematicsAnimated() : nullptr);

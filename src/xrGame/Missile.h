@@ -56,6 +56,7 @@ public:
 	virtual void 			OnStateSwitch				(u32 S);
 	virtual bool			GetBriefInfo				(II_BriefInfo& info);
 	bool					NeedBlockSprint				() const;
+	virtual void			PlayAnimIdle				();
 
 protected:
 	virtual void			UpdateFireDependencies_internal	();
