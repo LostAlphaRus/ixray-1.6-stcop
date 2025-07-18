@@ -5,11 +5,13 @@
 #include "UIDragDropListEx.h"
 #include "UICharacterInfo.h"
 #include "../../xrUI/Widgets/UI3tButton.h"
+#include "uiiteminfo.h"
 
 class CInventoryOwner;
 class CEatableItem;
 class CTrade;
 class CUI3tButton;
+class SDrawStaticStruct;
 
 class CUICellItem;
 
