@@ -53,6 +53,8 @@ float4 loading_main( v2p I )
 
 float4 	main	( v2p I )	: COLOR
 {
-	return (m_affects.a > 0 && m_affects.x >= 0.08 ) ? loading_main(I) : problems_main(I);
+	float4 color = (m_affects.a > 0 && m_affects.x >= 0.08 ) ? loading_main(I) : problems_main(I);
+	color.xyz *= 0.45f; // TODO: vsrati tonemap, hozar fix pozalyista, dakyu
+	return color;
 }
 

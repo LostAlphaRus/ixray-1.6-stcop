@@ -13,6 +13,7 @@ public:
 	virtual void DisableInfoPortion(const char* info_id) = 0;
 	virtual void SetActorPosition(Fvector pos) = 0;
 	virtual void SetActorDirection(float dir) = 0;
+	virtual void RenderItemUI() = 0;
 	virtual void StopAnyMove() = 0;
 	virtual CCameraBase* cam_Active() { return nullptr; }
 };

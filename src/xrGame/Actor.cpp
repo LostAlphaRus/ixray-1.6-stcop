@@ -81,6 +81,11 @@
 
 using namespace luabind;
 
+#include "PDA.h"
+#include "UIPdaWnd.h"
+#include "../xrUI/UICursor.h"
+
+
 const u32		patch_frames	= 50;
 const float		respawn_delay	= 1.f;
 const float		respawn_auto	= 7.f;
@@ -2344,7 +2349,26 @@ void CActor::RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color)
 	//-------------------------------------------------
 //	pFont->SetHeight(OldFontSize);
 	*pdup = delta_up;
-};
+}
+
+void CActor::RenderItemUI() {
+	// TODO to Ravlik: PDA окно неактивно, инпуты тоже не приходят. 
+	CHudPdaAnimator* pdaAnimator = HudAnimatorManager()->PdaAnimator();
+	if (pdaAnimator && pdaAnimator->IsActive())
+	{
+		CUIPdaWnd* PdaMenu = &CurrentGameUI()->PdaMenu();
+		CUIDialogWnd* TopInputReceiver = CurrentGameUI()->TopInputReceiver();
+
+		if (PdaMenu->IsShown())
+		{
+			PdaMenu->Draw();
+		}
+
+		if (PdaMenu == TopInputReceiver) {
+			GetUICursor().OnRender();
+		}
+	}
+}
 
 void CActor::SetPhPosition(const Fmatrix &transform)
 {

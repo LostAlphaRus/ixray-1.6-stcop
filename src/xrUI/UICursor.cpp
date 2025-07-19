@@ -70,10 +70,16 @@ void CUICursor::OnRender	()
 	g_btnHint->OnRender();
 	g_statHint->OnRender();
 
+	if (last_render_frame == Device.dwFrame)
+	{
+		return;
+	}
+
+	last_render_frame = Device.dwFrame;
+
 	if( !IsVisible() ) return;
 #ifdef DEBUG
 	VERIFY(last_render_frame != Device.dwFrame);
-	last_render_frame = Device.dwFrame;
 
 	if(bDebug)
 	{

@@ -2,6 +2,7 @@
 #include "HudPdaAnimator.h"
 #include "UIGameCustom.h"
 #include "Inventory.h"
+#include "UIPdaWnd.h"
 
 CHudPdaAnimator::CHudPdaAnimator(CActor* parent, const shared_str& section) : CHudAnimatorBase(parent)
 {
@@ -53,6 +54,15 @@ void CHudPdaAnimator::Update()
 		psHUD_Flags.set(HUD_DRAW_RT, !m_bIsZoomed);
 
 		m_current_inertion.lerp(m_base_inertion, m_zoom_inertion, m_fZoomRotationFactor);
+
+		if (auto ui = CurrentGameUI())
+		{
+			if (ui->PdaMenu().IsShown())
+			{
+				ui->PdaMenu().Enable(m_bIsZoomed);
+				ui->PdaMenu().Update();
+			}
+		}
 	}
 
 	if (m_bNeedActivated)
@@ -168,10 +178,10 @@ void CHudPdaAnimator::OnAnimationEnd(u32 state)
 		SetState(eHidden);
 
 		// Расскоментировать, когда будет готов рендер
-		//if (auto ui = CurrentGameUI())
-		//{
-		//	ui->HidePdaMenu();
-		//}
+		if (auto ui = CurrentGameUI())
+		{
+			ui->PdaMenu().HideDialog();
+		}
 
 		if (m_iRestoreSlot > 0 && m_actor->inventory().ItemFromSlot(m_iRestoreSlot))
 		{
@@ -224,10 +234,10 @@ void CHudPdaAnimator::OnStateSwitch(u32 state)
 		}
 
 		// Расскоментировать, когда будет готов рендер
-		//if (auto ui = CurrentGameUI())
-		//{
-		//	ui->ShowPdaMenu();
-		//}
+		if (auto ui = CurrentGameUI())
+		{
+			ui->PdaMenu().ShowDialog(false);
+		}
 	}break;
 	case eHiding:
 	{

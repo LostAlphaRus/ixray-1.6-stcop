@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../../xrEngine/IGame_Persistent.h"
+#include "../../xrEngine/IGame_Actor.h"
 #include "../xrRender/FBasicVisual.h"
 #include "../../xrEngine/CustomHUD.h"
 #include "../../xrEngine/xr_object.h"
@@ -361,6 +362,11 @@ void CRender::Render()
 	{
 		m_bFirstFrameAfterReset = false;
 		return;
+	}
+
+	if (g_pIGameActor) {
+		Target->u_setrt(Target->rt_ui_pda, 0, 0, RDepth);
+		g_pIGameActor->RenderItemUI();
 	}
 
 //.	VERIFY					(g_pGameLevel && g_pGameLevel->pHUD);

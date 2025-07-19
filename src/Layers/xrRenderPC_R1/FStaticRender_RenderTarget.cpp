@@ -69,6 +69,8 @@ BOOL CRenderTarget::Create()
 	}
 	//RImplementation.o.color_mapping = RT_color_map->valid();
 
+	RT_ui_pda.create("$user$ui_pda", curWidth, curHeight, D3DFMT_X8R8G8B8);
+
 	//FXAA
 	s_fxaa.create(b_fxaa, "r1\\fxaa");
 	g_fxaa.create(FVF::F_V, RCache.Vertex.Buffer(), RCache.QuadIB);
@@ -126,6 +128,18 @@ void CRenderTarget::phase_fxaa(u32 pass) {
 	RCache.set_Geometry(g_fxaa);
 	RCache.set_c("screen_res", _w, _h, ddw, ddh);
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+}
+
+void CRenderTarget::set_default_target()
+{
+	RCache.set_RT(RT->pRT);
+	RCache.set_ZB(ZB);
+}
+
+void CRenderTarget::set_ui_target()
+{
+	RCache.set_RT(RT_ui_pda->pRT);
+	RCache.set_ZB(ZB);
 }
 
 

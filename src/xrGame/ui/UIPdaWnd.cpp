@@ -133,7 +133,24 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 		{
 			if ( pWnd == m_btn_close )
 			{
-				HideDialog();
+				static const bool use_3d_pda = true;
+				if (use_3d_pda)
+				{
+					CActor* pActor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
+					if (pActor != nullptr)
+					{
+						auto animator_manager = pActor->HudAnimatorManager();
+						auto pda_animator = animator_manager->PdaAnimator();
+						if (pda_animator != nullptr && pda_animator->IsActive())
+						{
+							pda_animator->SwitchPdaAnimator();
+						}
+					}
+				}
+				else
+				{
+					HideDialog();
+				}
 			}
 			break;
 		}
@@ -284,8 +301,17 @@ void CUIPdaWnd::Show_MapLegendWnd( bool status )
 	pUITaskWnd->ShowMapLegend( status );
 }
 
+u32 pda_render_frame = 0;
+
 void CUIPdaWnd::Draw()
 {
+	if (pda_render_frame == Device.dwFrame)
+	{
+		return;
+	}
+
+	pda_render_frame = Device.dwFrame;
+
 	inherited::Draw();
 //.	DrawUpdatedSections();
 	DrawHint();
