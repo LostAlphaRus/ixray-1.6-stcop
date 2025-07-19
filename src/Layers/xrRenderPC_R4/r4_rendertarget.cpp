@@ -17,6 +17,7 @@
 #include "blender_gtao.h"
 #include "blender_taa.h"
 #include "BlenderGasmask.h"
+#include "blender_nvg.h"
 
 #include "../xrRenderDX10/DX10 Rain/dx10RainBlender.h"
 #include "../xrRender/blender_fxaa.h"
@@ -610,6 +611,12 @@ CRenderTarget::CRenderTarget()
 
 	rt_GammaLUT.create(r2_RT_gamma_lut, 1024, 1, DxgiFormat::DXGI_FORMAT_R10G10B10A2_UNORM);
 
+	//NVG
+	{
+		b_nvg = new CBlender_nvg();
+		s_nvg.create(b_nvg);
+	}
+
 	// OCCLUSION
 	s_occq.create(b_occq, "r2\\occq");
 
@@ -970,6 +977,7 @@ CRenderTarget::~CRenderTarget	()
 	xr_delete(b_cas);
 	xr_delete(b_gtao);
 	xr_delete(b_taa);
+	xr_delete(b_nvg);
 
 	g_Fsr2Wrapper.Destroy();
 	g_DLSSWrapper.Destroy();
