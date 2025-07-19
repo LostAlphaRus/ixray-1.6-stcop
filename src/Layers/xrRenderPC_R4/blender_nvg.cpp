@@ -11,11 +11,13 @@ void CBlender_nvg::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0:
-        C.r_Pass("stub_fullscreen_triangle", "nvg_render", FALSE, FALSE, FALSE);
+		C.r_Pass("stub_fullscreen_triangle", "nvg_render", FALSE, FALSE, FALSE);
+		C.r_dx10Texture("s_image", r2_RT_backbuffer_final);
+		C.r_dx10Texture("s_tonemap", r2_RT_luminance_cur);
 		C.r_dx10Texture("s_blue_noise", "shaders\\blue_noise_3x3");
-        C.r_dx10Sampler("smp_rtlinear");
-        C.r_dx10Sampler("smp_nofilter");
-        C.r_End();
-        break;
+		C.r_dx10Sampler("smp_rtlinear");
+		C.r_dx10Sampler("smp_nofilter");
+		C.r_End();
+		break;
     }
 }

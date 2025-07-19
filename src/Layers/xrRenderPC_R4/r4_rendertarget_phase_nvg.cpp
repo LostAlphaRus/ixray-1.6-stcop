@@ -5,9 +5,9 @@
 void CRenderTarget::phase_nvg()
 {
 	u32 Offset = 0;
-    constexpr u32 vertex_color = color_rgba(0, 0, 0, 255); //tu powinien byc kolor noktowizora. zawsze to mniejszy cbuffer
+    constexpr u32 vertex_color = color_rgba(0, 0, 0, 255);
 
-    u_setrt(jakis rt generic, nullptr, nullptr, nullptr);
+    u_setrt(rt_Back_Buffer_AA, nullptr, nullptr, nullptr);
     RCache.set_CullMode(CULL_NONE);
     RCache.set_Stencil(FALSE);
 
@@ -20,8 +20,8 @@ void CRenderTarget::phase_nvg()
 	pv++;
 	RCache.Vertex.Unlock(3, g_combine->vb_stride);
 
-	//Go go power rangers
     RCache.set_Element(s_nvg->E[0]);
 	RCache.set_Geometry(g_combine);
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 3, 0, 1);
+    RContext->CopyResource(rt_Back_Buffer->pSurface, rt_Back_Buffer_AA->pSurface);
 }
