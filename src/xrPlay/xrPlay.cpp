@@ -16,6 +16,8 @@
 #include "AMDGPUTransferee.h"
 #include "NvGPUTransferee.h"
 
+#include "chezzeRun.h"
+
 #ifndef DEBUG
 //#define NO_MULTI_INSTANCES
 #endif
@@ -96,6 +98,12 @@ int APIENTRY WinMain
 		return -1;
 	}
 
+	auto& client = ChezzeClient::Instance();
+
+	if (client.Connect("127.0.0.1", 19878)) {
+		//
+	}
+
 	Debug._initialize(false);
 
 	// Check for another instance
@@ -117,6 +125,7 @@ int APIENTRY WinMain
 		return 1;
 	}
 #endif
+
 	EnumerateDisplayModes();
 
 	g_AppInfo.Window = SDL_CreateWindow("IX-Ray Engine", 0, 0, 0);
