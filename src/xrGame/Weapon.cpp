@@ -95,7 +95,6 @@ CWeapon::CWeapon()
 	m_cur_scope				= 0;
 	bReloadKeyPressed		= false;
 	bAmmotypeKeyPressed		= false;
-	m_HudFovZoom = 0.0f;
 	_last_update_time = Device.dwTimeGlobal;
 	useLegacyMisfire = false;
 
@@ -445,7 +444,8 @@ void CWeapon::Load		(LPCSTR section)
 	m_pdm.m_fPDM_disp_crouch		= pSettings->r_float( section, "PDM_disp_crouch"		);
 	m_pdm.m_fPDM_disp_crouch_no_acc	= pSettings->r_float( section, "PDM_disp_crouch_no_acc" );
 	m_crosshair_inertion			= READ_IF_EXISTS(pSettings, r_float, section, "crosshair_inertion",	5.91f);
-	m_HudFovZoom = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom", 0.0f);
+	m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_zoom_factor", m_fHudFovFactor);
+	m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov_gl_zoom_factor", m_fHudFovFactor);
 
 	m_first_bullet_controller.load	(section);
 	fireDispersionConditionFactor = pSettings->r_float(section,"fire_dispersion_condition_factor");
@@ -2145,6 +2145,28 @@ void CWeapon::UpdateAddonsVisibility()
 
 void CWeapon::InitAddons()
 {
+	if (ScopeAttachable())
+	{
+		static float old_hud_fov_zoom_factor = m_fHudFovZoomFactor;
+		if (IsScopeAttached())
+		{
+			m_fHudFovZoomFactor = READ_IF_EXISTS(pSettings, r_float, *GetCurrentScopeSection(), "hud_fov_zoom_factor", old_hud_fov_zoom_factor);
+		}
+		else
+		{
+			m_fHudFovZoomFactor = old_hud_fov_zoom_factor;
+		}
+
+		static float old_hud_fov_gl_zoom_factor = m_fHudFovGLZoomFactor;
+		if (IsScopeAttached())
+		{
+			m_fHudFovGLZoomFactor = READ_IF_EXISTS(pSettings, r_float, *GetCurrentScopeSection(), "hud_fov_gl_zoom_factor", old_hud_fov_zoom_factor);
+		}
+		else
+		{
+			m_fHudFovGLZoomFactor = old_hud_fov_gl_zoom_factor;
+		}
+	}
 }
 
 float CWeapon::CurrentZoomFactor()
@@ -2864,11 +2886,18 @@ u32 CWeapon::Cost() const
 	return res;
 }
 
-float CWeapon::GetHudFov() {
-	auto base = inherited::GetHudFov();
-	auto zoom = m_HudFovZoom ? m_HudFovZoom : (base * Device.fFOV / g_fov);
-	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
-	return base;
+float CWeapon::GetHudFov()
+{
+	float get = inherited::GetHudFov() / m_fHudFovFactor;
+	float hud_fov = m_fHudFovFactor;
+	float zoom_fov = IsGrenadeMode() ? m_fHudFovGLZoomFactor : m_fHudFovZoomFactor;
+
+	if (((IsZoomed() && m_zoom_params.m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && m_zoom_params.m_fZoomRotationFactor > 0.f)))
+	{
+		hud_fov = hud_fov - (hud_fov - zoom_fov) * m_zoom_params.m_fZoomRotationFactor;
+	}
+
+	return get * hud_fov;
 }
 
 const CameraRecoil& CWeapon::getCameraRecoil(void) const
