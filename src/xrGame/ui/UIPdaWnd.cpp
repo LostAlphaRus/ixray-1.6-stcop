@@ -370,10 +370,29 @@ void RearrangeTabButtons(CUITabControl* pTab)
 
 bool CUIPdaWnd::OnKeyboardAction(int dik, EUIMessages keyboard_action)
 {
-	if ( is_binded(kACTIVE_JOBS, dik) )
+	if (is_binded(kACTIVE_JOBS, dik))
 	{
-		if ( WINDOW_KEY_PRESSED == keyboard_action )
-			HideDialog();
+		if (WINDOW_KEY_PRESSED == keyboard_action)
+		{
+			static const bool use_3d_pda = true;
+			if (use_3d_pda)
+			{
+				CActor* pActor = Level().CurrentControlEntity() != nullptr ? Level().CurrentControlEntity()->cast_actor() : nullptr;
+				if (pActor != nullptr)
+				{
+					auto animator_manager = pActor->HudAnimatorManager();
+					auto pda_animator = animator_manager->PdaAnimator();
+					if (pda_animator != nullptr && pda_animator->IsActive())
+					{
+						pda_animator->SwitchPdaAnimator();
+					}
+				}
+			}
+			else
+			{
+				HideDialog();
+			}
+		}
 
 		return true;
 	}	

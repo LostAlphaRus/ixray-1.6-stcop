@@ -98,16 +98,25 @@ bool CHudAnimatorBase::HudAnimationExist(const shared_str& name)
 CHudAnimatorManager::CHudAnimatorManager(CActor* actor) : m_actor(actor)
 {
 	m_item_animator = new CHudItemAnimator(actor);
-	//m_pda_animator = new CHudPdaAnimator(actor, "pda_show_animator_hud");
+
+	static const bool Use3DPda = true;
+	if (Use3DPda && pGameGlobals->line_exist("pda", "pda_animator_section"))
+	{
+		static shared_str pda_animator_section = pGameGlobals->r_string("pda", "pda_animator_section");
+		if (pSettings->section_exist(pda_animator_section))
+		{
+			m_pda_animator = new CHudPdaAnimator(actor, pda_animator_section);
+		}
+	}
 }
 
 CHudAnimatorManager::~CHudAnimatorManager()
 {
 	xr_delete(m_item_animator);
-	//xr_delete(m_pda_animator);
+	xr_delete(m_pda_animator);
 
 	m_actor = nullptr;
-	//m_pda_animator = nullptr;
+	m_pda_animator = nullptr;
 	m_item_animator = nullptr;
 	m_current_animator = nullptr;
 }
@@ -119,21 +128,21 @@ void CHudAnimatorManager::Update()
 		ItemAnimator()->Update();
 	}
 
-	//if (PdaAnimator() != nullptr)
-	//{
-	//	PdaAnimator()->Update();
-	//}
+	if (PdaAnimator() != nullptr)
+	{
+		PdaAnimator()->Update();
+	}
 }
 
 bool CHudAnimatorManager::AnyAnimatorActive()
 {
-	//auto pda = PdaAnimator();
+	auto pda = PdaAnimator();
 	auto item = ItemAnimator();
 
-	//if (pda != nullptr && pda->IsActive())
-	//{
-	//	return true;
-	//}
+	if (pda != nullptr && pda->IsActive())
+	{
+		return true;
+	}
 
 	if (item != nullptr && item->IsActive())
 	{
@@ -150,11 +159,11 @@ CHudAnimatorBase* CHudAnimatorManager::GetCurrentAnimator()
 		return m_current_animator;
 	}
 
-	//auto pda = PdaAnimator();
-	//if (pda && pda->IsActive())
-	//{
-	//	return m_current_animator = pda;
-	//}
+	auto pda = PdaAnimator();
+	if (pda && pda->IsActive())
+	{
+		return m_current_animator = pda;
+	}
 
 	auto item = ItemAnimator();
 	if (item && item->IsActive())

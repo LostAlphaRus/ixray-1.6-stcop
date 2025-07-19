@@ -411,7 +411,10 @@ void CUISequencer::IR_OnKeyboardPress	(int dik)
 		CActor* actor = Level().CurrentControlEntity() ? Level().CurrentControlEntity()->cast_actor() : nullptr;
 		if (actor && actor->HudAnimatorManager() && actor->HudAnimatorManager()->AnyAnimatorActive())
 		{
-			return;
+			if (actor->HudAnimatorManager()->GetCurrentAnimator()->cast_pda_animator() == nullptr || !is_binded(kACTIVE_JOBS, dik))
+			{
+				return;
+			}
 		}
 	}
 

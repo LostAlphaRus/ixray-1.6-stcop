@@ -99,12 +99,28 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 	if( !pActor->g_Alive() )	
 		return false;
 
+	auto animator_manager = pActor->HudAnimatorManager();
+	auto pda_animator = animator_manager->PdaAnimator();
+	static const bool use_3d_pda = true;
+
 	switch ( get_binded_action(dik) )
 	{
 	case kACTIVE_JOBS:
 		{
-			if ( !pActor->inventory_disabled() )
-				ShowPdaMenu();
+			if (use_3d_pda)
+			{
+				if (!animator_manager->AnyAnimatorActive() || pda_animator != nullptr && pda_animator->IsActive())
+				{
+					pda_animator->SwitchPdaAnimator();
+				}
+			}
+			else
+			{
+				if (!pActor->inventory_disabled())
+				{
+					ShowPdaMenu();
+				}
+			}
 			break;
 		}
 
@@ -117,7 +133,7 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 		}
 
 	case kSCORES:
-        if (!pActor->inventory_disabled())
+        if (!pActor->inventory_disabled() && (pda_animator == nullptr || !pda_animator->IsActive()))
         {
             m_game_objective = AddCustomStatic("main_task", true);
             CGameTask* t1 = Level().GameTaskManager()->ActiveTask(eTaskTypeStoryline);

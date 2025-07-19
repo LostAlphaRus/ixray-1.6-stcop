@@ -6,7 +6,7 @@
 class HUD_SOUND_COLLECTION;
 class CActor;
 class CMotionDef;
-//class CHudPdaAnimator;
+class CHudPdaAnimator;
 class CHudItemAnimator;
 
 class CHudAnimatorBase
@@ -42,7 +42,7 @@ public:
 	virtual u8 GetCurrentHudOffsetIdx() const { return 0; }
 	virtual void UpdateHudAdditonal(Fmatrix&) {}
 
-	//virtual CHudPdaAnimator* cast_pda_animator() { return nullptr; }
+	virtual CHudPdaAnimator* cast_pda_animator() { return nullptr; }
 	virtual CHudItemAnimator* cast_item_animator() { return nullptr; }
 
 protected:
@@ -71,7 +71,7 @@ protected:
 	InertionData m_current_inertion;
 };
 
-//#include "HudPdaAnimator.h"
+#include "HudPdaAnimator.h"
 #include "HudItemAnimator.h"
 
 class CHudAnimatorManager
@@ -93,13 +93,13 @@ public:
 	void OnMovementChanged();
 	const float GetHudFov();
 
-	//CHudPdaAnimator* PdaAnimator() { return m_pda_animator; }
+	CHudPdaAnimator* PdaAnimator() { return m_pda_animator; }
 	CHudItemAnimator* ItemAnimator() { return m_item_animator; }
 	CHudAnimatorBase* GetCurrentAnimator();
 
 private:
 	CActor* m_actor = nullptr;
-	//CHudPdaAnimator* m_pda_animator = nullptr;
+	CHudPdaAnimator* m_pda_animator = nullptr;
 	CHudItemAnimator* m_item_animator = nullptr;
 	CHudAnimatorBase* m_current_animator = nullptr;
 };
