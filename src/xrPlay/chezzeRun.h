@@ -2,13 +2,16 @@
 #pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
-//#include <string>
-//#include <mutex>
-//#include <iostream>
-//#include "../xrCore/log.h"
+
+#define CZ_OK "0"
+#define CZ_InvalidFormat "1"
+#define CZ_UnknownCommand "2"
+#define CZ_NoResponsibleType "3"
+#define CZ_ServerError "10"
 
 #pragma comment(lib, "Ws2_32.lib")
 class ChezzeClient {
+private:
     public:
         static ChezzeClient& Instance() {
             static ChezzeClient instance;
@@ -41,21 +44,30 @@ class ChezzeClient {
             return true;
         }
 
-        bool Send(const std::string& data) {
+        bool Send(const xr_string& data) {
             if (!connected || fatal) return false;
             return send(sock, data.c_str(), static_cast<int>(data.size()), 0) != SOCKET_ERROR;
         }
-        void SplashInfo(const std::string& persent, const std::string& info) {
-            Send("spl_start");
+        void SplashInfo(const xr_string& persent, const xr_string& desc) {
+            /*
+            * Example
+                {
+                "res_type": "spl_game_lnch",
+                "spl_pers": 0,
+                "spl_desc": "Test"
+                }
+            */
+            xr_string snd = std::format(
+                "{{\"res_type\":\"spl_game_lnch\",\"spl_pers\":\"{}\",\"spl_desc\":\"{}\"}}",
+                persent.c_str(),
+                desc.c_str()
+            ).c_str();
+            Send(snd);
             auto rec = Receive();
-            if (rec != "OK")
-                return;
-            Send(persent);
-            rec = Receive();
-            if (rec != "OK")
-                return;
-            Send(info);
-            rec = Receive();
+            if (rec != CZ_OK)
+            {
+                //if error do something
+            }
         }
         xr_string Receive(int bufferSize = 1024) {
             if (!connected) return "";

@@ -133,7 +133,9 @@ int APIENTRY WinMain
 	SDL_HideWindow(g_AppInfo.Window);
 
 	SDL_Window* wnd1 = nullptr;
-	splash::show((void*&)wnd1);
+
+	//splash::show((void*&)wnd1);
+
 	client.SplashInfo("20", "EngineLoadStage1");
 	EngineLoadStage1(lpCmdLine);
 
