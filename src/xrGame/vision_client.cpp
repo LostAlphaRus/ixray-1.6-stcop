@@ -64,11 +64,11 @@ void vision_client::eye_pp_s2					()
 	u32							dwTime = Device.dwTimeGlobal;
 	u32							dwDT = dwTime - m_time_stamp;
 	m_time_stamp				= dwTime;
-	static DWORD this_thread_id = 0;
-	this_thread_id = GetCurrentThreadId();
+	static std::thread::id this_thread_id;
+	this_thread_id = std::this_thread::get_id();
 	Device.secondary_tasks.run([=]()
 	{
-		if (this_thread_id != GetCurrentThreadId()) { PROF_THREAD("X-Ray PPL Thread") }
+		if (this_thread_id != std::this_thread::get_id()) { PROF_THREAD("X-Ray PPL Thread") }
 		feel_vision_update(m_object, m_position, float(dwDT) / 1000.f, visual().transparency_threshold());
 	});
 

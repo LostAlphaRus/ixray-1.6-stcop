@@ -74,13 +74,13 @@ void CALifeGraphRegistry::setup_current_level()
 		GameGraph::LEVEL_MAP::const_iterator I = ai().game_graph().header().levels().find(level_id);
 		Level().set_name((*I).second.name());
 		int levelid = pApp->Level_ID(*(*I).second.name(), "1.0", true);
-		static DWORD this_thread_id = 0;
-		this_thread_id = GetCurrentThreadId();
+		static std::thread::id this_thread_id;
+		this_thread_id = std::this_thread::get_id();
 		level_load.run([=]()
-			{
-				if (this_thread_id != GetCurrentThreadId()) { PROF_THREAD("X-Ray PPL Thread") }
-				Level().Load(levelid);
-			});
+		{
+			if (this_thread_id != std::this_thread::get_id()) { PROF_THREAD("X-Ray PPL Thread") }
+			Level().Load(levelid);
+		});
 	}
 
 	m_level						= new CALifeLevelRegistry(level_id);
