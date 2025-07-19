@@ -1,0 +1,32 @@
+class "se_level_changer" (cse_alife_level_changer)
+--------------------
+function se_level_changer:__init(section) super (section)
+	self.enabled = true
+	self.hint = "level_changer_invitation"
+end
+--------------------
+function se_level_changer:on_register()
+	cse_alife_level_changer.on_register(self)
+end
+--------------------
+function se_level_changer:on_unregister()
+	cse_alife_level_changer.on_unregister(self)
+end
+--------------------
+function se_level_changer:STATE_Write(packet)
+	cse_alife_level_changer.STATE_Write(self, packet)
+
+	packet:w_bool(self.enabled)
+	packet:w_stringZ(self.hint)
+end
+--------------------
+function se_level_changer:STATE_Read(packet, size)
+	cse_alife_level_changer.STATE_Read(self, packet, size)
+	-- под LevelEditor не пытаться читать из пакета ничего
+	if editor() then
+		return
+	end
+
+	self.enabled = packet:r_bool()
+	self.hint = packet:r_stringZ()
+end
