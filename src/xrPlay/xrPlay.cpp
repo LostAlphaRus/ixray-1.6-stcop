@@ -202,6 +202,7 @@ int APIENTRY WinMain
 	EditorLuaInit();
 #endif
 	client.SplashInfo("100", "EngineLoadStage5");
+	client.Execute("spl_hide");
 	EngineLoadStage5();
 
 	xr_delete(g_pStringTable);

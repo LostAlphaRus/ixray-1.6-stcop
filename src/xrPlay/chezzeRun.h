@@ -12,7 +12,11 @@
 #pragma comment(lib, "Ws2_32.lib")
 class ChezzeClient {
 private:
-    public:
+    bool Send(const xr_string& data) {
+        if (!connected || fatal) return false;
+        return send(sock, data.c_str(), static_cast<int>(data.size()), 0) != SOCKET_ERROR;
+    }
+public:
         static ChezzeClient& Instance() {
             static ChezzeClient instance;
             return instance;
@@ -44,10 +48,7 @@ private:
             return true;
         }
 
-        bool Send(const xr_string& data) {
-            if (!connected || fatal) return false;
-            return send(sock, data.c_str(), static_cast<int>(data.size()), 0) != SOCKET_ERROR;
-        }
+       
         void SplashInfo(const xr_string& persent, const xr_string& desc) {
             /*
             * Example
@@ -69,6 +70,19 @@ private:
                 //if error do something
             }
         }
+
+        void Execute(const xr_string& res_type)
+        {
+            xr_string snd = std::format(
+                "{{\"res_type\":\"{}\"}}", res_type.c_str()).c_str();
+            Send(snd);
+            auto rec = Receive();
+            if (rec != CZ_OK)
+            {
+                //if error do something
+            }
+        }
+
         xr_string Receive(int bufferSize = 1024) {
             if (!connected) return "";
 
