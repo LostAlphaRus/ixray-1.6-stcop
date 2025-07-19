@@ -42,7 +42,7 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
 }
 void	Vision::o_new(CObject* O)
 {
-	xrSRWLockGuard guard(&lock_visible, true);
+	xrSRWLockGuard guard(&lock_visible, false);
 	feel_visible.push_back(feel_visible_Item());
 	feel_visible_Item& I = feel_visible.back();
 	I.O = O;
