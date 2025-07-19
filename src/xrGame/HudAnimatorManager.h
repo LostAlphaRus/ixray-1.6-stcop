@@ -6,45 +6,50 @@
 class HUD_SOUND_COLLECTION;
 class CActor;
 class CMotionDef;
+//class CHudPdaAnimator;
+class CHudItemAnimator;
 
-class CHudAnimatorManager
+class CHudAnimatorBase
 {
 public:
-	CHudAnimatorManager(CActor* parent);
-	~CHudAnimatorManager();
 
-	void Load();
+	CHudAnimatorBase(CActor* parent) : m_actor(parent) {}
+	virtual ~CHudAnimatorBase();
+	virtual void Load();
 	void SetSection(const shared_str& new_section) { m_section = new_section; }
 	shared_str GetSection() const { return m_section; }
-	void Update();
-	bool IsActive() const { return m_bIsPlaying || m_bNeedActivated; }
-	void StartAnimator(const shared_str& section);
-	void StopAnimator();
+	virtual void Update();
+	virtual bool IsActive() const { return false; }
+	virtual void StopAnimator();
 	u8 GetSlotToRestore() const { return m_iRestoreSlot; }
-	void SetLeftCallback(xr_delegate<void()> callback) { m_left_callback = callback; }
-	void SetLeft2Callback(xr_delegate<void()> callback) { m_left2_callback = callback; }
-	void SetRightCallback(xr_delegate<void()> callback) { m_right_callback = callback; }
-	void SetRight2Callback(xr_delegate<void()> callback) { m_right2_callback = callback; }
-	void SetStartCallback(xr_delegate<void()> callback) { m_start_callback = callback; }
-	void SetEndCallback(xr_delegate<void()> callback) { m_end_callback = callback; }
-	float GetHudFov() const;
-	bool CanSprint() const { return m_bCanSprint; }
+	virtual float GetHudFov() const;
+	virtual bool CanSprint() const { return m_bCanSprint; }
 	void SetForceHideItems(bool value) { m_bForceHideItems = value; }
 	bool IsForceHideItems() const { return m_bForceHideItems; }
+	virtual void OnMovementChanged() {}
+	virtual bool need_renderable() { return true; }
 
-private:
+	virtual bool InputKeyPress(int cmd) { return false; }
+	virtual bool InputKeyHold(int cmd) { return false; }
+	virtual bool InputKeyRelease(int cmd) { return false; }
+	virtual bool InputMouseMove(int x, int y) { return false; }
+	virtual bool InputMouseWheel(int direction) { return false; }
+	virtual bool InputGamepadUpdateStick(int id, Fvector2 value) { return false; }
+	virtual bool InputGamepadKeyPress(int id) { return false; }
 
-	void OnMotionMark(const motion_marks& mark);
-	void OnAnimationEnd();
-	void UpdateAnimation();
-	void PlayMotion();
+	InertionData& CurrentInertionData() { return m_current_inertion; }
 
-	void CallLeftCallback();
-	void CallLeft2Callback();
-	void CallRightCallback();
-	void CallRight2Callback();
-	void CallStartCallback();
-	void CallEndCallback();
+	virtual u8 GetCurrentHudOffsetIdx() const { return 0; }
+	virtual void UpdateHudAdditonal(Fmatrix&) {}
+
+	//virtual CHudPdaAnimator* cast_pda_animator() { return nullptr; }
+	virtual CHudItemAnimator* cast_item_animator() { return nullptr; }
+
+protected:
+
+	virtual void OnMotionMark(const motion_marks& mark) {}
+	virtual void UpdateAnimation();
+	bool HudAnimationExist(const shared_str& name);
 
 	shared_str m_section;
 	HUD_SOUND_COLLECTION m_sounds;
@@ -52,18 +57,10 @@ private:
 	bool m_bRestoreDetector = false;
 	u8 m_iRestoreSlot = 0;
 	bool m_bNeedActivated = false;
-	bool m_bIsPlaying = false;
 	float m_fHudFov = 0.0f;
-	bool m_bBlend = false;
+	float m_fHudFovFactor = 1.0f;
 	bool m_bForceHideItems = false;
 	bool m_bCanSprint = false;
-
-	xr_delegate<void()> m_left_callback = nullptr;
-	xr_delegate<void()> m_left2_callback = nullptr;
-	xr_delegate<void()> m_right_callback = nullptr;
-	xr_delegate<void()> m_right2_callback = nullptr;
-	xr_delegate<void()> m_start_callback = nullptr;
-	xr_delegate<void()> m_end_callback = nullptr;
 
 	u32	m_dwMotionCurrTm = 0;
 	u32	m_dwMotionStartTm = 0;
@@ -71,12 +68,38 @@ private:
 	bool m_bStopAtEndAnimIsRunning = true;
 	const CMotionDef* m_current_motion_def = nullptr;
 
-	shared_str m_sLuaLeftCallback = "null";
-	shared_str m_sLuaLeft2Callback = "null";
-	shared_str m_sLuaRightCallback = "null";
-	shared_str m_sLuaRight2Callback = "null";
-	shared_str m_sLuaStartCallback = "null";
-	shared_str m_sLuaEndCallback = "null";
-	shared_str m_sLuaModifySect = "null";
-	shared_str m_sLuaPrecondFunc = "null";
+	InertionData m_current_inertion;
+};
+
+//#include "HudPdaAnimator.h"
+#include "HudItemAnimator.h"
+
+class CHudAnimatorManager
+{
+public:
+	CHudAnimatorManager(CActor* parent);
+	~CHudAnimatorManager();
+
+	void Update();
+	bool InputKeyPress(int cmd);
+	bool InputKeyHold(int cmd) { return false; }
+	bool InputKeyRelease(int cmd) { return false; }
+	bool InputMouseMove(int x, int y) { return false; }
+	bool InputMouseWheel(int direction) { return false; }
+	bool InputGamepadUpdateStick(int id, Fvector2 value) { return false; }
+	bool InputGamepadKeyPress(int id) { return false; }
+	bool AnyAnimatorActive();
+	bool CanSprint();
+	void OnMovementChanged();
+	const float GetHudFov();
+
+	//CHudPdaAnimator* PdaAnimator() { return m_pda_animator; }
+	CHudItemAnimator* ItemAnimator() { return m_item_animator; }
+	CHudAnimatorBase* GetCurrentAnimator();
+
+private:
+	CActor* m_actor = nullptr;
+	//CHudPdaAnimator* m_pda_animator = nullptr;
+	CHudItemAnimator* m_item_animator = nullptr;
+	CHudAnimatorBase* m_current_animator = nullptr;
 };

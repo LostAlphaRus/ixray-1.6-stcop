@@ -25,6 +25,7 @@
 #include "ActorCondition.h"
 #include "level_graph.h"
 #include "HudItem.h"
+#include "HudItemAnimator.h"
 #include "ui/UITalkWnd.h"
 #include "Inventory.h"
 #include "InfoPortion.h"
@@ -2228,9 +2229,9 @@ void CScriptGameObject::StartActorAnimator(LPCSTR section)
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		if (pActor->HudAnimator())
+		if (pActor->HudAnimatorManager())
 		{
-			pActor->HudAnimator()->StartAnimator(section);
+			pActor->HudAnimatorManager()->ItemAnimator()->StartAnimator(section);
 		}
 	}
 	else
@@ -2243,9 +2244,9 @@ void CScriptGameObject::StopActorAnimator()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		if (pActor->HudAnimator())
+		if (pActor->HudAnimatorManager())
 		{
-			pActor->HudAnimator()->StopAnimator();
+			pActor->HudAnimatorManager()->ItemAnimator()->StopAnimator();
 		}
 	}
 	else
@@ -2258,7 +2259,7 @@ LPCSTR CScriptGameObject::GetActorAnimatorSection()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() ? *pActor->HudAnimator()->GetSection() : "null";
+		return pActor->HudAnimatorManager() ? pActor->HudAnimatorManager()->ItemAnimator()->GetSection().c_str() : "null";
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetActorAnimatorSection!");
@@ -2269,7 +2270,7 @@ bool CScriptGameObject::IsAnimatorActive()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() && pActor->HudAnimator()->IsActive();
+		return pActor->HudAnimatorManager() && pActor->HudAnimatorManager()->ItemAnimator()->IsActive();
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member IsAnimatorActive!");
@@ -2280,7 +2281,7 @@ u8 CScriptGameObject::GetActorAnimatorRestoredSlot()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() ? pActor->HudAnimator()->GetSlotToRestore() : 0;
+		return pActor->HudAnimatorManager() ? pActor->HudAnimatorManager()->ItemAnimator()->GetSlotToRestore() : 0;
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetActorAnimatorRestoredSlot!");
@@ -2291,7 +2292,7 @@ bool CScriptGameObject::GetAnimatorForceHideItems()
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		return pActor->HudAnimator() && pActor->HudAnimator()->IsForceHideItems();
+		return pActor->HudAnimatorManager() && pActor->HudAnimatorManager()->ItemAnimator()->IsForceHideItems();
 	}
 
 	ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetAnimatorForceHideItems!");
@@ -2302,9 +2303,9 @@ void CScriptGameObject::SetAnimatorForceHideItems(bool status)
 {
 	if (CActor* pActor = object().cast_actor())
 	{
-		if (pActor->HudAnimator())
+		if (pActor->HudAnimatorManager())
 		{
-			pActor->HudAnimator()->SetForceHideItems(status);
+			pActor->HudAnimatorManager()->ItemAnimator()->SetForceHideItems(status);
 		}
 	}
 	else

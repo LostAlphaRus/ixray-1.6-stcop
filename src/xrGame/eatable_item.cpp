@@ -19,6 +19,7 @@
 #include "Inventory.h"
 #include "Actor.h"
 #include "ActorCondition.h"
+#include "HudItemAnimator.h"
 
 CEatableItem::CEatableItem()
 {
@@ -165,10 +166,10 @@ bool CEatableItem::UseBy(CEntityAlive* entity_alive)
 	{
 		if (bUseHUDAnim)
 		{
-			if (actor && actor->HudAnimator())
+			if (actor && actor->HudAnimatorManager())
 			{
-				actor->HudAnimator()->StartAnimator(pSettings->r_string(m_physic_item->cNameSect(), "animator_sect"));
-				actor->HudAnimator()->SetLeftCallback({this, &CEatableItem::EatableEffects});
+				actor->HudAnimatorManager()->ItemAnimator()->StartAnimator(pSettings->r_string(m_physic_item->cNameSect(), "animator_sect"));
+				actor->HudAnimatorManager()->ItemAnimator()->SetLeftCallback({this, &CEatableItem::EatableEffects});
 			}
 		}
 	}

@@ -280,7 +280,7 @@ protected:
 private:
 	void					SwitchOutBorder(bool new_border_state);
 
-	CHudAnimatorManager*	m_hud_animator = nullptr;
+	CHudAnimatorManager*	m_hud_animator_manager = nullptr;
 	u32 _jitter_time_remains = 0;
 
 public:
@@ -300,7 +300,7 @@ public:
 	void					SetShotRndSeed			(s32 Seed = 0);
 	s32						GetShotRndSeed			()	{ return m_ShotRndSeed;	};
 
-	CHudAnimatorManager*	HudAnimator()			{ return m_hud_animator; }
+	CHudAnimatorManager*	HudAnimatorManager()			{ return m_hud_animator_manager; }
 
 public:
 	void					detach_Vehicle			();
