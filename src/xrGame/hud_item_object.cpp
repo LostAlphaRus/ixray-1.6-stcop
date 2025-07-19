@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "hud_item_object.h"
+#include "Level.h"
 
 CHudItemObject::CHudItemObject			()
 {
@@ -102,7 +103,10 @@ void CHudItemObject::DeactivateItem			()
 void CHudItemObject::UpdateCL			()
 {
 	CInventoryItemObject::UpdateCL	();
-	CHudItem::UpdateCL				();
+	if (H_Parent() != nullptr && H_Parent() != Level().CurrentControlEntity())
+	{
+		CHudItem::UpdateCL();
+	}
 }
 
 void CHudItemObject::renderable_Render	()

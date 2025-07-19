@@ -253,6 +253,11 @@ void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVi
 
 void attachable_hud_item::update(bool bForce)
 {
+	if (m_parent_hud_item != nullptr)
+	{
+		m_parent_hud_item->UpdateHUD();
+	}
+
 	if(!bForce && m_upd_firedeps_frame==Device.dwFrame)	return;
 	bool is_16x9 = UI().is_widescreen();
 	

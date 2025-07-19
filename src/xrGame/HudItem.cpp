@@ -387,6 +387,18 @@ void CHudItem::UpdateHudAdditonal(Fmatrix& trans)
 
 void CHudItem::UpdateCL()
 {
+	//Only for NPC
+	UpdateAnimation();
+}
+
+void CHudItem::UpdateHUD()
+{
+	//Only for Actor
+	UpdateAnimation();
+}
+
+void CHudItem::UpdateAnimation()
+{
 	if(m_current_motion_def)
 	{
 		if(m_bStopAtEndAnimIsRunning)
