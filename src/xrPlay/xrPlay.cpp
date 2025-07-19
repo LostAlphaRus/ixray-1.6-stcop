@@ -103,6 +103,7 @@ int APIENTRY WinMain
 	if (client.Connect("127.0.0.1", 19878)) {
 		//
 	}
+	client.SplashInfo("20","Debug initialization");
 
 	Debug._initialize(false);
 
@@ -133,7 +134,7 @@ int APIENTRY WinMain
 
 	SDL_Window* wnd1 = nullptr;
 	splash::show((void*&)wnd1);
-
+	client.SplashInfo("20", "EngineLoadStage1");
 	EngineLoadStage1(lpCmdLine);
 
 		{
@@ -150,6 +151,7 @@ int APIENTRY WinMain
 #ifdef DEBUG
 	xrLogger::EnableFastDebugLog();
 #endif
+	client.SplashInfo("40", "EngineLoadStage2");
 	EngineLoadStage2();
 
 	Engine.External.CreateRendererList();
@@ -158,6 +160,7 @@ int APIENTRY WinMain
 			PROF_EVENT("Console::Create");
 	Console = new CConsole();
 		}
+	client.SplashInfo("60", "EngineLoadStage3");
 	EngineLoadStage3();
 
 		{
@@ -181,7 +184,7 @@ int APIENTRY WinMain
 
 	//Console->Execute("stat_memory");
 	Msg("IX-Ray CoP %s build info: hash[%s] branch[%s] commit author[%s]", _VER, _HASH, _BRANCH, _AUTHOR);
-
+	client.SplashInfo("80", "EngineLoadStage4");
 	EngineLoadStage4();
 
 	LoadCustomSettings();
@@ -196,7 +199,7 @@ int APIENTRY WinMain
 	RenderUI();
 	EditorLuaInit();
 #endif
-
+	client.SplashInfo("100", "EngineLoadStage5");
 	EngineLoadStage5();
 
 	xr_delete(g_pStringTable);

@@ -41,26 +41,37 @@ class ChezzeClient {
             return true;
         }
 
-        /*bool Send(const std::string& data) {
-            if (!connected) return false;
+        bool Send(const std::string& data) {
+            if (!connected || fatal) return false;
             return send(sock, data.c_str(), static_cast<int>(data.size()), 0) != SOCKET_ERROR;
-        }*/
-
-        /*std::string Receive(int bufferSize = 1024) {
+        }
+        void SplashInfo(const std::string& persent, const std::string& info) {
+            Send("spl_start");
+            auto rec = Receive();
+            if (rec != "OK")
+                return;
+            Send(persent);
+            rec = Receive();
+            if (rec != "OK")
+                return;
+            Send(info);
+            rec = Receive();
+        }
+        xr_string Receive(int bufferSize = 1024) {
             if (!connected) return "";
 
             char* buffer = new char[bufferSize];
             memset(buffer, 0, bufferSize);
 
             int bytesReceived = recv(sock, buffer, bufferSize, 0);
-            std::string result;
+            xr_string result;
             if (bytesReceived > 0) {
                 result.assign(buffer, bytesReceived);
             }
 
             delete[] buffer;
             return result;
-        }*/
+        }
 
         void Disconnect() {
             if (connected) {
