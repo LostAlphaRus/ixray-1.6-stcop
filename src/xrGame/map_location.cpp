@@ -465,7 +465,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 
 		if(map->Heading())
 		{
-			m_position_on_map	= map->ConvertRealToLocal(position, true); //for drawing
+			m_position_on_map	= map->ConvertRealToLocal(position, false); //for drawing
 			sp->SetWndPos		(m_position_on_map);
 		}
 

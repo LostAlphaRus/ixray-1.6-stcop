@@ -20,6 +20,7 @@
 #include "../alife_registry_wrappers.h"
 #include "../actor.h"
 #include "../../xrCore/object_broker.h"
+#include "../../xrUI/UIHelper.h"
 
 #define				ENCYCLOPEDIA_DIALOG_XML		"encyclopedia.xml"
 
@@ -42,10 +43,17 @@ void CUIEncyclopediaWnd::Init()
 	CUIXmlInit	xml_init;
 
 	xml_init.InitWindow		(uiXml, "main_wnd", 0, this);
+	
+	CUIWindow* frameParent = this;
+	if (uiXml.NavigateToNode("background"))
+	{
+		m_background					= UIHelper::CreateFrameWindow(uiXml, "background", this);
+		frameParent						= m_background;
+	}
 
 	// Load xml data
 	UIEncyclopediaIdxBkg		= new CUIFrameWindow(); UIEncyclopediaIdxBkg->SetAutoDelete(true);
-	AttachChild(UIEncyclopediaIdxBkg);
+	frameParent->AttachChild(UIEncyclopediaIdxBkg);
 	xml_init.InitFrameWindow(uiXml, "right_frame_window", 0, UIEncyclopediaIdxBkg);
 
 	xml_init.InitFont(uiXml, "tree_item_font", 0, m_uTreeItemColor, m_pTreeItemFont);
@@ -63,7 +71,7 @@ void CUIEncyclopediaWnd::Init()
 	xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimation);
 
 	UIEncyclopediaInfoBkg		= new CUIFrameWindow();UIEncyclopediaInfoBkg->SetAutoDelete(true);
-	AttachChild(UIEncyclopediaInfoBkg);
+	frameParent->AttachChild(UIEncyclopediaInfoBkg);
 	xml_init.InitFrameWindow(uiXml, "left_frame_window", 0, UIEncyclopediaInfoBkg);
 
 	UIEncyclopediaInfoHeader	= new CUIFrameLineWnd();UIEncyclopediaInfoHeader->SetAutoDelete(true);

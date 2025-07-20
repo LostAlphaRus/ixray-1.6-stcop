@@ -45,6 +45,7 @@ public:
 protected:
 	u32					prevArticlesCount;
 	// Элементы графического оформления
+	CUIFrameWindow*		m_background;
 	CUIFrameWindow*		UIEncyclopediaIdxBkg;
 	CUIFrameWindow*		UIEncyclopediaInfoBkg;
 	CUIFrameLineWnd*	UIEncyclopediaIdxHeader;

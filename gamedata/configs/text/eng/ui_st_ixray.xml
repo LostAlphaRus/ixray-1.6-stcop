@@ -397,4 +397,13 @@
 	<string id="pda_btn_contacts_hint">
 		<text>Show stalker contact list</text>
 	</string>
+	<string id="Encyclopedia">
+		<text>Encyclopedia</text>
+	</string>
+	<string id="pda_btn_encyclopedia">
+		<text>Encyclopedia</text>
+	</string>
+	<string id="pda_btn_encyclopedia_hint">
+		<text>Show the Zone encyclopedia</text>
+	</string>
 </string_table>
