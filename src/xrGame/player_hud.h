@@ -22,7 +22,7 @@ struct player_hud_motion
 	shared_str				m_additional_name;
 	xr_vector<shared_str>	m_bone_parts;
 	float					m_anim_speed;
-	xr_vector<motion_descr>	m_animations;
+	xr_vector<motion_descr>	m_animations{};
 };
 
 struct player_hud_motion_container
@@ -151,6 +151,7 @@ struct hud_item_measures
 
 	Fmatrix load					(const shared_str& sect_name, IKinematics* K);
 	Fmatrix load_monolithic			(const shared_str& sect_name, IKinematics* K, CHudItem* owner);
+	void update(Fmatrix& attach_offset);
 };
 
 struct attachable_hud_item

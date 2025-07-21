@@ -268,7 +268,7 @@ void RenderHUDAdjustManager()
 										}
 									}
 								}
-								//if (!(p_item->m_monolithic && p_item->m_parent_hud_item->GetCurrentHudOffsetIdx() == 0))
+								if (!(p_item->m_monolithic && p_item->m_parent_hud_item->GetCurrentHudOffsetIdx() == 0))
 								{
 									if (ImGui::CollapsingHeader(hud_header_name))
 									{

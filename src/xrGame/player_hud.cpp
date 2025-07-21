@@ -263,6 +263,8 @@ void attachable_hud_item::update(bool bForce)
 		reload_measures();
 	}
 
+	m_measures.update(m_attach_offset);
+
 	m_parent->calc_transform		(m_attach_place_idx, m_attach_offset, m_item_transform);
 	m_upd_firedeps_frame			= Device.dwFrame;
 
@@ -388,12 +390,8 @@ Fmatrix hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	m_item_attach[0]			= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_position", zero_vel);
 	m_item_attach[1]			= READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "item_orientation", zero_vel);
 
-	Fvector ypr = m_item_attach[1];
-	ypr.mul(PI / 180.f);
-
 	Fmatrix attach_offset;
-	attach_offset.setHPB(ypr.x, ypr.y, ypr.z);
-	attach_offset.translate_over(m_item_attach[0]);
+	update(attach_offset);
 
 	shared_str					 bone_name;
 	m_prop_flags.set			 (e_fire_point,pSettings->line_exist(sect_name,"fire_bone"));
@@ -450,12 +448,8 @@ Fmatrix hud_item_measures::load_monolithic(const shared_str& sect_name, IKinemat
     m_item_attach[0] = pSettings->r_fvector3(sect_name, "position");
     m_item_attach[1] = pSettings->r_fvector3(sect_name, "orientation");
 
-    Fvector ypr = m_item_attach[1];
-    ypr.mul(PI / 180.f);
-
     Fmatrix attach_offset;
-    attach_offset.setHPB(ypr.x, ypr.y, ypr.z);
-    attach_offset.translate_over(m_item_attach[0]);
+	update(attach_offset);
 
     // fire bone
     if (owner && owner->cast_weapon())
@@ -610,6 +604,14 @@ attachable_hud_item::~attachable_hud_item()
 	IRenderVisual* v			= m_model->dcast_RenderVisual();
 	::Render->model_Delete		(v);
 	m_model						= nullptr;
+}
+
+void hud_item_measures::update(Fmatrix& attach_offset)
+{
+	Fvector ypr = m_item_attach[1];
+	ypr.mul(PI / 180.f);
+	attach_offset.setHPB(ypr.x, ypr.y, ypr.z);
+	attach_offset.translate_over(m_item_attach[0]);
 }
 
 attachable_hud_item::attachable_hud_item(player_hud* parent, const shared_str& sect_name, IKinematicsAnimated* hands_model)
@@ -1429,7 +1431,7 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 	attachable_hud_item* pi			= create_hud_item(hud_name);
 	player_hud_motion*	pm			= pi->m_hand_motions.find_motion(anim_name);
 	if(!pm)
-		return						100; // ms TEMPORARY
+		return						-1;
 	R_ASSERT2						(pm, 
 		make_string<const char*>("hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str() )
 		);
