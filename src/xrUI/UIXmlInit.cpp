@@ -164,12 +164,10 @@ bool CUIXmlInit::InitOptionsItem(CUIXml& xml_doc, LPCSTR path, int index, CUIOpt
 
 
 bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path, 
-									int index, CUIStatic* pWnd)
+									int index, CUIStatic* pWnd, bool fatal)
 {
-	bool ValidNode = xml_doc.NavigateToNode(path, index);
-	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
-
-	InitWindow			(xml_doc, path, index, pWnd);
+	if (!InitWindow(xml_doc, path, index, pWnd, fatal))
+		return false;
 
 	string256			buf;
 	InitText			(xml_doc, xr_strconcat(buf,path,":text"), index, pWnd);
