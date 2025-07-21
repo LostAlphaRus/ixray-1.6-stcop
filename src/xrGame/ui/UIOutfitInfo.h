@@ -47,7 +47,7 @@ public:
 	virtual CUIWindow* ui_cast_window() { return this; }
 
 protected:
-	enum				{ max_count = ALife::eHitTypeMax-4 };
+	enum				{ max_count = ALife::eHitTypeMax-3 };
 	
 	CUIStatic*			m_caption;
 	CUIStatic*			m_Prop_line;
