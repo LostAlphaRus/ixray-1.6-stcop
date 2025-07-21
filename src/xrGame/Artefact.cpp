@@ -463,7 +463,7 @@ void CArtefact::OnStateSwitch(u32 S)
 	switch(S){
 	case eShowing:
 		{
-			PlayHUDMotion(HudAnimationExist("anm_show") ? "anm_show" : "anim_draw", FALSE, S);
+			PlayHUDMotion(HudAnimationExist("anm_show") ? "anm_show" : "anim_show", FALSE, S);
 		}break;
 	case eHiding:
 		{
