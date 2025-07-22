@@ -35,6 +35,22 @@ u16	INV_STATE_BLOCK_ALL		= 0xffff;
 u16	INV_STATE_INV_WND		= INV_STATE_BLOCK_ALL;
 u16	INV_STATE_BUY_MENU		= INV_STATE_BLOCK_ALL;
 
+bool defaultSlotActive[] =
+{
+	true,		// knife
+	true,		// pistol
+	true,		// automatic
+	true,		// grenades
+	true,		// binocular
+	true,		// bolt
+	false,		// outfit
+	false,		// pda
+	false,		// detector
+	false,		// torch
+	true,		// artefact
+	false,		// helmet
+};
+
 CInventorySlot::CInventorySlot() 
 {
 	m_pIItem				= nullptr;
@@ -65,17 +81,27 @@ CInventory::CInventory()
 	xr_strcpy(slot_active, "slot_active_1");
 
 	u16 k = 1;
-	while (pSettings->line_exist("inventory", slot_persistent) && pSettings->line_exist("inventory", slot_active)) 
+	while (pSettings->line_exist("inventory", slot_persistent)) 
 	{
 		m_last_slot = k;
 
 		m_slots[k].m_bPersistent = !!pSettings->r_bool("inventory", slot_persistent);
-		m_slots[k].m_bAct = !!pSettings->r_bool("inventory", slot_active);
+		m_slots[k].m_bAct = !!READ_IF_EXISTS(pSettings, r_bool, "inventory", slot_active, defaultSlotActive[k-1]);
 
 		k++;
 
 		xr_sprintf(slot_persistent, "%s%d", "slot_persistent_", k);
 		xr_sprintf(slot_active, "%s%d", "slot_active_", k);
+	}
+
+	// St4lker0k765: костыль для ТЧ, чтобы вылетов по шлему не было
+	if (k == 11)
+	{
+		m_slots[11].m_bPersistent = false;
+		m_slots[11].m_bAct = true;
+
+		m_slots[12].m_bPersistent = false;
+		m_slots[12].m_bAct = false;
 	}
 
 	m_blocked_slots.resize(k + 1);
@@ -92,7 +118,7 @@ CInventory::CInventory()
 	m_dwModifyFrame								= 0;
 	m_drop_last_frame							= false;
 	m_iMaxBelt									= 0;
-	if (EngineExternal().ShadowOfChernobylMode())
+	if (k == 11)
 		m_iMaxBelt								= pSettings->r_s32		("inventory","max_belt");
 
 	
