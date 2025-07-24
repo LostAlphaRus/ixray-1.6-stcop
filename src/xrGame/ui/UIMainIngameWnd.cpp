@@ -253,9 +253,11 @@ void CUIMainIngameWnd::Init()
 		}
 	}
 
-	UIWeaponJammedIcon			= UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
-	UIWeaponJammedIcon->Show	(false);
-
+	if (uiXml.NavigateToNode("weapon_jammed_static") && !m_ind_weapon_broken)
+	{
+		UIWeaponJammedIcon = UIHelper::CreateStatic(uiXml, "weapon_jammed_static", nullptr);
+		UIWeaponJammedIcon->Show(false);
+	}
 	if (uiXml.NavigateToNode("radiation_static"))
 	{
 		UIRadiaitionIcon = UIHelper::CreateStatic(uiXml, "radiation_static", nullptr);
