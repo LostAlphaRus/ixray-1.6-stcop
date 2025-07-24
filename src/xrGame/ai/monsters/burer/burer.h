@@ -120,6 +120,7 @@ public:
 	LPCSTR	particle_fire_shield;
 
 	CBurerFastGravi	*m_fast_gravi;
+	bool m_use_three_gravi_anims{};
 
 public:
 					CBurer				();
