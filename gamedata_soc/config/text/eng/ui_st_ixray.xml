@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
     <string id="st_ixray_title">
+        <text>S.T.A.L.K.E.R.: Call of Pripyat</text>
+    </string>
+    <string id="st_ixray_title_cs">
+        <text>S.T.A.L.K.E.R.: Clear Sky</text>
+    </string>
+    <string id="st_ixray_title_soc">
         <text>S.T.A.L.K.E.R.: Shadow of Chernobyl</text>
     </string>
     <string id="st_discord_menu">
@@ -300,6 +306,15 @@
     <string id="SM_DOG_F">
         <text>PsyDog (Phantom)</text>
     </string>
+    <string id="ui_mm_lights_details">
+        <text>Extended grass shadows</text>
+    </string>
+    <string id="ui_mm_puddles">
+        <text>Volumetric puddles</text>
+    </string>
+    <string id="ui_mm_grass_distance">
+        <text>Grass distance</text>
+    </string>
     <string id="SCRPTART">
         <text>Artefact</text>
     </string>
@@ -360,5 +375,11 @@
 	</string>
 	<string id="ui_inv_max_weight">
 		<text>max</text>
+	</string>
+	<string id="st_track_opt_off">
+		<text>off</text>
+	</string>
+	<string id="st_track_opt_on">
+		<text>on</text>
 	</string>
 </string_table>
