@@ -49,7 +49,11 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
 		{
 			*slot_to_activate = INV_SLOT_2;
 		}
-		else if (m_pInventory->ItemFromSlot(KNIFE_SLOT))
+		else if (m_pInventory->ItemFromSlot(PISTOL_SLOT_NEW) && m_pInventory->ItemFromSlot(PISTOL_SLOT_NEW)->BaseSlot() != INV_SLOT_3)
+		{
+			*slot_to_activate = PISTOL_SLOT_NEW;
+		}
+		else if(m_pInventory->ItemFromSlot(KNIFE_SLOT))
 		{
 			*slot_to_activate = KNIFE_SLOT;
 		}
@@ -263,7 +267,7 @@ void CCustomDetector::switch_detector()
 
 	bool need_fx = active_item == nullptr || active_item->cast_hud_item() == nullptr || !active_item->cast_hud_item()->m_eAnimationsFlags.test(af_prepare_detector);
 
-	if (!m_bDetectorActive && GetState() == eHidden && g_player_hud->attached_item(0) && need_fx && active_item && active_item->BaseSlot() == INV_SLOT_2)
+	if (!m_bDetectorActive && GetState() == eHidden && g_player_hud->attached_item(0) && need_fx && active_item && (active_item->BaseSlot() == INV_SLOT_2 || active_item->BaseSlot() == PISTOL_SLOT_NEW))
 	{
 		if(g_player_hud->animator_play(g_player_hud->check_anim("anm_hide", 0)?"anm_hide":"anm_hide_0", 0, 1, TRUE, 1.5f, 0, false, true, [](CBlend*B){static_cast<CCustomDetector*>(B->CallbackParam)->ShowingCallback(B);}, this, 0))
 			g_player_hud->animator_fx_play(g_player_hud->check_anim("anm_hide", 0)?"anm_hide":"anm_hide_0", 0, 2, 0, 3.f, 1.f, 1.f, 0.5f);

@@ -35,6 +35,33 @@ u16	INV_STATE_BLOCK_ALL		= 0xffff;
 u16	INV_STATE_INV_WND		= INV_STATE_BLOCK_ALL;
 u16	INV_STATE_BUY_MENU		= INV_STATE_BLOCK_ALL;
 
+bool defaultSlotPersistent[] =
+{
+	true,		// knife
+	false,		// pistol
+	false,		// automatic
+	true,		// grenades
+	true,		// binocular
+	true,		// bolt
+	false,		// outfit
+	true,		// pda
+	true,		// detector
+	true,		// torch
+	false,		// artefact
+	false,		// helmet
+	false,		// pistol (new)
+	true,		// custom slot 1
+	true,		// custom slot 2
+	true,		// custom slot 3
+	true,		// custom slot 4
+	true,		// custom slot 5
+	true,		// custom slot 6
+	true,		// custom slot 7
+	true,		// custom slot 8
+	true,		// custom slot 9
+	true,		// custom slot 10
+};
+
 bool defaultSlotActive[] =
 {
 	true,		// knife
@@ -49,6 +76,17 @@ bool defaultSlotActive[] =
 	false,		// torch
 	true,		// artefact
 	false,		// helmet
+	true,		// pistol (new)
+	false,		// custom slot 1
+	false,		// custom slot 2
+	false,		// custom slot 3
+	false,		// custom slot 4
+	false,		// custom slot 5
+	false,		// custom slot 6
+	false,		// custom slot 7
+	false,		// custom slot 8
+	false,		// custom slot 9
+	false,		// custom slot 10
 };
 
 CInventorySlot::CInventorySlot() 
@@ -75,33 +113,19 @@ CInventory::CInventory()
 	m_iNextActiveSlot							= NO_ACTIVE_SLOT;
 	m_iPrevActiveSlot							= NO_ACTIVE_SLOT;
 
-	string256	slot_persistent;
-	string256	slot_active;
-	xr_strcpy(slot_persistent, "slot_persistent_1");
-	xr_strcpy(slot_active, "slot_active_1");
 
 	u16 k = 1;
-	while (pSettings->line_exist("inventory", slot_persistent)) 
+	for (u32 i = 1; i < LAST_SLOT; i++)
 	{
-		m_last_slot = k;
+		string256	slot_persistent;
+		string256	slot_active;
+		xr_sprintf(slot_persistent, "%s%d", "slot_persistent_", i);
+		xr_sprintf(slot_active, "%s%d", "slot_active_", i);
+		m_last_slot = k = i;
 
-		m_slots[k].m_bPersistent = !!pSettings->r_bool("inventory", slot_persistent);
-		m_slots[k].m_bAct = !!READ_IF_EXISTS(pSettings, r_bool, "inventory", slot_active, defaultSlotActive[k-1]);
+		m_slots[k].m_bPersistent = !!READ_IF_EXISTS(pSettings, r_bool, "inventory", slot_persistent, defaultSlotPersistent[i-1]);
+		m_slots[k].m_bAct = !!READ_IF_EXISTS(pSettings, r_bool, "inventory", slot_active, defaultSlotActive[i-1]);
 
-		k++;
-
-		xr_sprintf(slot_persistent, "%s%d", "slot_persistent_", k);
-		xr_sprintf(slot_active, "%s%d", "slot_active_", k);
-	}
-
-	// St4lker0k765: костыль для ТЧ, чтобы вылетов по шлему не было
-	if (k == 11)
-	{
-		m_slots[11].m_bPersistent = false;
-		m_slots[11].m_bAct = true;
-
-		m_slots[12].m_bPersistent = false;
-		m_slots[12].m_bAct = false;
 	}
 
 	m_blocked_slots.resize(k + 1);
@@ -817,7 +841,7 @@ bool CInventory::Action(u16 cmd, u32 flags)
 				{
 					PIItem pItem = ItemFromSlot(slot);
 					// Pavel: достаем пушку только после того, как убрали детектор
-					if (pItem && pItem->BaseSlot() != INV_SLOT_2)
+					if (pItem && (pItem->BaseSlot() != INV_SLOT_2 || pItem->BaseSlot() != PISTOL_SLOT_NEW))
 					{
 						pDetector->HideAndSetCallback([cmd, flags, this]() {
 							this->SendActionEvent(cmd, flags);

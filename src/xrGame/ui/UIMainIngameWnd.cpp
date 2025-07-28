@@ -1135,7 +1135,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	{
 		u16 slot = pActor->inventory().GetActiveSlot();
 		m_ind_weapon_broken->Show(false);
-		if (slot == INV_SLOT_2 || slot == INV_SLOT_3)
+		if (slot == INV_SLOT_2 || slot == INV_SLOT_3 || slot == PISTOL_SLOT_NEW)
 		{
 			PIItem item_from_slot = pActor->inventory().ItemFromSlot(slot);
 			CWeapon* weapon = item_from_slot ? item_from_slot->cast_weapon() : nullptr;
@@ -1162,7 +1162,7 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 	{
 		u16 slot = pActor->inventory().GetActiveSlot();
 		SetWarningIconColor(ewiWeaponJammed, 0x00ffffff);
-		if (slot == INV_SLOT_2 || slot == INV_SLOT_3)
+		if (slot == INV_SLOT_2 || slot == INV_SLOT_3 || slot == PISTOL_SLOT_NEW)
 		{
 			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
 			if (weapon)
