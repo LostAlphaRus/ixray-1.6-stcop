@@ -26,6 +26,8 @@
 
 CUIEncyclopediaWnd::CUIEncyclopediaWnd()
 {
+	m_background = nullptr;
+	m_background2 = nullptr;
 	prevArticlesCount	= 0;
 }
 
@@ -47,8 +49,16 @@ void CUIEncyclopediaWnd::Init()
 	CUIWindow* frameParent = this;
 	if (uiXml.NavigateToNode("background"))
 	{
-		m_background					= UIHelper::CreateFrameWindow(uiXml, "background", this);
-		frameParent						= m_background;
+		m_background					= UIHelper::CreateFrameWindow(uiXml, "background", this, false);
+		if (m_background)
+		{
+			frameParent = m_background;
+		}
+		else
+		{
+			m_background2 = UIHelper::CreateFrameLine(uiXml, "background", this);
+			frameParent = m_background2;
+		}
 	}
 
 	// Load xml data
