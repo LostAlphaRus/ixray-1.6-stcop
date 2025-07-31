@@ -1167,26 +1167,17 @@ void CUIMainIngameWnd::UpdateMainIndicators()
 			CWeapon* weapon = smart_cast<CWeapon*>(pActor->inventory().ItemFromSlot(slot));
 			if (weapon)
 			{
-				float condition = 1 - weapon->GetConditionToShow();
-				if (condition < 0.6f)
+				float condition = weapon->GetCondition();
+				float start_misf_cond = weapon->GetMisfireStartCondition();
+				float end_misf_cond = weapon->GetMisfireEndCondition();
+				if (condition < start_misf_cond)
 				{
-					SetWarningIconColor(ewiWeaponJammed, color_rgba(0, 255, 0, 255));
-				}
-				else if (condition < 0.7f)
-				{
-					SetWarningIconColor(ewiWeaponJammed, color_rgba(127, 255, 0, 255));
-				}
-				else if (condition < 0.8f)
-				{
-					SetWarningIconColor(ewiWeaponJammed, color_rgba(255, 255, 0, 255));
-				}
-				else if (condition < 0.9f)
-				{
-					SetWarningIconColor(ewiWeaponJammed, color_rgba(255, 127, 0, 255));
-				}
-				else
-				{
-					SetWarningIconColor(ewiWeaponJammed, color_rgba(255, 0, 0, 255));
+					if (condition > (start_misf_cond + end_misf_cond) / 2)
+						SetWarningIconColor(ewiWeaponJammed, color_rgba(0, 255, 0, 255));
+					else if (condition > end_misf_cond)
+						SetWarningIconColor(ewiWeaponJammed, color_rgba(255, 255, 0, 255));
+					else
+						SetWarningIconColor(ewiWeaponJammed, color_rgba(255, 0, 0, 255));
 				}
 			}
 		}
