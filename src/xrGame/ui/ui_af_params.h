@@ -5,7 +5,6 @@
 
 class CUIXml;
 class CUIStatic;
-class CUITextWnd;
 class UIArtefactParamItem;
 class CInventoryItem;
 
@@ -79,7 +78,7 @@ protected:
 
 private:
 	CUIStatic*	m_caption;
-	CUITextWnd*	m_value;
+	CUIStatic*	m_value;
 	float		m_magnitude;
 	bool		m_sign_inverse;
 	shared_str	m_unit_str;

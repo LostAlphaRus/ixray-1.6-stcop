@@ -97,7 +97,7 @@ void CUIKeyBinding::FillUpList(CUIXml& xml_doc_ui, LPCSTR path_ui)
 void CUIKeyBinding::CheckStructure(CUIXml& xml_doc)
 {
 	bool first = true;
-	CUITextWnd*	pItem = nullptr;
+	CUIStatic*	pItem = nullptr;
 	
 	for (int i=0; true; i++)
 	{
@@ -111,7 +111,7 @@ void CUIKeyBinding::CheckStructure(CUIXml& xml_doc)
 
 				if (first)
 				{
-					pItem					= new CUITextWnd();
+					pItem					= new CUIStatic();
 					pItem->SetWndPos		(Fvector2().set(0,0));
 					pItem->SetWndSize		(Fvector2().set(m_scroll_wnd->GetWndSize().x,20.0f));
 					pItem->SetText			("NEXT ITEMS NOT DESCRIBED IN COMMAND DESC LIST");
@@ -120,7 +120,7 @@ void CUIKeyBinding::CheckStructure(CUIXml& xml_doc)
 					m_scroll_wnd->AddWindow	(pItem, true);
 				}
 				
-				pItem						= new CUITextWnd();
+				pItem						= new CUIStatic();
 				pItem->SetWndPos			(Fvector2().set(0,0));
 				pItem->SetWndSize			(Fvector2().set(m_scroll_wnd->GetWndSize().x,20.0f));
 				pItem->SetText				(action_name);

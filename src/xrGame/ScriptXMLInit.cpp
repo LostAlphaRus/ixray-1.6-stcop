@@ -151,14 +151,6 @@ CUIStatic* CScriptXmlInit::InitStatic(LPCSTR path, CUIWindow* parent)
 	return pWnd;
 }
 
-CUITextWnd* CScriptXmlInit::InitTextWnd(LPCSTR path, CUIWindow* parent)
-{
-	CUITextWnd* pWnd = new CUITextWnd();
-	CUIXmlInit::InitTextWnd(m_xml, path, 0, pWnd);
-	_attach_child(pWnd, parent);
-	return pWnd;
-}
-
 CUIStatic* CScriptXmlInit::InitAnimStatic(LPCSTR path, CUIWindow* parent)
 {
 	CUIAnimatedStatic* pWnd = new CUIAnimatedStatic();
@@ -363,7 +355,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitLabel",				&CScriptXmlInit::InitFrameLine)
 		.def("InitEditBox",				&CScriptXmlInit::InitEditBox)
 		.def("InitStatic",				&CScriptXmlInit::InitStatic)
-		.def("InitTextWnd",				&CScriptXmlInit::InitTextWnd)
+		.def("InitTextWnd",				&CScriptXmlInit::InitStatic)
 		.def("InitAnimStatic",			&CScriptXmlInit::InitAnimStatic)
 		.def("InitSleepStatic",			&CScriptXmlInit::InitSleepStatic)
 		.def("Init3tButton",			&CScriptXmlInit::Init3tButton)

@@ -68,25 +68,13 @@ void CUIStatic::script_register(lua_State *L)
         .def("SetHeading",			&CUIStatic::SetHeading)
         .def("GetHeading",			&CUIStatic::GetHeading)
 
-        .def("SetElipsis",			&CUIStatic::SetEllipsis),
-
-		class_<CUITextWnd, CUIWindow>("CUITextWnd")
-		.def(						constructor<>())
-		.def("AdjustHeightToText",	&CUITextWnd::AdjustHeightToText)
-		.def("AdjustWidthToText",	&CUITextWnd::AdjustWidthToText)
-		.def("SetText",				&CUITextWnd::SetText)
-		.def("SetTextST",			&CUITextWnd::SetTextST)
-		.def("GetText",				&CUITextWnd::GetText)
-		.def("SetFont",				&CUITextWnd::SetFont)
-		.def("GetFont",				&CUITextWnd::GetFont)
-		.def("SetTextColor",		&CUITextWnd::SetTextColor)
-		.def("GetTextColor",		&CUITextWnd::GetTextColor)
-		.def("SetTextComplexMode",	&CUITextWnd::SetTextComplexMode)
-		.def("SetTextAlignment",	&CUITextWnd::SetTextAlignment)
-		.def("SetVTextAlignment",	&CUITextWnd::SetVTextAlignment)
-		.def("SetEllipsis",			&CUITextWnd::SetEllipsis)
-		.def("SetTextOffset",		&CUITextWnd::SetTextOffset),
-//		.def("",					&CUITextWnd::)
+        .def("SetElipsis",			&CUIStatic::SetEllipsis)
+        .def("SetEllipsis",			&CUIStatic::SetEllipsis_script)
+		.def("SetTextAlignment",	&CUIStatic::SetTextAlignment)
+		.def("SetVTextAlignment",	&CUIStatic::SetVTextAlignment)
+		.def("SetTextComplexMode",	&CUIStatic::SetTextComplexMode)
+		.def("GetFont",				&CUIStatic::GetFont)
+		.def("SetTextOffset",		&CUIStatic::SetTextOffset),
 
 		class_<CUISleepStatic, CUIStatic>("CUISleepStatic")
 		.def(						constructor<>())
