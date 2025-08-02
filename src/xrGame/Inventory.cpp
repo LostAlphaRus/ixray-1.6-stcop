@@ -142,7 +142,7 @@ CInventory::CInventory()
 	m_dwModifyFrame								= 0;
 	m_drop_last_frame							= false;
 	m_iMaxBelt									= 0;
-	if (k == 11)
+	if (!pSettings->line_exist("inventory", "slot_active_1"))
 		m_iMaxBelt								= pSettings->r_s32		("inventory","max_belt");
 
 	
