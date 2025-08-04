@@ -45,7 +45,8 @@ public:
 	virtual void			OnFocusLost				();
 
 	virtual pcstr GetText() { return TextItemControl()->GetText(); }
-	virtual void SetText(pcstr txt) { TextItemControl()->SetText(txt); }
+	virtual void SetText(LPCSTR txt);
+			void SetTextIfNodeExist(LPCSTR txt);
 	virtual void SetTextST(pcstr txt) { TextItemControl()->SetTextST(txt); }
 	virtual void SetTextColor(u32 clr) { TextItemControl()->SetTextColor(clr); }
 	//virtual	void		SetFont					(CGameFont* F)				{CUIWindow::SetFont(F); TextItemControl()->SetFont(F);}
@@ -157,6 +158,7 @@ protected:
 	float			m_fHeading;
 
 	Fvector2		m_TextureOffset;
+	bool			m_text_control_exists;
 
 public:
 	CUILines*		TextItemControl						();
