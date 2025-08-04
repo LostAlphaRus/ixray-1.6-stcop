@@ -192,7 +192,7 @@ void CActor::UpdateAvailableDialogs(CPhraseDialogManager* partner)
 
 			const DIALOG_ID_VECTOR& names = info_portion.DialogNames();
 			for (const shared_str& name : names)
-				AddAvailableDialog(name.c_str(), partner);
+				AddAvailableDialog(name, partner);
 		}
 	}
 
