@@ -156,7 +156,7 @@ function keep_item(npc, item)
     end
 
     local item_id = item:id()
-    local item_in_slot = npc:item_in_slot(1)
+    local item_in_slot = npc:item_in_slot(2)
     if item_in_slot ~= nil and
        item_in_slot:id() == item_id
     then
@@ -165,7 +165,7 @@ function keep_item(npc, item)
 		item:set_condition((math.random(15)+75)/100)
         return true
     end
-    item_in_slot = npc:item_in_slot(2)
+    item_in_slot = npc:item_in_slot(3)
     if item_in_slot ~= nil and
        item_in_slot:id() == item_id
     then
