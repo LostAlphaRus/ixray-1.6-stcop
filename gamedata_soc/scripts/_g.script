@@ -1336,3 +1336,14 @@ quest_section["hunters_toz"]		= true
 quest_section["bar_ecolog_flash"]	= true
 quest_section["bar_tiran_pda"]		= true
 quest_section["bar_lucky_pda"]		= true
+
+function vec_to_str (vector)
+	if vector == nil then return "nil" end
+	return string.format("[%d:%d:%d]", vector.x, vector.y, vector.z)
+end
+
+function callstack()
+	if debug ~= nil then
+		log(debug.traceback(2))
+	end
+end
