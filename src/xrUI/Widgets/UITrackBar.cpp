@@ -156,22 +156,22 @@ void CUITrackBar::Draw()
 	m_pSlider->Draw();
 }
 
-// Форматирование текущего значения
+// Р¤РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ С‚РµРєСѓС‰РµРіРѕ Р·РЅР°С‡РµРЅРёСЏ
 static std::string FormatFloatWithStep(float value, int num_of_signs)
 {
-	// Вычисляем множитель на основе количества знаков после запятой
+	// Р’С‹С‡РёСЃР»СЏРµРј РјРЅРѕР¶РёС‚РµР»СЊ РЅР° РѕСЃРЅРѕРІРµ РєРѕР»РёС‡РµСЃС‚РІР° Р·РЅР°РєРѕРІ РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№
 	float multiplier = std::pow(10.0f, num_of_signs);
 
-	// Округляем значение с учетом заданной точности
+	// РћРєСЂСѓРіР»СЏРµРј Р·РЅР°С‡РµРЅРёРµ СЃ СѓС‡РµС‚РѕРј Р·Р°РґР°РЅРЅРѕР№ С‚РѕС‡РЅРѕСЃС‚Рё
 	float rounded_value = std::round(value * multiplier) / multiplier;
 
-	// Проверяем, является ли округлённое значение целым
+	// РџСЂРѕРІРµСЂСЏРµРј, СЏРІР»СЏРµС‚СЃСЏ Р»Рё РѕРєСЂСѓРіР»С‘РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ С†РµР»С‹Рј
 	if (std::fabs(std::floor(rounded_value) - rounded_value) < 0.00001f)
 	{
-		return std::to_string(static_cast<int>(rounded_value)); // Преобразуем в строку как целое число
+		return std::to_string(static_cast<int>(rounded_value)); // РџСЂРµРѕР±СЂР°Р·СѓРµРј РІ СЃС‚СЂРѕРєСѓ РєР°Рє С†РµР»РѕРµ С‡РёСЃР»Рѕ
 	}
 
-	// Если дробная часть есть, форматируем с указанной точностью
+	// Р•СЃР»Рё РґСЂРѕР±РЅР°СЏ С‡Р°СЃС‚СЊ РµСЃС‚СЊ, С„РѕСЂРјР°С‚РёСЂСѓРµРј СЃ СѓРєР°Р·Р°РЅРЅРѕР№ С‚РѕС‡РЅРѕСЃС‚СЊСЋ
 	std::ostringstream oss;
 	oss << std::fixed << std::setprecision(num_of_signs) << rounded_value;
 	return oss.str();
@@ -192,31 +192,37 @@ void CUITrackBar::UpdateText()
 {
 	CUIStatic* pUIStatic = m_pSlider->GetBtnStatic();
 	std::string out_str = "";
-	if (pUIStatic && m_bDrawValue)
+	if (m_bDrawValue)
 	{
 		switch (m_mode)
 		{
 			case eTrackBarModeInt:
 			{
 				out_str = std::to_string(m_i_val);
-			}break;
+			}
+			break;
 			case eTrackBarModeFloat:
 			{
 				out_str = FormatFloatWithStep(m_f_val, m_i_num_of_signs);
-			}break;
+			}
+			break;
 			case eTrackBarModeToken:
 			{
 				xr_token* tok = GetOptToken();
 				LPCSTR cur_val = get_token_name(tok, m_i_val - 1);
-				out_str = *CStringTable().translate(cur_val);
-			}break;
+				out_str = g_pStringTable->translate(cur_val).c_str();
+			}
+			break;
 			case eTrackBarModeBool:
 			{
-				out_str = m_i_val == m_i_min ? *CStringTable().translate("st_track_opt_off") : *CStringTable().translate("st_track_opt_on");
-			}break;
+				out_str = m_i_val == m_i_min ? g_pStringTable->translate("st_track_opt_off").c_str() : g_pStringTable->translate("st_track_opt_on").c_str();
+			}
+			break;
 		}
-		pUIStatic->SetText(out_str.c_str());
 	}
+
+	if (pUIStatic)
+		pUIStatic->SetText(out_str.c_str());
 }
 
 void CUITrackBar::SetCurrentOptValue()

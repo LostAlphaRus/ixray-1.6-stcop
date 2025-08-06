@@ -11,6 +11,7 @@
 #include <luabind/luabind.hpp>
 #include <luabind/adopt_policy.hpp>
 #include "UIHint.h"
+#include "UIOptionsItem.h"
 
 CFontManager& mngr()
 {
@@ -145,7 +146,7 @@ void CUIWindow::script_register(lua_State *L)
 		def("GetCursorPosition",			&GetCursorPosition_script),
 		def("SetCursorPosition",			&SetCursorPosition_script),
 		def("FitInRect",					&fit_in_rect),
-		def("SetARGB", &SetARGB),
+		def("SetARGB",						&SetARGB),
 
 		class_<TEX_INFO>("TEX_INFO")
 		.def("get_file_name",	 			&TEX_INFO::get_file_name)
