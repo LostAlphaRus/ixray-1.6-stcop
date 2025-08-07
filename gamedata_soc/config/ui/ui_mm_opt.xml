@@ -84,11 +84,11 @@
 	</main_dialog>
   <tab_size x="55" y="74" width="738" height="416"/>
   
-#include "ui\ui_mm_opt_video.xml"
-#include "ui\ui_mm_opt_video_adv.xml"
-#include "ui\ui_mm_opt_sound.xml"
-#include "ui\ui_mm_opt_gameplay.xml"
-#include "ui\ui_mm_opt_controls.xml"
+#include "ui\options_tabs\ui_mm_opt_video.xml"
+#include "ui\options_tabs\ui_mm_opt_video_adv.xml"
+#include "ui\options_tabs\ui_mm_opt_sound.xml"
+#include "ui\options_tabs\ui_mm_opt_gameplay.xml"
+#include "ui\options_tabs\ui_mm_opt_controls.xml"
 	
 	<frame x="0" y="0" width="470" height="330">
 		<texture>ui_tablist_textbox</texture>		
