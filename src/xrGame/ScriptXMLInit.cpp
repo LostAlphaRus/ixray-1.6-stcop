@@ -22,6 +22,7 @@
 #include "../../xrUI/Widgets/UIScrollView.h"
 #include "../../xrUI/Widgets/UIProgressBar.h"
 #include "../../xrUI/Widgets/UIListWnd.h"
+#include "../../xrUI/Widgets/UIArrow.h"
 
 using namespace luabind;
 
@@ -331,6 +332,13 @@ CUIEditBox* CScriptXmlInit::InitMPPlayerName(LPCSTR path, CUIWindow* parent)
 	return							pWnd;	
 }
 
+CUIArrow* CScriptXmlInit::InitArrow(LPCSTR path, CUIWindow* parent)
+{
+	CUIArrow* pWnd					= new CUIArrow();
+	pWnd->init_from_xml				(m_xml, path, parent);
+	return							pWnd;	
+}
+
 #pragma optimize("s",on)
 void CScriptXmlInit::script_register(lua_State *L){
 	module(L)
@@ -378,6 +386,7 @@ void CScriptXmlInit::script_register(lua_State *L){
 		.def("InitListBox",				&CScriptXmlInit::InitListBox)
 		.def("InitList",				&CScriptXmlInit::InitListWnd)
 		.def("InitProgressBar",			&CScriptXmlInit::InitProgressBar)
+		.def("InitArrow",				&CScriptXmlInit::InitArrow)
 	];
 
 }

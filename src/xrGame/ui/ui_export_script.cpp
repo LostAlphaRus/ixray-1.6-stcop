@@ -21,6 +21,8 @@
 #include "ui/UIMapInfo.h"
 #include "map_manager.h"
 #include "ScriptXMLInit.h"
+#include "../xrUI/Widgets/UIArrow.h"
+
 using namespace luabind;
 
 CMainMenu*	MainMenu();
@@ -52,6 +54,7 @@ void UIRegistrator::script_register(lua_State *L)
 	CUIMapInfo::script_register(L);
 	CScriptXmlInit::script_register(L);
 	CUIGameCustom::script_register(L);
+	CUIArrow::script_register(L);
 
 	module(L)
 	[
