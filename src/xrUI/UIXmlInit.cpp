@@ -1173,12 +1173,11 @@ void CUIXmlInit::InitColorDefs()
 	}
 }
 
-bool CUIXmlInit::InitScrollView	(CUIXml& xml_doc, LPCSTR path, int index, CUIScrollView* pWnd)
+bool CUIXmlInit::InitScrollView	(CUIXml& xml_doc, LPCSTR path, int index, CUIScrollView* pWnd, bool fatal)
 {
-	bool ValidNode = xml_doc.NavigateToNode(path, index);
-	R_ASSERT4(ValidNode, "XML node not found", path, xml_doc.m_xml_file_name);
+	if (!InitWindow(xml_doc, path, index, pWnd, fatal))
+		return false;
 
-	InitWindow							(xml_doc, path, index, pWnd);
 	pWnd->SetRightIndention				(xml_doc.ReadAttribFlt	(path, index, "right_ident",	0.0f));
 	pWnd->SetLeftIndention				(xml_doc.ReadAttribFlt	(path, index, "left_ident",		0.0f));
 	pWnd->SetUpIndention				(xml_doc.ReadAttribFlt	(path, index, "top_indent",		0.0f));
