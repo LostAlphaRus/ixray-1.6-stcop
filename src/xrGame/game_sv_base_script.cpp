@@ -25,43 +25,6 @@ void game_sv_GameState::script_register(lua_State *L)
 
 	module(L,"game")
 	[
-	class_< xrTime >("CTime")
-		.enum_("date_format")
-		[
-			value("DateToDay",		int(InventoryUtilities::edpDateToDay)),
-			value("DateToMonth",	int(InventoryUtilities::edpDateToMonth)),
-			value("DateToYear",		int(InventoryUtilities::edpDateToYear))
-		]
-		.enum_("time_format")
-		[
-			value("TimeToHours",	int(InventoryUtilities::etpTimeToHours)),
-			value("TimeToMinutes",	int(InventoryUtilities::etpTimeToMinutes)),
-			value("TimeToSeconds",	int(InventoryUtilities::etpTimeToSeconds)),
-			value("TimeToMilisecs",	int(InventoryUtilities::etpTimeToMilisecs))
-		]
-		.def(						constructor<>()				)
-		.def(						constructor<const xrTime&>())
-		.def(const_self <			xrTime()					)
-		.def(const_self <=			xrTime()					)
-		.def(const_self >			xrTime()					)
-		.def(const_self >=			xrTime()					)
-		.def(const_self ==			xrTime()					)
-		.def(self +					xrTime()					)
-		.def(self -					xrTime()					)
-
-		.def("diffSec"				,&xrTime::diffSec_script)
-		.def("add"					,&xrTime::add_script)
-		.def("sub"					,&xrTime::sub_script)
-
-		.def("setHMS"				,&xrTime::setHMS)
-		.def("setHMSms"				,&xrTime::setHMSms)
-		.def("set"					,&xrTime::set)
-		.def("get"					,&xrTime::get, out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
-		.def("dateToString"			,&xrTime::dateToString)
-		.def("timeToString"			,&xrTime::timeToString),
-		// declarations
-		def("time",					get_time),
-		def("get_game_time",		get_time_struct),
 //		def("get_surge_time",	Game::get_surge_time),
 //		def("get_object_by_name",Game::get_object_by_name),
 	
