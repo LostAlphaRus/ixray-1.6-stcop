@@ -324,6 +324,7 @@ void	CSpecificCharacter::save(NET_Packet& output_packet)
 #ifdef  XRGAME_EXPORTS
 	save_data(data()->m_prev_icon_name, output_packet);
 	save_data(data()->m_icon_name, output_packet);
+	save_data(data()->m_saved_icon_name, output_packet);
 #endif
 }
 
@@ -332,5 +333,6 @@ void	CSpecificCharacter::load(IReader& input_packet)
 #ifdef  XRGAME_EXPORTS
 	load_data(data()->m_prev_icon_name, input_packet);
 	load_data(data()->m_icon_name, input_packet);
+	load_data(data()->m_saved_icon_name, input_packet);
 #endif
 }
