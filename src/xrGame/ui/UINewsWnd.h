@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../../xrUI/Widgets/UIWindow.h"
+#include "../../xrUI/xrUIXmlParser.h"
 class CUIScrollView;
-class CUIXml;
 struct GAME_NEWS_DATA;
 
 class CUINewsWnd: public CUIWindow

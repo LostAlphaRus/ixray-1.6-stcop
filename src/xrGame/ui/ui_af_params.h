@@ -1,10 +1,9 @@
 #pragma once
 #include "../../xrUI/Widgets/UIWindow.h"
 #include "../../xrEngine/AI/alife_space.h"
-
+#include "../../xrUI/Widgets/UIStatic.h"
 
 class CUIXml;
-class CUIStatic;
 class UIArtefactParamItem;
 class CInventoryItem;
 
