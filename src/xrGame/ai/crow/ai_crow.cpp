@@ -200,7 +200,11 @@ void CAI_Crow::switch2_FlyUp()
 }
 void CAI_Crow::switch2_FlyIdle()
 {
-	smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle	(m_Anims.m_idle.GetRandom());
+	MotionID anm = m_Anims.m_idle.GetRandom();
+	IKinematicsAnimated* ka = smart_cast<IKinematicsAnimated*>(Visual());
+
+	if (anm.valid())
+		ka->PlayCycle	(anm);
 }
 void CAI_Crow::switch2_DeathDead()
 {

@@ -465,7 +465,8 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 
 		if(map->Heading())
 		{
-			m_position_on_map	= map->ConvertRealToLocal(position, true); //for drawing
+			// St4lker0k765: temporary fix, do something more complex later
+			m_position_on_map	= map->ConvertRealToLocal(position, !EngineExternal().ShadowOfChernobylMode()); //for drawing
 			sp->SetWndPos		(m_position_on_map);
 		}
 

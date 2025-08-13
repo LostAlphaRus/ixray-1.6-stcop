@@ -550,7 +550,7 @@ void CAI_Stalker::LookAtActor(CBoneInstance* headBone) {
 	if (!g_Alive())
 		return;
 
-	if (!Actor())
+	if (!g_actor)
 		return;
 
 	if (wounded())

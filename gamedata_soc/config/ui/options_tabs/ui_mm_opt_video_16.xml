@@ -6,7 +6,7 @@
 			<options_item entry="renderer" group="mm_opt_video" depend="restart"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
-        <d color="ui_gray"/>
+        <d r="128" g="128" b="128"/>
       </text_color>
 			<list_font_s r="240" g="217" b="182"/>
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
@@ -19,7 +19,7 @@
 			<options_item entry="_preset" group="mm_opt_video_preset" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
-        <d color="ui_gray"/>
+        <d r="128" g="128" b="128"/>
       </text_color>
 			<list_font_s r="240" g="217" b="182"/>
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
@@ -32,7 +32,7 @@
 			<options_item entry="vid_mode" group="mm_opt_video" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
-        <d color="ui_gray"/>
+        <d r="128" g="128" b="128"/>
       </text_color>
 			<list_font_s r="240" g="217" b="182"/>
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
@@ -87,7 +87,7 @@
 			<options_item entry="r__screenshot_format" group="mm_opt_video_preset" depend="runtime"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
-				<d color="ui_gray"/>
+				<d r="128" g="128" b="128"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
 			<list_font	 r="216" g="186" b="140" font="letterica16"/>
