@@ -191,7 +191,7 @@ void CUIOutfitInfo::InitFromXml( CUIXml& xml_doc )
 	for (auto [id, section, caption, magnitude, unit] : outfit_immunity)
 	{
 		m_items[id] = CreateItem(xml_doc, section, magnitude, unit, caption);
-		if (!m_listWnd)
+		if (m_items[id] && !m_listWnd)
 		{
 			AttachChild(m_items[id]);
 			m_items[id]->SetWndPos(pos);
