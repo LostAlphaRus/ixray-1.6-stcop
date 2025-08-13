@@ -433,6 +433,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		Fvector2 position	= GetPosition();
 
 		m_position_on_map	= map->ConvertRealToLocal(position, (map->Heading())?false:true); //for visibility calculating
+		Fvector2 pos_border	= map->ConvertRealToLocal(position, true); //for visibility calculating
 
 		sp->SetWndPos		(m_position_on_map);
 
@@ -457,7 +458,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 		CMapSpot* s = GetSpotBorder(sp);
 		if (s)
 		{
-			s->SetWndPos(sp->GetWndPos());
+			s->SetWndPos(pos_border);
 			map->AttachChild(s);
 		}
 
@@ -465,8 +466,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp )
 
 		if(map->Heading())
 		{
-			// St4lker0k765: temporary fix, do something more complex later
-			m_position_on_map	= map->ConvertRealToLocal(position, !EngineExternal().ShadowOfChernobylMode()); //for drawing
+			m_position_on_map	= map->ConvertRealToLocal(position, true); //for drawing
 			sp->SetWndPos		(m_position_on_map);
 		}
 
