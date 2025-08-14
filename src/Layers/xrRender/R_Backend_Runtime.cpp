@@ -15,7 +15,6 @@ using namespace DirectX;
 #include "../xrRender/dxUIShader.h"
 
 #include <lunasvg\lunasvg.h>
-
 #include "smol-atlas.h"
 
 #ifdef DEBUG
@@ -703,26 +702,35 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, 
 		0,
 		&lr,
 		nullptr,
-		D3DLOCK_NOOVERWRITE
+		D3DLOCK_DISCARD
 	);
 
-	R_ASSERT(SUCCEEDED(hr) && "failed to lockrect");
-	R_ASSERT(lr.pBits && "failed to get data from buffer!");
-
-	// Copy row by row
-	BYTE* destBase = reinterpret_cast<BYTE*>(lr.pBits);
-	for (UINT row = 0; row < h; ++row)
+	if (!SUCCEEDED(hr))
 	{
-		BYTE* destRow = destBase
-			+ (y + row) * lr.Pitch
-			+ (x * 4);
-		const BYTE* srcRow = reinterpret_cast<const BYTE*>(pData)
-			+ row * pitch;
-
-		std::memcpy(destRow, srcRow, w * 4);
+		Msg("! [D3D9]: failed to map texture, reason: %s", Debug.dxerror2string(hr));
+		R_ASSERT(SUCCEEDED(hr) && "failed to lockrect");
+		R_ASSERT(lr.pBits && "failed to get data from buffer!");
 	}
 
-	pCasted->UnlockRect(0);
+	if (SUCCEEDED(hr))
+	{
+		// Copy row by row
+		BYTE* destBase = reinterpret_cast<BYTE*>(lr.pBits);
+		for (UINT row = 0; row < h; ++row)
+		{
+			BYTE* destRow = destBase
+				+ (y + row) * lr.Pitch
+				+ (x * 4);
+			const BYTE* srcRow = reinterpret_cast<const BYTE*>(pData)
+				+ row * pitch;
+
+			std::memcpy(destRow, srcRow, w * 4);
+		}
+	}
+
+	hr = pCasted->UnlockRect(0);
+
+	R_ASSERT(SUCCEEDED(hr) && "failed to umap texture");
 
 #else
 #error provide sdk 

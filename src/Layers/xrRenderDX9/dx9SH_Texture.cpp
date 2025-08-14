@@ -102,6 +102,15 @@ void CTexture::CreateEmpty(u32 w, u32 h)
 		&pTexture,
 		nullptr
 	);
+	
+	if (!SUCCEEDED(hr))
+	{
+		pTexture = nullptr;
+		Msg("![D3D9]: failed to create texture on d3d9 side, reason = %s", Debug.dxerror2string(hr));
+	}
+
+	R_ASSERT(SUCCEEDED(hr) && "failed to create texture!");
+
 	pSurface = pTexture;
 
 	if (pSurface)
