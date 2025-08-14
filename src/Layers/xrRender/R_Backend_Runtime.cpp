@@ -707,6 +707,7 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, 
 	);
 
 	R_ASSERT(SUCCEEDED(hr) && "failed to lockrect");
+	R_ASSERT(lr.pBits && "failed to get data from buffer!");
 
 	// Copy row by row
 	BYTE* destBase = reinterpret_cast<BYTE*>(lr.pBits);
