@@ -59,7 +59,7 @@
 			<auto_static x="5" y="45" width="4" height="460">
 				<texture>ui\ui_pda_vertical_line_r_l</texture>
 			</auto_static>
-			<auto_static x="416" y="45" width="4" height="460">
+			<auto_static x="310" y="45" width="4" height="460">
 				<texture>ui\ui_pda_vertical_line_r_r</texture>
 			</auto_static>
 
