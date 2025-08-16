@@ -20,6 +20,7 @@ protected:
 	virtual shared_str SetCurrentStateAnimation(const shared_str& first_name);
 	virtual shared_str SetCurrentShootAnimation();
 	virtual shared_str SetCurrentReloadAnimation();
+	virtual shared_str SetCurrentAimAnimation		();
 
 	virtual CWeaponBM16* cast_weapon_bm16() { return this; }
 

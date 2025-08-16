@@ -255,6 +255,19 @@ shared_str CWeaponBM16::SetCurrentStateAnimation(const shared_str& first_name)
 	return anim;
 }
 
+shared_str CWeaponBM16::SetCurrentAimAnimation()
+{
+	if (IsZoomed())
+	{
+		if (iAmmoElapsed == 2 && HudAnimationExist("anim_zoomedidle_2"))
+			return "anim_zoomedidle_2";
+		else if (iAmmoElapsed == 1 && HudAnimationExist("anim_zoomed_idle_1"))
+			return "anim_zoomed_idle_1";
+	}
+
+	return inherited::SetCurrentAimAnimation();
+}
+
 bool CWeaponBM16::HudAnimationExist(const shared_str& anim_name)
 {
 	string128 new_name;
