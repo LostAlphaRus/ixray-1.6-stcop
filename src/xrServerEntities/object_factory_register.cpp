@@ -142,6 +142,7 @@
 #	include "elitedetector.h"
 #	include "advanceddetector.h"
 #	include "zonecampfire.h"
+#	include "DynamicWallmarkZone.h"
 
 #	include "torch.h"
 #	include "pda.h"
@@ -398,7 +399,7 @@ void CObjectFactory::register_classes	()
 	ADD(CAmebaZone				,CSE_ALifeZoneVisual			,CLSID_Z_AMEBA					,"ameba_zone");
 	ADD(CNoGravityZone			,CSE_ALifeAnomalousZone			,CLSID_Z_NOGRAVITY				,"nogravity_zone");
 	ADD(CZoneCampfire			,CSE_ALifeAnomalousZone			,CLSID_Z_CAMPFIRE				,"zone_campfire");
-	ADD(CSpaceRestrictor		,CSE_ALifeDynamicWallmark		,TEXT2CLSID("DYNA_WM")			,"dynamic_wallmark");
+	ADD(CDynamicWallmarkZone		,CSE_ALifeDynamicWallmark		,TEXT2CLSID("DYNA_WM")			,"dynamic_wallmark");
 	// Detectors
 	ADD(CSimpleDetector			,CSE_ALifeItemDetector			,CLSID_DETECTOR_SIMPLE			,"device_detector_simple");
 	ADD(CAdvancedDetector		,CSE_ALifeItemDetector			,CLSID_DETECTOR_ADVANCED		,"device_detector_advanced");
