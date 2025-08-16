@@ -508,6 +508,14 @@ void CSpawnPoint::SSpawnData::OnWallmarkUpdateClick(ButtonValue* value, bool& bM
 	}
 }
 
+void CSpawnPoint::SSpawnData::OnWallmarkDetachClick(ButtonValue* value, bool& bModif, bool& bSafe)
+{
+	if (Wallmark)
+	{
+		Wallmark->Detach();
+	}
+}
+
 void CSpawnPoint::SSpawnData::FillProp(LPCSTR pref, PropItemVec& items)
 {
 	xrCriticalSectionGuard guard(mLuaEnter);
@@ -530,6 +538,8 @@ void CSpawnPoint::SSpawnData::FillProp(LPCSTR pref, PropItemVec& items)
 	{
 		auto Button = PHelper().CreateButton(items, PrepareKey(pref,m_Data->name(), "Update Wallmark"), "Update", 0);
 		Button->OnBtnClickEvent.bind(this, &CSpawnPoint::SSpawnData::OnWallmarkUpdateClick);
+		Button = PHelper().CreateButton(items, PrepareKey(pref, m_Data->name(), "Convert Wallmark to Static"), "Convert", 0);
+		Button->OnBtnClickEvent.bind(this, &CSpawnPoint::SSpawnData::OnWallmarkDetachClick);
 	}
 }
 

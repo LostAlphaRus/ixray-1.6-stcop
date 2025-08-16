@@ -174,5 +174,6 @@ public:
 	WMData& GetData() {return m_data;}
 
 	void Update();
+	void Detach();
 	
 };

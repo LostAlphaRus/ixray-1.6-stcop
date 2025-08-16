@@ -1032,4 +1032,12 @@ void EWallmarkWrapper::Update()
 		m_data.w,m_data.h,m_data.r, &m_wallmark);
 }
 
+void EWallmarkWrapper::Detach()
+{
+	if (!m_wallmark) return;
+
+	m_wallmark->flags.set(ESceneWallmarkTool::wallmark::flTemporary, false);
+	m_wallmark = nullptr;
+}
+
 
