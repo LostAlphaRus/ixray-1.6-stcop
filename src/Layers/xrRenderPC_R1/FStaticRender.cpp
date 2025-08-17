@@ -278,14 +278,14 @@ StaticWallmarkHandle::WallmarkHandlePtr CRender::add_DynamicWallmark(const wm_sh
 {
 	if (T->suppress_wm)
 	{
-		R_ASSERT(!T->suppress_wm, "Unable to add dynamic wallmark!");
+		R_ASSERT2(!T->suppress_wm, "Unable to add dynamic wallmark!");
 		return nullptr;
 	}
-	VERIFY(_valid(P), "Invalid dynamic wallmark position");
-	VERIFY(_valid(w) && (w > EPS_L), "Invalid dynamic wallmark width");
-	VERIFY(_valid(h) && (h > EPS_L), "Invalid dynamic wallmark height");
-	VERIFY(_valid(r), "Invalid dynamic wallmark rotation");
-	VERIFY(T && V, "Invalid static wallmark params");
+	VERIFY2(_valid(P), "Invalid dynamic wallmark position");
+	VERIFY2(_valid(w) && (w > EPS_L), "Invalid dynamic wallmark width");
+	VERIFY2(_valid(h) && (h > EPS_L), "Invalid dynamic wallmark height");
+	VERIFY2(_valid(r), "Invalid dynamic wallmark rotation");
+	VERIFY2(T && V, "Invalid static wallmark params");
 	dxUIShader* pShader = (dxUIShader*)&*S;
 	auto wm = Wallmarks->AddStaticWallmark(
 		T, V, P, pShader->hShader, w, h, r,

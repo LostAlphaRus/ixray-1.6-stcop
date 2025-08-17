@@ -3,6 +3,7 @@
 #include "../Include/xrRender/WallMarkArray.h"
 
 #include "xrServer_Objects_ALife.h"
+#include "Level.h"
 
 CDynamicWallmarkRegistry::CDynamicWallmarkRegistry()
 {
