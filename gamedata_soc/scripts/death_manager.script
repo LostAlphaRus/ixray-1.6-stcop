@@ -147,7 +147,12 @@ end
 function keep_item(npc, item)
     local section = item:section()
 
-    if section == "bolt" then
+    if section == "bolt"
+	or section == "guitar_a"
+	or section == "harmonica_a"
+	or section == "wpn_binoc"
+	or section == "device_torch"
+	or section == "device_pda" then
         return false
     end
 
