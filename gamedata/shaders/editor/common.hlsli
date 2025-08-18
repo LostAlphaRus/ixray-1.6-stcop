@@ -254,7 +254,7 @@ void cotangent_frame(inout p_bumped_new O)
     float2 duv1 = ddx(O.tcdh.xy);
     float2 duv2 = ddy(O.tcdh.xy);
 
-	float3 N = normalize(O.M1);
+	float3 N = normalize(cross(dp1, dp2));//O.M1);
 
     // Solve the linear system
     float3 dp2perp = cross(dp2, N);
