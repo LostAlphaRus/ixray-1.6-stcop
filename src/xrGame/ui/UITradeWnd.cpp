@@ -36,6 +36,7 @@
 #define				TRADE_CHARACTER_XML	"trade_character.xml"
 #define				TRADE_ITEM_XML		"trade_item.xml"
 
+
 CUITradeWnd::CUITradeWnd()
 	:	m_bDealControlsVisible	(false),
 		m_pTrade(nullptr),
