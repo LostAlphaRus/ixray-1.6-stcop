@@ -447,6 +447,8 @@ typedef _vector3<double>	Dvector3;
 typedef _vector3<s32>		Ivector;
 typedef _vector3<s32>		Ivector3;
 
+static_assert(sizeof(Fvector) == 12, "Incorrect size of Fvector");
+
 template <class T>
 BOOL	_valid			(const _vector3<T>& v)	{ return _valid((T)v.x) && _valid((T)v.y) && _valid((T)v.z);	}
 

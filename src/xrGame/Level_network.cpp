@@ -199,7 +199,7 @@ void CLevel::ClientSend()
 
 				pObj->net_Export			(P);
 
-				if (P.B.count>9)				
+				if (P.GetBufferSize()>9)				
 				{
 					if (!OnServer())
 						Send	(P, net_flags(FALSE));
@@ -223,7 +223,7 @@ void CLevel::ClientSend()
 		P.w_begin						(M_UPDATE);
 		start	= Objects.net_Export	(&P, start, max_objects_size);
 
-		if (P.B.count>2)
+		if (P.GetBufferSize()>2)
 		{
 			Device.Statistic->TEST3.Begin();
 				Send	(P, net_flags(FALSE));
@@ -257,7 +257,7 @@ void CLevel::ClientSave()
 		GO->net_Save(Packet);
 		Packet.w_chunk_close16(ChunkID);
 
-		if (Packet.B.count > 2)
+		if (Packet.GetBufferSize() > 2)
 		{
 			Send(Packet, net_flags(FALSE));
 		}
@@ -366,9 +366,6 @@ BOOL CLevel::Connect2Server(LPCSTR options)
 			if (CurTime > EndTime)
 			{
 				NET_Packet	P;
-				P.B.count = 0;
-				P.r_pos = 0;
-
 				P.w_u8(0);
 				P.w_u8(0);
 				P.w_stringZ("Data verification failed. Cheater?");

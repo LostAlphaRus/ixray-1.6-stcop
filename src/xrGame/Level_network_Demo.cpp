@@ -173,8 +173,8 @@ void CLevel::SavePacket(NET_Packet& packet)
 {
 	m_writer->w_u32	(Device.dwTimeGlobal - m_demo_header.m_time_global);
 	m_writer->w_u32	(packet.timeReceive);
-	m_writer->w_u32	(packet.B.count);
-	m_writer->w		(packet.B.data, packet.B.count);
+	m_writer->w_u32	(packet.GetBufferSize());
+	m_writer->w		(packet.GetBuffer(), packet.GetBufferSize());
 }
 
 bool CLevel::LoadDemoHeader	()
@@ -208,8 +208,8 @@ bool CLevel::LoadPacket		(NET_Packet & dest_packet, u32 global_time_delta)
 		(tmp_hdr.m_time_global_delta < global_time_delta))
 	{
 		R_ASSERT2	(tmp_hdr.m_packet_size < NET_PacketSizeLimit, "bad demo packet");
-		m_reader->r	(dest_packet.B.data, tmp_hdr.m_packet_size);
-		dest_packet.B.count		= tmp_hdr.m_packet_size;
+		m_reader->r	(dest_packet.GetBuffer(), tmp_hdr.m_packet_size);
+		dest_packet.SetBufferSize(tmp_hdr.m_packet_size);
 		dest_packet.timeReceive = tmp_hdr.m_timeReceive; //not used ..
 		dest_packet.r_pos		= 0;
 		if (m_reader->elapsed() <= sizeof(DemoPacket))
@@ -229,7 +229,7 @@ void CLevel::SimulateServerUpdate()
 	{
 		if (m_msg_filter)
 			m_msg_filter->check_new_data(tmp_packet);
-		IPureClient::OnMessage(tmp_packet.B.data, tmp_packet.B.count);
+		IPureClient::OnMessage(tmp_packet.GetBuffer(), tmp_packet.GetBufferSize());
 	}
 }
 

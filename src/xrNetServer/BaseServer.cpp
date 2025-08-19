@@ -427,32 +427,12 @@ void BaseServer::SendTo_Buf(ClientID id, void* data, u32 size, u32 dwFlags, u32 
 
 void BaseServer::SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout)
 {
-	/*if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS))
-	{
-		if (!pSvNetLog) pSvNetLog = new INetLog("logs\\net_sv_log.log", TimeGlobal(device_timer));
-		if (pSvNetLog) pSvNetLog->LogData(TimeGlobal(device_timer), data, size);
-	}*/
-
-	/*
-#ifdef _DEBUG
-	u32 time_global = TimeGlobal(device_timer);
-	if (time_global - stats.dwSendTime >= 999)
-	{
-		stats.dwBytesPerSec = (stats.dwBytesPerSec * 9 + stats.dwBytesSended) / 10;
-		stats.dwBytesSended = 0;
-		stats.dwSendTime = time_global;
-	};
-	if (ID.value())
-		stats.dwBytesSended += size;
-#endif
-*/
-
 	_SendTo_LL(ID, data, size, dwFlags, dwTimeout);
 }
 
 void BaseServer::SendTo(ClientID ID, NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
-	SendTo_LL(ID, P.B.data, P.B.count, dwFlags, dwTimeout);
+	SendTo_LL(ID, P.GetBuffer(), P.GetBufferSize(), dwFlags, dwTimeout);
 }
 
 void BaseServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dwFlags)
@@ -493,7 +473,7 @@ void BaseServer::SendBroadcast_LL(ClientID exclude, void* data, u32 size, u32 dw
 void BaseServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
 {
 	// Perform broadcasting
-	SendBroadcast_LL(exclude, P.B.data, P.B.count, dwFlags);
+	SendBroadcast_LL(exclude, P.GetBuffer(), P.GetBufferSize(), dwFlags);
 }
 
 #pragma endregion
@@ -504,25 +484,15 @@ void BaseServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
 
 void BaseServer::_Recieve(const void* data, u32 data_size, u32 param)
 {
-	if (data_size >= NET_PacketSizeLimit) {
+	if (data_size >= NET_PacketSizeLimit)
+	{
 		Msg("! too large packet size[%d] received, DoS attack?", data_size);
 		return;
 	}
 
 	csMessagesQueue.Enter();
-
 	m_messagesQueue.emplace_back(data, data_size, param);
-
 	csMessagesQueue.Leave();
-
-	/*if (psNET_Flags.test(NETFLAG_LOG_SV_PACKETS))
-	{
-		if (!pSvNetLog)
-			pSvNetLog = new INetLog("logs\\net_sv_log.log", TimeGlobal(device_timer));
-
-		if (pSvNetLog)
-			pSvNetLog->LogPacket(TimeGlobal(device_timer), &packet, TRUE);
-	}*/
 }
 
 void BaseServer::ProcessMessagesQueue()

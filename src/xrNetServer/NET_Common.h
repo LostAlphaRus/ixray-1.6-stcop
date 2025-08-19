@@ -42,49 +42,40 @@ struct GameDescriptionData
 
 extern XRNETSERVER_API int psNET_GuaranteedPacketMode;
 
-/*#ifdef DEBUG
-void PrintParsedPacket(const char* message, u16 message_type, const void* packet_data, u32 packet_size);
-#endif*/
-
 //==============================================================================
-
 class XRNETSERVER_API
-MultipacketSender
+    MultipacketSender
 {
 public:
-                    MultipacketSender();
-    virtual         ~MultipacketSender() {}
+    MultipacketSender();
+    virtual ~MultipacketSender() {}
 
-    void            SendPacket( const void* packet_data, u32 packet_sz, u32 flags, u32 timeout );
-    void            FlushSendBuffer( u32 timeout );
+    void SendPacket(const void* packet_data, u32 packet_sz, u32 flags, u32 timeout);
+    void FlushSendBuffer(u32 timeout);
 
 
 protected:
-
-    virtual void    _SendTo_LL( const void* data, u32 size, u32 flags, u32 timeout ) =0;
+    virtual void _SendTo_LL(const void* data, u32 size, u32 flags, u32 timeout) = 0;
 
 
 private:
-
-    struct Buffer;
-
-
-    void            _FlushSendBuffer( u32 timeout, Buffer* buf );
-
-    struct
-    Buffer
+    struct Buffer
     {
-                    Buffer() : last_flags(0) { buffer.B.count = 0; }
-                    
+        Buffer() : last_flags(0)
+        {
+            buffer.SetBufferSize(0);
+        }
+
         NET_Packet  buffer;
         u32         last_flags;
     };
 
-    Buffer              _buf;
-    Buffer              _gbuf;
-    xrCriticalSection   _buf_cs;
-};
+    void _FlushSendBuffer(u32 timeout, Buffer* buf);
 
+    Buffer _buf;
+    Buffer _gbuf;
+    xrCriticalSection _buf_cs;
+};
 
 //==============================================================================
 

@@ -369,23 +369,25 @@ void item_respawn_manager::respawn_level_items()
 	string_path				fn_spawn;
 	if (FS.exist(fn_spawn, "$level$", "level_rs.spawn"))
 	{
-		IReader*			SP		= FS.r_open(fn_spawn);
-		NET_Packet			P;
-		u32					S_id;
-		for (IReader *S = SP->open_chunk_iterator(S_id); S; S = SP->open_chunk_iterator(S_id,S)) {
-			P.B.count		= S->length();
-			S->r			(P.B.data,P.B.count);
-			
-			u16				ID;
-			P.r_begin		(ID);
-			R_ASSERT		(M_SPAWN==ID);
-			ClientID clientID;clientID.set(0);
+		IReader* SP = FS.r_open(fn_spawn);
+		NET_Packet P;
+		u32 S_id;
 
-			CSE_Abstract			*entity = m_server->Process_spawn(P,clientID);
-			
+		for (IReader* S = SP->open_chunk_iterator(S_id); S; S = SP->open_chunk_iterator(S_id, S))
+		{
+			P.SetBufferSize(S->length());
+			S->r(P.GetBuffer(), P.GetBufferSize());
+
+			u16				ID;
+			P.r_begin(ID);
+			R_ASSERT(M_SPAWN == ID);
+			ClientID clientID; clientID.set(0);
+
+			CSE_Abstract* entity = m_server->Process_spawn(P, clientID);
+
 			if (entity)
 				level_items_respawn.insert(entity->ID);
 		}
-		FS.r_close			(SP);
+		FS.r_close(SP);
 	}
 }

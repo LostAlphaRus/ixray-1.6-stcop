@@ -30,8 +30,8 @@ void CServerEntityWrapper::save				(IWriter &stream)
 	stream.open_chunk		(0);
 
 	m_object->Spawn_Write	(net_packet,TRUE);
-	stream.w_u16			(u16(net_packet.B.count));
-	stream.w				(net_packet.B.data,net_packet.B.count);
+	stream.w_u16			(u16(net_packet.GetBufferSize()));
+	stream.w				(net_packet.GetBuffer(),net_packet.GetBufferSize());
 	
 	stream.close_chunk		();
 
@@ -40,8 +40,8 @@ void CServerEntityWrapper::save				(IWriter &stream)
 
 	net_packet.w_begin		(M_UPDATE);
 	m_object->UPDATE_Write	(net_packet);
-	stream.w_u16			(u16(net_packet.B.count));
-	stream.w				(net_packet.B.data,net_packet.B.count);
+	stream.w_u16			(u16(net_packet.GetBufferSize()));
+	stream.w				(net_packet.GetBuffer(),net_packet.GetBufferSize());
 
 //	u16						ID;
 //	net_packet.r_begin		(ID);
@@ -59,8 +59,8 @@ void CServerEntityWrapper::load				(IReader &stream)
 	
 	chunk					= stream.open_chunk(0);
 
-	net_packet.B.count		= chunk->r_u16();
-	chunk->r				(net_packet.B.data,net_packet.B.count);
+	net_packet.SetBufferSize(chunk->r_u16());
+	chunk->r				(net_packet.GetBuffer(),net_packet.GetBufferSize());
 
 	chunk->close			();
 
@@ -77,8 +77,8 @@ void CServerEntityWrapper::load				(IReader &stream)
 	
 	chunk					= stream.open_chunk(1);
 	
-	net_packet.B.count		= chunk->r_u16();
-	chunk->r				(net_packet.B.data,net_packet.B.count);
+	net_packet.SetBufferSize(chunk->r_u16());
+	chunk->r				(net_packet.GetBuffer(),net_packet.GetBufferSize());
 	
 	chunk->close			();
 
@@ -92,8 +92,8 @@ void CServerEntityWrapper::save_update		(IWriter &stream)
 //	NET_Packet				net_packet;
 //	net_packet.w_begin		(M_UPDATE);
 //	m_object->save_update	(net_packet);
-//	stream.w_u16			(u16(net_packet.B.count));
-//	stream.w				(net_packet.B.data,net_packet.B.count);
+//	stream.w_u16			(u16(net_packet.GetBufferSize()));
+//	stream.w				(net_packet.B.data,net_packet.GetBufferSize());
 }
 
 void CServerEntityWrapper::load_update		(IReader &stream)
@@ -101,8 +101,8 @@ void CServerEntityWrapper::load_update		(IReader &stream)
 //	NET_Packet				net_packet;
 //	u16						ID;
 //
-//	net_packet.B.count		= stream.r_u16();
-//	stream.r				(net_packet.B.data,net_packet.B.count);
+//	net_packet.GetBufferSize()		= stream.r_u16();
+//	stream.r				(net_packet.B.data,net_packet.GetBufferSize());
 //
 //	net_packet.r_begin		(ID);
 //	R_ASSERT2				(M_UPDATE == ID,"Invalid packet ID (!= M_UPDATE)!");

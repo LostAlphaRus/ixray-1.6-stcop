@@ -86,7 +86,7 @@ void INetQueue::Release()
 	//---------------------------------------------
 	size_t tmp_time = CPU::GetTickCount() - 60000;
 	size_t size = unused.size();
-	ready.front()->B.count = 0;
+	ready.front()->SetBufferSize(0);
 	if ((LastTimeCreate < tmp_time) && (size > 32))
 	{
 		xr_delete(ready.front());

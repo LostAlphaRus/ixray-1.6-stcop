@@ -152,7 +152,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 			P.r_pos -=2;
 			if (type == GE_HIT_STATISTIC) 
 			{
-				P.B.count -= 4;
+				P.SetBufferSize(P.GetBufferSize() - 4);
 				P.w_u32(sender.value());
 			};
 			game->AddDelayedEvent(P,GAME_EVENT_ON_HIT, 0, ClientID() );

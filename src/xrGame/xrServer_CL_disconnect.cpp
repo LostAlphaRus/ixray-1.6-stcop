@@ -11,8 +11,8 @@ void xrServer::OnCL_Disconnected	(IClient* CL)
 	
 	// Game config (all, info includes deleted player now, excludes at the next cl-update)
 	NET_Packet P;
-	P.B.count = 0;
 	P.w_clientID(CL->ID);
+
 	xrClientData* xrCData = (xrClientData*)(CL);
 	VERIFY(xrCData);
 	

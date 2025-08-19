@@ -306,7 +306,7 @@ void xrServer::MakeUpdatePackets()
 		if (Test.s_flags.is(M_SPAWN_OBJECT_PHANTOM) || !Test.Net_Relevant())	
 			continue;
 
-		tmpPacket.B.count = 0;
+		tmpPacket.SetBufferSize(0);
 
 		// write specific data
 		{
@@ -507,9 +507,9 @@ void xrServer::SendUpdatePacketsToAll()
 			for (update_iterator_t i = m_update_begin; i != m_update_end; ++i)
 			{
 				NET_Packet& P = **i;
-				if (P.B.count > 2)
+				if (P.GetBufferSize() > 2)
 				{
-					m_owner->SendTo_LL(client->ID, P.B.data, P.B.count, m_dwFlags);
+					m_owner->SendTo_LL(client->ID, P.GetBuffer(), P.GetBufferSize(), m_dwFlags);
 				}
 			}
 		}
@@ -669,8 +669,8 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 			NET_Packet	tmpP;
 			while (!P.r_eof())
 			{
-				tmpP.B.count		= P.r_u8();
-				P.r					(&tmpP.B.data, tmpP.B.count);
+				tmpP.SetBufferSize(P.r_u8());
+				P.r					(tmpP.GetBuffer(), tmpP.GetBufferSize());
 
 				OnMessage			(tmpP, sender);
 			};			
@@ -962,7 +962,7 @@ void xrServer::SendBroadcast(ClientID exclude, NET_Packet& P, u32 dwFlags)
 			m_owner->SendTo_LL(client->ID, m_data, m_size, m_dwFlags);			
 		}
 	};
-	ClientSenderFunctor temp_functor(this, P.B.data, P.B.count, dwFlags);
+	ClientSenderFunctor temp_functor(this, P.GetBuffer(), P.GetBufferSize(), dwFlags);
 	net_players.ForFoundClientsDo(ClientExcluderPredicate(exclude), temp_functor);
 }
 //--------------------------------------------------------------------
@@ -1090,7 +1090,7 @@ void xrServer::OnVoiceMessage(NET_Packet& P, ClientID sender)
 	if (!ps) return;
 	if (!pClient->owner) return;
 
-	// Msg("VoiceMessage size: %u", P.B.count);
+	// Msg("VoiceMessage size: %u", P.GetBufferSize());
 
 	struct send_voice_message
 	{
@@ -1499,4 +1499,136 @@ void xrServer::PopLastServerScriptEvent()
 u32 xrServer::GetSizeServerScriptEvent()
 {
 	return script_server_events.size();
+}
+
+void xrServer::SLS_Load(IReader& fs)
+{
+	// Generate spawn+update
+	NET_Packet P;
+	u16 u_id = 0xffff;
+	u32 C;
+
+	for (IReader* F = fs.open_chunk_iterator(C); F; F = fs.open_chunk_iterator(C, F)) {
+		// Spawn
+		P.SetBufferSize(F->r_u16());
+		F->r(P.GetBuffer(), P.GetBufferSize());
+		P.r_begin(u_id);
+		R_ASSERT(M_SPAWN == u_id);
+		ClientID		clientID;
+		clientID.set(0);
+		Process_spawn(P, clientID);
+
+		// Update
+		P.SetBufferSize(F->r_u16());
+		F->r(P.GetBuffer(), P.GetBufferSize());
+		P.r_begin(u_id);
+		R_ASSERT(M_UPDATE == u_id);
+
+		clientID.set(0);
+		Process_update(P, clientID);
+	}
+}
+
+void xrServer::SLS_Save(IWriter& fs)
+{
+	// Generate spawn+update
+	NET_Packet		P;
+	u32				position;
+	xrS_entities::iterator	I = entities.begin(), E = entities.end();
+	for (u32 C = 0; I != E; ++I, ++C)
+	{
+		CSE_Abstract* E_ = I->second;
+
+		fs.open_chunk(C);
+
+		// Spawn
+		E_->Spawn_Write(P, TRUE);
+		fs.w_u16(u16(P.GetBufferSize()));
+		fs.w(P.GetBuffer(), P.GetBufferSize());
+
+		// Update
+		P.w_begin(M_UPDATE);
+		P.w_u16(E_->ID);
+		P.w_chunk_open8(position);
+		E_->UPDATE_Write(P);
+		P.w_chunk_close8(position);
+
+		fs.w_u16(u16(P.GetBufferSize()));
+		fs.w(P.GetBuffer(), P.GetBufferSize());
+
+		fs.close_chunk();
+	}
+}
+
+#if 1//def DEBUG
+#	define USE_DESIGNER_KEY
+#endif
+
+#ifdef USE_DESIGNER_KEY
+#	include "xrServer_Objects_ALife_Monsters.h"
+#endif
+
+void xrServer::SLS_Default()
+{
+	if (game->custom_sls_default()) {
+		game->sls_default();
+		return;
+	}
+
+#ifdef USE_DESIGNER_KEY
+	bool					_designer = !!strstr(Core.Params, "-designer");
+	CSE_ALifeCreatureActor* _actor = 0;
+#endif
+
+	string_path				fn_spawn;
+	if (FS.exist(fn_spawn, "$level$", "level.spawn")) {
+		IReader* SP = FS.r_open(fn_spawn);
+		NET_Packet			P;
+		u32					S_id;
+		for (IReader* S = SP->open_chunk_iterator(S_id); S; S = SP->open_chunk_iterator(S_id, S)) {
+			P.SetBufferSize(S->length());
+			S->r(P.GetBuffer(), P.GetBufferSize());
+
+			u16				ID;
+			P.r_begin(ID);
+			R_ASSERT(M_SPAWN == ID);
+			ClientID clientID; clientID.set(0);
+
+#ifdef USE_DESIGNER_KEY
+			CSE_Abstract* entity =
+#endif
+				Process_spawn(P, clientID);
+#ifdef USE_DESIGNER_KEY
+			if (_designer) {
+				CSE_ALifeCreatureActor* actor = smart_cast<CSE_ALifeCreatureActor*>(entity);
+				if (actor)
+					_actor = actor;
+			}
+#endif
+		}
+		FS.r_close(SP);
+	}
+
+#ifdef USE_DESIGNER_KEY
+	if (!_designer)
+		return;
+
+	if (_actor)
+		return;
+
+	_actor = smart_cast<CSE_ALifeCreatureActor*>(entity_Create("actor"));
+	_actor->o_Position = Fvector().set(0.f, 0.f, 0.f);
+	_actor->set_name_replace("designer");
+	_actor->s_flags.flags |= M_SPAWN_OBJECT_ASPLAYER;
+	NET_Packet				packet;
+	packet.w_begin(M_SPAWN);
+	_actor->Spawn_Write(packet, TRUE);
+
+	u16						id;
+	packet.r_begin(id);
+	R_ASSERT(id == M_SPAWN);
+	ClientID				clientID;
+	clientID.set(0);
+	Process_spawn(packet, clientID);
+#endif
 }

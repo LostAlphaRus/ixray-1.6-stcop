@@ -1212,7 +1212,7 @@ void game_cl_CaptureTheArtefact::OnVoteStart(NET_Packet& P)
 	if (!m_game_ui)
 		return;
 	
-	u32					psize	=	P.B.count + 1;
+	u32					psize	=	P.GetBufferSize() + 1;
 	char*				command = static_cast<char*>(_alloca(psize));
 	char*				player = static_cast<char*>(_alloca(psize));
 	char*				cmd_name = static_cast<char*>(_alloca(psize));

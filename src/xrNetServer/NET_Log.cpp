@@ -95,16 +95,17 @@ void	INetLog::FlushLog()
 	m_aLogPackets.clear();
 }
 
-void		INetLog::LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn)
+void INetLog::LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn)
 {
 	if (!pPacket) return;
 
 	m_cs.Enter();
-	
+
 	SLogPacket NewPacket;
-	
-	NewPacket.m_u16Type = *((u16*)&pPacket->B.data);
-	NewPacket.m_u32Size = pPacket->B.count;
+
+	u8* Buff = pPacket->GetBuffer();
+	NewPacket.m_u16Type = *((u16*)&Buff);
+	NewPacket.m_u32Size = pPacket->GetBufferSize();
 	NewPacket.m_u32Time = Time - m_dwStartTime;
 	NewPacket.m_bIsIn = IsIn;
 
@@ -114,7 +115,7 @@ void		INetLog::LogPacket(u32 Time, NET_Packet* pPacket, bool IsIn)
 	m_cs.Leave();
 };
 
-void		INetLog::LogData(u32 Time, void* data, u32 size, bool IsIn)
+void INetLog::LogData(u32 Time, void* data, u32 size, bool IsIn)
 {
 	if (!data) return;
 

@@ -78,7 +78,7 @@ void CLevel::ClientReceive()
 		}
 		//-----------------------------------------------------
 		m_dwRPC++;
-		m_dwRPS += P->B.count;
+		m_dwRPS += P->GetBufferSize();
 		//-----------------------------------------------------
 		u16			m_type;
 		u16			ID;
@@ -113,8 +113,8 @@ void CLevel::ClientReceive()
 				NET_Packet	tmpP;
 				while (!P->r_eof())
 				{
-					tmpP.B.count = P->r_u8();
-					P->r(&tmpP.B.data, tmpP.B.count);
+					tmpP.SetBufferSize(P->r_u8());
+					P->r(tmpP.GetBuffer(), tmpP.GetBufferSize());
 					tmpP.timeReceive = P->timeReceive;
 
 					game_events->insert		(tmpP);

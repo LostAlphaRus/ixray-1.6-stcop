@@ -1113,10 +1113,10 @@ void game_sv_CaptureTheArtefact::AddAnomalyChanges(
 		u_EventGen			(temp_packet, GE_ZONE_STATE_CHANGE, i->second);
 		temp_packet.w_u8	(static_cast<u8>(state));
 		
-		VERIFY2((packet.w_tell() + temp_packet.B.count) < NET_PacketSizeLimit,
+		VERIFY2((packet.w_tell() + temp_packet.GetBufferSize()) < NET_PacketSizeLimit,
 			"event packet exceeds size !");
-		packet.w_u8		(static_cast<u8>(temp_packet.B.count));
-		packet.w		(&temp_packet.B.data, temp_packet.B.count);
+		packet.w_u8		(static_cast<u8>(temp_packet.GetBufferSize()));
+		packet.w		(temp_packet.GetBuffer(), temp_packet.GetBufferSize());
 	}
 }
 
@@ -1759,12 +1759,12 @@ BOOL game_sv_CaptureTheArtefact::OnTouchItem(CSE_ActorMP *actor, CSE_Abstract *i
 				
 				m_server->Perform_transfer(PacketReject, PacketTake, e_child_item, item, actor);
 
-				EventPack.w_u8(u8(PacketReject.B.count));
-				EventPack.w(&PacketReject.B.data, PacketReject.B.count);
-				EventPack.w_u8(u8(PacketTake.B.count));
-				EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+				EventPack.w_u8(u8(PacketReject.GetBufferSize()));
+				EventPack.w(PacketReject.GetBuffer(), PacketReject.GetBufferSize());
+				EventPack.w_u8(u8(PacketTake.GetBufferSize()));
+				EventPack.w(PacketTake.GetBuffer(), PacketTake.GetBufferSize());
 			}
-			if (EventPack.B.count > 2)
+			if (EventPack.GetBufferSize() > 2)
 				u_EventSend(EventPack);
 		}
 		//-------------------------------
@@ -1949,13 +1949,13 @@ void game_sv_CaptureTheArtefact::OnDetachItem(CSE_ActorMP *actor, CSE_Abstract *
 			tr_it != tr_it_e; ++tr_it)
 		{
 			m_server->Perform_transfer(PacketReject, PacketTake, *tr_it, actor, item);
-			EventPack.w_u8(u8(PacketReject.B.count));
-			EventPack.w(&PacketReject.B.data, PacketReject.B.count);
-			EventPack.w_u8(u8(PacketTake.B.count));
-			EventPack.w(&PacketTake.B.data, PacketTake.B.count);
+			EventPack.w_u8(u8(PacketReject.GetBufferSize()));
+			EventPack.w(PacketReject.GetBuffer(), PacketReject.GetBufferSize());
+			EventPack.w_u8(u8(PacketTake.GetBufferSize()));
+			EventPack.w(PacketTake.GetBuffer(), PacketTake.GetBufferSize());
 		}
 		
-		if (EventPack.B.count > 2)	
+		if (EventPack.GetBufferSize() > 2)	
 			u_EventSend(EventPack);
 
 		std::for_each(to_destroy.begin(), to_destroy.end(),
@@ -2037,7 +2037,7 @@ void game_sv_CaptureTheArtefact::MoveLifeActors()
 	NET_Packet MovePacket;
 	MovePacket.w_begin(M_MOVE_PLAYERS);
 	MovePacket.w_u8(tmp_functor.lifeActors);
-	MovePacket.w(tmp_functor.tempPacket.B.data, tmp_functor.tempPacket.B.count);
+	MovePacket.w(tmp_functor.tempPacket.GetBuffer(), tmp_functor.tempPacket.GetBufferSize());
 	m_server->SendBroadcast(BroadcastCID, MovePacket, net_flags(TRUE, TRUE));
 }
 

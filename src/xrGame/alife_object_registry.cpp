@@ -28,34 +28,34 @@ CALifeObjectRegistry::~CALifeObjectRegistry	()
 	m_objects_as_vec.clear();
 }
 
-void CALifeObjectRegistry::save				(IWriter &memory_stream, CSE_ALifeDynamicObject *object, u32 &object_count)
+void CALifeObjectRegistry::save(IWriter& memory_stream, CSE_ALifeDynamicObject* object, u32& object_count)
 {
 	++object_count;
 
-	NET_Packet					tNetPacket;
+	NET_Packet tNetPacket;
 	// Spawn
-	object->Spawn_Write			(tNetPacket,TRUE);
-	memory_stream.w_u16			(u16(tNetPacket.B.count));
-	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
+	object->Spawn_Write(tNetPacket, TRUE);
+	memory_stream.w_u16(u16(tNetPacket.GetBufferSize()));
+	memory_stream.w(tNetPacket.GetBuffer(), tNetPacket.GetBufferSize());
 
 	// Update
-	tNetPacket.w_begin			(M_UPDATE);
-	object->UPDATE_Write		(tNetPacket);
+	tNetPacket.w_begin(M_UPDATE);
+	object->UPDATE_Write(tNetPacket);
 
-	memory_stream.w_u16			(u16(tNetPacket.B.count));
-	memory_stream.w				(tNetPacket.B.data,tNetPacket.B.count);
+	memory_stream.w_u16(u16(tNetPacket.GetBufferSize()));
+	memory_stream.w(tNetPacket.GetBuffer(), tNetPacket.GetBufferSize());
 
 	ALife::OBJECT_VECTOR::const_iterator	I = object->children.begin();
 	ALife::OBJECT_VECTOR::const_iterator	E = object->children.end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeDynamicObject	*child = this->object(*I,true);
+	for (; I != E; ++I) {
+		CSE_ALifeDynamicObject* child = this->object(*I, true);
 		if (!child)
 			continue;
 
 		if (!child->can_save())
 			continue;
 
-		save					(memory_stream,child,object_count);
+		save(memory_stream, child, object_count);
 	}
 }
 
@@ -93,38 +93,38 @@ void CALifeObjectRegistry::save				(IWriter &memory_stream)
 	Msg							("* %d objects are successfully saved",object_count);
 }
 
-CSE_ALifeDynamicObject *CALifeObjectRegistry::get_object		(IReader &file_stream)
+CSE_ALifeDynamicObject* CALifeObjectRegistry::get_object(IReader& file_stream)
 {
 	NET_Packet				tNetPacket;
 	u16						u_id;
 	// Spawn
-	tNetPacket.B.count		= file_stream.r_u16();
-	file_stream.r			(tNetPacket.B.data,tNetPacket.B.count);
-	tNetPacket.r_begin		(u_id);
-	R_ASSERT2				(M_SPAWN==u_id,"Invalid packet ID (!= M_SPAWN)");
+	tNetPacket.SetBufferSize(file_stream.r_u16());
+	file_stream.r(tNetPacket.GetBuffer(), tNetPacket.GetBufferSize());
+	tNetPacket.r_begin(u_id);
+	R_ASSERT2(M_SPAWN == u_id, "Invalid packet ID (!= M_SPAWN)");
 
 	string64				s_name;
-	tNetPacket.r_stringZ	(s_name);
+	tNetPacket.r_stringZ(s_name);
 #ifdef DEBUG
 	if (psAI_Flags.test(aiALife)) {
-		Msg					("Loading object %s [%d]b", s_name, tNetPacket.B.count);
+		Msg("Loading object %s [%d]b", s_name, tNetPacket.GetBufferSize());
 	}
 #endif
 	// create entity
-	CSE_Abstract			*tpSE_Abstract = F_entity_Create	(s_name);
-	R_ASSERT2				(tpSE_Abstract,"Can't create entity.");
-	CSE_ALifeDynamicObject	*tpALifeDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(tpSE_Abstract);
-	R_ASSERT2				(tpALifeDynamicObject,"Non-ALife object in the saved game!");
+	CSE_Abstract* tpSE_Abstract = F_entity_Create(s_name);
+	R_ASSERT2(tpSE_Abstract, "Can't create entity.");
+	CSE_ALifeDynamicObject* tpALifeDynamicObject = smart_cast<CSE_ALifeDynamicObject*>(tpSE_Abstract);
+	R_ASSERT2(tpALifeDynamicObject, "Non-ALife object in the saved game!");
 	tpALifeDynamicObject->Spawn_Read(tNetPacket);
 
 	// Update
-	tNetPacket.B.count		= file_stream.r_u16();
-	file_stream.r			(tNetPacket.B.data,tNetPacket.B.count);
-	tNetPacket.r_begin		(u_id);
-	R_ASSERT2				(M_UPDATE==u_id,"Invalid packet ID (!= M_UPDATE)");
+	tNetPacket.SetBufferSize(file_stream.r_u16());
+	file_stream.r(tNetPacket.GetBuffer(), tNetPacket.GetBufferSize());
+	tNetPacket.r_begin(u_id);
+	R_ASSERT2(M_UPDATE == u_id, "Invalid packet ID (!= M_UPDATE)");
 	tpALifeDynamicObject->UPDATE_Read(tNetPacket);
 
-	return					(tpALifeDynamicObject);
+	return (tpALifeDynamicObject);
 }
 
 void CALifeObjectRegistry::load(IReader& file_stream)

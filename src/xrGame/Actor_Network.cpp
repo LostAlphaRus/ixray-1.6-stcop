@@ -1795,7 +1795,7 @@ void	CActor::OnRender_Network()
 					SPHNetState state;
 					PHGetSyncItem(i)->get_State(state);
 
-					PX.B.count = 0;
+					PX.SetBufferSize(0);
 					w_vec_q8(PX,state.position,min,max);
 					w_qt_q8(PX,state.quaternion);
 //					w_vec_q8(PX,state.linear_vel,min,max);

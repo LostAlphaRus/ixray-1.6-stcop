@@ -1,12 +1,7 @@
-#ifndef _INCDEF_NETUTILS_H_
-#define _INCDEF_NETUTILS_H_
 #pragma once
-
 #include "client_id.h"
 
 #pragma pack(push,1)
-
-const	u32			NET_PacketSizeLimit	= 16*1024;
 
 struct XRCORE_API IIniFileStream
 {
@@ -38,11 +33,12 @@ struct XRCORE_API IIniFileStream
 	virtual void	__stdcall	r_s64			(s64&)						= 0;
 
 	virtual void	__stdcall	r_string		(LPSTR dest, u32 dest_size)	= 0;
-//	virtual void	__stdcall	r_tell			()							= 0;
-//	virtual void	__stdcall	r_seek			(u32 pos)					= 0;
 	virtual void	__stdcall	skip_stringZ	()							= 0;
 };
 
+
+constexpr size_t NET_PacketSizeLimit = 16 * 1024;
+constexpr size_t NET_PacketSizeLight = 8 * 1024;
 
 #define INI_W(what_to_do)\
 if(inistream)\
@@ -60,46 +56,54 @@ if(inistream)\
 }
 #endif
 
-struct	NET_Buffer
-{
-	BYTE	data	[NET_PacketSizeLimit];
-	u32		count;
-};
-
-class XRCORE_API NET_Packet
+class XRCORE_API NET_PacketBase
 {
 public:
-	IIniFileStream* inistream;
+	IIniFileStream* inistream = nullptr;
 
-    void            construct( const void* data, unsigned size )
-                    {
-                        memcpy( B.data, data, size );
-                        B.count = size;
-                    }
-                    
-	NET_Buffer		B;
-	u32				r_pos;
-	u32				timeReceive;
-	bool			w_allow;
+	void construct(const void* data, size_t size)
+    {
+		memcpy(GetBuffer(), data, size);
+		SetBufferSize(size);
+    }
+
+	virtual u8* GetBuffer() = 0;
+	virtual const size_t GetBufferSize() const = 0;
+	virtual void SetBufferSize(size_t Sise) = 0;
+
+	u32 r_pos = 0;
+	u32 timeReceive = 0;
+	bool w_allow = true;
+
 public:
-	NET_Packet			():inistream(NULL),w_allow(true)	{}
 	// writing - main
-	IC void write_start	()				{	B.count=0;				INI_W(move_begin());}
-	IC void	w_begin		( u16 type	)	{	B.count=0;	w_u16(type);}
+	IC void write_start	()				{ SetBufferSize(0); INI_W(move_begin());}
+	IC void	w_begin		( u16 type	)	{ SetBufferSize(0); w_u16(type);}
 
-	struct W_guard{
-		bool*	guarded;
-		W_guard(bool* b):guarded(b){*b=true;}
-		~W_guard(){*guarded=false;}
-	};
-	IC void	w		( const void* p, u32 count )
+	struct W_guard
 	{
-		R_ASSERT	(inistream==NULL || w_allow);
-		VERIFY		(p && count);
-		VERIFY		(B.count + count < NET_PacketSizeLimit);
-		CopyMemory(&B.data[B.count],p,count);
-		B.count		+= count;
-		VERIFY		(B.count<NET_PacketSizeLimit);
+		bool* guarded;
+		W_guard(bool* b) : guarded(b) { *b = true; }
+		~W_guard() { *guarded = false; }
+	};
+
+	IC void	w(const void* p, u32 count)
+	{
+		R_ASSERT(inistream == nullptr || w_allow);
+		VERIFY(p && count);
+		VERIFY(GetBufferSize() + count < NET_PacketSizeLimit);
+		CopyMemory(&GetBuffer()[GetBufferSize()], p, count);
+		SetBufferSize(GetBufferSize() + count);
+		VERIFY(GetBufferSize() < NET_PacketSizeLimit);
+	}
+
+	IC void r(void* p, u32 count)
+	{
+		R_ASSERT(inistream == nullptr);
+		VERIFY(p && count);
+		CopyMemory(p, &GetBuffer()[r_pos], count);
+		r_pos += count;
+		VERIFY(r_pos <= GetBufferSize());
 	}
 
 	// read/write operators
@@ -115,21 +119,21 @@ public:
 		r(&value, (u32)sizeof(T));
 	}
 
-	IC void w_seek	(u32 pos, const void* p, u32 count);
-	IC u32	w_tell	()						{ return B.count; }
+	IC void w_seek(u32 pos, const void* p, u32 count);
+	IC u32	w_tell() { return (u32)GetBufferSize(); }
 
 	// writing - utilities
-	IC void	w_float		( float a       )	{ W_guard g(&w_allow); w(&a,4);				INI_W(w_float(a));		}			// float
-	IC void w_vec3		( const Fvector& a) { W_guard g(&w_allow);  w(&a,3*sizeof(float));INI_W(w_vec3(a));		}			// vec3
-	IC void w_vec4		( const Fvector4& a){ W_guard g(&w_allow);  w(&a,4*sizeof(float));INI_W(w_vec4(a));		}			// vec4
-	IC void w_u64		( u64 a			)	{ W_guard g(&w_allow);  w(&a,8);				INI_W(w_u64(a));		}			// qword (8b)
-	IC void w_s64		( s64 a			)	{ W_guard g(&w_allow);  w(&a,8);				INI_W(w_s64(a));		}			// qword (8b)
-	IC void w_u32		( u32 a			)	{ W_guard g(&w_allow);  w(&a,4);				INI_W(w_u32(a));		}			// dword (4b)
-	IC void w_s32		( s32 a			)	{ W_guard g(&w_allow);  w(&a,4);				INI_W(w_s32(a));		}			// dword (4b)
-	IC void w_u16		( u16 a			)	{ W_guard g(&w_allow);  w(&a,2);				INI_W(w_u16(a));		}			// word (2b)
-	IC void w_s16		( s16 a			)	{ W_guard g(&w_allow);  w(&a,2);				INI_W(w_s16(a));		}			// word (2b)
-	IC void	w_u8		( u8 a			)	{ W_guard g(&w_allow);  w(&a,1);				INI_W(w_u8(a));			}			// byte (1b)
-	IC void	w_s8		( s8 a			)	{ W_guard g(&w_allow);  w(&a,1);				INI_W(w_s8(a));			}			// byte (1b)
+	IC void	w_float		(float a       )	{ W_guard g(&w_allow);  w(&a,4);				INI_W(w_float(a)); }
+	IC void w_vec3		(const Fvector& a)  { W_guard g(&w_allow);  w(&a,sizeof(Fvector));	INI_W(w_vec3(a));  }
+	IC void w_vec4		(const Fvector4& a) { W_guard g(&w_allow);  w(&a,sizeof(Fvector4));	INI_W(w_vec4(a));  }
+	IC void w_u64		(u64 a			)	{ W_guard g(&w_allow);  w(&a,8);				INI_W(w_u64(a));   }
+	IC void w_s64		(s64 a			)	{ W_guard g(&w_allow);  w(&a,8);				INI_W(w_s64(a));   }
+	IC void w_u32		(u32 a			)	{ W_guard g(&w_allow);  w(&a,4);				INI_W(w_u32(a));   }
+	IC void w_s32		(s32 a			)	{ W_guard g(&w_allow);  w(&a,4);				INI_W(w_s32(a));   }
+	IC void w_u16		(u16 a			)	{ W_guard g(&w_allow);  w(&a,2);				INI_W(w_u16(a));   }
+	IC void w_s16		(s16 a			)	{ W_guard g(&w_allow);  w(&a,2);				INI_W(w_s16(a));   }
+	IC void	w_u8		(u8 a			)	{ W_guard g(&w_allow);  w(&a,1);				INI_W(w_u8(a));    }
+	IC void	w_s8		(s8 a			)	{ W_guard g(&w_allow);  w(&a,1);				INI_W(w_s8(a));    }
 
 	IC void w_float_q16	( float a, float min, float max)
 	{
@@ -221,14 +225,6 @@ public:
 	void		r_seek			(u32 pos);
 	u32			r_tell			();
 
-	IC void		r				( void* p, u32 count)
-	{
-		R_ASSERT	(inistream==NULL);
-		VERIFY		(p && count);
-		CopyMemory	(p,&B.data[r_pos],count);
-		r_pos		+= count;
-		VERIFY		(r_pos<=B.count);
-	}
 	BOOL		r_eof			();
 	u32			r_elapsed		();
 	void		r_advance		(u32 size);
@@ -286,6 +282,64 @@ public:
 	void		r_clientID		(ClientID& C);
 };
 
-#pragma pack(pop)
+template <size_t SSize>
+struct NET_Buffer
+{
+	u8 data[SSize] = {};
+	u32 count = 0;
+};
 
-#endif /*_INCDEF_NETUTILS_H_*/
+class XRCORE_API NET_Packet :
+	public NET_PacketBase
+{
+	NET_Buffer<NET_PacketSizeLimit> B;
+
+public:
+	NET_Packet() = default;
+
+	virtual u8* GetBuffer()
+	{
+		return B.data;
+	}
+	
+	virtual const u8* GetBuffer() const
+	{
+		return B.data;
+	}
+
+	virtual const size_t GetBufferSize() const
+	{
+		return B.count;
+	}
+
+	virtual void SetBufferSize(size_t Sise) override
+	{
+		B.count = Sise;
+	};
+};
+
+class XRCORE_API NET_PacketLight :
+	public NET_PacketBase
+{
+	NET_Buffer<NET_PacketSizeLight> B;
+
+public:
+	NET_PacketLight() = default;
+
+	virtual u8* GetBuffer()
+	{
+		return B.data;
+	}
+
+	virtual const size_t GetBufferSize() const
+	{
+		return B.count;
+	}
+
+	virtual void SetBufferSize(size_t Sise) override
+	{
+		B.count = Sise;
+	};
+};
+
+#pragma pack(pop)

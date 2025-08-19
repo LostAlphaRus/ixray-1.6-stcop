@@ -30,10 +30,10 @@ void xrServer::SecureSendTo(xrClientData* xrCL, NET_Packet& P, u32 dwFlags, u32 
 	NET_Packet enc_packet;
 	
 	enc_packet.w_begin	(M_SECURE_MESSAGE);
-	enc_packet.w		(P.B.data, P.B.count);
+	enc_packet.w		(P.GetBuffer(), P.GetBufferSize());
 	u32 checksum		= secure_messaging::encrypt(
-		enc_packet.B.data + sizeof(u16),
-		enc_packet.B.count - sizeof(u16),
+		enc_packet.GetBuffer() + sizeof(u16),
+		enc_packet.GetBufferSize() - sizeof(u16),
 		xrCL->m_secret_key);
 	enc_packet.w_u32	(checksum);
 	SendTo				(xrCL->ID, enc_packet, dwFlags, dwTimeout);
@@ -50,9 +50,9 @@ void xrServer::OnSecureMessage(NET_Packet & P, xrClientData* xrClSender)
 	VERIFY(dbg_encrypt_checksum == dbg_decrypt_checksum);
 #endif
 	NET_Packet dec_packet;
-	dec_packet.B.count	= P.B.count - sizeof(u16) - sizeof(u32); // - r_begin - crypt_check_sum
-	P.r					(dec_packet.B.data, dec_packet.B.count);
-	u32 checksum		= secure_messaging::decrypt(dec_packet.B.data, dec_packet.B.count, xrClSender->m_secret_key);
+	dec_packet.SetBufferSize(P.GetBufferSize() - sizeof(u16) - sizeof(u32)); // - r_begin - crypt_check_sum
+	P.r					(dec_packet.GetBuffer(), dec_packet.GetBufferSize());
+	u32 checksum		= secure_messaging::decrypt(dec_packet.GetBuffer(), dec_packet.GetBufferSize(), xrClSender->m_secret_key);
 	u32 real_checksum	= 0;
 	P.r_u32				(real_checksum);
 	VERIFY2				(checksum == real_checksum, "caught cheater");

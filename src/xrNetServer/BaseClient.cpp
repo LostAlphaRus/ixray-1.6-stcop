@@ -163,21 +163,18 @@ void BaseClient::_SendTo_LL(const void* data, u32 size, u32 flags, u32 timeout)
 	SendTo_LL(const_cast<void*>(data), size, flags, timeout);
 }
 
-
-void	BaseClient::Send(NET_Packet& packet, u32 dwFlags, u32 dwTimeout)
+void BaseClient::Send(NET_Packet& packet, u32 dwFlags, u32 dwTimeout)
 {
-	MultipacketSender::SendPacket(packet.B.data, packet.B.count, dwFlags, dwTimeout);
+	MultipacketSender::SendPacket(packet.GetBuffer(), packet.GetBufferSize(), dwFlags, dwTimeout);
 }
 
-void	BaseClient::Flush_Send_Buffer()
+void BaseClient::Flush_Send_Buffer()
 {
 	MultipacketSender::FlushSendBuffer(0);
 }
-
 #pragma endregion
 
 // -----------------------------------------------------------------------------
-
 #pragma region time correct
 void client_sync_thread(void* P)
 {

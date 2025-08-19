@@ -89,23 +89,21 @@ xrServer::EConnect xrServer::Connect(shared_str &session_name, GameDescriptionDa
 }
 
 
-IClient* xrServer::new_client( SClientConnectData* cl_data )
+IClient* xrServer::new_client(SClientConnectData* cl_data)
 {
-	IClient* CL		= client_Find_Get( cl_data->clientID );
-	VERIFY( CL );
-	
+	IClient* CL = client_Find_Get(cl_data->clientID);
+	VERIFY(CL);
+
 	// copy entity
-	CL->ID			= cl_data->clientID;
-	CL->process_id	= cl_data->process_id;
-	CL->name		= cl_data->name;	//only for offline mode
-	CL->pass._set	( cl_data->pass );
+	CL->ID = cl_data->clientID;
+	CL->process_id = cl_data->process_id;
+	CL->name = cl_data->name;	//only for offline mode
+	CL->pass._set(cl_data->pass);
 
-	NET_Packet		P;
-	P.B.count		= 0;
-	P.r_pos			= 0;
+	NET_Packet P;
 
-	game->AddDelayedEvent( P, GAME_EVENT_CREATE_CLIENT, 0, CL->ID );
-	
+	game->AddDelayedEvent(P, GAME_EVENT_CREATE_CLIENT, 0, CL->ID);
+
 	return CL;
 }
 

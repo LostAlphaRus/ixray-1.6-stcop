@@ -67,11 +67,11 @@ BOOL CPhysicObject::net_Spawn(CSE_Abstract* DC)
 	m_just_after_spawn		= true;
 	m_activated				= false;
 
-	if (DC->s_flags.is(M_SPAWN_UPDATE)) {
-		NET_Packet				temp;
-		temp.B.count			= 0;
+	if (DC->s_flags.is(M_SPAWN_UPDATE))
+	{
+		NET_Packet temp;
 		DC->UPDATE_Write			(temp);
-		if (temp.B.count > 0)
+		if (temp.GetBufferSize() > 0)
 		{
 			temp.r_seek			(0);
 			net_Import			(temp);

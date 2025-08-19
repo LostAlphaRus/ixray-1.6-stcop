@@ -8,7 +8,7 @@
 
 void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Packet& P)
 {
-	P.B.count = 0;
+	P.SetBufferSize(0);
 	xr_vector<u16>::iterator it = std::find(conn_spawned_ids.begin(), conn_spawned_ids.end(), E->ID);
 	if(it != conn_spawned_ids.end())
 	{
