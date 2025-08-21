@@ -170,56 +170,66 @@ float CCustomOutfit::GetBoneArmor(s16 element)
 
 float CCustomOutfit::HitThroughArmor(float hit_power, s16 element, float ap, bool& add_wound, ALife::EHitType hit_type)
 {
-	float NewHitPower = hit_power;
-	if(hit_type == ALife::eHitTypeFireWound)
+	if (EngineExternal().ShadowOfChernobylMode())
 	{
-		float ba = GetBoneArmor(element);
-		if(ba<0.0f)
-			return NewHitPower;
-
-		float BoneArmor = ba*GetCondition();
-		if(/*!fis_zero(ba, EPS) && */(ap > BoneArmor))
-		{
-			//пуля пробила бронь
-			if(!IsGameTypeSingle())
-			{
-				float hit_fraction = (ap - BoneArmor) / ap;
-				if(hit_fraction < m_boneProtection->m_fHitFracActor)
-					hit_fraction = m_boneProtection->m_fHitFracActor;
-
-				NewHitPower *= hit_fraction;
-				NewHitPower *= m_boneProtection->getBoneProtection(element);
-			}
-
-			VERIFY(NewHitPower>=0.0f);
-		}
-		else
-		{
-			//пуля НЕ пробила бронь
-			NewHitPower *= m_boneProtection->m_fHitFracActor;
-			add_wound = false; 	//раны нет
-		}
+		float BoneArmour = m_boneProtection->getBoneArmor(element) * GetCondition() * (1 - ap);
+		float NewHitPower = hit_power - BoneArmour;
+		if (NewHitPower < hit_power * m_boneProtection->m_fHitFracNpc) return hit_power * m_boneProtection->m_fHitFracNpc;
+		return NewHitPower;
 	}
 	else
 	{
-		float one = 0.1f;
-		if(hit_type == ALife::eHitTypeStrike || 
-		   hit_type == ALife::eHitTypeWound || 
-		   hit_type == ALife::eHitTypeWound_2 || 
-		   hit_type == ALife::eHitTypeExplosion)
+		float NewHitPower = hit_power;
+		if (hit_type == ALife::eHitTypeFireWound)
 		{
-			one = 1.0f;
+			float ba = GetBoneArmor(element);
+			if (ba < 0.0f)
+				return NewHitPower;
+
+			float BoneArmor = ba * GetCondition();
+			if (/*!fis_zero(ba, EPS) && */(ap > BoneArmor))
+			{
+				//пуля пробила бронь
+				if (!IsGameTypeSingle())
+				{
+					float hit_fraction = (ap - BoneArmor) / ap;
+					if (hit_fraction < m_boneProtection->m_fHitFracActor)
+						hit_fraction = m_boneProtection->m_fHitFracActor;
+
+					NewHitPower *= hit_fraction;
+					NewHitPower *= m_boneProtection->getBoneProtection(element);
+				}
+
+				VERIFY(NewHitPower >= 0.0f);
+			}
+			else
+			{
+				//пуля НЕ пробила бронь
+				NewHitPower *= m_boneProtection->m_fHitFracActor;
+				add_wound = false; 	//раны нет
+			}
 		}
-		float protect = GetDefHitTypeProtection(hit_type);
-		NewHitPower -= protect * one;
+		else
+		{
+			float one = 0.1f;
+			if (hit_type == ALife::eHitTypeStrike ||
+				hit_type == ALife::eHitTypeWound ||
+				hit_type == ALife::eHitTypeWound_2 ||
+				hit_type == ALife::eHitTypeExplosion)
+			{
+				one = 1.0f;
+			}
+			float protect = GetDefHitTypeProtection(hit_type);
+			NewHitPower -= protect * one;
 
-		if(NewHitPower < 0.f)
-			NewHitPower = 0.f;
+			if (NewHitPower < 0.f)
+				NewHitPower = 0.f;
+		}
+		//увеличить изношенность костюма
+		Hit(hit_power, hit_type);
+
+		return NewHitPower;
 	}
-	//увеличить изношенность костюма
-	Hit(hit_power, hit_type);
-
-	return NewHitPower;
 }
 
 BOOL	CCustomOutfit::BonePassBullet					(int boneID)
