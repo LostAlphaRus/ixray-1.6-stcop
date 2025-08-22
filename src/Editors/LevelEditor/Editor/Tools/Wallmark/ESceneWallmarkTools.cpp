@@ -1030,6 +1030,10 @@ void EWallmarkWrapper::Update()
 	auto wm_tool = Scene->GetTool(OBJCLASS_WM);
 	((ESceneWallmarkTool*)wm_tool)->AddWallmark_internal(m_data.Pos,m_data.Dir,m_data.Shader,m_data.Texture,
 		m_data.w,m_data.h,m_data.r, &m_wallmark);
+	if (m_wallmark)
+	{
+		m_wallmark->flags.set(ESceneWallmarkTool::wallmark::flTemporary, true);
+	}
 }
 
 void EWallmarkWrapper::Detach()
