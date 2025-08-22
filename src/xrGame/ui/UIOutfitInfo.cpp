@@ -240,10 +240,10 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 				_val_af = 1.0f - _val_af;
 
 				m_items[i]->SetAfValue(_val_af);
+				m_items[i]->SetProgressValue(0.0f, 0.0f);
 
 				if (!m_items[i]->GetParent() && !fis_zero(_val_af))
 				{
-					m_items[i]->SetProgressValue(0.0f, 0.0f);
 					m_listWnd->AddWindow(m_items[i], false);
 				}
 				else if (m_items[i]->GetParent() && fis_zero(_val_af))
@@ -254,7 +254,7 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 	}
 	for ( u32 i = 0; i < max_count; ++i )
 	{	
-		if ( i == ALife::eHitTypeFireWound || !m_items[i] )
+		if ( !m_items[i] || (i == ALife::eHitTypeFireWound && !m_items[ALife::eHitTypeFireWound]->GetLegacyMode()))
 		{
 			continue;
 		}
@@ -264,12 +264,16 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 
 		float cur = cur_outfit->GetDefHitTypeProtection( hit_type );
 		cur /= max_power; // = 0..1
+		if (m_items[i]->GetLegacyMode())
+			cur = 1 - cur;
 		float slot = cur;
 		
 		if ( slot_outfit )
 		{
 			slot = slot_outfit->GetDefHitTypeProtection( hit_type );
 			slot /= max_power; //  = 0..1
+			if (m_items[i]->GetLegacyMode())
+				slot = 1 - slot;
 		}
 
 		float _val_af = Actor()->HitArtefactsOnBeltLegacy(1.0f, hit_type);
@@ -288,7 +292,7 @@ void CUIOutfitInfo::UpdateInfo(CCustomOutfit* cur_outfit, CCustomOutfit* slot_ou
 		}
 	}
 
-	if ( m_items[ALife::eHitTypeFireWound] )
+	if ( m_items[ALife::eHitTypeFireWound] && !m_items[ALife::eHitTypeFireWound]->GetLegacyMode() )
 	{
 		IKinematics* ikv = PKinematics(actor->Visual());
 		VERIFY( ikv );
@@ -366,57 +370,3 @@ void CUIOutfitInfo::UpdateInfo(CHelmet* cur_helmet, CHelmet* slot_helmet)
 	}
 
 }
-
-/*
-void CUIOutfitInfo::SetItem(CCustomOutfit* outfit, u32 hitType, bool force_add)
-{
-    string128  _buff;
-    float      _val_outfit = 0.0f;
-    float      _val_af     = 0.0f;
-
-    CUIStatic* _s          = m_items_legacy[hitType];
-
-	ALife::EHitType hit_type = (ALife::EHitType)hitType;
-	float max_power		   = Actor()->conditions().GetZoneMaxPower(hit_type);
-
-	if (hitType != ALife::eHitTypeFireWound)
-	{
-		_val_outfit = outfit ? outfit->GetDefHitTypeProtection(hit_type) : 0.f;
-		_val_outfit /= max_power; // = 0..1
-	}
-	else
-	{
-		IKinematics* ikv = smart_cast<IKinematics*>( Actor()->Visual());
-		VERIFY( ikv );
-		u16 spine_bone = ikv->LL_BoneID( "bip01_spine" );
-
-		_val_outfit = outfit ? outfit->GetBoneArmor( spine_bone )*outfit->GetCondition() : 0.f;
-		float max_power = Actor()->conditions().GetMaxFireWoundProtection();
-		_val_outfit /= max_power;
-	}
-
-    _val_af                = Actor()->HitArtefactsOnBeltLegacy(1.0f, hit_type);
-	_val_af                = 1.0f - _val_af;
-
-    if (fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
-    {
-        if (_s->GetParent())
-            m_listWnd->RemoveWindow(_s);
-        return;
-    }
-
-    // LPCSTR _clr_outfit, _clr_af;
-    LPCSTR _imm_name = *g_pStringTable->translate(immunity_st_names[hitType]);
-
-    int    _sz       = xr_sprintf(_buff, sizeof(_buff), "%s ", _imm_name);
-    _sz += xr_sprintf(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_outfit > 0.0f) ? "%c[green]" : "%c[red]", _val_outfit * 100.0f);
-
-    if (!fsimilar(_val_af, 0.0f))
-    {
-        _sz += xr_sprintf(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af * 100.0f);
-    }
-    _s->SetText(_buff);
-
-    if (!_s->GetParent())
-        m_listWnd->AddWindow(_s, false);
-}*/
