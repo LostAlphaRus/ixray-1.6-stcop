@@ -435,13 +435,17 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	float mtl_ap = mtl->fShootFactor;
 	float shoot_factor = 0.0f; //default >> пуля НЕ пробила материал!
 	float ap = bullet->armor_piercing;
+	float mp = bullet->material_piercing;
 
-	if ( ap > EPS && ap >= mtl_ap )
+	if ( ap > EPS && ap >= mtl_ap && GMLib.GetLibraryVersion() != GAMEMTL_VERSION_SOC)
 	{
 		//пуля пробила материал
 		shoot_factor = (( ap - mtl_ap ) / ap);
 	}
-
+	else if (GMLib.GetLibraryVersion() == GAMEMTL_VERSION_SOC)
+	{
+		shoot_factor = ((mp - mtl_ap) / mp);
+	}
 	hit_res->impulse = 0.0f;
 	float speed_scale = 0.0f;
 

@@ -45,7 +45,6 @@ void SBullet::Init(const Fvector& position,
 				   const Fvector& direction,
 				   float starting_speed,
 				   float power,
-//.				   float power_critical,
 				   float impulse,
 				   u16	sender_id,
 				   u16 sendersweapon_id,
@@ -80,6 +79,7 @@ void SBullet::Init(const Fvector& position,
 	weapon_id				= sendersweapon_id;
 	hit_type				= e_hit_type;
 
+	material_piercing		= cartridge.param_s.kPierce;
 	armor_piercing			= cartridge.param_s.kAP;
 	air_resistance			= cartridge.param_s.kAirRes*air_resistance_factor;
 	wallmark_size			= cartridge.param_s.fWallmarkSize;
@@ -189,7 +189,6 @@ void CBulletManager::AddBullet(const Fvector& position,
 							   const Fvector& direction,
 							   float starting_speed,
 							   float power,
-//.							   float power_critical,
 							   float impulse,
 							   u16	sender_id,
 							   u16 sendersweapon_id,
@@ -207,7 +206,7 @@ void CBulletManager::AddBullet(const Fvector& position,
 //	u32 OwnerID					= sender_id;
 	xrCriticalSectionGuard guard(&m_Lock);
 	SBullet& bullet				= m_Bullets.emplace_back();
-	bullet.Init					(position, direction, starting_speed, power, /*power_critical,*/ impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, air_resistance_factor, SendHit);
+	bullet.Init					(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, air_resistance_factor, SendHit);
 //	bullet.frame_num			= Device.dwFrame;
 	bullet.flags.aim_bullet		= AimBullet;
 	if (!IsGameTypeSingle())
