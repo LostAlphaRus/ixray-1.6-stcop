@@ -153,6 +153,7 @@ void CUICellItem::Update()
         }
         m_upgrade->Show(m_has_upgrade);
     }
+	UpdateCustomMarksAndText();
 }
 
 void CUICellItem::UpdateCustomMarksAndText() {
