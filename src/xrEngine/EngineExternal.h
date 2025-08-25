@@ -35,14 +35,13 @@ enum class EEngineExternalGame
 	EnableInventoryPistolSlot,
 	EnableImproveWeaponMisfire,
 	EnableDelayedWeaponActions,
-	// SoC only
-	UseNewScopeSystem,
 };
 
 enum class EEngineExternalRender 
 {
 	DisableLoadScreenTips,
 	UseDynamicSnowMask,
+	UseLegacyParticleLoader,
 	None
 };
 
