@@ -305,7 +305,6 @@ void CWeaponKnife::MakeShot(Fvector const & pos, Fvector const & dir, float cons
 	cartridge.param_s.kDisp			= 1.0f;
 	cartridge.param_s.kHit			= k_hit;
 	cartridge.param_s.kImpulse		= 1.0f;
-    cartridge.param_s.kPierce		= 1.0f;
 	cartridge.param_s.kAP			= EPS_L;
 	cartridge.m_flags.set			(CCartridge::cfTracer, FALSE);
 	cartridge.m_flags.set			(CCartridge::cfRicochet, FALSE);

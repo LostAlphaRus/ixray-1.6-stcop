@@ -79,7 +79,6 @@ void SBullet::Init(const Fvector& position,
 	weapon_id				= sendersweapon_id;
 	hit_type				= e_hit_type;
 
-	material_piercing		= cartridge.param_s.kPierce;
 	armor_piercing			= cartridge.param_s.kAP;
 	air_resistance			= cartridge.param_s.kAirRes*air_resistance_factor;
 	wallmark_size			= cartridge.param_s.fWallmarkSize;

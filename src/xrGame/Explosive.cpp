@@ -368,7 +368,6 @@ void CExplosive::Explode()
 		cartridge.param_s.kDist				= 1.f;
 		cartridge.param_s.kHit				= 1.f;
 		cartridge.param_s.kImpulse			= 1.f;
-		cartridge.param_s.kPierce			= 1.f;
 		cartridge.param_s.kAP				= 1.f;
 		cartridge.param_s.fWallmarkSize		= fWallmarkSize;
 		cartridge.bullet_material_idx		= GMLib.GetMaterialIdx(WEAPON_MATERIAL_NAME);

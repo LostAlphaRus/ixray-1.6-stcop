@@ -57,7 +57,6 @@ struct SBullet
 	//-------------------------------------------------------------------
 	float			max_speed			;			// maxspeed*cartridge
 	float			max_dist			;			// maxdist*cartridge
-    float			material_piercing	;
     float			armor_piercing		;
 	float			wallmark_size		;
 	//-------------------------------------------------------------------
