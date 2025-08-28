@@ -337,10 +337,12 @@ struct p_bumped_new
 
     float4 hpos_curr : TEXCOORD5;
     float4 hpos_old : TEXCOORD6;
+
+	float snow_mask : TEXCOORD7;
 	
 #ifndef USE_LM_HEMI
 #ifdef USE_LENGTH_BUFFER
-	float3 lmap : TEXCOORD7;
+	float3 lmap : TEXCOORD8;
 #endif
 #endif
 };
@@ -505,8 +507,8 @@ struct v_tree
 //	Details
 struct v_detail
 {
-    float4 pos : POSITION; // (float,float,float,1)
-    int4 misc : TEXCOORD0; // (u(Q),v(Q),frac,matrix-id)
+    float4 pos : POSITION; // position, frac
+    float2 tc : TEXCOORD0; // texcoord
 };
 
 #endif //	common_iostructs_h_included

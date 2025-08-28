@@ -18,13 +18,21 @@ float3 CompureDiffuseIrradance(float3 N, float Hemi)
 	RemapVector(LightDirection);
 #endif
 
+#ifdef USE_NORMAL_HEMI_DISTRIBUTION
+	Hemi = min(Hemi, LightDirection.y * 0.375f + 0.375f);
+#endif
+
 	float3 SampleLast = env_s0.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
 	float3 SampleNext = env_s1.SampleLevel(smp_linear, LightDirection, 0.0f).xyz;
 
 	float3 Irradance = lerp(SampleLast, SampleNext, L_hemi_color.w);
 
 #ifdef USE_DIFFUSE_SKY_COLOR
-	Irradance *= L_sky_color.xyz;
+	#ifdef USE_BGRA_SKYCOLOR
+	   	Irradance *= L_sky_color.zyx;
+	#else
+	    Irradance *= L_sky_color.xyz;
+	#endif
 #else
 	Irradance *= L_hemi_color.xyz;
 #endif
@@ -82,7 +90,11 @@ float3 CompureSpecularIrradance(float3 R, float Hemi, float Roughness)
 #ifdef USE_SPECULAR_HEMI_COLOR
 	Irradance *= L_hemi_color.xyz;
 #else
-	Irradance *= L_sky_color.xyz;
+	#ifdef USE_BGRA_SKYCOLOR
+	   	Irradance *= L_sky_color.zyx;
+	#else
+	    Irradance *= L_sky_color.xyz;
+	#endif
 #endif
 
 #ifdef USE_VIEW_REFLECTIONS
