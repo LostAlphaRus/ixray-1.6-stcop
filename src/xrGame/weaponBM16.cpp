@@ -157,7 +157,7 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 				}
 				else
 				{
-					anim = HudAnimationExist("anm_reload_2") ? "anm_reload_2" : "anim_reload_2";
+					anim = HudAnimationExist("anm_reload_2") ? "anm_reload_2" : "anim_reload";
 				}
 			}
 		}
