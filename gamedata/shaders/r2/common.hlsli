@@ -264,7 +264,7 @@ uniform sampler2D s_tonemap; // actually MidleGray / exp(Lw + eps)
 float3 tonemap(float3 rgb, float scale)
 {
     rgb = rgb * scale;
-#ifdef USE_SOC_LIGHTING
+#ifndef USE_SOC_LIGHTING
     const float fWhiteIntensity = 1.7f;
     const float fWhiteIntensitySQR = fWhiteIntensity * fWhiteIntensity;
 
