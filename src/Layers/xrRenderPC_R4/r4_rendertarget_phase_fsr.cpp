@@ -19,7 +19,7 @@ void CRenderTarget::init_fsr()
 	initParams.device = RDevice;
 
 #ifdef DEBUG_DRAW
-	initParams.fpMessage = [](FfxFsr2MsgType type, const wchar_t* message)
+	initParams.fpMessage = [](auto type, const wchar_t* message)
 	{
 		xr_string error_msg = Platform::TCHAR_TO_ANSI_U8(message);
 		Msg("[FSR]: %s", error_msg.c_str());

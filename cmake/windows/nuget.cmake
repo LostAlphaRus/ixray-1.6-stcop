@@ -72,7 +72,7 @@ set(IXR_TBB_BIN ${IXR_TBB_SDK}runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Rel
 set(IXR_TBB_LIB ${IXR_TBB_SDK}/runtimes/win7-${NUGET_PACKAGE_PLATFORM}/native/Release/tbb12.lib)
 
 # AMD FidelityFX FSR2
-set(AMD_FSR2 ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.FidelityFX.FSR2.DirectX11.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2.2.1.1)
+set(AMD_FSR3 ${CMAKE_BINARY_DIR}/packages/IXRay.FSR3.1)
 
 # SpeexDSP
 set(SPEEXDSP ${CMAKE_BINARY_DIR}/packages/ImeSense.Packages.SpeexDsp.Runtimes.win-${NUGET_PACKAGE_PLATFORM}.2024.6.4.1-open)

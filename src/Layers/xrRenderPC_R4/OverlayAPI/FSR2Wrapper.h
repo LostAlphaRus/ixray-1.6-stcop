@@ -1,6 +1,6 @@
 #pragma once
-#include <ffx-fsr2-api/ffx_fsr2.h>
-#include <ffx-fsr2-api/dx11/ffx_fsr2_dx11.h>
+#include <host/ffx_fsr3.h>
+#include <host/backends/dx11/ffx_dx11.h>
 
 class Fsr2Wrapper
 {
@@ -10,7 +10,7 @@ public:
         uint32_t flags = 0;
         FfxDimensions2D maxRenderSize = { 0, 0 };
         FfxDimensions2D displaySize = { 0, 0 };
-        FfxFsr2Message fpMessage;
+        FfxFsr3UpscalerMessage fpMessage;
         ID3D11Device* device = nullptr;
     };
 
@@ -62,8 +62,10 @@ public:
 private:
     bool m_created = false;
 
-    FfxFsr2Context m_context;
-    FfxFsr2ContextDescription m_contextDesc;
+    FfxFsr3Context m_context;
+    FfxFsr3UpscalerContext m_UpscalerContext;
+    FfxFsr3ContextDescription m_contextDesc;
+    FfxFsr3UpscalerContextDescription m_UpscalercontextDesc;
     ContextParameters m_contextParams;
 
     xr_vector<char> m_scratchBuffer;

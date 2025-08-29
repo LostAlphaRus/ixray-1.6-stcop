@@ -200,6 +200,7 @@ bool CreateD3D11()
 			if (SUCCEEDED(((ID3D11Device*)HWRenderDevice)->QueryInterface(__uuidof(ID3D11InfoQueue), (void**)&infoQueue)))
 			{
 				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+				infoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
 
 				D3D11_MESSAGE_SEVERITY Severities[] =
 				{

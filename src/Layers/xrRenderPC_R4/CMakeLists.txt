@@ -53,7 +53,7 @@ target_precompile_headers(xrRender_R4 PRIVATE "stdafx.h")
 # Include directories
 target_include_directories(xrRender_R4 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrRender_R4 PUBLIC "${IXRAY_SDK_INC}")
-target_include_directories(xrRender_R4 PUBLIC "${AMD_FSR2}/build/native/include/")
+target_include_directories(xrRender_R4 PUBLIC "${AMD_FSR3}/includes/")
 target_include_directories(xrRender_R4 PUBLIC "${NVIDIA_DLSS}/include/")
 
 # Project defines
@@ -69,18 +69,21 @@ target_link_libraries(xrRender_R4 PUBLIC "dxgi.lib")
 target_link_libraries(xrRender_R4 PUBLIC "d3d11.lib")
 target_link_libraries(xrRender_R4 PUBLIC "d3dcompiler.lib")
 target_link_libraries(xrRender_R4 PUBLIC "dxguid.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.lib")
 
 ## AMD FidelityFX FSR 2
-target_link_directories(xrRender_R4 PUBLIC "${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.lib")
-target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.lib")
+target_link_directories(xrRender_R4 PUBLIC "${AMD_FSR3}/libs/")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_frameinterpolation_x64.lib")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr3_x64.lib")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_backend_dx11_x64.lib")
+target_link_libraries(xrRender_R4 PUBLIC "ffx_fsr3upscaler_x64.lib")
 
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR2}/runtimes/win-${NUGET_PACKAGE_PLATFORM}/native/Release/ffx_fsr2_api_dx11_${NUGET_PACKAGE_PLATFORM}.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR3}/bins/ffx_backend_dx11_x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR3}/bins/ffx_fsr3_x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR3}/bins/ffx_frameinterpolation_x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR3}/bins/ffx_fsr3upscaler_x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${AMD_FSR3}/bins/ffx_opticalflow_x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
 )
 
 if (WIN32 AND "${CMAKE_VS_PLATFORM_NAME}" MATCHES "(x64)")
