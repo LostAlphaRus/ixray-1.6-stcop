@@ -167,7 +167,10 @@ shared_str CWeaponBM16::SetCurrentReloadAnimation()
 	else
 	{
 		xr_sprintf(new_suffix, "%s%s", *anim, "_2");
-		anim = new_suffix;
+		if (HudAnimationExist(new_suffix))
+			anim = new_suffix;
+		else
+			anim = "anim_reload";
 	}
 
 	return anim;
