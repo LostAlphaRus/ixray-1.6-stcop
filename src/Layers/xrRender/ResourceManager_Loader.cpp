@@ -126,8 +126,9 @@ void	CResourceManager::OnDeviceCreate	(IReader* F)
 	// we don't use storage svg if rendering ui is raster because there's no need in such creation
 	if (!this->m_pStorageSVG && !EngineExternal().isRenderingUIRaster())
 	{
-		this->m_pStorageSVG = new CSVGStorage(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation);
-		this->m_pStorageSVG->init(RDevice, RContext);
+		R_ASSERT(false && "continue");
+	//	this->m_pStorageSVG = new CSVGStorage(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation);
+	//	this->m_pStorageSVG->init(RDevice, RContext);
 	}
 }
 
