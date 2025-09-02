@@ -197,7 +197,7 @@ public:
 
 public:
 	Shader_xrLC_LIB ShaderXRLC;
-	u32 CullMode = -1;
+	u32 CullMode = CULL_NONE;
 	u32 FillMode = -1;
 
 private:

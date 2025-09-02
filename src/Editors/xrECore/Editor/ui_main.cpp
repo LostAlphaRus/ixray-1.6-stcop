@@ -84,7 +84,7 @@ TUI::~TUI()
 
 void* TUI::LoadTexture(const char* Texture) const
 {
-	return EDevice->Resources->_CreateTexture(Texture)->pSurface;
+	return EDevice->Resources->_CreateTexture(Texture)->get_SRView();
 }
 
 void TUI::OnDeviceCreate()
