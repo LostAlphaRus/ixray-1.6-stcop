@@ -50,37 +50,31 @@ list(APPEND XRR2_SRC_FILES ${XRR2_SOURCE_INCL_FILES})
 #list(FILTER XRR2_SRC_FILES EXCLUDE REGEX "../xrRender/r__pixel_calculator.cpp")
 
 # xrRender_R2 project
-add_library(xrRender_R2 SHARED ${XRR2_SRC_FILES})
-target_precompile_headers(xrRender_R2 PRIVATE "stdafx.h")
+add_library(${PROJECT_NAME} SHARED ${XRR2_SRC_FILES})
+target_precompile_headers(${PROJECT_NAME} PRIVATE "stdafx.h")
 
 # Include directories
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_include_directories(xrRender_R2 PUBLIC "${IXRAY_SDK_INC}")
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_include_directories(${PROJECT_NAME} PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines
-target_compile_definitions(xrRender_R2 PRIVATE XRRENDER_R2_EXPORTS)
-target_compile_definitions(xrRender_R2 PRIVATE _USRDLL)
+target_compile_definitions(${PROJECT_NAME} PRIVATE XRRENDER_R2_EXPORTS)
+target_compile_definitions(${PROJECT_NAME} PRIVATE _USRDLL)
 
 # Linker list
-target_link_libraries(xrRender_R2 PRIVATE xrAbstractions)
-target_link_libraries(xrRender_R2 PRIVATE xrParticles)
-target_link_libraries(xrRender_R2 PRIVATE "d3dcompiler.lib")
-target_link_libraries(xrRender_R2 PRIVATE "d3d9.lib")
+target_link_libraries(${PROJECT_NAME} PRIVATE xrAbstractions)
+target_link_libraries(${PROJECT_NAME} PRIVATE xrParticles)
+target_link_libraries(${PROJECT_NAME} PRIVATE "d3dcompiler.lib")
+target_link_libraries(${PROJECT_NAME} PRIVATE "d3d9.lib")
 
 ## DirectX SDK
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
-target_include_directories(xrRender_R2 PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
-target_link_libraries(xrRender_R2 PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_BINARY_DIR}/packages/directxmesh_desktop_2019.2024.6.5.1/include/")
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/include/")
+target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_BINARY_DIR}/packages/directxtex_desktop_2019.2024.6.5.1/native/lib/${NUGET_PACKAGE_PLATFORM}/release/DirectXTex.lib)
 
 ## RenderDoc
-target_include_directories(xrRender_R2 PUBLIC "${RENDERDOC_API}")
+target_include_directories(${PROJECT_NAME} PUBLIC "${RENDERDOC_API}")
 
 ## lunaSVG
 
-add_custom_command(TARGET ${PROJECT_NAME}
-    POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${IXR_LUNASVG_BIN} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/
-)
-
-target_include_directories(${PROJECT_NAME} PUBLIC ${IXR_LUNASVG_INC})
-target_link_libraries(${PROJECT_NAME} PUBLIC ${IXR_LUNASVG_LIB})
+target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)

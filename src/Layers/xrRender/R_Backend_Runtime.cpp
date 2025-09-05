@@ -14,7 +14,7 @@ using namespace DirectX;
 #include "dxRenderDeviceRender.h"
 #include "../xrRender/dxUIShader.h"
 
-#include <lunasvg\lunasvg.h>
+#include <lunasvg.h>
 #include "smol-atlas.h"
 
 #ifdef DEBUG
