@@ -546,20 +546,13 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 
 							ImGui::SeparatorText("Info");
 
-							ImGui::Text("atlas width: %.2f", pAtlas->getWidth());
-							ImGui::Text("atlas height: %.2f", pAtlas->getHeight());
+							ImGui::Text("atlas width: %.2f", float(pAtlas->getWidth()));
+							ImGui::Text("atlas height: %.2f", float(pAtlas->getHeight()));
 
 							ImGui::Text("Elements:");
-							for (const auto& pair : elements)
+							for (const auto& element : elements)
 							{
-								ImGui::Text("\t[%s]", pair.first.data());
-								for (const auto& node : pair.second.get_nodes())
-								{
-									for (const auto& entry : node.entries)
-									{
-										ImGui::Text("\t\tw=%.2f h=%.2f x=%.2f y=%.2f", entry.value.w(), entry.value.h(), entry.value.x(), entry.value.y());
-									}
-								}
+								ImGui::Text("\t\tw=%.2f h=%.2f x=%.2f y=%.2f", element.w(), element.h(), element.x(), element.y());
 							}
 
 							ImGui::SeparatorText("Atlas");
@@ -587,18 +580,12 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 							ImVec2 mousePos = ImGui::GetMousePos();
 
 							bool break_called = false;
-							xr_string_view hovered_icon_name;
 							u32 hovered_icon_w;
 							u32 hovered_icon_h;
 
 							int i = 0;
-							for (const auto& pair : elements)
+							for (const auto& element : elements)
 							{
-								for (const auto& node : pair.second.get_nodes())
-								{
-									for (const auto& entry : node.entries)
-									{
-										const auto& element = entry.value;
 
 										ImVec2 subMin = ImVec2(
 											atlasMin.x + 1 + element.x() * scaleX,
@@ -620,7 +607,6 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 											
 											hovered_icon_w = element.w();
 											hovered_icon_h = element.h();
-											hovered_icon_name = pair.first;
 
 											hoveredSubMin = subMin;
 											hoveredSubSize = subSize;
@@ -629,26 +615,12 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 										}
 
 										++i;
-									}
-
-									if (break_called)
-										break;
-								}
-
-								if (break_called)
-									break;
 							}
 
 							i = 0;
 
-							for (const auto& pair : elements)
+							for (const auto& element : elements)
 							{
-								for (const auto& node : pair.second.get_nodes())
-								{
-									for (const auto& entry : node.entries)
-									{
-										const auto& element = entry.value;
-
 										ImVec2 subMin = ImVec2(
 											atlasMin.x + 1 + element.x() * scaleX,
 											atlasMin.y + 1 + element.y() * scaleY
@@ -708,24 +680,22 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 										ImGui::SetCursorPos(parentCursorBackup);
 
 										++i;
-									}
-								}
 							}
 
 
-							if (hoveredIndex >= 0 && hovered_icon_name.empty()==false && hovered_icon_w && hovered_icon_h)
+							if (hoveredIndex >= 0 && hovered_icon_w && hovered_icon_h)
 							{
 								ImGui::BeginTooltip();
-								ImGui::Text("Region=%s [w=%.2f|h=%.2f]", hovered_icon_name.data(), hovered_icon_w, hovered_icon_h);
+								ImGui::Text("[w=%.2f|h=%.2f]", hovered_icon_w, hovered_icon_h);
 								// (Optionally show its pixel‐coords inside the atlas:)
 
-								auto* p_element = elements.at(hovered_icon_name).nearest({ static_cast<float>(hovered_icon_w), static_cast<float>(hovered_icon_h) });
-								R_ASSERT(p_element && "must be obtainable!");
+						//		auto* p_element = elements.nearest({ static_cast<float>(hovered_icon_w), static_cast<float>(hovered_icon_h) });
+						//		R_ASSERT(p_element && "must be obtainable!");
 
-								if (p_element)
-								{
-									ImGui::Text("Name=%s w=%.2f h=%.2f x=%.2f y=%.2f", hovered_icon_name.data(), p_element->w(), p_element->h(), p_element->x(), p_element->y());
-								}
+						//		if (p_element)
+						//		{
+						//			ImGui::Text("Name=%s w=%.2f h=%.2f x=%.2f y=%.2f", hovered_icon_name.data(), p_element->w(), p_element->h(), p_element->x(), p_element->y());
+						//		}
 								ImGui::EndTooltip();
 							}
 						}

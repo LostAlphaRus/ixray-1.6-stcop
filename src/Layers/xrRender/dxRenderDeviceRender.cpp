@@ -546,6 +546,16 @@ void  dxRenderDeviceRender::OnAssetsChanged()
 #endif
 }
 
+void dxRenderDeviceRender::PostCreate()
+{
+	R_ASSERT2(Resources, "must be valid or early calling");
+
+	if (Resources)
+	{
+		Resources->Initialize_SVGStorage();
+	}
+}
+
 const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::string_view& subpath)
 {
 	if (Resources)

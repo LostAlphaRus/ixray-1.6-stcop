@@ -19,83 +19,83 @@ public:
 	{
 		rstPixel = 0,	//	Default texture offset
 		rstVertex = D3DVERTEXTEXTURESAMPLER0,
-		rstGeometry = rstVertex+256,
-		rstHull = rstGeometry+256,
-		rstDomain = rstHull+256,
-		rstCompute = rstDomain+256,
-        rstInvalid = rstCompute+256
+		rstGeometry = rstVertex + 256,
+		rstHull = rstGeometry + 256,
+		rstDomain = rstHull + 256,
+		rstCompute = rstDomain + 256,
+		rstInvalid = rstCompute + 256
 	};
 
 public:
-	void								apply_load		(u32	stage);
-	void								apply_theora	(u32	stage);
-	void								apply_avi		(u32	stage);
-	void								apply_seq		(u32	stage);
-	void								apply_normal	(u32	stage);
+	void								apply_load(u32	stage);
+	void								apply_theora(u32	stage);
+	void								apply_avi(u32	stage);
+	void								apply_seq(u32	stage);
+	void								apply_normal(u32	stage);
 
-	void								Preload			();
-	void								Load			();
+	void								Preload();
+	void								Load();
 	/// @brief just creates resources but without uploading and filling
 	void								CreateEmpty(u32 w, u32 h);
-	void								PostLoad		();
-	void								Unload			(void);
-//	void								Apply			(u32 dwStage);
+	void								PostLoad();
+	void								Unload(void);
+	//	void								Apply			(u32 dwStage);
 
-	void								surface_set		(ID3DBaseTexture* surf );
-	ID3DBaseTexture*					surface_get 	();
+	void								surface_set(ID3DBaseTexture* surf);
+	ID3DBaseTexture* surface_get();
 
-	IC BOOL								isUser			()		{ return flags.bUser;					}
-	IC u32								get_Width		()		{ desc_enshure(); return desc.Width;	}
-	IC u32								get_Height		()		{ desc_enshure(); return desc.Height;	}
+	IC BOOL								isUser() { return flags.bUser; }
+	IC u32								get_Width() { desc_enshure(); return desc.Width; }
+	IC u32								get_Height() { desc_enshure(); return desc.Height; }
 
 #ifdef USE_DX11
-	IC DXGI_FORMAT						get_Format		()		{ desc_enshure(); return desc.Format;	}
+	IC DXGI_FORMAT						get_Format() { desc_enshure(); return desc.Format; }
 #endif
 
-	void								video_Sync		(u32 _time){m_play_time=_time;}
-	void								video_Play		(BOOL looped, u32 _time=0xFFFFFFFF);
-	void								video_Pause		(BOOL state);
-	void								video_Stop		();
-	BOOL								video_IsPlaying	();
+	void								video_Sync(u32 _time) { m_play_time = _time; }
+	void								video_Play(BOOL looped, u32 _time = 0xFFFFFFFF);
+	void								video_Pause(BOOL state);
+	void								video_Stop();
+	BOOL								video_IsPlaying();
 
-	CTexture							();
-	virtual ~CTexture					();
-	
+	CTexture();
+	virtual ~CTexture();
+
 #ifdef USE_DX11
-	ID3DShaderResourceView*				get_SRView() {return m_pSRView;}
+	ID3DShaderResourceView* get_SRView() { return m_pSRView; }
 #endif //USE_DX11
 
 private:
-	IC BOOL								desc_valid		()		{ return pSurface==desc_cache; }
-	IC void								desc_enshure	()		{ if (!desc_valid()) desc_update(); }
-	void								desc_update		();
+	IC BOOL								desc_valid() { return pSurface == desc_cache; }
+	IC void								desc_enshure() { if (!desc_valid()) desc_update(); }
+	void								desc_update();
 #ifdef USE_DX11
-	void								Apply			(u32 dwStage);
+	void								Apply(u32 dwStage);
 	void								ProcessStaging();
 	D3D_USAGE							GetUsage();
 #endif //USE_DX11
 
 	//	Class data
 public:	//	Public class members (must be encapsulated furthur)
-	struct 
+	struct
 	{
-		u32					bLoaded		: 1;
-		u32					bUser		: 1;
-		u32					seqCycles	: 1;
-		u32					MemoryUsage	: 28;
+		u32					bLoaded : 1;
+		u32					bUser : 1;
+		u32					seqCycles : 1;
+		u32					MemoryUsage : 28;
 #ifdef USE_DX11
-		u32					bLoadedAsStaging: 1;
+		u32					bLoadedAsStaging : 1;
 #endif //USE_DX11
 	}									flags;
 	xr_delegate<void(u32)> bind;
 
 
-	CAviPlayerCustom*					pAVI;
-	CTheoraSurface*						pTheora;
+	CAviPlayerCustom* pAVI;
+	CTheoraSurface* pTheora;
 	float								m_material;
 	shared_str							m_bumpmap;
 
-	union{
+	union {
 		u32								m_play_time;		// sync theora time
 		u32								seqMSPF;			// Sequence data milliseconds per frame
 	};
@@ -109,24 +109,24 @@ private:
 	xr_vector<ID3DBaseTexture*>			seqDATA;
 
 	// Description
-	ID3DBaseTexture*					desc_cache;
+	ID3DBaseTexture* desc_cache;
 	D3D_TEXTURE2D_DESC					desc;
 
 #ifdef USE_DX11
-	ID3DShaderResourceView*			m_pSRView;
+	ID3DShaderResourceView* m_pSRView;
 	// Sequence view data
 	xr_vector<ID3DShaderResourceView*>m_seqSRView;
 #endif //USE_DX11
 };
-struct 		resptrcode_texture	: public resptr_base<CTexture>
+struct 		resptrcode_texture : public resptr_base<CTexture>
 {
-	ECORE_API void		create			(LPCSTR	_name);
-	void				destroy			()					{ _set(NULL);					}
-	shared_str			bump_get		()					{ return _get()->m_bumpmap;		}
-	bool				bump_exist		()					{ return 0!=bump_get().size();	}
+	ECORE_API void		create(LPCSTR	_name);
+	void				destroy() { _set(NULL); }
+	shared_str			bump_get() { return _get()->m_bumpmap; }
+	bool				bump_exist() { return 0 != bump_get().size(); }
 };
-typedef	resptr_core<CTexture,resptrcode_texture >	
-	ref_texture;
+typedef	resptr_core<CTexture, resptrcode_texture >
+ref_texture;
 
 constexpr unsigned char _kRenderBackend_DebugTextureAtlasNameLength = 16;
 constexpr unsigned char _kRenderBackend_SVGStorageSizeInitial = 2;
@@ -152,6 +152,7 @@ class ECORE_API CTextureAtlas
 public:
 	struct ECORE_API CTextureAtlasElement
 	{
+		char lookup_id = char(0);
 		smol_atlas_item_t* p_placement = nullptr;
 
 		float x() const;
@@ -160,7 +161,8 @@ public:
 		float h() const;
 	};
 
-	using storage_type = std::pmr::unordered_map<xr_string_view, xr_rtree2d<CTextureAtlasElement, 2, 8>>;
+	using element_lookupid_type = decltype(CTextureAtlasElement::lookup_id);
+	using storage_type = std::pmr::vector<CTextureAtlasElement>;
 	using storage_allocator = std::pmr::polymorphic_allocator<storage_type::value_type>;
 
 public:
@@ -191,6 +193,10 @@ public:
 
 	const storage_type& getElements(void) const;
 
+	element_lookupid_type findNearest(float x, float y) const;
+	bool removeElement(float x, float y);
+	bool removeElement(element_lookupid_type lookup_id);
+
 private:
 	// for older GAPI < DX11
 	void addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
@@ -201,7 +207,7 @@ private:
 #ifdef DEBUG
 	bool init_was_called;
 #endif
-
+	mutable bool m_is_storage_dirty;
 	u32 m_id;
 
 	// logical layout placement 
@@ -211,7 +217,9 @@ private:
 	CTexture* m_p_texture;
 	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(storage_type::value_type), _kRenderBackend_TextureAtlasPreallocatedItems)];
 	std::pmr::monotonic_buffer_resource sais_wrapper;
-	storage_type m_atlas_items;
+	// be very careful, change it only when it is needed by sense 
+	// otherwise we can't provide find as const
+	mutable storage_type m_atlas_items;
 };
 
 #endif

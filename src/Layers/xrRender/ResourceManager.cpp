@@ -475,3 +475,13 @@ void	CResourceManager::Evict()
 	CHK_DX	(RDevice->EvictManagedResources());
 #endif //USE_DX11
 }
+
+void CResourceManager::Initialize_SVGStorage()
+{
+	// we don't use storage svg if rendering ui is raster because there's no need in such creation
+	if (!this->m_pStorageSVG && !EngineExternal().isRenderingUIRaster())
+	{
+		this->m_pStorageSVG = new CSVGStorage(eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation);
+		this->m_pStorageSVG->init(RDevice, RContext);
+	}
+}

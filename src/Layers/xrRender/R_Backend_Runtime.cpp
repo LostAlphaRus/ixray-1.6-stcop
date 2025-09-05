@@ -500,6 +500,7 @@ CTextureAtlas::CTextureAtlas() :
 #ifdef DEBUG
 	init_was_called{},
 #endif
+	m_is_storage_dirty{},
 	m_id{ _kRenderBackend_TextureAtlasInvalidID },
 	m_p_atlas{},
 	m_p_texture{},
@@ -514,15 +515,16 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 #ifdef DEBUG
 	init_was_called{ other.init_was_called },
 #endif
+	m_is_storage_dirty{},
 	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ storage_allocator{&sais_wrapper} }
 {
 	other.m_p_atlas = nullptr;
 	other.m_p_texture = nullptr;
 	other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 
-	for (auto& pair : other.m_atlas_items)
+	for (auto& element : other.m_atlas_items)
 	{
-		this->m_atlas_items.insert(std::move(pair));
+		this->m_atlas_items.emplace_back(element);
 	}
 
 	other.m_atlas_items.clear();
@@ -547,9 +549,9 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 		this->m_p_texture = other.m_p_texture;
 
 
-		for (const auto& pair : other.m_atlas_items)
+		for (auto& element : other.m_atlas_items)
 		{
-			this->m_atlas_items.insert(std::move(pair));
+			this->m_atlas_items.emplace_back(element);
 		}
 
 		other.m_p_atlas = nullptr;
@@ -605,7 +607,6 @@ void CTextureAtlas::uninit()
 
 	if (this->m_p_atlas)
 	{
-		/*
 		for (CTextureAtlasElement& item : this->m_atlas_items)
 		{
 			R_ASSERT(item.p_placement && "must be valid otherwise you didn't remove item from vector properly");
@@ -614,20 +615,7 @@ void CTextureAtlas::uninit()
 				sma_item_remove(this->m_p_atlas, item.p_placement);
 			}
 		}
-		*/
-
-		for (auto& pair_iconname_and_elements : this->m_atlas_items)
-		{
-			// we suppose that each of node of rtree doesn't share or have same elements otherwise you have to report to developers so it is expected that user must pass only unique dimensions for icon and later it will be placed on atlas space
-			for (auto& node : pair_iconname_and_elements.second.get_nodes())
-			{
-				for (auto& element : node.entries)
-				{
-					sma_item_remove(this->m_p_atlas,
-						element.value.p_placement);
-				}
-			}
-		}
+		
 
 		sma_atlas_destroy(this->m_p_atlas);
 
@@ -667,7 +655,9 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 		//	item.v1 = float(y + h) / float(_h);
 
 		//	this->m_atlas_items.push_back(item);
-			this->m_atlas_items[icon_subpath_name].insert({ static_cast<float>(w),static_cast<float>(h) }, item);
+		//	this->m_atlas_items[icon_subpath_name].insert({ static_cast<float>(w),static_cast<float>(h) }, item);
+			this->m_atlas_items.push_back(item);
+			this->m_atlas_items.back().lookup_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
 
 			if (pitch == 0)
 				pitch = _w * 4;
@@ -853,6 +843,100 @@ u32 CTextureAtlas::getHeight(void) const
 const CTextureAtlas::storage_type& CTextureAtlas::getElements(void) const
 {
 	return this->m_atlas_items;
+}
+
+CTextureAtlas::element_lookupid_type CTextureAtlas::findNearest(float x, float y) const
+{
+	element_lookupid_type result = element_lookupid_type(-1);
+
+	auto pMortonCodeCalculate = [](float _x, float _y) -> u64
+		{
+			constexpr float minVal = 0.0f;
+			constexpr float maxVal = 32768.0f;
+			constexpr uint32_t maxInt = 0x7FFFFF; // 23 bits for precision
+
+			// Normalize to [0, 1] range
+			float nx = (_x - minVal) / (maxVal - minVal);
+			float ny = (_y - minVal) / (maxVal - minVal);
+
+			// Scale to integer range
+			uint32_t ix = static_cast<uint32_t>(nx * maxInt);
+			uint32_t iy = static_cast<uint32_t>(ny * maxInt);
+
+			// Interleave bits using magic numbers (faster than loop)
+			uint64_t x64 = ix;
+			uint64_t y64 = iy;
+
+			x64 = (x64 | (x64 << 16)) & 0x0000FFFF0000FFFF;
+			x64 = (x64 | (x64 << 8)) & 0x00FF00FF00FF00FF;
+			x64 = (x64 | (x64 << 4)) & 0x0F0F0F0F0F0F0F0F;
+			x64 = (x64 | (x64 << 2)) & 0x3333333333333333;
+			x64 = (x64 | (x64 << 1)) & 0x5555555555555555;
+
+			y64 = (y64 | (y64 << 16)) & 0x0000FFFF0000FFFF;
+			y64 = (y64 | (y64 << 8)) & 0x00FF00FF00FF00FF;
+			y64 = (y64 | (y64 << 4)) & 0x0F0F0F0F0F0F0F0F;
+			y64 = (y64 | (y64 << 2)) & 0x3333333333333333;
+			y64 = (y64 | (y64 << 1)) & 0x5555555555555555;
+
+			return x64 | (y64 << 1);
+		};
+
+	if (this->m_is_storage_dirty)
+	{
+		std::sort(this->m_atlas_items.begin(), this->m_atlas_items.end(), [pMortonCodeCalculate](const CTextureAtlasElement& left, const CTextureAtlasElement& right) -> bool {
+			return pMortonCodeCalculate(left.x(), left.y()) < pMortonCodeCalculate(right.x(), right.y());
+			});
+
+		this->m_is_storage_dirty = false;
+	}
+
+	u64 queryCode = pMortonCodeCalculate(x, y);
+
+	// Binary search for the closest Morton code
+	auto it = std::lower_bound(this->m_atlas_items.begin(), this->m_atlas_items.end(),
+		pMortonCodeCalculate(0.0f, 0.0f),
+		[pMortonCodeCalculate, queryCode](const CTextureAtlasElement& p, const u64) {
+			return pMortonCodeCalculate(p.x(), p.y()) < queryCode;
+		});
+
+	// Check if we're at the beginning or end
+	if (it == this->m_atlas_items.begin())
+		return 0;
+
+	if (it == this->m_atlas_items.end())
+		return static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
+
+
+	// Compare with previous element to find which is closer
+	element_lookupid_type idx = static_cast<element_lookupid_type>(it - this->m_atlas_items.begin());
+	u64 code1 = pMortonCodeCalculate(this->m_atlas_items[idx].x(), this->m_atlas_items[idx].y());
+	u64 code2 = pMortonCodeCalculate(this->m_atlas_items[idx - 1].x(), this->m_atlas_items[idx - 1].y());
+
+	return static_cast<element_lookupid_type>((std::abs(static_cast<int64_t>(queryCode - code1)) <
+		std::abs(static_cast<int64_t>(queryCode - code2))) ? idx : idx - 1);
+}
+
+bool CTextureAtlas::removeElement(float x, float y)
+{
+	char id = findNearest(x, y);
+	return this->removeElement(id);
+}
+
+bool CTextureAtlas::removeElement(char lookup_id)
+{
+	bool result = true;
+
+	if (lookup_id < 0)
+	{
+		result = false;
+		return result;
+	}
+
+	this->m_atlas_items.erase(this->m_atlas_items.begin() + lookup_id);
+	this->m_is_storage_dirty = true;
+
+	return result;
 }
 
 

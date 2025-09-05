@@ -339,6 +339,9 @@ public:
 
 	CSVGStorage* GetSVGStorage() const;
 
+	// for dx9 call only after vid_restart because device will contain allocated texture that weren't deleted and thus we couldn't make a succesful DxDevice->Reset
+	void Initialize_SVGStorage();
+
 private:
 	CSVGStorage* m_pStorageSVG;
 
