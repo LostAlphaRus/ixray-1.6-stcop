@@ -496,6 +496,45 @@ float CTextureAtlas::CTextureAtlasElement::h() const
 	return -1.0f;
 }
 
+float CTextureAtlas::CTextureAtlasElement::u0(u32 atlas_width) const
+{
+	float result = x();
+
+	result /= static_cast<float>(atlas_width);
+
+	return result;
+}
+
+float CTextureAtlas::CTextureAtlasElement::v0(u32 atlas_height) const
+{
+	float result = y();
+
+	result /= static_cast<float>(atlas_height);
+
+	return result;
+}
+
+float CTextureAtlas::CTextureAtlasElement::u1(u32 atlas_width) const
+{
+	float result = x();
+	result += w();
+
+	result /= static_cast<float>(atlas_width);
+
+	return result;
+}
+
+float CTextureAtlas::CTextureAtlasElement::v1(u32 atlas_height) const
+{
+	float result = y();
+
+	result += h();
+
+	result /= static_cast<float>(atlas_height);
+
+	return result;
+}
+
 CTextureAtlas::CTextureAtlas() :
 #ifdef DEBUG
 	init_was_called{},
@@ -649,13 +688,11 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 			u32 _h = this->m_p_texture->get_Height();
 
 			// we don't need to store it but we need to calculate at runtime
-		//	item.u0 = float(x) / float(_w);
-		//	item.v0 = float(y) / float(_h);
-		//	item.u1 = float(x + w) / float(_w);
-		//	item.v1 = float(y + h) / float(_h);
-
-		//	this->m_atlas_items.push_back(item);
-		//	this->m_atlas_items[icon_subpath_name].insert({ static_cast<float>(w),static_cast<float>(h) }, item);
+		//	u0 = float(x) / float(_w);
+		//	v0 = float(y) / float(_h);
+		//	u1 = float(x + w) / float(_w);
+		//	v1 = float(y + h) / float(_h);
+			
 			this->m_atlas_items.push_back(item);
 			this->m_atlas_items.back().lookup_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
 

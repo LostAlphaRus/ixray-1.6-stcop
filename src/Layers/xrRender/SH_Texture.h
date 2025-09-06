@@ -159,6 +159,12 @@ public:
 		float y() const;
 		float w() const;
 		float h() const;
+
+
+		float u0(u32 atlas_width) const;
+		float v0(u32 atlas_height) const;
+		float u1(u32 atlas_width) const;
+		float v1(u32 atlas_height) const;
 	};
 
 	using element_lookupid_type = decltype(CTextureAtlasElement::lookup_id);
