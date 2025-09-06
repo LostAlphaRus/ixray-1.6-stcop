@@ -549,11 +549,8 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 							ImGui::Text("atlas width: %.2f", float(pAtlas->getWidth()));
 							ImGui::Text("atlas height: %.2f", float(pAtlas->getHeight()));
 
-							ImGui::Text("Elements:");
-							for (const auto& element : elements)
-							{
-								ImGui::Text("\t\tw=%.2f h=%.2f x=%.2f y=%.2f", element.w(), element.h(), element.x(), element.y());
-							}
+							ImGui::SeparatorText("Elements");
+							ImGui::Text("amount: %zu", elements.size());
 
 							ImGui::SeparatorText("Atlas");
 
