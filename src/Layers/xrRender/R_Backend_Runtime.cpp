@@ -692,7 +692,7 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, 
 		0,
 		&lr,
 		nullptr,
-		D3DLOCK_DISCARD
+		0
 	);
 
 	if (!SUCCEEDED(hr))
