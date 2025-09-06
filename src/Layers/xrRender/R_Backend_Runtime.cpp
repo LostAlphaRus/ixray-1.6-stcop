@@ -1157,7 +1157,10 @@ void CSVGStorage::init_default_atlas()
 				float fStartDim = 32.0f;
 				fStartDim *= i;
 				lunasvg::Bitmap bmp = doc->renderToBitmap(fStartDim, fStartDim);
+#if defined(D3D10_SDK_VERSION) || defined(D3D11_SDK_VERSION)
 				bmp.convertToRGBA();
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION <= 0x0900
+#endif
 				this->m_default_atlas.addRegion(this->m_p_device, this->m_p_device_context, _kSVGStorge_DefaultSVGTextureSubPathName, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
 			}
 		}
