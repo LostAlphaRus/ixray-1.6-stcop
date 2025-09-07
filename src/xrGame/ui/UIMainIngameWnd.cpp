@@ -691,16 +691,15 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	if (isRaster == false)
 		isRaster = !(pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon));
 	
+	int m_iGridWidth = pSettings->r_u32(sect_name, "inv_grid_width");
+	int m_iGridHeight = pSettings->r_u32(sect_name, "inv_grid_height");
+
+	int m_iXPos = pSettings->r_u32(sect_name, "inv_grid_x");
+	int m_iYPos = pSettings->r_u32(sect_name, "inv_grid_y");
 
 	//properties used by inventory menu
 	if (isRaster)
 	{
-		int m_iGridWidth = pSettings->r_u32(sect_name, "inv_grid_width");
-		int m_iGridHeight = pSettings->r_u32(sect_name, "inv_grid_height");
-
-		int m_iXPos = pSettings->r_u32(sect_name, "inv_grid_x");
-		int m_iYPos = pSettings->r_u32(sect_name, "inv_grid_y");
-
 		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name.c_str(), "icons_texture", nullptr);
 		const ui_shader& ui_shader = InventoryUtilities::GetEquipmentIconsShader(icons_texture);
 		UIPickUpItemIcon->SetShader(ui_shader);

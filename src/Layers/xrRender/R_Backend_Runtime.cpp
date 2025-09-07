@@ -24,104 +24,104 @@ using namespace DirectX;
 #endif
 #endif
 
-void CBackend::OnFrameEnd	()
+void CBackend::OnFrameEnd()
 {
-//#ifndef DEDICATED_SERVER
+	//#ifndef DEDICATED_SERVER
 #ifndef _EDITOR
 	if (!g_dedicated_server)
 #endif    
 	{
 #ifdef USE_DX11
-		Invalidate			();
+		Invalidate();
 #else //USE_DX11
 
-		for (u32 stage=0; stage<Caps.raster.dwStages; stage++)
-			CHK_DX(RDevice->SetTexture(0,0));
-		CHK_DX				(RDevice->SetStreamSource	(0,0,0,0));
-		CHK_DX				(RDevice->SetIndices			(0));
-		CHK_DX				(RDevice->SetVertexShader	(0));
-		CHK_DX				(RDevice->SetPixelShader		(0));
-		Invalidate			();
+		for (u32 stage = 0; stage < Caps.raster.dwStages; stage++)
+			CHK_DX(RDevice->SetTexture(0, 0));
+		CHK_DX(RDevice->SetStreamSource(0, 0, 0, 0));
+		CHK_DX(RDevice->SetIndices(0));
+		CHK_DX(RDevice->SetVertexShader(0));
+		CHK_DX(RDevice->SetPixelShader(0));
+		Invalidate();
 #endif
 	}
-//#endif
+	//#endif
 }
 
-void CBackend::OnFrameBegin	()
+void CBackend::OnFrameBegin()
 {
-//#ifndef DEDICATED_SERVER
+	//#ifndef DEDICATED_SERVER
 #ifndef _EDITOR
 	if (!g_dedicated_server)
 #endif    
 	{
-		PGO					(Msg("PGO:*****frame[%d]*****",RDEVICE.dwFrame));
+		PGO(Msg("PGO:*****frame[%d]*****", RDEVICE.dwFrame));
 #ifdef USE_DX11
 		Invalidate();
 		//	DX9 sets base rt nd base zb by default
 		RImplementation.rmNormal();
-		set_RT				(RImplementation.Target->rt_BackbufferLUT->pRT);
-		set_ZB				(nullptr);
+		set_RT(RImplementation.Target->rt_BackbufferLUT->pRT);
+		set_ZB(nullptr);
 #endif //USE_DX11
-		Memory.mem_fill		(&stat,0,sizeof(stat));
-		Vertex.Flush		();
-		Index.Flush			();
-		set_Stencil			(FALSE);
+		Memory.mem_fill(&stat, 0, sizeof(stat));
+		Vertex.Flush();
+		Index.Flush();
+		set_Stencil(FALSE);
 	}
-//#endif
+	//#endif
 }
 
-void CBackend::Invalidate	()
+void CBackend::Invalidate()
 {
-	pRT[0]						= nullptr;
-	pRT[1]						= nullptr;
-	pRT[2]						= nullptr;
-	pRT[3]						= nullptr;
-	pZB							= nullptr;
+	pRT[0] = nullptr;
+	pRT[1] = nullptr;
+	pRT[2] = nullptr;
+	pRT[3] = nullptr;
+	pZB = nullptr;
 
-	decl						= nullptr;
-	vb							= nullptr;
-	ib							= nullptr;
-	vb_stride					= 0;
+	decl = nullptr;
+	vb = nullptr;
+	ib = nullptr;
+	vb_stride = 0;
 
-	state						= nullptr;
-	ps							= nullptr;
-	vs							= nullptr;
-DX10_ONLY(gs					= nullptr);
+	state = nullptr;
+	ps = nullptr;
+	vs = nullptr;
+	DX10_ONLY(gs = nullptr);
 #ifdef USE_DX11
 	hs = 0;
 	ds = 0;
 	cs = 0;
 #endif //USE_DX11
-	ctable						= nullptr;
+	ctable = nullptr;
 
-	T							= nullptr;
-	M							= nullptr;
-	C							= nullptr;
+	T = nullptr;
+	M = nullptr;
+	C = nullptr;
 
-	stencil_enable=u32(-1);
-	stencil_func=u32(-1);
-	stencil_ref=u32(-1);
-	stencil_mask=u32(-1);
-	stencil_writemask=u32(-1);
-	stencil_fail=u32(-1);
-	stencil_pass=u32(-1);
-	stencil_zfail=u32(-1);
-	cull_mode=u32(-1);
-	z_enable=u32(-1);
-	z_func=u32(-1);
-	alpha_ref=u32(-1);
-	colorwrite_mask				= u32(-1);
+	stencil_enable = u32(-1);
+	stencil_func = u32(-1);
+	stencil_ref = u32(-1);
+	stencil_mask = u32(-1);
+	stencil_writemask = u32(-1);
+	stencil_fail = u32(-1);
+	stencil_pass = u32(-1);
+	stencil_zfail = u32(-1);
+	cull_mode = u32(-1);
+	z_enable = u32(-1);
+	z_func = u32(-1);
+	alpha_ref = u32(-1);
+	colorwrite_mask = u32(-1);
 
 	//	Since constant buffers are unmapped (for DirecX 10)
 	//	transform setting handlers should be unmapped too.
-	xforms.unmap	();
+	xforms.unmap();
 
 #ifdef USE_DX11
-	m_pInputLayout				= nullptr;
-	m_PrimitiveTopology			= D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
-	m_bChangedRTorZB			= false;
-	m_pInputSignature			= nullptr;
-	for (int i=0; i<MaxCBuffers; ++i)
+	m_pInputLayout = nullptr;
+	m_PrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+	m_bChangedRTorZB = false;
+	m_pInputSignature = nullptr;
+	for (int i = 0; i < MaxCBuffers; ++i)
 	{
 		m_aPixelConstants[i] = 0;
 		m_aVertexConstants[i] = 0;
@@ -137,20 +137,20 @@ DX10_ONLY(gs					= nullptr);
 	SSManager.ResetDeviceState();
 	SRVSManager.ResetDeviceState();
 
-	for (u32 gs_it =0; gs_it < mtMaxGeometryShaderTextures;)	textures_gs	[gs_it++]	= 0;
-	for (u32 hs_it =0; hs_it < mtMaxHullShaderTextures;)	textures_hs	[hs_it++]	= 0;
-	for (u32 ds_it =0; ds_it < mtMaxDomainShaderTextures;)	textures_ds	[ds_it++]	= 0;
-	for (u32 cs_it =0; cs_it < mtMaxComputeShaderTextures;)	textures_cs	[cs_it++]	= 0;
+	for (u32 gs_it = 0; gs_it < mtMaxGeometryShaderTextures;)	textures_gs[gs_it++] = 0;
+	for (u32 hs_it = 0; hs_it < mtMaxHullShaderTextures;)	textures_hs[hs_it++] = 0;
+	for (u32 ds_it = 0; ds_it < mtMaxDomainShaderTextures;)	textures_ds[ds_it++] = 0;
+	for (u32 cs_it = 0; cs_it < mtMaxComputeShaderTextures;)	textures_cs[cs_it++] = 0;
 #endif //USE_DX11
 
-	for (u32 ps_it =0; ps_it < mtMaxPixelShaderTextures;)	textures_ps	[ps_it++]	= 0;
-	for (u32 vs_it =0; vs_it < mtMaxVertexShaderTextures;)	textures_vs	[vs_it++]	= 0;
+	for (u32 ps_it = 0; ps_it < mtMaxPixelShaderTextures;)	textures_ps[ps_it++] = 0;
+	for (u32 vs_it = 0; vs_it < mtMaxVertexShaderTextures;)	textures_vs[vs_it++] = 0;
 #ifdef _EDITOR
-	for (u32 m_it =0; m_it< 8;)		matrices	[m_it++]	= 0;
+	for (u32 m_it = 0; m_it < 8;)		matrices[m_it++] = 0;
 #endif
 }
 
-void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=nullptr */, u32 count/* =0*/)
+void	CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=nullptr */, u32 count/* =0*/)
 {
 #ifdef USE_DX11
 	//	TODO: DX10: Implement in the corresponding vertex shaders
@@ -158,15 +158,15 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=nullptr */, u32 c
 	//VERIFY(!"CBackend::set_ClipPlanes not implemented!");
 	return;
 #else //USE_DX11
-	if (0==Caps.geometry.dwClipPlanes)	return;
-	if (!_enable)	{
-		CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
+	if (0 == Caps.geometry.dwClipPlanes)	return;
+	if (!_enable) {
+		CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
 		return;
 	}
-	
+
 	// Enable and setup planes
-	VERIFY	(_planes && count);
-	if		(count>Caps.geometry.dwClipPlanes)	count=Caps.geometry.dwClipPlanes;
+	VERIFY(_planes && count);
+	if (count > Caps.geometry.dwClipPlanes)	count = Caps.geometry.dwClipPlanes;
 
 	auto worldToClipMatrixIT = XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&Device.mFullTransform)));
 	worldToClipMatrixIT = XMMatrixTranspose(worldToClipMatrixIT);
@@ -181,273 +181,274 @@ void	CBackend::set_ClipPlanes	(u32 _enable, Fplane*	_planes /*=nullptr */, u32 c
 	}
 
 	// Enable them
-	u32		e_mask	= (1<<count)-1;
-	CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,e_mask));
+	u32		e_mask = (1 << count) - 1;
+	CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, e_mask));
 #endif
 }
 
 #ifndef DEDICATED_SREVER
-void	CBackend::set_ClipPlanes	(u32 _enable, Fmatrix*	_xform  /*=nullptr */, u32 fmask/* =0xff */)
+void	CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform  /*=nullptr */, u32 fmask/* =0xff */)
 {
-	if (!_enable)	{
+	if (!_enable) {
 #ifdef USE_DX11
 		//	TODO: DX10: Implement in the corresponding vertex shaders
 		//	Use this to set up location, were shader setup code will get data
 		//VERIFY(!"CBackend::set_ClipPlanes not implemented!");
 #else //USE_DX11
-		CHK_DX	(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE,FALSE));
+		CHK_DX(RDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE));
 #endif
 		return;
 	}
-	VERIFY		(_xform && fmask);
+	VERIFY(_xform && fmask);
 	CFrustum	F;
-	F.CreateFromMatrix	(*_xform,fmask);
-	set_ClipPlanes		(_enable,F.planes,F.p_count);
+	F.CreateFromMatrix(*_xform, fmask);
+	set_ClipPlanes(_enable, F.planes, F.p_count);
 }
 
-void CBackend::set_Textures			(STextureList* _T)
+void CBackend::set_Textures(STextureList* _T)
 {
 	PROF_EVENT("set_Textures");
 	if (T == _T)	return;
-	T				= _T;
+	T = _T;
 	//	If resources weren't set at all we should clear from resource #0.
-	int _last_ps	= -1;
-	int _last_vs	= -1;
+	int _last_ps = -1;
+	int _last_vs = -1;
 #ifdef USE_DX11
-	int _last_gs	= -1;
-	int _last_hs	= -1;
-	int _last_ds	= -1;
-	int _last_cs	= -1;
+	int _last_gs = -1;
+	int _last_hs = -1;
+	int _last_ds = -1;
+	int _last_cs = -1;
 #endif //USE_DX11
-	STextureList::iterator	_it		= _T->begin	();
-	STextureList::iterator	_end	= _T->end	();
+	STextureList::iterator	_it = _T->begin();
+	STextureList::iterator	_end = _T->end();
 
-	for (; _it!=_end; _it++)
+	for (; _it != _end; _it++)
 	{
-		std::pair<u32,ref_texture>&		loader	=	*_it;
-		u32			load_id		= loader.first		;
-		CTexture*	load_surf	= &*loader.second	;
-//		if (load_id < 256)		{
+		std::pair<u32, ref_texture>& loader = *_it;
+		u32			load_id = loader.first;
+		CTexture* load_surf = &*loader.second;
+		//		if (load_id < 256)		{
 		if (load_id < CTexture::rstVertex)
 		{
 			//	Set up pixel shader resources
-			VERIFY(load_id<mtMaxPixelShaderTextures);
+			VERIFY(load_id < mtMaxPixelShaderTextures);
 			// ordinary pixel surface
-			if ((int)load_id>_last_ps)		_last_ps	=	load_id;
-			if (textures_ps[load_id]!=load_surf)	
+			if ((int)load_id > _last_ps)		_last_ps = load_id;
+			if (textures_ps[load_id] != load_surf)
 			{
-				textures_ps[load_id]	= load_surf			;
+				textures_ps[load_id] = load_surf;
 #ifdef DEBUG
-				stat.textures			++;
-#endif
-				if (load_surf)			
-				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
-					load_surf->bind		(load_id);
-//					load_surf->Apply	(load_id);
-				}
-			}
-		} else 
-#ifdef USE_DX11
-		if (load_id < CTexture::rstGeometry)
-#endif	//	UDE_DX10
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstVertex+mtMaxVertexShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstVertex;
-			if ((int)load_id_remapped>_last_vs)	_last_vs	=	load_id_remapped;
-			if (textures_vs[load_id_remapped]!=load_surf)	
-			{
-				textures_vs[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
+				stat.textures++;
 #endif
 				if (load_surf)
 				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
-					load_surf->bind		(load_id);
-//					load_surf->Apply	(load_id);
-				}
-			}
-		}
-#ifdef USE_DX11
-		else if (load_id < CTexture::rstHull)
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstGeometry+mtMaxGeometryShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstGeometry;
-			if ((int)load_id_remapped>_last_gs)	_last_gs	=	load_id_remapped;
-			if (textures_gs[load_id_remapped]!=load_surf)	
-			{
-				textures_gs[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
-				if (load_surf)
-				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
-					load_surf->bind		(load_id);
+					PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
+					load_surf->bind(load_id);
 					//					load_surf->Apply	(load_id);
 				}
 			}
 		}
-#ifdef USE_DX11
-		else if (load_id < CTexture::rstDomain)
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstHull+mtMaxHullShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstHull;
-			if ((int)load_id_remapped>_last_hs)	_last_hs	=	load_id_remapped;
-			if (textures_hs[load_id_remapped]!=load_surf)	
-			{
-				textures_hs[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
-				if (load_surf)
-				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
-					load_surf->bind		(load_id);
-					//					load_surf->Apply	(load_id);
-				}
-			}
-		}
-		else if (load_id < CTexture::rstCompute)
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstDomain+mtMaxDomainShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstDomain;
-			if ((int)load_id_remapped>_last_ds)	_last_ds	=	load_id_remapped;
-			if (textures_ds[load_id_remapped]!=load_surf)	
-			{
-				textures_ds[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
-				if (load_surf)
-				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
-					load_surf->bind		(load_id);
-					//					load_surf->Apply	(load_id);
-				}
-			}
-		}
-		else if (load_id < CTexture::rstInvalid)
-		{
-			//	Set up pixel shader resources
-			VERIFY(load_id < CTexture::rstCompute+mtMaxComputeShaderTextures);
-
-			// vertex only //d-map or vertex	
-			u32		load_id_remapped	= load_id - CTexture::rstCompute;
-			if ((int)load_id_remapped>_last_cs)	_last_cs	=	load_id_remapped;
-			if (textures_cs[load_id_remapped]!=load_surf)	
-			{
-				textures_cs[load_id_remapped]	= load_surf;
-#ifdef DEBUG
-				stat.textures	++;
-#endif
-				if (load_surf)
-				{
-					PGO					(Msg("PGO:tex%d:%s",load_id,load_surf->cName.c_str()));
-					load_surf->bind		(load_id);
-					//					load_surf->Apply	(load_id);
-				}
-			}
-		}
-#endif
 		else
-			VERIFY("Invalid enum");
+#ifdef USE_DX11
+			if (load_id < CTexture::rstGeometry)
+#endif	//	UDE_DX10
+			{
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstVertex + mtMaxVertexShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstVertex;
+				if ((int)load_id_remapped > _last_vs)	_last_vs = load_id_remapped;
+				if (textures_vs[load_id_remapped] != load_surf)
+				{
+					textures_vs[load_id_remapped] = load_surf;
+#ifdef DEBUG
+					stat.textures++;
+#endif
+					if (load_surf)
+					{
+						PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
+						load_surf->bind(load_id);
+						//					load_surf->Apply	(load_id);
+					}
+				}
+			}
+#ifdef USE_DX11
+			else if (load_id < CTexture::rstHull)
+			{
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstGeometry + mtMaxGeometryShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstGeometry;
+				if ((int)load_id_remapped > _last_gs)	_last_gs = load_id_remapped;
+				if (textures_gs[load_id_remapped] != load_surf)
+				{
+					textures_gs[load_id_remapped] = load_surf;
+#ifdef DEBUG
+					stat.textures++;
+#endif
+					if (load_surf)
+					{
+						PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
+						load_surf->bind(load_id);
+						//					load_surf->Apply	(load_id);
+					}
+				}
+			}
+#ifdef USE_DX11
+			else if (load_id < CTexture::rstDomain)
+			{
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstHull + mtMaxHullShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstHull;
+				if ((int)load_id_remapped > _last_hs)	_last_hs = load_id_remapped;
+				if (textures_hs[load_id_remapped] != load_surf)
+				{
+					textures_hs[load_id_remapped] = load_surf;
+#ifdef DEBUG
+					stat.textures++;
+#endif
+					if (load_surf)
+					{
+						PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
+						load_surf->bind(load_id);
+						//					load_surf->Apply	(load_id);
+					}
+				}
+			}
+			else if (load_id < CTexture::rstCompute)
+			{
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstDomain + mtMaxDomainShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstDomain;
+				if ((int)load_id_remapped > _last_ds)	_last_ds = load_id_remapped;
+				if (textures_ds[load_id_remapped] != load_surf)
+				{
+					textures_ds[load_id_remapped] = load_surf;
+#ifdef DEBUG
+					stat.textures++;
+#endif
+					if (load_surf)
+					{
+						PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
+						load_surf->bind(load_id);
+						//					load_surf->Apply	(load_id);
+					}
+				}
+			}
+			else if (load_id < CTexture::rstInvalid)
+			{
+				//	Set up pixel shader resources
+				VERIFY(load_id < CTexture::rstCompute + mtMaxComputeShaderTextures);
+
+				// vertex only //d-map or vertex	
+				u32		load_id_remapped = load_id - CTexture::rstCompute;
+				if ((int)load_id_remapped > _last_cs)	_last_cs = load_id_remapped;
+				if (textures_cs[load_id_remapped] != load_surf)
+				{
+					textures_cs[load_id_remapped] = load_surf;
+#ifdef DEBUG
+					stat.textures++;
+#endif
+					if (load_surf)
+					{
+						PGO(Msg("PGO:tex%d:%s", load_id, load_surf->cName.c_str()));
+						load_surf->bind(load_id);
+						//					load_surf->Apply	(load_id);
+					}
+				}
+			}
+#endif
+			else
+				VERIFY("Invalid enum");
 #endif	//	UDE_DX10
 	}
 
 
 	// clear remaining stages (PS)
-	for (++_last_ps; _last_ps<mtMaxPixelShaderTextures; _last_ps++)
+	for (++_last_ps; _last_ps < mtMaxPixelShaderTextures; _last_ps++)
 	{
 		if (!textures_ps[_last_ps])
 			continue;
 
-		textures_ps[_last_ps]			= 0;
+		textures_ps[_last_ps] = 0;
 #ifdef USE_DX11
 		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
+		ID3DShaderResourceView* pRes = 0;
 		//RDevice->PSSetShaderResources(_last_ps, 1, &pRes);
 		SRVSManager.SetPSResource(_last_ps, pRes);
 #else //USE_DX11
-		CHK_DX							(RDevice->SetTexture(_last_ps,nullptr));
+		CHK_DX(RDevice->SetTexture(_last_ps, nullptr));
 #endif
 	}
 	// clear remaining stages (VS)
-	for (++_last_vs; _last_vs<mtMaxVertexShaderTextures; _last_vs++)		
+	for (++_last_vs; _last_vs < mtMaxVertexShaderTextures; _last_vs++)
 	{
 		if (!textures_vs[_last_vs])
 			continue;
 
-		textures_vs[_last_vs]			= 0;
+		textures_vs[_last_vs] = 0;
 #ifdef USE_DX11
 		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
+		ID3DShaderResourceView* pRes = 0;
 		//RDevice->VSSetShaderResources(_last_vs, 1, &pRes);
 		SRVSManager.SetVSResource(_last_vs, pRes);
 #else //USE_DX11
-		CHK_DX							(RDevice->SetTexture(_last_vs+CTexture::rstVertex,nullptr));
+		CHK_DX(RDevice->SetTexture(_last_vs + CTexture::rstVertex, nullptr));
 #endif
 	}
 
 #ifdef USE_DX11
 	// clear remaining stages (VS)
-	for (++_last_gs; _last_gs<mtMaxGeometryShaderTextures; _last_gs++)
+	for (++_last_gs; _last_gs < mtMaxGeometryShaderTextures; _last_gs++)
 	{
 		if (!textures_gs[_last_gs])
 			continue;
 
-		textures_gs[_last_gs]			= 0;
+		textures_gs[_last_gs] = 0;
 
 		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
+		ID3DShaderResourceView* pRes = 0;
 		//RDevice->GSSetShaderResources(_last_gs, 1, &pRes);
 		SRVSManager.SetGSResource(_last_gs, pRes);
 	}
 
-	for (++_last_hs; _last_hs<mtMaxHullShaderTextures; _last_hs++)
+	for (++_last_hs; _last_hs < mtMaxHullShaderTextures; _last_hs++)
 	{
 		if (!textures_hs[_last_hs])
 			continue;
 
-		textures_hs[_last_hs]			= 0;
+		textures_hs[_last_hs] = 0;
 
 		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
+		ID3DShaderResourceView* pRes = 0;
 		SRVSManager.SetHSResource(_last_hs, pRes);
 	}
-	for (++_last_ds; _last_ds<mtMaxDomainShaderTextures; _last_ds++)
+	for (++_last_ds; _last_ds < mtMaxDomainShaderTextures; _last_ds++)
 	{
 		if (!textures_ds[_last_ds])
 			continue;
 
-		textures_ds[_last_ds]			= 0;
+		textures_ds[_last_ds] = 0;
 
 		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
+		ID3DShaderResourceView* pRes = 0;
 		SRVSManager.SetDSResource(_last_ds, pRes);
 	}
-	for (++_last_cs; _last_cs<mtMaxComputeShaderTextures; _last_cs++)
+	for (++_last_cs; _last_cs < mtMaxComputeShaderTextures; _last_cs++)
 	{
 		if (!textures_cs[_last_cs])
 			continue;
 
-		textures_cs[_last_cs]			= 0;
+		textures_cs[_last_cs] = 0;
 
 		//	TODO: DX10: Optimise: set all resources at once
-		ID3DShaderResourceView	*pRes = 0;
+		ID3DShaderResourceView* pRes = 0;
 		SRVSManager.SetCSResource(_last_cs, pRes);
 	}
 
@@ -455,12 +456,12 @@ void CBackend::set_Textures			(STextureList* _T)
 }
 #else
 
-void	CBackend::set_ClipPlanes	(u32 _enable, Fmatrix*	_xform  /*=nullptr */, u32 fmask/* =0xff */) {}
-void CBackend::set_Textures			(STextureList* _T) {}
+void	CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform  /*=nullptr */, u32 fmask/* =0xff */) {}
+void CBackend::set_Textures(STextureList* _T) {}
 
 #endif
 
-float CTextureAtlas::CTextureAtlasElement::x() const 
+float CTextureAtlas::CTextureAtlasElement::x() const
 {
 	if (p_placement)
 		return sma_item_x(p_placement);
@@ -543,11 +544,13 @@ CTextureAtlas::CTextureAtlas() :
 	m_id{ _kRenderBackend_TextureAtlasInvalidID },
 	m_p_atlas{},
 	m_p_texture{},
-	static_atlas_items_storage{},
 	sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) },
-	m_atlas_items{ storage_allocator{&sais_wrapper} }
+	saissi_wrapper{ &static_atlas_items_storage_spatial_indexing, sizeof(static_atlas_items_storage_spatial_indexing) },
+	m_atlas_items{ storage_allocator{&sais_wrapper} },
+	m_atlas_items_spatial_indexing{ spatial_storage_allocator{&saissi_wrapper} }
 {
 	m_atlas_items.reserve(_kRenderBackend_TextureAtlasPreallocatedItems);
+	m_atlas_items_spatial_indexing.reserve(_kRenderBackend_TextureAtlasPreallocatedItems);
 }
 
 CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
@@ -555,18 +558,26 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 	init_was_called{ other.init_was_called },
 #endif
 	m_is_storage_dirty{},
-	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, static_atlas_items_storage{}, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, m_atlas_items{ storage_allocator{&sais_wrapper} }
+	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, saissi_wrapper{ &static_atlas_items_storage_spatial_indexing, sizeof(static_atlas_items_storage_spatial_indexing) }, m_atlas_items{
+	storage_allocator{ &sais_wrapper } }, m_atlas_items_spatial_indexing{ spatial_storage_allocator{&saissi_wrapper} }
 {
-	other.m_p_atlas = nullptr;
-	other.m_p_texture = nullptr;
-	other.m_id = _kRenderBackend_TextureAtlasInvalidID;
+	m_id = other.m_id;
 
 	for (auto& element : other.m_atlas_items)
 	{
-		this->m_atlas_items.emplace_back(element);
+		this->m_atlas_items.emplace_back(std::move(element));
 	}
 
+	for (auto& element : other.m_atlas_items_spatial_indexing)
+	{
+		this->m_atlas_items_spatial_indexing.emplace_back(std::move(element));
+	}
+
+	other.m_p_atlas = nullptr;
+	other.m_p_texture = nullptr;
+	other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 	other.m_atlas_items.clear();
+	other.m_atlas_items_spatial_indexing.clear();
 }
 
 CTextureAtlas::~CTextureAtlas()
@@ -590,13 +601,19 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 
 		for (auto& element : other.m_atlas_items)
 		{
-			this->m_atlas_items.emplace_back(element);
+			this->m_atlas_items.emplace_back(std::move(element));
+		}
+
+		for (auto& element : other.m_atlas_items_spatial_indexing)
+		{
+			this->m_atlas_items_spatial_indexing.emplace_back(std::move(element));
 		}
 
 		other.m_p_atlas = nullptr;
 		other.m_p_texture = nullptr;
 		other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 		other.m_atlas_items.clear();
+		other.m_atlas_items_spatial_indexing.clear();
 
 #ifdef DEBUG
 		init_was_called = other.init_was_called;
@@ -623,10 +640,10 @@ void CTextureAtlas::init(ID3DDevice* p_device, int width, int height, const char
 	}
 
 	this->m_p_texture = DEV->_CreateEmptyTexture(pName, width, height);
-	
+
 	if (this->m_p_texture)
 		this->m_p_texture->setDebugName(pName);
-	
+
 	R_ASSERT(this->m_p_texture && "must be created a valid texture from resource manager, failed to create!");
 
 #ifdef DEBUG
@@ -654,7 +671,7 @@ void CTextureAtlas::uninit()
 				sma_item_remove(this->m_p_atlas, item.p_placement);
 			}
 		}
-		
+
 
 		sma_atlas_destroy(this->m_p_atlas);
 
@@ -692,9 +709,11 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 		//	v0 = float(y) / float(_h);
 		//	u1 = float(x + w) / float(_w);
 		//	v1 = float(y + h) / float(_h);
-			
+
 			this->m_atlas_items.push_back(item);
-			this->m_atlas_items.back().lookup_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
+
+			this->m_atlas_items_spatial_indexing.push_back({});
+			this->m_atlas_items_spatial_indexing.back().lookup_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
 
 			if (pitch == 0)
 				pitch = _w * 4;
@@ -778,7 +797,7 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 	R_ASSERT2(p_context, "you must pass a valid context! For D3D11 device context, for D3D12 command list!");
 	R_ASSERT(m_p_texture && "must be valid!");
 	R_ASSERT(m_p_texture->pSurface && "must be valid!");
-	
+
 #ifdef DEBUG
 	D3D_RESOURCE_DIMENSION	type;
 	m_p_texture->pSurface->GetType(&type);
@@ -798,12 +817,12 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 	UINT rowPitch = pitch;
 
 	p_context->UpdateSubresource(
-		pResourceTexture,          
-		0,                
-		&destBox,         
-		pData,         
-		rowPitch,        
-		0                  
+		pResourceTexture,
+		0,
+		&destBox,
+		pData,
+		rowPitch,
+		0
 	);
 
 #else
@@ -823,7 +842,7 @@ void* CTextureAtlas::getResource()
 #ifdef USE_DX11
 	R_ASSERT(this->m_p_texture->get_SRView() && "must be valid!");
 #endif
-	
+
 	if (this->m_p_texture)
 	{
 #ifdef USE_DX11
@@ -856,7 +875,7 @@ void CTextureAtlas::setID(u32 id)
 u32 CTextureAtlas::getWidth(void) const
 {
 	R_ASSERT(this->m_p_texture && "must be valid!");
-	
+
 	if (this->m_p_texture)
 	{
 		return this->m_p_texture->get_Width();
@@ -882,7 +901,43 @@ const CTextureAtlas::storage_type& CTextureAtlas::getElements(void) const
 	return this->m_atlas_items;
 }
 
-CTextureAtlas::element_lookupid_type CTextureAtlas::findNearest(float x, float y) const
+CTextureAtlas::CTextureAtlasElement* CTextureAtlas::findNearest(float x, float y)
+{
+	CTextureAtlasElement* pResult = nullptr;
+
+	if (this->m_atlas_items.empty())
+		return pResult;
+
+	element_lookupid_type id = findNearestSpatialIndex(x, y);
+	R_ASSERT(id >= -1 && "failed to obtain nearest!");
+
+	if (id == -1)
+		return pResult;
+
+	pResult = &this->m_atlas_items[this->m_atlas_items_spatial_indexing[id].lookup_id];
+
+	return pResult;
+}
+
+const CTextureAtlas::CTextureAtlasElement* CTextureAtlas::findNearest(float x, float y) const
+{
+	CTextureAtlasElement* pResult = nullptr;
+
+	if (this->m_atlas_items.empty())
+		return pResult;
+
+	element_lookupid_type id = findNearestSpatialIndex(x, y);
+	R_ASSERT(id >= -1 && "failed to obtain nearest!");
+
+	if (id == -1)
+		return pResult;
+
+	pResult = &this->m_atlas_items[this->m_atlas_items_spatial_indexing[id].lookup_id];
+
+	return pResult;
+}
+
+CTextureAtlas::element_lookupid_type CTextureAtlas::findNearestSpatialIndex(float x, float y) const
 {
 	element_lookupid_type result = element_lookupid_type(-1);
 
@@ -921,8 +976,15 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearest(float x, float y
 
 	if (this->m_is_storage_dirty)
 	{
-		std::sort(this->m_atlas_items.begin(), this->m_atlas_items.end(), [pMortonCodeCalculate](const CTextureAtlasElement& left, const CTextureAtlasElement& right) -> bool {
-			return pMortonCodeCalculate(left.x(), left.y()) < pMortonCodeCalculate(right.x(), right.y());
+		std::sort(this->m_atlas_items_spatial_indexing.begin(), this->m_atlas_items_spatial_indexing.end(), [pMortonCodeCalculate, this](const CTAESpatialIndex& left, const CTAESpatialIndex& right) -> bool {
+
+			R_ASSERT(left.lookup_id >= 0 && "must be initialized and valid!");
+			R_ASSERT(right.lookup_id >= 0 && "must be initialized and valid!");
+
+			const CTextureAtlasElement& el_left = this->m_atlas_items[left.lookup_id];
+			const CTextureAtlasElement& el_right = this->m_atlas_items[right.lookup_id];
+
+			return pMortonCodeCalculate(el_left.x(), el_left.y()) < pMortonCodeCalculate(el_right.x(), el_right.y());
 			});
 
 		this->m_is_storage_dirty = false;
@@ -931,24 +993,32 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearest(float x, float y
 	u64 queryCode = pMortonCodeCalculate(x, y);
 
 	// Binary search for the closest Morton code
-	auto it = std::lower_bound(this->m_atlas_items.begin(), this->m_atlas_items.end(),
+	auto it = std::lower_bound(this->m_atlas_items_spatial_indexing.begin(), this->m_atlas_items_spatial_indexing.end(),
 		pMortonCodeCalculate(0.0f, 0.0f),
-		[pMortonCodeCalculate, queryCode](const CTextureAtlasElement& p, const u64) {
-			return pMortonCodeCalculate(p.x(), p.y()) < queryCode;
+		[pMortonCodeCalculate, queryCode, this](const CTAESpatialIndex& p, const u64) {
+			R_ASSERT(p.lookup_id >= 0 && "must be initialized and valid!");
+
+			const CTextureAtlasElement& el = this->m_atlas_items[p.lookup_id];
+
+			return pMortonCodeCalculate(el.x(), el.y()) < queryCode;
 		});
 
 	// Check if we're at the beginning or end
-	if (it == this->m_atlas_items.begin())
+	if (it == this->m_atlas_items_spatial_indexing.begin())
 		return 0;
 
-	if (it == this->m_atlas_items.end())
-		return static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
+	if (it == this->m_atlas_items_spatial_indexing.end())
+		return static_cast<element_lookupid_type>(this->m_atlas_items_spatial_indexing.size() - 1);
 
 
 	// Compare with previous element to find which is closer
-	element_lookupid_type idx = static_cast<element_lookupid_type>(it - this->m_atlas_items.begin());
-	u64 code1 = pMortonCodeCalculate(this->m_atlas_items[idx].x(), this->m_atlas_items[idx].y());
-	u64 code2 = pMortonCodeCalculate(this->m_atlas_items[idx - 1].x(), this->m_atlas_items[idx - 1].y());
+	element_lookupid_type idx = static_cast<element_lookupid_type>(it - this->m_atlas_items_spatial_indexing.begin());
+
+	const CTextureAtlasElement& el_code1 = this->m_atlas_items[this->m_atlas_items_spatial_indexing[idx].lookup_id];
+	const CTextureAtlasElement& el_code2 = this->m_atlas_items[this->m_atlas_items_spatial_indexing[idx - 1].lookup_id];
+
+	u64 code1 = pMortonCodeCalculate(el_code1.x(), el_code1.y());
+	u64 code2 = pMortonCodeCalculate(el_code2.x(), el_code2.y());
 
 	return static_cast<element_lookupid_type>((std::abs(static_cast<int64_t>(queryCode - code1)) <
 		std::abs(static_cast<int64_t>(queryCode - code2))) ? idx : idx - 1);
@@ -956,11 +1026,12 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearest(float x, float y
 
 bool CTextureAtlas::removeElement(float x, float y)
 {
-	char id = findNearest(x, y);
+	element_lookupid_type id = findNearestSpatialIndex(x, y);
+
 	return this->removeElement(id);
 }
 
-bool CTextureAtlas::removeElement(char lookup_id)
+bool CTextureAtlas::removeElement(element_lookupid_type lookup_id)
 {
 	bool result = true;
 
@@ -970,7 +1041,19 @@ bool CTextureAtlas::removeElement(char lookup_id)
 		return result;
 	}
 
-	this->m_atlas_items.erase(this->m_atlas_items.begin() + lookup_id);
+	element_lookupid_type real_lookup = this->m_atlas_items_spatial_indexing[lookup_id].lookup_id;
+
+	this->m_atlas_items.erase(this->m_atlas_items.begin() + real_lookup);
+	this->m_atlas_items_spatial_indexing.erase(this->m_atlas_items_spatial_indexing.begin() + lookup_id);
+
+	R_ASSERT(this->m_atlas_items.size() == this->m_atlas_items_spatial_indexing.size() && "must be equal!");
+
+	// now we reset lookup indexing due to sorting
+	for (char i = 0; i < this->m_atlas_items_spatial_indexing.size(); ++i)
+	{
+		this->m_atlas_items_spatial_indexing[i].lookup_id = i;
+	}
+
 	this->m_is_storage_dirty = true;
 
 	return result;
@@ -989,12 +1072,12 @@ CSVGStorage::CSVGStorage(u32 flags) :
 	m_default_atlas{},
 	m_static_storage{},
 	m_ss_wrapper{ &m_static_storage, sizeof(m_static_storage), flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation ? std::pmr::null_memory_resource() : std::pmr::get_default_resource() },
-	m_storage{ std::pmr::polymorphic_allocator<CTextureAtlas>{&m_ss_wrapper} }
+	m_storage_atlases{ std::pmr::polymorphic_allocator<CTextureAtlas>{&m_ss_wrapper} }
 {
 	R_ASSERT(!(flags & eSVGStorageFlags::kFeatureSVGStorage_Static_Allocation && flags & eSVGStorageFlags::kFeatureSVGStorage_Dynamic_Allocation) && "invalid flags");
 
 	// if allocation size is changed in static mode you will get throw bad_alloc due to fact that required allocation formula was changed so in such case you have to change the size of static_storage field please
-	m_storage.reserve(_kRenderBackend_SVGStorageSizeInitial);
+	m_storage_atlases.reserve(_kRenderBackend_SVGStorageSizeInitial);
 }
 
 
@@ -1015,7 +1098,7 @@ void CSVGStorage::init(ID3DDevice* p_device, ID3DDeviceContext* p_device_context
 
 	this->m_p_device = p_device;
 	this->m_p_device_context = p_device_context;
-	
+
 	this->init_default();
 
 #ifdef DEBUG
@@ -1023,7 +1106,7 @@ void CSVGStorage::init(ID3DDevice* p_device, ID3DDeviceContext* p_device_context
 #endif
 }
 
-void CSVGStorage::uninit() 
+void CSVGStorage::uninit()
 {
 	this->m_default_atlas.uninit();
 	xr_delete(m_p_default_shader);
@@ -1043,7 +1126,7 @@ constexpr unsigned char CSVGStorage::get_static_size() const
 // returns current size of storage
 unsigned int CSVGStorage::get_size() const
 {
-	return this->m_storage.size();
+	return this->m_storage_atlases.size();
 }
 
 // if returns u32(-1) means it is failed to add atlas
@@ -1077,11 +1160,11 @@ CTextureAtlas* CSVGStorage::get_atlas(u32 id)
 		return &this->m_default_atlas;
 	}
 
-	auto it = std::find_if(this->m_storage.begin(), this->m_storage.end(), [id](const CTextureAtlas& atlas) -> bool {
+	auto it = std::find_if(this->m_storage_atlases.begin(), this->m_storage_atlases.end(), [id](const CTextureAtlas& atlas) -> bool {
 		return atlas.getID() == id;
 		});
 
-	if (it != this->m_storage.end())
+	if (it != this->m_storage_atlases.end())
 		return &(*it);
 
 	return nullptr;
@@ -1094,11 +1177,11 @@ const CTextureAtlas* CSVGStorage::get_atlas(u32 id) const
 		return &this->m_default_atlas;
 	}
 
-	auto it = std::find_if(this->m_storage.begin(), this->m_storage.end(), [id](const CTextureAtlas& atlas) -> bool {
+	auto it = std::find_if(this->m_storage_atlases.begin(), this->m_storage_atlases.end(), [id](const CTextureAtlas& atlas) -> bool {
 		return atlas.getID() == id;
-	});
+		});
 
-	if (it != this->m_storage.end())
+	if (it != this->m_storage_atlases.end())
 		return &(*it);
 
 	return nullptr;
@@ -1106,7 +1189,7 @@ const CTextureAtlas* CSVGStorage::get_atlas(u32 id) const
 
 const std::pmr::vector<CTextureAtlas>& CSVGStorage::get_atlases(void) const
 {
-	return this->m_storage;
+	return this->m_storage_atlases;
 }
 
 void CSVGStorage::delete_atlas(u32 id)
@@ -1156,7 +1239,7 @@ void CSVGStorage::init_default()
 }
 
 void CSVGStorage::init_default_atlas()
-{	
+{
 	string_path fn;
 	FS.update_path(fn, "$game_textures$", _kSVGStorge_DefaultSVGTextureSubPathName);
 
@@ -1174,7 +1257,7 @@ void CSVGStorage::init_default_atlas()
 		if (len <= 4095)
 		{
 			string4096 buf;
-			pReader->r_stringZ(buf, len+1);
+			pReader->r_stringZ(buf, len + 1);
 			doc = std::move(lunasvg::Document::loadFromData(buf));
 		}
 		else

@@ -150,9 +150,10 @@ struct smol_atlas_item_t;
 class ECORE_API CTextureAtlas
 {
 public:
+	using element_lookupid_type = char;
+
 	struct ECORE_API CTextureAtlasElement
 	{
-		char lookup_id = char(0);
 		smol_atlas_item_t* p_placement = nullptr;
 
 		float x() const;
@@ -167,9 +168,16 @@ public:
 		float v1(u32 atlas_height) const;
 	};
 
-	using element_lookupid_type = decltype(CTextureAtlasElement::lookup_id);
+	/// @brief CTextureAtlasElement spatial indexing feature using morton codes, contains stable lookup_id for accessing element itself 
+	struct ECORE_API CTAESpatialIndex
+	{
+		element_lookupid_type lookup_id = element_lookupid_type(-1);
+	};
+
 	using storage_type = std::pmr::vector<CTextureAtlasElement>;
+	using spatial_storage_type = std::pmr::vector<CTAESpatialIndex>;
 	using storage_allocator = std::pmr::polymorphic_allocator<storage_type::value_type>;
+	using spatial_storage_allocator = std::pmr::polymorphic_allocator<spatial_storage_type::value_type>;
 
 public:
 	CTextureAtlas();
@@ -199,11 +207,15 @@ public:
 
 	const storage_type& getElements(void) const;
 
-	element_lookupid_type findNearest(float x, float y) const;
+	CTextureAtlasElement* findNearest(float x, float y);
+	const CTextureAtlasElement* findNearest(float x, float y) const;
+
 	bool removeElement(float x, float y);
 	bool removeElement(element_lookupid_type lookup_id);
 
 private:
+	element_lookupid_type findNearestSpatialIndex(float x, float y) const;
+
 	// for older GAPI < DX11
 	void addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);
 
@@ -221,11 +233,16 @@ private:
 
 	// returned from resource manager and resource manager stores this texture (because later user will need to SetShader calling and for building we need to compile "blender" for that we need to obtain our texture from resource manager otherwise we can't use original way of rendering svg)
 	CTexture* m_p_texture;
-	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(storage_type::value_type), _kRenderBackend_TextureAtlasPreallocatedItems)];
-	std::pmr::monotonic_buffer_resource sais_wrapper;
+
+
 	// be very careful, change it only when it is needed by sense 
 	// otherwise we can't provide find as const
+	std::pmr::monotonic_buffer_resource sais_wrapper;
+	std::pmr::monotonic_buffer_resource saissi_wrapper;
 	mutable storage_type m_atlas_items;
+	mutable spatial_storage_type m_atlas_items_spatial_indexing;
+	unsigned char static_atlas_items_storage_spatial_indexing[calculate_reserve_count(sizeof(spatial_storage_type::value_type), _kRenderBackend_TextureAtlasPreallocatedItems)];
+	unsigned char static_atlas_items_storage[calculate_reserve_count(sizeof(storage_type::value_type), _kRenderBackend_TextureAtlasPreallocatedItems)];
 };
 
 #endif
