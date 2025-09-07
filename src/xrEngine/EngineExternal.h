@@ -103,6 +103,7 @@ public:
 	float GetSprintFovFactor() const;
 	const char* GetCurrentPlatformFullName();
 	bool isRenderingUIRaster() const;
+	bool isRenderingUIErrorFallbackToDefaultAtlas() const;
 
 	bool operator[](const EEngineExternalUI& ID) const;
 	bool operator[](const EEngineExternalPhysical& ID) const;
@@ -119,6 +120,7 @@ private:
 	void InitPlatform(const char* pPlatformName);
 
 private:
+	bool m_is_rendering_ui_vector_when_error_use_default_atlas;
 	EEngineExternalUIRenderingType m_preferredUIRendering;
 	EEngineExternalPlatform m_platform_type;
 	CInifile* pOptions;

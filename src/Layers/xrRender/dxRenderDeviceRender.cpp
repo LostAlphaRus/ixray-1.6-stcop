@@ -568,7 +568,6 @@ const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::strin
 
 		if (pStorage)
 		{
-			
 		}
 	}
 

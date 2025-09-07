@@ -11,6 +11,8 @@ typedef	FactoryPtr<IUIShader>	ui_shader;
 
 const static bool isHQIcons = EngineExternal()[EEngineExternalUI::HQIcons];
 
+constexpr const char _kDefaultSVGShader[] = "IXRAY_DEFAULT_SVG_SHADER";
+
 enum EUIItemAlign
 {
 	alNone	= 0x0000,

@@ -688,8 +688,13 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	bool isRaster = EngineExternal().isRenderingUIRaster();
 
-	if (isRaster == false)
-		isRaster = !(pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon));
+	if (!isRaster)
+	{
+		if (EngineExternal().isRenderingUIErrorFallbackToDefaultAtlas()==false)
+		{
+			isRaster = !(pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon));
+		}
+	}
 	
 	int m_iGridWidth = pSettings->r_u32(sect_name, "inv_grid_width");
 	int m_iGridHeight = pSettings->r_u32(sect_name, "inv_grid_height");
@@ -733,19 +738,32 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		UIPickUpItemIcon->SetHeight(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) * scale);
 		UIPickUpItemIcon->SetWndPos(Fvector2().set(m_iPickUpItemIconX + (m_iPickUpItemIconWidth - UIPickUpItemIcon->GetWidth()) / 2.0f,
 			m_iPickUpItemIconY + (m_iPickUpItemIconHeight - UIPickUpItemIcon->GetHeight()) / 2.0f));
-
-		UIPickUpItemIcon->SetTextureColor(color_rgba(255, 255, 255, 192));
 	}
 	else
 	{
-		std::string_view icon_subpath = pSettings->r_string(sect_name, kUIConfigField_InventoryVectorIcon);
-
-		if (icon_subpath.empty()==false)
+		if (pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon))
 		{
-			UI().GetVectorShader(icon_subpath);
+			std::string_view icon_subpath = pSettings->r_string(sect_name, kUIConfigField_InventoryVectorIcon);
+
+			if (icon_subpath.empty() == false)
+			{
+				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath);
+
+				UIPickUpItemIcon->SetShader(svg_shader);
+			}
+			else
+			{
+				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader);
+				UIPickUpItemIcon->SetShader(default_shader);
+			}
+		}
+		else
+		{
+			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader);
+			UIPickUpItemIcon->SetShader(default_shader);
 		}
 	}
-	
+	UIPickUpItemIcon->SetTextureColor(color_rgba(255, 255, 255, 192));
 
 	UIPickUpItemIcon->SetStretchTexture(true);
 	UIPickUpItemIcon->Show(true);
