@@ -35,6 +35,8 @@ void CUIStatic::script_register(lua_State *L)
 
        .def("GetText",				&CUIStatic::GetText)
 
+		.def("SetFont",				&CUIStatic::SetFont)
+
        .def("SetTextX",				&CUIStatic::SetTextX)
        .def("SetTextY",				&CUIStatic::SetTextY)
 	   .def("GetTextX",				&CUIStatic::GetTextX)
@@ -44,6 +46,8 @@ void CUIStatic::script_register(lua_State *L)
        .def("GetColor",				&CUIStatic::GetTextureColor)
 
         .def("SetTextColor",		&CUIStatic::SetTextColor_script)
+		.def("SetTextColor",		&CUIStatic::SetTextColor)
+		.def("GetTextColor",		&CUIStatic::GetTextColor)
 
         .def("InitTexture",			&CUIStatic::InitTexture)
         .def("InitTexture",			+[](CUIStatic* self, pcstr texture) { self->InitTexture(texture); })
