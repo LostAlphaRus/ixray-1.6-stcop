@@ -539,6 +539,9 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 					auto p_atlas_draw = [](const CTextureAtlas* pAtlas)->void {
 
 						static bool _ViewerState_EnableDeleting = false;
+						static xr_stack_string<256> _ViewerState_QueryResult;
+						static float _ViewerState_QueryWidth = 0.0f;
+						static float _ViewerState_QueryHeight = 0.0f;
 
 						char name[32];
 						std::sprintf(name, "[%d] %s", pAtlas->getID(), _kSVGStorage_DefaultAtlasName);
@@ -553,6 +556,37 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 							ImGui::Text("height: %.2f", float(pAtlas->getHeight()));
 
 							ImGui::Checkbox("Deleting", &_ViewerState_EnableDeleting);
+
+							ImGui::DragFloat("w", &_ViewerState_QueryWidth);
+							ImGui::DragFloat("h", &_ViewerState_QueryHeight);
+
+							if (ImGui::Button("find nearest"))
+							{
+								const auto* pElement = pAtlas->findNearest(_ViewerState_QueryWidth, _ViewerState_QueryHeight);
+
+								if (pElement)
+								{
+									std::sprintf(_ViewerState_QueryResult.data(), "w: %.2f h: %.2f\nx: %.2f y: %.2f\nu0: %.2f v0: %.2f u1: %.2f v1: %.2f", pElement->w(), pElement->h(), pElement->x(), pElement->y(), pElement->u0(pAtlas->getWidth()), pElement->v0(pAtlas->getHeight()), pElement->u1(pAtlas->getWidth()), pElement->v1(pAtlas->getHeight()));
+								}
+								else
+								{
+									_ViewerState_QueryResult.clear();
+									std::sprintf(_ViewerState_QueryResult.data(), "failed to obtain element!");
+								}
+							}
+
+							if (_ViewerState_QueryResult.empty() == false)
+							{
+								ImGui::SameLine();
+								if (ImGui::Button("Reset"))
+								{
+									_ViewerState_QueryResult.clear();
+								}
+
+								ImGui::Text("Nearest Query:");
+								ImGui::Text("%s", _ViewerState_QueryResult.c_str());
+							}
+
 
 							ImGui::SeparatorText("Elements");
 							ImGui::Text("amount: %zu", elements.size());
