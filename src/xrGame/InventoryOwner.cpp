@@ -758,11 +758,3 @@ void CInventoryOwner::deadbody_closed( bool status )
 	P.w_u8( (m_deadbody_closed)? 1 : 0 );
 	CGameObject::u_EventSend( P );
 }
-
-void CInventoryOwner::SetIcon(const shared_str& iconName)
-{
-	if (iconName.size() > 0)
-		CharacterInfo().m_SpecificCharacter.data()->m_saved_icon_name = iconName;
-
-	CharacterInfo().m_SpecificCharacter.data()->m_icon_name = (iconName.size() > 0) ? iconName : CharacterInfo().m_SpecificCharacter.data()->m_saved_icon_name;
-}
