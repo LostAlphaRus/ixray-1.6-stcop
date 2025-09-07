@@ -196,6 +196,7 @@ public:
 	void getRegion(const xr_string_view& icon_subpath_name, u32& w, u32& h);
 
 	void* getResource();
+	void* getResource() const;
 
 	void saveOnDisk();
 
@@ -207,14 +208,14 @@ public:
 
 	const storage_type& getElements(void) const;
 
-	CTextureAtlasElement* findNearest(float x, float y);
-	const CTextureAtlasElement* findNearest(float x, float y) const;
+	CTextureAtlasElement* findNearest(float w, float h);
+	const CTextureAtlasElement* findNearest(float w, float h) const;
 
-	bool removeElement(float x, float y);
+	bool removeElement(float w, float h);
 	bool removeElement(element_lookupid_type lookup_id);
 
 private:
-	element_lookupid_type findNearestSpatialIndex(float x, float y) const;
+	element_lookupid_type findNearestSpatialIndex(float w, float h) const;
 
 	// for older GAPI < DX11
 	void addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch);

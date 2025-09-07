@@ -855,6 +855,27 @@ void* CTextureAtlas::getResource()
 	return nullptr;
 }
 
+void* CTextureAtlas::getResource() const
+{
+	R_ASSERT(this->m_p_texture && "must be valid, otherwise early calling!");
+
+#ifdef USE_DX11
+	R_ASSERT(this->m_p_texture->get_SRView() && "must be valid!");
+#endif
+
+	if (this->m_p_texture)
+	{
+#ifdef USE_DX11
+		return this->m_p_texture->get_SRView();
+#else
+		return this->m_p_texture->pSurface;
+#endif
+	}
+
+	return nullptr;
+}
+
+
 void CTextureAtlas::saveOnDisk()
 {
 #ifdef DEBUG
@@ -984,7 +1005,7 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearestSpatialIndex(floa
 			const CTextureAtlasElement& el_left = this->m_atlas_items[left.lookup_id];
 			const CTextureAtlasElement& el_right = this->m_atlas_items[right.lookup_id];
 
-			return pMortonCodeCalculate(el_left.x(), el_left.y()) < pMortonCodeCalculate(el_right.x(), el_right.y());
+			return pMortonCodeCalculate(el_left.w(), el_left.h()) < pMortonCodeCalculate(el_right.w(), el_right.h());
 			});
 
 		this->m_is_storage_dirty = false;
@@ -1000,7 +1021,7 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearestSpatialIndex(floa
 
 			const CTextureAtlasElement& el = this->m_atlas_items[p.lookup_id];
 
-			return pMortonCodeCalculate(el.x(), el.y()) < queryCode;
+			return pMortonCodeCalculate(el.w(), el.h()) < queryCode;
 		});
 
 	// Check if we're at the beginning or end
@@ -1010,15 +1031,14 @@ CTextureAtlas::element_lookupid_type CTextureAtlas::findNearestSpatialIndex(floa
 	if (it == this->m_atlas_items_spatial_indexing.end())
 		return static_cast<element_lookupid_type>(this->m_atlas_items_spatial_indexing.size() - 1);
 
-
 	// Compare with previous element to find which is closer
 	element_lookupid_type idx = static_cast<element_lookupid_type>(it - this->m_atlas_items_spatial_indexing.begin());
 
 	const CTextureAtlasElement& el_code1 = this->m_atlas_items[this->m_atlas_items_spatial_indexing[idx].lookup_id];
 	const CTextureAtlasElement& el_code2 = this->m_atlas_items[this->m_atlas_items_spatial_indexing[idx - 1].lookup_id];
 
-	u64 code1 = pMortonCodeCalculate(el_code1.x(), el_code1.y());
-	u64 code2 = pMortonCodeCalculate(el_code2.x(), el_code2.y());
+	u64 code1 = pMortonCodeCalculate(el_code1.w(), el_code1.h());
+	u64 code2 = pMortonCodeCalculate(el_code2.w(), el_code2.h());
 
 	return static_cast<element_lookupid_type>((std::abs(static_cast<int64_t>(queryCode - code1)) <
 		std::abs(static_cast<int64_t>(queryCode - code2))) ? idx : idx - 1);

@@ -536,7 +536,10 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 				{
 					CTextureAtlas* pDefault = pStorage->get_atlas(_kSVGStorage_DefaultAtlasID);
 
-					auto p_atlas_draw = [](CTextureAtlas* pAtlas)->void {
+					auto p_atlas_draw = [](const CTextureAtlas* pAtlas)->void {
+
+						static bool _ViewerState_EnableDeleting = false;
+
 						char name[32];
 						std::sprintf(name, "[%d] %s", pAtlas->getID(), _kSVGStorage_DefaultAtlasName);
 
@@ -548,6 +551,8 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 
 							ImGui::Text("width: %.2f", float(pAtlas->getWidth()));
 							ImGui::Text("height: %.2f", float(pAtlas->getHeight()));
+
+							ImGui::Checkbox("Deleting", &_ViewerState_EnableDeleting);
 
 							ImGui::SeparatorText("Elements");
 							ImGui::Text("amount: %zu", elements.size());
@@ -631,6 +636,7 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 
 							i = 0;
 
+							bool hovered_icon_clicked = false;
 							for (const auto& element : elements)
 							{
 								ImVec2 subMin = ImVec2(
@@ -684,6 +690,11 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 
 								ImGui::Dummy(subSize);
 
+								if (i == hoveredIndex)
+								{
+									hovered_icon_clicked = ImGui::IsItemClicked();
+								}
+
 								ImGui::EndChild();
 								ImGui::PopStyleColor();
 								ImGui::PopStyleVar();
@@ -697,6 +708,18 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 
 							if (hoveredIndex >= 0 && hovered_icon_w && hovered_icon_h)
 							{
+								bool clicked = ImGui::IsItemClicked();
+
+								if (_ViewerState_EnableDeleting)
+								{
+									if (hovered_icon_clicked)
+									{
+										// yeah slow (prob dumb), but it is for debug purposes, so there's no need to point out on that thing, seriously :/
+										// upd: we don't need to make removeElement as const since it is obvious write operation and must be accessible only when we have non const pointer (like we don't read, but this viewer is for reading mainly)
+										const_cast<CTextureAtlas*>(pAtlas)->removeElement(hovered_icon_w, hovered_icon_h);
+									}
+								}
+
 								ImGui::BeginTooltip();
 								ImGui::Text("Lookup id: %d", hoveredIndex);
 								ImGui::SeparatorText("Dimensions");
@@ -713,7 +736,12 @@ void R_dsgraph_structure::renderImGuiDebugWindow_SVGStorage()
 						};
 
 					p_atlas_draw(pDefault);
+					const auto& atlases = pStorage->get_atlases();
 
+					for (const auto& atlas : atlases)
+					{
+						p_atlas_draw(&atlas);
+					}
 				}
 
 				if (ImGui::CollapsingHeader("Cache"))
