@@ -429,9 +429,9 @@ void CUIScrollView::SetSelected(CUIWindow* w)
 	}
 
 	xrCriticalSectionGuard guard(m_pad->csUi);
-	for (CUIWindow* child : m_pad->GetChildWndList())
+	for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end()!=it; ++it)
 	{
-		child->ui_cast_selectable()->SetSelected(child == w);
+		smart_cast<CUISelectable*>(*it)->SetSelected(*it==w);
 	}
 }
 
