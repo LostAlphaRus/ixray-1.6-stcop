@@ -29,7 +29,7 @@ constexpr const char* _kSVGStorge_DefaultSVGTextureSubPathName = "ui/ui_vector_e
 #endif
 
 constexpr const char* _kSVGStorage_DefaultSVGTextureName = "ui_vector_error.svg";
-constexpr const char* _kSVGStorage_DefaultAtlasName = "SVGDefaultAtlas_";
+constexpr const char* _kSVGStorage_DefaultAtlasName = "svgdefaultatlas_";
 constexpr unsigned short _kSVGStorage_MaxSubpathLength = 128;
 constexpr u32 _kSVGStorage_DefaultAtlasID = 10;
 // where element of specified size can be located because like we could add sizes (32,32); (128,128); but (256,256) can't be added for current atlas and it goes to different one and for that we have connection between two atlases by one texture name
@@ -79,8 +79,10 @@ public:
 	// make it optional field that will check should we cache
 	void load_cache();
 
-	const FactoryPtr<IUIShader>& get_shader(const std::string_view& subpath);
+	const FactoryPtr<IUIShader>& get_shader(const std::string_view& subpath, float requested_width, float requested_height);
 	const FactoryPtr<IUIShader>& get_default_shader();
+
+	Frect get_uv(const std::string_view& subpath, float requested_width, float requested_height);
 
 private:
 	void init_default();

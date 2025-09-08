@@ -701,6 +701,27 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 
 	int m_iXPos = pSettings->r_u32(sect_name, "inv_grid_x");
 	int m_iYPos = pSettings->r_u32(sect_name, "inv_grid_y");
+	float scale_x = m_iPickUpItemIconWidth /
+		float(m_iGridWidth * INV_GRID_WIDTH(isHQIcons));
+	float scale_y = m_iPickUpItemIconHeight /
+		float(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons));
+
+	scale_x = (scale_x > 1) ? 1.0f : scale_x;
+	scale_y = (scale_y > 1) ? 1.0f : scale_y;
+
+	if (isHQIcons)
+	{
+		scale_x = m_iPickUpItemIconWidth /
+			(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) / 2);
+		scale_y = m_iPickUpItemIconHeight /
+			(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) / 2);
+
+		scale_x = (scale_x > 1) ? 0.5f : scale_x / 2;
+		scale_y = (scale_y > 1) ? 0.5f : scale_y / 2;
+	}
+
+	float scale = scale_x < scale_y ? scale_x : scale_y;
+	Frect texture_rect = {};
 
 	//properties used by inventory menu
 	if (isRaster)
@@ -708,61 +729,49 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, sect_name.c_str(), "icons_texture", nullptr);
 		const ui_shader& ui_shader = InventoryUtilities::GetEquipmentIconsShader(icons_texture);
 		UIPickUpItemIcon->SetShader(ui_shader);
-		float scale_x = m_iPickUpItemIconWidth /
-			float(m_iGridWidth * INV_GRID_WIDTH(isHQIcons));
-		float scale_y = m_iPickUpItemIconHeight /
-			float(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons));
 
-		scale_x = (scale_x > 1) ? 1.0f : scale_x;
-		scale_y = (scale_y > 1) ? 1.0f : scale_y;
-
-		if (isHQIcons)
-		{
-			scale_x = m_iPickUpItemIconWidth /
-				(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) / 2);
-			scale_y = m_iPickUpItemIconHeight /
-				(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) / 2);
-
-			scale_x = (scale_x > 1) ? 0.5f : scale_x / 2;
-			scale_y = (scale_y > 1) ? 0.5f : scale_y / 2;
-		}
-
-		float scale = scale_x < scale_y ? scale_x : scale_y;
-
-		Frect texture_rect = {};
 		texture_rect.lt.set(m_iXPos * INV_GRID_WIDTH(isHQIcons), m_iYPos * INV_GRID_HEIGHT(isHQIcons));
 		texture_rect.rb.set(m_iGridWidth * INV_GRID_WIDTH(isHQIcons), m_iGridHeight * INV_GRID_HEIGHT(isHQIcons));
 		texture_rect.rb.add(texture_rect.lt);
-		UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
-		UIPickUpItemIcon->SetWidth(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) * scale * UI().get_current_kx());
-		UIPickUpItemIcon->SetHeight(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) * scale);
-		UIPickUpItemIcon->SetWndPos(Fvector2().set(m_iPickUpItemIconX + (m_iPickUpItemIconWidth - UIPickUpItemIcon->GetWidth()) / 2.0f,
-			m_iPickUpItemIconY + (m_iPickUpItemIconHeight - UIPickUpItemIcon->GetHeight()) / 2.0f));
 	}
 	else
 	{
+		float fRequestedWidth = m_iGridWidth * INV_GRID_WIDTH(isHQIcons) * scale * UI().get_current_kx();
+		float fRequestedHeight = m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) * scale;
+
 		if (pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon))
 		{
 			std::string_view icon_subpath = pSettings->r_string(sect_name, kUIConfigField_InventoryVectorIcon);
 
 			if (icon_subpath.empty() == false)
 			{
-				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath);
+				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath, fRequestedWidth, fRequestedHeight);
+
+				texture_rect = UI().GetVectorUV(icon_subpath, fRequestedWidth, fRequestedHeight);
 
 				UIPickUpItemIcon->SetShader(svg_shader);
 			}
 			else
 			{
-				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader);
+				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
+
+				texture_rect = UI().GetVectorUV(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
 				UIPickUpItemIcon->SetShader(default_shader);
 			}
 		}
 		else
 		{
-			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader);
+			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
+			texture_rect = UI().GetVectorUV(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
 			UIPickUpItemIcon->SetShader(default_shader);
 		}
 	}
+
+	UIPickUpItemIcon->GetStaticItem()->SetTextureRect(texture_rect);
+	UIPickUpItemIcon->SetWidth(m_iGridWidth * INV_GRID_WIDTH(isHQIcons) * scale * UI().get_current_kx());
+	UIPickUpItemIcon->SetHeight(m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) * scale);
+	UIPickUpItemIcon->SetWndPos(Fvector2().set(m_iPickUpItemIconX + (m_iPickUpItemIconWidth - UIPickUpItemIcon->GetWidth()) / 2.0f,
+		m_iPickUpItemIconY + (m_iPickUpItemIconHeight - UIPickUpItemIcon->GetHeight()) / 2.0f));
 	UIPickUpItemIcon->SetTextureColor(color_rgba(255, 255, 255, 192));
 
 	UIPickUpItemIcon->SetStretchTexture(true);

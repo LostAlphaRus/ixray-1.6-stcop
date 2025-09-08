@@ -55,9 +55,11 @@ public:
 
 	void PostCreate() override;
 
-	const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath) override;
-	const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath) override;
+	const FactoryPtr<IUIShader>& GetSVGShader(const std::string_view& subpath, float width, float height) override;
+	const FactoryPtr<IUIShader>& GetSVGShader(const char* pSubpath, float width, float height) override;
 	const FactoryPtr<IUIShader>& GetSVGDefaultShader() override;
+
+	Frect GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height) override;
 
 public:
 	CResourceManager*	Resources;

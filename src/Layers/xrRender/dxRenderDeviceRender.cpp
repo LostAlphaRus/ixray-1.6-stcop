@@ -556,7 +556,7 @@ void dxRenderDeviceRender::PostCreate()
 	}
 }
 
-const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::string_view& subpath)
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::string_view& subpath, float width, float height)
 {
 	if (Resources)
 	{
@@ -568,18 +568,19 @@ const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const std::strin
 
 		if (pStorage)
 		{
+			return pStorage->get_shader(subpath, width, height);
 		}
 	}
 
 	return FactoryPtr<IUIShader>();
 }
 
-const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const char* pSubpath)
+const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGShader(const char* pSubpath, float width, float height)
 {
 	R_ASSERT(pSubpath && "invalid string (nullptr)");
 	R_ASSERT(pSubpath[0] != '\0' && "empty string");
 
-	return GetSVGShader(std::string_view(pSubpath));
+	return GetSVGShader(std::string_view(pSubpath), width, height);
 }
 
 const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGDefaultShader()
@@ -590,4 +591,23 @@ const FactoryPtr<IUIShader>& dxRenderDeviceRender::GetSVGDefaultShader()
 	}
 
 	return FactoryPtr<IUIShader>();
+}
+
+Frect dxRenderDeviceRender::GetSVGUV(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	if (Resources)
+	{
+		R_ASSERT(subpath.empty() == false && "must be not empty path");
+
+		CSVGStorage* pStorage = Resources->GetSVGStorage();
+
+		R_ASSERT(pStorage && "must be valid!");
+
+		if (pStorage)
+		{
+			return pStorage->get_uv(subpath, requested_width, requested_height);
+		}
+	}
+
+	return Frect();
 }

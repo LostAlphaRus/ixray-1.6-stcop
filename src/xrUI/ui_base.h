@@ -61,8 +61,10 @@ public:
 	static	float	get_current_kx					();
 	shared_str		get_xml_name					(LPCSTR fn);
 
-	const ui_shader& GetVectorShader(const std::string_view& subpath);
-	const ui_shader& GetVectorShader(const char* pSubpath);
+	const ui_shader& GetVectorShader(const std::string_view& subpath, float requested_width, float requested_height);
+	const ui_shader& GetVectorShader(const char* pSubpath, float requested_width, float requested_height);
+
+	Frect GetVectorUV(const std::string_view& subpath, float requested_width, float requested_height);
 	
 	IUIRender::ePointType		m_currentPointType;
 };

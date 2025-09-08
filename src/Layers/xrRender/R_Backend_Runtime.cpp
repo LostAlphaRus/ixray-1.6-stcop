@@ -1228,14 +1228,14 @@ void CSVGStorage::load_cache()
 
 }
 
-const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& subpath)
+const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& subpath, float requested_width, float requested_height)
 {
-	R_ASSERT(subpath.empty() == false && "must be valid path");
 	R_ASSERT(m_p_default_shader && "default shader must be initialized!");
 
 	if (subpath.empty() == false)
 	{
-
+		// todo: 
+	//	R_ASSERT(false && "todo");
 	}
 
 	return get_default_shader();
@@ -1251,6 +1251,33 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_default_shader()
 
 	return FactoryPtr<IUIShader>();
 }
+
+Frect CSVGStorage::get_uv(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	Frect result;
+
+	if (subpath.empty() == false)
+	{
+		// todo: 
+	}
+
+	if (this->m_default_atlas.getResource())
+	{
+		CTextureAtlas::CTextureAtlasElement* pElement = this->m_default_atlas.findNearest(requested_width, requested_height);
+
+		if (pElement)
+		{
+			float w = this->m_default_atlas.getWidth();
+			float h = this->m_default_atlas.getHeight();
+
+			result.lt.set(w * pElement->u0(static_cast<u32>(w)), h * pElement->v0(static_cast<u32>(h)));
+			result.rb.set(w * pElement->u1(static_cast<u32>(w)), h * pElement->v1(static_cast<u32>(h)));
+		}
+	}
+
+	return result;
+}
+
 
 void CSVGStorage::init_default()
 {

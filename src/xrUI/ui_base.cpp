@@ -339,7 +339,7 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 	return str;
 }
 
-const ui_shader& ui_core::GetVectorShader(const std::string_view& subpath)
+const ui_shader& ui_core::GetVectorShader(const std::string_view& subpath, float requested_width, float requested_height)
 {
 	R_ASSERT(DevicePtr && "Render must be initialized otherwise early calling!");
 	R_ASSERT(DevicePtr->m_pRender && "Resource manager");
@@ -347,13 +347,21 @@ const ui_shader& ui_core::GetVectorShader(const std::string_view& subpath)
 	if (DevicePtr == nullptr || DevicePtr->m_pRender == nullptr)
 		return ui_shader();
 
-	return DevicePtr->m_pRender->GetSVGShader(subpath);
+	return DevicePtr->m_pRender->GetSVGShader(subpath, requested_width, requested_height);
 }
 
-const ui_shader& ui_core::GetVectorShader(const char* pSubpath)
+const ui_shader& ui_core::GetVectorShader(const char* pSubpath, float requested_width, float requested_height)
 {
 	R_ASSERT(pSubpath && "invalid string (nullptr)");
-	R_ASSERT(pSubpath[0] != '\0' && "invalid subpath (empty string)");
 
-	return GetVectorShader(std::string_view(pSubpath));
+	return GetVectorShader(std::string_view(pSubpath), requested_width, requested_height);
+}
+
+Frect ui_core::GetVectorUV(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	if (DevicePtr == nullptr || DevicePtr->m_pRender == nullptr)
+		return Frect();
+
+
+	return DevicePtr->m_pRender->GetSVGUV(subpath, requested_width, requested_height);
 }
