@@ -10,6 +10,7 @@ class CUIStatic;
 class CUIAnimatedStatic;
 class CUIScrollView;
 class CInventoryOwner;
+class UIHint;
 
 class CUIPdaContactsWnd: public CUIWindow  
 {
@@ -25,7 +26,9 @@ public:
 	void						Init					();
 
 
+	virtual void				Draw					();
 	virtual void				Update					();
+	virtual void				DrawHint				();
 	virtual void				Reset					();
 
 	virtual void				Show					(bool status);
@@ -37,6 +40,7 @@ public:
 
 	CUIScrollView*				UIListWnd;
 	CUIScrollView*				UIDetailsWnd;
+	UIHint*						m_hint_wnd;
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 
@@ -61,4 +65,8 @@ public:
 
 	virtual CUIWindow* ui_cast_window() { return this; }
 	virtual CUISelectable* ui_cast_selectable() { return this; }
+
+	virtual void				OnFocusReceive			();
+	virtual void				OnFocusLost				();
+			void				SetHintText				();
 };

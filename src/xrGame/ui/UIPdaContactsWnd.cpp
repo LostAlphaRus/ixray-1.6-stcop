@@ -7,9 +7,12 @@
 #include "../../xrUI/Widgets/UIFrameLineWnd.h"
 #include "../../xrUI/Widgets/UIAnimatedStatic.h"
 #include "../../xrUI/Widgets/UIScrollView.h"
+#include "../../xrUI/Widgets/UIHint.h"
 #include "../actor.h"
 #include "../../xrEngine/string_table.h"
 #include "../../xrUI/UIHelper.h"
+#include "../../xrServerEntities/xrServer_Objects_ALife_Monsters.h"
+#include "../../xrUI/UICursor.h"
 
 #define PDA_CONTACT_HEIGHT 70
 
@@ -18,6 +21,7 @@
 CUIPdaContactsWnd::CUIPdaContactsWnd()
 {
 	m_flags.zero();
+	m_hint_wnd = nullptr;
 }
 
 CUIPdaContactsWnd::~CUIPdaContactsWnd()
@@ -70,6 +74,11 @@ void CUIPdaContactsWnd::Init()
 	UIDetailsWnd						= new CUIScrollView();UIDetailsWnd->SetAutoDelete(true);
 	UIRightFrame->AttachChild			(UIDetailsWnd);
 	xml_init.InitScrollView				(uiXml, "detail_list", 0, UIDetailsWnd);
+
+	if (uiXml.NavigateToNode("hint_wnd"))
+	{
+		m_hint_wnd = UIHelper::CreateHint(uiXml, "hint_wnd");
+	}
 	
 	int leftStaticCount					= uiXml.GetNodesNum(uiXml.GetRoot(), "left_auto_static");
 	for (int i = 0; i < leftStaticCount; ++i)
@@ -90,6 +99,16 @@ void CUIPdaContactsWnd::Init()
 	}
 }
 
+void CUIPdaContactsWnd::Draw()
+{
+	inherited::Draw();
+}
+
+void CUIPdaContactsWnd::DrawHint()
+{
+	if (m_hint_wnd)
+		m_hint_wnd->Draw();
+}
 
 void CUIPdaContactsWnd::Update()
 {
@@ -104,6 +123,9 @@ void CUIPdaContactsWnd::Update()
 void CUIPdaContactsWnd::UpdateInfo()
 {
 	RemoveAll();
+
+	if (m_hint_wnd)
+		m_hint_wnd->set_text("");
 
 	CPda* pPda = Actor()->GetPDA();
 	if (!pPda)			return;
@@ -177,4 +199,80 @@ bool CUIPdaContactItem::OnMouseDown(int mouse_btn)
 		return true;
 	}
 	return false;
+}
+
+void CUIPdaContactItem::OnFocusReceive()
+{
+	CUIWindow::OnFocusReceive();
+
+	if (!m_cw->m_hint_wnd)
+		return;
+
+	Frect rect;
+	m_cw->UIListWnd->GetAbsoluteRect(rect);
+	Fvector2 pos = UI().GetUICursor().GetCursorPosition();
+
+	if (!m_bCursorOverWindow || !rect.in(pos))
+	{
+		m_cw->m_hint_wnd->set_text("");
+		return;
+	}
+	SetHintText();
+}
+
+void CUIPdaContactItem::SetHintText()
+{
+	CSE_ALifeTraderAbstract* T = ch_info_get_from_id(UIInfo->OwnerID());
+
+	const char* stalkersKilled = "0";
+	const char* mutantsKilled = "0";
+	const char* artsFound = "0";
+	const char* itemsSold = "0";
+
+	luabind::functor<const char*> functorGetStalkersKilled;
+	if (ai().script_engine().functor("pda.coc_contacts_get_stalkers_killed", functorGetStalkersKilled))
+		stalkersKilled = functorGetStalkersKilled(UIInfo->OwnerID());
+
+	luabind::functor<const char*> functorGetMutantsKilled;
+	if (ai().script_engine().functor("pda.coc_contacts_get_mutants_killed", functorGetMutantsKilled))
+		mutantsKilled = functorGetMutantsKilled(UIInfo->OwnerID());
+
+	luabind::functor<const char*> functorGetArtsFound;
+	if (ai().script_engine().functor("pda.coc_contacts_get_arts_found", functorGetArtsFound))
+		artsFound = functorGetArtsFound(UIInfo->OwnerID());
+
+	luabind::functor<const char*> functorGetItemsSold;
+	if (ai().script_engine().functor("pda.coc_contacts_get_items_sold", functorGetItemsSold))
+		itemsSold = functorGetItemsSold(UIInfo->OwnerID());
+
+	xr_string str;
+	str = "%c[255, 255, 160, 255] %c[default]";
+	str += T->m_character_name.c_str();
+	str += "\\n \\n %c[255, 215, 215, 215]";
+	str += g_pStringTable->translate("st_mm_pda_statistics").c_str();
+	str += ": %c[default] \\n%c[255, 160, 160, 160]";
+	str += g_pStringTable->translate("st_mm_pda_stalkers_killed").c_str();
+	str += ": %c[default] ";
+	str += stalkersKilled;
+	str += "\\n%c[255, 160, 160, 160]";
+	str += g_pStringTable->translate("st_mm_pda_mutants_killed").c_str();
+	str += ": %c[default] ";
+	str += mutantsKilled;
+	str += "\\n%c[255, 160, 160, 160]";
+	str += g_pStringTable->translate("st_mm_pda_artes_found").c_str();
+	str += ": %c[default] ";
+	str += artsFound;
+	str += "\\n%c[255, 160, 160, 160]";
+	str += g_pStringTable->translate("st_mm_pda_items_sold").c_str();
+	str += ": %c[default] ";
+	str += itemsSold;
+
+	m_cw->m_hint_wnd->set_text(str.c_str());
+}
+
+void CUIPdaContactItem::OnFocusLost()
+{
+	CUIWindow::OnFocusLost();
+	if (m_cw->m_hint_wnd)
+		m_cw->m_hint_wnd->set_text("");
 }

@@ -132,14 +132,15 @@ void CUIPdaWnd::Init()
 	if (uiXml.NavigateToNode("close_button"))
 		m_btn_close				= UIHelper::Create3tButton( uiXml, "close_button", this );
 
-	if (uiXml.NavigateToNode("hint_wnd"))
-		m_hint_wnd				= UIHelper::CreateHint( uiXml, "hint_wnd" );
 
 	UITabControl					= new CUITabControl();
 	UITabControl->SetAutoDelete		(true);
 	tabControlParent->AttachChild	(UITabControl);
 	CUIXmlInit::InitTabControl		(uiXml, "tab", 0, UITabControl);
 	UITabControl->SetMessageTarget	(this);
+
+	if (uiXml.NavigateToNode("hint_wnd"))
+		m_hint_wnd				= UIHelper::CreateHint( uiXml, "hint_wnd" );
 
 	std::tuple<LPCSTR,LPCSTR> 
 		tabLegacyList[] = 
@@ -193,13 +194,12 @@ void CUIPdaWnd::Init()
 		UIPdaContactsWnd = new CUIPdaContactsWnd();
 		UIPdaContactsWnd->Init();
 	}
-	CUIXml xml_test;
-	if (xml_test.Load(CONFIG_PATH, UI_PATH, "pda_ranking.xml"))
+	if (UITabControl->GetButtonById("eptRanking"))
 	{
 		pUIRankingWnd = new CUIRankingWnd();
 		pUIRankingWnd->Init();
 	}
-	else
+	if (UITabControl->GetButtonById("eptRankingGlobal"))
 	{
 		pUIStalkersRankingWnd = new CUIStalkersRankingWnd();
 		pUIStalkersRankingWnd->Init();
@@ -549,7 +549,7 @@ void CUIPdaWnd::DrawHint()
 	}
 	else if (m_sActiveSection == "eptContacts")
 	{
-
+		UIPdaContactsWnd->DrawHint();
 	}
 	if (m_hint_wnd)
 		m_hint_wnd->Draw();
