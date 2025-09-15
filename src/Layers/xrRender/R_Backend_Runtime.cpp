@@ -730,8 +730,6 @@ bool CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 
 bool CTextureAtlas::tryAddRegion(const xr_string_view& icon_subpath_name, u32 w, u32 h)
 {
-	bool result = false;
-
 	R_ASSERT(this->m_p_atlas && "must be initialized before calling this method!");
 	R_ASSERT(this->m_p_texture && "you forgot to call init because texture wasn't initialized!");
 
@@ -1446,7 +1444,7 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 		u32 atlas_id = this->init_atlas(_kSVGStorage_DefaultAtlasSize, _kSVGStorage_DefaultAtlasSize, debug_name, atlas, true);
 		atlas.setID(atlas_id);
 
-		this->m_storage_atlases.push_back(atlas);
+		this->m_storage_atlases.emplace_back(std::move(atlas));
 
 		R_ASSERT2(requested_height <= atlas.getHeight(), "invalid height! Too big height");
 		R_ASSERT2(requested_width <= atlas.getWidth(), "invalid width! Too big width");
@@ -1571,7 +1569,7 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 			*bmp = doc->renderToBitmap(requested_width, requested_height);
 
 #if defined(D3D10_SDK_VERSION) || defined(D3D11_SDK_VERSION)
-			bmp.convertToRGBA();
+			bmp->convertToRGBA();
 #elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION <= 0x0900
 #endif
 		}
