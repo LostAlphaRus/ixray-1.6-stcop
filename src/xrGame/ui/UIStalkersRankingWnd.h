@@ -18,6 +18,7 @@ public:
 	virtual void			Show				(bool status);
 			void			ShowHumanDetails	();
 protected:
+	CUIFrameWindow*			m_background = nullptr;
 	CUIFrameWindow*			UIInfoFrame;
 	CUIFrameWindow*			UICharIconFrame;
 	CUIFrameLineWnd*		UIInfoHeader;
@@ -30,6 +31,7 @@ protected:
 	CUIScrollView*			UIList;
 	void					AddStalkerItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 	void					AddActorItem		(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
+	s32						m_items_count;
 
 public:
 	CUIScrollView&			GetTopList			()			{return *UIList;}

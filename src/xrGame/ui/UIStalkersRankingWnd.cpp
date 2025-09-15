@@ -13,6 +13,7 @@
 #include "../PDA.h"
 #include "../Actor.h"
 #include "xrServer_Objects_ALife_Monsters.h"
+#include "../../xrUI/UIHelper.h"
 
 #define		STALKERS_RANKING_XML			"stalkers_ranking.xml"
 #define		STALKERS_RANKING_CHARACTER_XML	"stalkers_ranking_character.xml"
@@ -35,8 +36,15 @@ void CUIStalkersRankingWnd::Init()
 
 	xml_init.InitWindow					(uiXml, "main_wnd", 0, this);
 
+	CUIWindow* frameParent = this;
+	if (uiXml.NavigateToNode("background"))
+	{
+		m_background = UIHelper::CreateFrameWindow(uiXml, "background", this);
+		frameParent = m_background;
+	}
+
 	UICharIconFrame						= new CUIFrameWindow(); UICharIconFrame->SetAutoDelete(true);
-	AttachChild							(UICharIconFrame);
+	frameParent->AttachChild			(UICharIconFrame);
 	xml_init.InitFrameWindow			(uiXml, "chicon_frame_window", 0, UICharIconFrame);
 
 	UICharIconHeader					= new CUIFrameLineWnd(); UICharIconHeader->SetAutoDelete(true);
@@ -45,7 +53,7 @@ void CUIStalkersRankingWnd::Init()
 
 
 	UIInfoFrame							= new CUIFrameWindow(); UIInfoFrame->SetAutoDelete(true);
-	AttachChild							(UIInfoFrame);
+	frameParent->AttachChild			(UIInfoFrame);
 	xml_init.InitFrameWindow			(uiXml, "info_frame_window", 0, UIInfoFrame);
 	
 	UIInfoHeader						= new CUIFrameLineWnd(); UIInfoHeader->SetAutoDelete(true);
@@ -59,6 +67,7 @@ void CUIStalkersRankingWnd::Init()
 	UIList								= new CUIScrollView(); UIList->SetAutoDelete(true);
 	UIInfoFrame->AttachChild			(UIList);
 	xml_init.InitScrollView				(uiXml, "list", 0, UIList);
+	m_items_count						= uiXml.ReadAttribInt("list", 0, "item_count", 20);
 
 	UICharacterWindow					= new CUIWindow(); UICharacterWindow->SetAutoDelete(true);
 	UICharIconFrame->AttachChild		(UICharacterWindow);
@@ -117,10 +126,10 @@ void CUIStalkersRankingWnd::FillList()
 		CSE_ALifeTraderAbstract* pActorAbstract = ch_info_get_from_id(Actor()->ID());
 		int actor_place							= get_actor_ranking();
 
-		int sz = _min(g_all_statistic_humans.size(),20);
+		int sz = _min(g_all_statistic_humans.size(),m_items_count);
 		for(int i=0; i<sz; ++i){
 			CSE_ALifeTraderAbstract* pT			= (g_all_statistic_humans[i]).trader;
-			if(pT==pActorAbstract || (i==19&&actor_place>19)  ){
+			if(pT==pActorAbstract || (i== m_items_count-1&&actor_place>m_items_count-1)  ){
 				AddActorItem					(&uiXml, actor_place+1, pActorAbstract);
 			}else{
 				AddStalkerItem					(&uiXml, i+1, pT);
