@@ -684,15 +684,18 @@ void CTextureAtlas::uninit()
 #endif
 }
 
-void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch)
+bool CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT(this->m_p_atlas && "must be initialized before calling this method!");
 	R_ASSERT(this->m_p_texture && "you forgot to call init because texture wasn't initialized!");
+
+	bool result = false;
 
 	if (this->m_p_atlas && this->m_p_texture)
 	{
 		smol_atlas_item_t* p_current_placement = sma_item_add(this->m_p_atlas, w, h);
 		R_ASSERT(p_current_placement && "failed to create logical placement item");
+		result = !!(p_current_placement);
 		if (p_current_placement)
 		{
 			u32 x = static_cast<u32>(sma_item_x(p_current_placement));
@@ -721,6 +724,56 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 			addRegion(p_device, p_context, x, y, w, h, pData, pitch);
 		}
 	}
+
+	return result;
+}
+
+bool CTextureAtlas::tryAddRegion(const xr_string_view& icon_subpath_name, u32 w, u32 h)
+{
+	bool result = false;
+
+	R_ASSERT(this->m_p_atlas && "must be initialized before calling this method!");
+	R_ASSERT(this->m_p_texture && "you forgot to call init because texture wasn't initialized!");
+
+	bool result = false;
+
+	if (this->m_p_atlas && this->m_p_texture)
+	{
+		smol_atlas_item_t* p_current_placement = sma_item_add(this->m_p_atlas, w, h);
+		R_ASSERT(p_current_placement && "failed to create logical placement item");
+		result = !!(p_current_placement);
+		if (p_current_placement)
+		{
+			CTextureAtlasElement item;
+			item.p_placement = p_current_placement;
+
+			this->m_atlas_items.push_back(item);
+
+			this->m_atlas_items_spatial_indexing.push_back({});
+			this->m_atlas_items_spatial_indexing.back().lookup_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
+		}
+	}
+
+	return result;
+}
+
+bool CTextureAtlas::addData(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch)
+{
+	bool result = false;
+
+	CTextureAtlasElement& element = this->m_atlas_items.back();
+
+	u32 x = static_cast<u32>(sma_item_x(element.p_placement));
+	u32 y = static_cast<u32>(sma_item_y(element.p_placement));
+	u32 _w = this->m_p_texture->get_Width();
+	u32 _h = this->m_p_texture->get_Height();
+
+	if (pitch == 0)
+		pitch = _w * 4;
+
+	result = addRegion(p_device, p_context, x, y, w, h, pData, pitch);
+
+	return result;
 }
 
 void CTextureAtlas::getRegion(const xr_string_view& icon_subpath_name, u32& w, u32& h)
@@ -784,10 +837,10 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, u32 x, u32 y, u32 w, u32 h, 
 #endif
 }
 
-void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
+bool CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 x, u32 y, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT2(p_device, "you must pass a valid device!");
-
+	bool result = true;
 
 #ifdef IXR_WINDOWS
 #if defined(D3D12_SDK_VERSION)
@@ -833,6 +886,7 @@ void CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 #endif
 #endif
 
+	return result;
 }
 
 void* CTextureAtlas::getResource()
@@ -1149,18 +1203,7 @@ unsigned int CSVGStorage::get_size() const
 	return this->m_storage_atlases.size();
 }
 
-// if returns u32(-1) means it is failed to add atlas
-// see allocation policies that defined in eSVGStorageFlags
-u32 CSVGStorage::add_atlas(u32 w, u32 h, const char* pName)
-{
-	R_ASSERT(pName && pName[0] != '\0' && "you have to pass a valid and not empty string!");
-
-	u32 result = generate_id();
-
-	return result;
-}
-
-u32 CSVGStorage::add_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool is_generate_id)
+u32 CSVGStorage::init_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool is_generate_id)
 {
 	R_ASSERT(pName && pName[0] != '\0' && "you have to pass a valid and not empty string!");
 
@@ -1236,6 +1279,14 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& sub
 	{
 		// todo: 
 	//	R_ASSERT(false && "todo");
+
+		if (this->m_storage_textures.find(subpath.data()) == this->m_storage_textures.end())
+		{
+			auto lookup = this->try_allocate(subpath, requested_width, requested_height);
+			R_ASSERT(lookup.isValid() && "failed to allocate!");
+
+			this->m_storage_textures[subpath.data()] = lookup;
+		}
 	}
 
 	return get_default_shader();
@@ -1296,7 +1347,7 @@ void CSVGStorage::init_default_atlas()
 
 	if (pReader)
 	{
-		this->add_atlas(384, 384, _kSVGStorage_DefaultAtlasName, this->m_default_atlas);
+		this->init_atlas(384, 384, _kSVGStorage_DefaultAtlasName, this->m_default_atlas);
 		this->m_default_atlas.setID(_kSVGStorage_DefaultAtlasID);
 
 		u32 len = pReader->length();
@@ -1346,6 +1397,190 @@ void CSVGStorage::init_default_shader()
 		(*m_p_default_shader)->create("hud\\default", _kSVGStorage_DefaultAtlasName);
 	}
 }
+
+CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	AtlasConnection result;
+
+	char iter = 0;
+	bool was_added = false;
+	for (CTextureAtlas& atlas : this->m_storage_atlases)
+	{
+		bool status = this->try_add_data(subpath, requested_width, requested_height, atlas);
+
+#ifdef DEBUG
+		if (status)
+		{
+			Msg("[svg]: added region w: %.2f h: %.2f to atlas [%d]", requested_width, requested_height, atlas.getID());
+		}
+#endif
+
+		was_added = status;
+
+		if (was_added)
+			break;
+
+		++iter;
+	}
+
+	if (!was_added)
+	{
+		result = this->allocate(subpath, requested_width, requested_height);
+	}
+
+	return result;
+}
+
+
+CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpath, float requested_width, float requested_height)
+{
+	AtlasConnection result;
+
+	if (requested_width <= _kSVGStorage_DefaultAtlasSize && requested_height <= _kSVGStorage_DefaultAtlasSize)
+	{
+		char debug_name[32];
+
+		std::sprintf(debug_name, "svg_atlas_%zu", this->m_storage_atlases.size());
+
+		CTextureAtlas atlas;
+		u32 atlas_id = this->init_atlas(_kSVGStorage_DefaultAtlasSize, _kSVGStorage_DefaultAtlasSize, debug_name, atlas, true);
+		atlas.setID(atlas_id);
+
+		this->m_storage_atlases.push_back(atlas);
+
+		R_ASSERT2(requested_height <= atlas.getHeight(), "invalid height! Too big height");
+		R_ASSERT2(requested_width <= atlas.getWidth(), "invalid width! Too big width");
+
+		R_ASSERT(atlas.getResource() && "failed to create texture, out of memory?");
+
+		bool data_insert_status = this->add_data(subpath, atlas.getWidth(), atlas.getHeight(), atlas);
+
+		R_ASSERT(data_insert_status, "failed to insert data to atlas");
+
+		if (data_insert_status)
+		{
+			result.atlas_ids[0] = static_cast<char>(this->m_storage_atlases.size() - 1);
+		}
+
+#ifdef DEBUG
+		Msg("[svg]: allocated atlas[id:%d;w:%d;h:%d] and addded region w: %.2f h: %.2f ",
+			atlas.getID(),
+			atlas.getWidth(),
+			atlas.getHeight(),
+			requested_width,
+			requested_height
+		);
+#endif
+	}
+
+	return result;
+}
+
+
+bool CSVGStorage::add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas)
+{
+	R_ASSERT(subpath.empty() == false && "must be valid!");
+
+	bool result = false;
+
+	if (subpath.empty() == false)
+	{
+		result = true;
+
+		lunasvg::Bitmap bmp;
+		result = this->get_bitmap(subpath, requested_width, requested_height, &bmp);
+
+		R_ASSERT(result && "failed to obtain bitmap!");
+
+		if (result)
+		{
+			result = atlas.addRegion(this->m_p_device, this->m_p_device_context, subpath, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+		}
+	}
+
+	return result;
+}
+
+bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas)
+{
+	bool result = false;
+
+	result = atlas.tryAddRegion(subpath, requested_width, requested_height);
+
+#ifdef DEBUG
+	if (!result)
+		Msg("[svg]: can't add atlas with w: %d h: %d to [%d]", requested_width, requested_height, atlas.getID());
+#endif
+
+	if (result)
+	{
+		lunasvg::Bitmap bmp;
+
+		result = this->get_bitmap(subpath, requested_width, requested_height, &bmp);
+
+		R_ASSERT(result && "failed to obtain data!");
+
+		if (result)
+		{
+			result = atlas.addData(this->m_p_device, this->m_p_device_context, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+		}
+	}
+
+	return result;
+}
+
+bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_width, float requested_height, lunasvg::Bitmap* bmp)
+{
+	R_ASSERT(bmp && "pass valid pointer!");
+
+	bool result = false;
+
+	string_path fn;
+	FS.update_path(fn, "$game_textures$", subpath.data());
+
+	IReader* pReader = FS.r_open(fn);
+
+	result = !!(pReader);
+
+	R_ASSERT(pReader && "failed to open file!");
+
+	if (pReader)
+	{
+		u32 len = pReader->length();
+		std::unique_ptr<lunasvg::Document> doc;
+
+		if (len <= 4095)
+		{
+			string4096 buf;
+			pReader->r_stringZ(buf, len + 1);
+			doc = std::move(lunasvg::Document::loadFromData(buf));
+		}
+		else
+		{
+			xr_string buf;
+			pReader->r_stringZ(buf);
+			doc = std::move(lunasvg::Document::loadFromData(buf.c_str()));
+		}
+
+		R_ASSERT(doc.get() && "failed to load svg document!");
+
+		result = !!(doc.get());
+
+		if (doc.get())
+		{
+			*bmp = doc->renderToBitmap(requested_width, requested_height);
+
+#if defined(D3D10_SDK_VERSION) || defined(D3D11_SDK_VERSION)
+			bmp.convertToRGBA();
+#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION <= 0x0900
+#endif
+		}
+	}
+
+	return result;
+}
+
+
 
 u32 CSVGStorage::generate_id()
 {

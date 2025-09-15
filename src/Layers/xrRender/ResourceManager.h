@@ -34,6 +34,12 @@ constexpr unsigned short _kSVGStorage_MaxSubpathLength = 128;
 constexpr u32 _kSVGStorage_DefaultAtlasID = 10;
 // where element of specified size can be located because like we could add sizes (32,32); (128,128); but (256,256) can't be added for current atlas and it goes to different one and for that we have connection between two atlases by one texture name
 constexpr unsigned char _kSVGStorage_MaxAtlasPlacement = 4;
+constexpr int _kSVGStorage_DefaultAtlasSize = 512;
+
+namespace lunasvg
+{
+	class Bitmap;
+};
 
 /// @brief author: wh1t3lord
 class ECORE_API CSVGStorage
@@ -46,7 +52,9 @@ public:
 
 	struct AtlasConnection
 	{
-		char atlas_ids[_kSVGStorage_MaxAtlasPlacement]{-1,-1,-1,-1};
+		char atlas_ids[_kSVGStorage_MaxAtlasPlacement]{ -1,-1,-1,-1 };
+
+		bool isValid(void) const { return atlas_ids[0] != char(-1) || atlas_ids[1] != char(-1) || atlas_ids[2] != char(-1) || atlas_ids[3] != char(-1); }
 	};
 
 public:
@@ -65,8 +73,7 @@ public:
 
 	// if returns u32(-1) means it is failed to add atlas
 	// see allocation policies that defined in eSVGStorageFlags
-	u32 add_atlas(u32 w, u32 h, const char* pName);
-	u32 add_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool generate_id = false);
+	u32 init_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool generate_id = false);
 
 	CTextureAtlas* get_atlas(u32 id);
 	const CTextureAtlas* get_atlas(u32 id) const;
@@ -90,6 +97,19 @@ private:
 	void init_default_shader();
 	// always linerally adds new value to existed atlas_index_generator field (so obviously really trivial and efficient)
 	u32 generate_id();
+
+	// at runtime it might slow due to fact of IO
+	// so use precaching strategy before loading level or before loading game
+	AtlasConnection try_allocate(const std::string_view& subpath, float requested_width, float requested_height);
+
+	// allocates a new texture use it only when no atlas was allocated in storage or no valid atlas in storage
+	AtlasConnection allocate(const std::string_view& subpath, float requested_width, float requested_height);
+
+	bool add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas);
+
+	bool try_add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas);
+
+	bool get_bitmap(const std::string_view& subpath, float requested_width, float requested_height, lunasvg::Bitmap* bmp);
 
 private:
 #ifdef DEBUG
