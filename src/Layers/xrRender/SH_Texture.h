@@ -191,10 +191,10 @@ public:
 	void init(ID3DDevice* p_device, int width, int height, const char* pName);
 	void uninit();
 
-	bool addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch = 0);
+	bool addRegion(element_lookupid_type& lookup_element_id, ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch = 0);
 
 	// if was successful immediately call addData after that method
-	bool tryAddRegion(const xr_string_view& icon_subpath_name, u32 w, u32 h);
+	bool tryAddRegion(element_lookupid_type& lookup_element_id, const xr_string_view& icon_subpath_name, u32 w, u32 h);
 
 	bool addData(ID3DDevice* p_device, ID3DDeviceContext* p_context, u32 w, u32 h, const void* pData, u32 pitch);
 
@@ -202,6 +202,7 @@ public:
 
 	void* getResource();
 	void* getResource() const;
+	const char* getTextureName() const;
 
 	void saveOnDisk();
 
@@ -219,6 +220,9 @@ public:
 	bool removeElement(float w, float h);
 	bool removeElement(element_lookupid_type lookup_id);
 
+	FactoryPtr<IUIShader>* getShader(void) const;
+	void createShader();
+
 private:
 	element_lookupid_type findNearestSpatialIndex(float w, float h) const;
 
@@ -230,6 +234,7 @@ private:
 private:
 #ifdef DEBUG
 	bool init_was_called;
+	bool shader_was_created;
 #endif
 	mutable bool m_is_storage_dirty;
 	u32 m_id;
@@ -240,6 +245,7 @@ private:
 	// returned from resource manager and resource manager stores this texture (because later user will need to SetShader calling and for building we need to compile "blender" for that we need to obtain our texture from resource manager otherwise we can't use original way of rendering svg)
 	CTexture* m_p_texture;
 
+	FactoryPtr<IUIShader>* m_p_shader;
 
 	// be very careful, change it only when it is needed by sense 
 	// otherwise we can't provide find as const

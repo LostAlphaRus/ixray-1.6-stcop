@@ -34,6 +34,8 @@ constexpr unsigned short _kSVGStorage_MaxSubpathLength = 128;
 constexpr u32 _kSVGStorage_DefaultAtlasID = 10;
 // where element of specified size can be located because like we could add sizes (32,32); (128,128); but (256,256) can't be added for current atlas and it goes to different one and for that we have connection between two atlases by one texture name
 constexpr unsigned char _kSVGStorage_MaxAtlasPlacement = 4;
+// how many variants we can have per one texture
+constexpr unsigned char _kSVGStorage_MaxElementsPerAtlas = 8;
 constexpr int _kSVGStorage_DefaultAtlasSize = 512;
 
 namespace lunasvg
@@ -53,8 +55,23 @@ public:
 	struct AtlasConnection
 	{
 		char atlas_ids[_kSVGStorage_MaxAtlasPlacement]{ -1,-1,-1,-1 };
+		char elements_per_atlas[_kSVGStorage_MaxElementsPerAtlas * _kSVGStorage_MaxAtlasPlacement]{ -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
 
-		bool isValid(void) const { return atlas_ids[0] != char(-1) || atlas_ids[1] != char(-1) || atlas_ids[2] != char(-1) || atlas_ids[3] != char(-1); }
+		bool isValid(void) const 
+		{ 
+			bool result = false;
+
+			for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
+			{
+				if (atlas_ids[i] != char(-1))
+				{
+					result = true;
+					break;
+				}
+			}
+
+			return result;
+		}
 	};
 
 public:
@@ -73,7 +90,7 @@ public:
 
 	// if returns u32(-1) means it is failed to add atlas
 	// see allocation policies that defined in eSVGStorageFlags
-	u32 init_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool generate_id = false);
+	u32 init_atlas(u32 w, u32 h, const char* pTextureName, CTextureAtlas& instance, bool generate_id = false);
 
 	CTextureAtlas* get_atlas(u32 id);
 	const CTextureAtlas* get_atlas(u32 id) const;
@@ -100,14 +117,14 @@ private:
 
 	// at runtime it might slow due to fact of IO
 	// so use precaching strategy before loading level or before loading game
-	AtlasConnection try_allocate(const std::string_view& subpath, float requested_width, float requested_height);
+	AtlasConnection try_allocate(const std::string_view& subpath, float requested_width, float requested_height, AtlasConnection* p_existed);
 
 	// allocates a new texture use it only when no atlas was allocated in storage or no valid atlas in storage
 	AtlasConnection allocate(const std::string_view& subpath, float requested_width, float requested_height);
 
-	bool add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas);
+	bool add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection);
 
-	bool try_add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas);
+	bool try_add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection);
 
 	bool get_bitmap(const std::string_view& subpath, float requested_width, float requested_height, lunasvg::Bitmap* bmp);
 

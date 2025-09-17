@@ -539,11 +539,13 @@ float CTextureAtlas::CTextureAtlasElement::v1(u32 atlas_height) const
 CTextureAtlas::CTextureAtlas() :
 #ifdef DEBUG
 	init_was_called{},
+	shader_was_created{},
 #endif
 	m_is_storage_dirty{},
 	m_id{ _kRenderBackend_TextureAtlasInvalidID },
 	m_p_atlas{},
 	m_p_texture{},
+	m_p_shader{},
 	sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) },
 	saissi_wrapper{ &static_atlas_items_storage_spatial_indexing, sizeof(static_atlas_items_storage_spatial_indexing) },
 	m_atlas_items{ storage_allocator{&sais_wrapper} },
@@ -556,10 +558,13 @@ CTextureAtlas::CTextureAtlas() :
 CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 #ifdef DEBUG
 	init_was_called{ other.init_was_called },
+	shader_was_created{},
 #endif
 	m_is_storage_dirty{},
-	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, sais_wrapper{ &static_atlas_items_storage, sizeof(static_atlas_items_storage) }, saissi_wrapper{ &static_atlas_items_storage_spatial_indexing, sizeof(static_atlas_items_storage_spatial_indexing) }, m_atlas_items{
-	storage_allocator{ &sais_wrapper } }, m_atlas_items_spatial_indexing{ spatial_storage_allocator{&saissi_wrapper} }
+	m_id{ other.m_id }, m_p_atlas{ other.m_p_atlas }, m_p_texture{ other.m_p_texture }, m_p_shader{ other.m_p_shader }, sais_wrapper{
+	&static_atlas_items_storage, sizeof(static_atlas_items_storage)
+	}, saissi_wrapper{ &static_atlas_items_storage_spatial_indexing, sizeof(static_atlas_items_storage_spatial_indexing) }, m_atlas_items{
+		storage_allocator{ &sais_wrapper } }, m_atlas_items_spatial_indexing{ spatial_storage_allocator{&saissi_wrapper} }
 {
 	m_id = other.m_id;
 
@@ -575,9 +580,14 @@ CTextureAtlas::CTextureAtlas(CTextureAtlas&& other) noexcept :
 
 	other.m_p_atlas = nullptr;
 	other.m_p_texture = nullptr;
+	other.m_p_shader = nullptr;
 	other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 	other.m_atlas_items.clear();
 	other.m_atlas_items_spatial_indexing.clear();
+
+#ifdef DEBUG
+	other.init_was_called = false;
+#endif
 }
 
 CTextureAtlas::~CTextureAtlas()
@@ -597,7 +607,7 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 		this->m_p_atlas = other.m_p_atlas;
 
 		this->m_p_texture = other.m_p_texture;
-
+		this->m_p_shader = other.m_p_shader;
 
 		for (auto& element : other.m_atlas_items)
 		{
@@ -611,12 +621,14 @@ CTextureAtlas& CTextureAtlas::operator=(CTextureAtlas&& other) noexcept
 
 		other.m_p_atlas = nullptr;
 		other.m_p_texture = nullptr;
+		other.m_p_shader = nullptr;
 		other.m_id = _kRenderBackend_TextureAtlasInvalidID;
 		other.m_atlas_items.clear();
 		other.m_atlas_items_spatial_indexing.clear();
 
 #ifdef DEBUG
 		init_was_called = other.init_was_called;
+		other.init_was_called = false;
 #endif
 	}
 
@@ -653,6 +665,12 @@ void CTextureAtlas::init(ID3DDevice* p_device, int width, int height, const char
 
 void CTextureAtlas::uninit()
 {
+	if (this->m_p_shader)
+	{
+		delete this->m_p_shader;
+		this->m_p_shader = nullptr;
+	}
+
 	if (this->m_p_texture)
 	{
 		this->m_p_texture->can_unload = false;
@@ -681,16 +699,17 @@ void CTextureAtlas::uninit()
 
 #ifdef DEBUG
 	init_was_called = false;
+	shader_was_created = false;
 #endif
 }
 
-bool CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch)
+bool CTextureAtlas::addRegion(element_lookupid_type& lookup_element_id, ID3DDevice* p_device, ID3DDeviceContext* p_context, const xr_string_view& icon_subpath_name, u32 w, u32 h, const void* pData, u32 pitch)
 {
 	R_ASSERT(this->m_p_atlas && "must be initialized before calling this method!");
 	R_ASSERT(this->m_p_texture && "you forgot to call init because texture wasn't initialized!");
 
 	bool result = false;
-
+	lookup_element_id = element_lookupid_type(-1);
 	if (this->m_p_atlas && this->m_p_texture)
 	{
 		smol_atlas_item_t* p_current_placement = sma_item_add(this->m_p_atlas, w, h);
@@ -716,7 +735,8 @@ bool CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 			this->m_atlas_items.push_back(item);
 
 			this->m_atlas_items_spatial_indexing.push_back({});
-			this->m_atlas_items_spatial_indexing.back().lookup_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
+			lookup_element_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
+			this->m_atlas_items_spatial_indexing.back().lookup_id = lookup_element_id;
 
 			if (pitch == 0)
 				pitch = _w * 4;
@@ -728,13 +748,13 @@ bool CTextureAtlas::addRegion(ID3DDevice* p_device, ID3DDeviceContext* p_context
 	return result;
 }
 
-bool CTextureAtlas::tryAddRegion(const xr_string_view& icon_subpath_name, u32 w, u32 h)
+bool CTextureAtlas::tryAddRegion(element_lookupid_type& lookup_element_id, const xr_string_view& icon_subpath_name, u32 w, u32 h)
 {
 	R_ASSERT(this->m_p_atlas && "must be initialized before calling this method!");
 	R_ASSERT(this->m_p_texture && "you forgot to call init because texture wasn't initialized!");
 
 	bool result = false;
-
+	lookup_element_id = element_lookupid_type(-1);
 	if (this->m_p_atlas && this->m_p_texture)
 	{
 		smol_atlas_item_t* p_current_placement = sma_item_add(this->m_p_atlas, w, h);
@@ -748,6 +768,7 @@ bool CTextureAtlas::tryAddRegion(const xr_string_view& icon_subpath_name, u32 w,
 			this->m_atlas_items.push_back(item);
 
 			this->m_atlas_items_spatial_indexing.push_back({});
+			lookup_element_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
 			this->m_atlas_items_spatial_indexing.back().lookup_id = static_cast<element_lookupid_type>(this->m_atlas_items.size() - 1);
 		}
 	}
@@ -925,6 +946,14 @@ void* CTextureAtlas::getResource() const
 	}
 
 	return nullptr;
+}
+
+const char* CTextureAtlas::getTextureName() const
+{
+	if (this->m_p_texture)
+		return this->m_p_texture->cName.c_str();
+
+	return "";
 }
 
 
@@ -1131,6 +1160,37 @@ bool CTextureAtlas::removeElement(element_lookupid_type lookup_id)
 	return result;
 }
 
+FactoryPtr<IUIShader>* CTextureAtlas::getShader(void) const
+{
+	return m_p_shader;
+}
+
+void CTextureAtlas::createShader()
+{
+#ifdef DEBUG
+	R_ASSERT(!shader_was_created && "you must call only once!");
+	R_ASSERT(!m_p_shader && "must be not inited!");
+#endif
+
+	R_ASSERT(this->m_p_texture && "early calling, texture must exist!");
+
+	if (!this->m_p_shader && this->m_p_texture)
+	{
+		this->m_p_shader = new FactoryPtr<IUIShader>();
+		R_ASSERT(this->m_p_shader && "failed to allocate shader! (CPU)");
+
+		if (this->m_p_shader)
+		{
+			char buf[128];
+			std::sprintf(buf, "hud%sdefault", Platform::kPreferredSeparator);
+			(*this->m_p_shader)->create(buf, this->m_p_texture->cName.c_str());
+
+#ifdef DEBUG
+			shader_was_created = true;
+#endif
+		}
+	}
+}
 
 CSVGStorage::CSVGStorage(u32 flags) :
 
@@ -1201,15 +1261,15 @@ unsigned int CSVGStorage::get_size() const
 	return this->m_storage_atlases.size();
 }
 
-u32 CSVGStorage::init_atlas(u32 w, u32 h, const char* pName, CTextureAtlas& instance, bool is_generate_id)
+u32 CSVGStorage::init_atlas(u32 w, u32 h, const char* pTextureName, CTextureAtlas& instance, bool is_generate_id)
 {
-	R_ASSERT(pName && pName[0] != '\0' && "you have to pass a valid and not empty string!");
+	R_ASSERT(pTextureName && pTextureName[0] != '\0' && "you have to pass a valid and not empty string!");
 
 	u32 result = u32(-1);
 	if (is_generate_id)
 		result = this->generate_id();
 
-	instance.init(this->m_p_device, w, h, pName);
+	instance.init(this->m_p_device, w, h, pTextureName);
 
 	return result;
 }
@@ -1280,10 +1340,22 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& sub
 
 		if (this->m_storage_textures.find(subpath.data()) == this->m_storage_textures.end())
 		{
-			auto lookup = this->try_allocate(subpath, requested_width, requested_height);
+			auto lookup = this->try_allocate(subpath, requested_width, requested_height, nullptr);
 			R_ASSERT(lookup.isValid() && "failed to allocate!");
 
 			this->m_storage_textures[subpath.data()] = lookup;
+
+			char idx = lookup.atlas_ids[0];
+
+			CTextureAtlas& atlas = this->m_storage_atlases[idx];
+
+			R_ASSERT(atlas.getShader() && "must be valid!");
+
+			return *(atlas.getShader());
+		}
+		else
+		{
+			R_ASSERT(false && "todo: implement");
 		}
 	}
 
@@ -1304,13 +1376,90 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_default_shader()
 Frect CSVGStorage::get_uv(const std::string_view& subpath, float requested_width, float requested_height)
 {
 	Frect result;
-
+	bool found = false;
 	if (subpath.empty() == false)
 	{
-		// todo: 
+		if (this->m_storage_textures.find(subpath.data()) != this->m_storage_textures.end())
+		{
+			AtlasConnection& lookup_list = this->m_storage_textures.at(subpath.data());
+
+			R_ASSERT(lookup_list.isValid() && "must be valid!!!");
+			constexpr int _kSize = sizeof(AtlasConnection::atlas_ids) / sizeof(AtlasConnection::atlas_ids[0]);
+
+
+			for (int i = 0; i < _kSize; ++i)
+			{
+				if (found)
+					break;
+
+				CTextureAtlas& atlas = this->m_storage_atlases[lookup_list.atlas_ids[i]];
+				R_ASSERT(atlas.getShader() && "must be inited and valid!");
+				R_ASSERT(atlas.getResource() && "must be valid!");
+				
+				if (atlas.getShader() == nullptr)
+				{
+#ifdef DEBUG
+					Msg("! [svg]: atlas[%s] has invalid shader", atlas.getTextureName());
+#endif
+					break;
+				}
+
+				if (atlas.getResource() == nullptr)
+				{
+#ifdef DEBUG
+					Msg("! [svg]: atlas[%s] has invalid texture", atlas.getTextureName());
+#endif
+					break;
+				}
+				
+				const CTextureAtlas::storage_type& elements = atlas.getElements();
+
+				for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
+				{
+					int real_j = j + (_kSVGStorage_MaxElementsPerAtlas * i);
+
+					CTextureAtlas::element_lookupid_type el_id = lookup_list.elements_per_atlas[real_j];
+
+					if (el_id != CTextureAtlas::element_lookupid_type(-1))
+					{
+						const CTextureAtlas::CTextureAtlasElement& element = elements[el_id];
+
+						if (element.w() == int(requested_width) && element.h() == int(requested_height))
+						{
+							found = true;
+							float w = atlas.getWidth();
+							float h = atlas.getHeight();
+
+							result.lt.set(w * element.u0(static_cast<u32>(w)), h * element.v0(static_cast<u32>(h)));
+							result.rb.set(w * element.u1(static_cast<u32>(w)), h * element.v1(static_cast<u32>(h)));
+
+							break;
+						}
+					}
+				}
+			}
+
+			if (!found)
+			{
+#ifdef DEBUG
+				R_ASSERT(false && "shouldn't happen?");
+				Msg("! [svg]: failed to obtain [tex_name:%s;w:%.2f;h:%.2f]",
+					subpath.data(), 
+					requested_width,
+					requested_height
+				);
+#endif
+			}
+		}
+#ifdef DEBUG
+		else
+		{
+			Msg("! [svg]: can't find texture[%s]", subpath.data());
+		}
+#endif
 	}
 
-	if (this->m_default_atlas.getResource())
+	if (this->m_default_atlas.getResource() && !found)
 	{
 		CTextureAtlas::CTextureAtlasElement* pElement = this->m_default_atlas.findNearest(requested_width, requested_height);
 
@@ -1367,7 +1516,7 @@ void CSVGStorage::init_default_atlas()
 
 		if (doc.get())
 		{
-
+			char _notused_lookupid;
 			for (unsigned char i = 1; i <= 4; ++i)
 			{
 				float fStartDim = 32.0f;
@@ -1377,7 +1526,9 @@ void CSVGStorage::init_default_atlas()
 				bmp.convertToRGBA();
 #elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION <= 0x0900
 #endif
-				this->m_default_atlas.addRegion(this->m_p_device, this->m_p_device_context, _kSVGStorge_DefaultSVGTextureSubPathName, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+
+
+				this->m_default_atlas.addRegion(_notused_lookupid, this->m_p_device, this->m_p_device_context, _kSVGStorge_DefaultSVGTextureSubPathName, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
 			}
 		}
 
@@ -1396,7 +1547,7 @@ void CSVGStorage::init_default_shader()
 	}
 }
 
-CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& subpath, float requested_width, float requested_height)
+CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& subpath, float requested_width, float requested_height, AtlasConnection* p_existed)
 {
 	AtlasConnection result;
 
@@ -1404,7 +1555,13 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 	bool was_added = false;
 	for (CTextureAtlas& atlas : this->m_storage_atlases)
 	{
-		bool status = this->try_add_data(subpath, requested_width, requested_height, atlas);
+		bool status = this->try_add_data(
+			subpath,
+			requested_width,
+			requested_height,
+			atlas,
+			p_existed ? *p_existed : result
+		);
 
 #ifdef DEBUG
 		if (status)
@@ -1416,7 +1573,9 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 		was_added = status;
 
 		if (was_added)
+		{
 			break;
+		}
 
 		++iter;
 	}
@@ -1436,12 +1595,12 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 
 	if (requested_width <= _kSVGStorage_DefaultAtlasSize && requested_height <= _kSVGStorage_DefaultAtlasSize)
 	{
-		char debug_name[32];
+		char texture_name[32];
 
-		std::sprintf(debug_name, "svg_atlas_%zu", this->m_storage_atlases.size());
+		std::sprintf(texture_name, "svg_atlas_%zu", this->m_storage_atlases.size());
 
 		CTextureAtlas atlas;
-		u32 atlas_id = this->init_atlas(_kSVGStorage_DefaultAtlasSize, _kSVGStorage_DefaultAtlasSize, debug_name, atlas, true);
+		u32 atlas_id = this->init_atlas(_kSVGStorage_DefaultAtlasSize, _kSVGStorage_DefaultAtlasSize, texture_name, atlas, true);
 		atlas.setID(atlas_id);
 
 		R_ASSERT2(requested_height <= atlas.getHeight(), "invalid height! Too big height");
@@ -1449,17 +1608,22 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 
 		R_ASSERT(atlas.getResource() && "failed to create texture, out of memory?");
 
-		bool data_insert_status = this->add_data(subpath, atlas.getWidth(), atlas.getHeight(), atlas);
+		bool data_insert_status = this->add_data(subpath, requested_width, requested_height, atlas, result);
 
 		R_ASSERT(data_insert_status, "failed to insert data to atlas");
 
 		if (data_insert_status)
 		{
+			R_ASSERT(atlas.getShader() == nullptr && "must be nullptr!");
+
+			atlas.createShader();
+
 #ifdef DEBUG
-			Msg("[svg]: allocated atlas[id:%d;w:%d;h:%d] and addded region w: %.2f h: %.2f ",
+			Msg("[svg]: allocated atlas[id:%d;w:%d;h:%d;tex_name:%s] and addded region w: %.2f h: %.2f ",
 				atlas.getID(),
 				atlas.getWidth(),
 				atlas.getHeight(),
+				atlas.getTextureName(),
 				requested_width,
 				requested_height
 			);
@@ -1473,7 +1637,7 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 }
 
 
-bool CSVGStorage::add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas)
+bool CSVGStorage::add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection)
 {
 	R_ASSERT(subpath.empty() == false && "must be valid!");
 
@@ -1490,18 +1654,30 @@ bool CSVGStorage::add_data(const std::string_view& subpath, float requested_widt
 
 		if (result)
 		{
-			result = atlas.addRegion(this->m_p_device, this->m_p_device_context, subpath, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+			CTextureAtlas::element_lookupid_type lookup_element_id;
+			result = atlas.addRegion(lookup_element_id, this->m_p_device, this->m_p_device_context, subpath, bmp.width(), bmp.height(), bmp.data(), bmp.stride());
+
+			R_ASSERT(connection.atlas_ids[0] == CTextureAtlas::element_lookupid_type(-1) && "expected minus one because it is not existed in map!");
+			R_ASSERT(connection.elements_per_atlas[0] == CTextureAtlas::element_lookupid_type(-1) && "expected minus one because it is not existed in map!");
+
+			connection.elements_per_atlas[0] = lookup_element_id;
 		}
 	}
 
 	return result;
 }
 
-bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas)
+bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection)
 {
 	bool result = false;
 
-	result = atlas.tryAddRegion(subpath, requested_width, requested_height);
+	CTextureAtlas::element_lookupid_type lookup_el_id;
+	result = atlas.tryAddRegion(lookup_el_id, subpath, requested_width, requested_height);
+
+	if (lookup_el_id != CTextureAtlas::element_lookupid_type(-1))
+	{
+		R_ASSERT(false && "todo: implement");
+	}
 
 #ifdef DEBUG
 	if (!result)
