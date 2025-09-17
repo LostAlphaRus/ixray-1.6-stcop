@@ -1455,8 +1455,6 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 
 		if (data_insert_status)
 		{
-			this->m_storage_atlases.emplace_back(std::move(atlas));
-			result.atlas_ids[0] = static_cast<char>(this->m_storage_atlases.size() - 1);
 #ifdef DEBUG
 			Msg("[svg]: allocated atlas[id:%d;w:%d;h:%d] and addded region w: %.2f h: %.2f ",
 				atlas.getID(),
@@ -1466,6 +1464,8 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 				requested_height
 			);
 #endif
+			this->m_storage_atlases.emplace_back(std::move(atlas));
+			result.atlas_ids[0] = static_cast<char>(this->m_storage_atlases.size() - 1);
 		}
 	}
 
@@ -1532,6 +1532,14 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 	bool result = false;
 
 	char buf[256];
+	constexpr unsigned int _kSize = sizeof(buf) / sizeof(buf[0]);
+	if (subpath.size() > _kSize)
+	{
+		R_ASSERT(false && "you have too long subpath, there's no need to move files to different folders and making chaos...");
+		Msg("! [svg]: too long subpath, max length is 255, can't add data");
+		return result;
+	}
+
 	std::sprintf(buf, "ui%s%s", Platform::kPreferredSeparator, subpath.data());
 
 	string_path fn;
