@@ -1444,8 +1444,6 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 		u32 atlas_id = this->init_atlas(_kSVGStorage_DefaultAtlasSize, _kSVGStorage_DefaultAtlasSize, debug_name, atlas, true);
 		atlas.setID(atlas_id);
 
-		this->m_storage_atlases.emplace_back(std::move(atlas));
-
 		R_ASSERT2(requested_height <= atlas.getHeight(), "invalid height! Too big height");
 		R_ASSERT2(requested_width <= atlas.getWidth(), "invalid width! Too big width");
 
@@ -1457,18 +1455,18 @@ CSVGStorage::AtlasConnection CSVGStorage::allocate(const std::string_view& subpa
 
 		if (data_insert_status)
 		{
+			this->m_storage_atlases.emplace_back(std::move(atlas));
 			result.atlas_ids[0] = static_cast<char>(this->m_storage_atlases.size() - 1);
-		}
-
 #ifdef DEBUG
-		Msg("[svg]: allocated atlas[id:%d;w:%d;h:%d] and addded region w: %.2f h: %.2f ",
-			atlas.getID(),
-			atlas.getWidth(),
-			atlas.getHeight(),
-			requested_width,
-			requested_height
-		);
+			Msg("[svg]: allocated atlas[id:%d;w:%d;h:%d] and addded region w: %.2f h: %.2f ",
+				atlas.getID(),
+				atlas.getWidth(),
+				atlas.getHeight(),
+				requested_width,
+				requested_height
+			);
 #endif
+		}
 	}
 
 	return result;
@@ -1533,8 +1531,11 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 
 	bool result = false;
 
+	char buf[256];
+	std::sprintf(buf, "ui%s%s", std::filesystem::path::preferred_separator, subpath.data());
+
 	string_path fn;
-	FS.update_path(fn, "$game_textures$", subpath.data());
+	FS.update_path(fn, "$game_textures$", buf);
 
 	IReader* pReader = FS.r_open(fn);
 
