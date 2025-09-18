@@ -98,7 +98,7 @@ public:
 
 	void delete_atlas(u32 id);
 
-	void cache_atlases();
+	void generate_cache();
 
 	// make it optional field that will check should we cache
 	void load_cache();
@@ -124,7 +124,7 @@ private:
 
 	bool add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection);
 
-	bool try_add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection);
+	bool try_add_data(const std::string_view& subpath, float requested_width, float requested_height, const CTextureAtlas::element_lookupid_type atlas_lookup_id, CTextureAtlas& atlas, AtlasConnection& connection);
 
 	bool get_bitmap(const std::string_view& subpath, float requested_width, float requested_height, lunasvg::Bitmap* bmp);
 

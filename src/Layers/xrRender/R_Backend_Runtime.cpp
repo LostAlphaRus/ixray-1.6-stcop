@@ -1323,7 +1323,7 @@ void CSVGStorage::delete_atlas(u32 id)
 
 }
 
-void CSVGStorage::cache_atlases()
+void CSVGStorage::generate_cache()
 {
 
 }
@@ -1602,7 +1602,7 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 {
 	AtlasConnection result;
 
-	char iter = 0;
+	CTextureAtlas::element_lookupid_type iter = 0;
 	bool was_added = false;
 	for (CTextureAtlas& atlas : this->m_storage_atlases)
 	{
@@ -1610,6 +1610,7 @@ CSVGStorage::AtlasConnection CSVGStorage::try_allocate(const std::string_view& s
 			subpath,
 			requested_width,
 			requested_height,
+			iter,
 			atlas,
 			p_existed ? *p_existed : result
 		);
@@ -1718,7 +1719,7 @@ bool CSVGStorage::add_data(const std::string_view& subpath, float requested_widt
 	return result;
 }
 
-bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_width, float requested_height, CTextureAtlas& atlas, AtlasConnection& connection)
+bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_width, float requested_height, const CTextureAtlas::element_lookupid_type atlas_lookup_id, CTextureAtlas& atlas, AtlasConnection& connection)
 {
 	bool result = false;
 
@@ -1727,7 +1728,49 @@ bool CSVGStorage::try_add_data(const std::string_view& subpath, float requested_
 
 	if (lookup_el_id != CTextureAtlas::element_lookupid_type(-1))
 	{
-		R_ASSERT(false && "todo: implement");
+		//	R_ASSERT(false && "todo: implement");
+
+		R_ASSERT(atlas_lookup_id <= CTextureAtlas::element_lookupid_type(3) && "overflow, same texture can be placed at most in 4 atlases!");
+
+		bool filled_atlas_info = false;
+		for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
+		{
+			if (connection.atlas_ids[i] == CTextureAtlas::element_lookupid_type(-1))
+			{
+				connection.atlas_ids[i] = atlas_lookup_id;
+				filled_atlas_info = true;
+				break;
+			}
+			else
+			{
+				if (connection.atlas_ids[i] == atlas_lookup_id)
+				{
+					filled_atlas_info = true;
+					break;
+				}
+			}
+		}
+
+		R_ASSERT(filled_atlas_info && "probably overflow it means we can't insert new information to existed connection");
+
+		if (filled_atlas_info)
+		{
+			bool filled_element_info = false;
+			for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
+			{
+				int connection_el_id = j + (atlas_lookup_id * _kSVGStorage_MaxElementsPerAtlas);
+
+				if (
+					connection.elements_per_atlas[connection_el_id] == CTextureAtlas::element_lookupid_type(-1))
+				{
+					connection.elements_per_atlas[connection_el_id] = lookup_el_id;
+					filled_element_info = true;
+					break;
+				}
+			}
+
+			R_ASSERT(filled_element_info && "failed to set data, overflow!");
+		}
 	}
 
 #ifdef DEBUG
