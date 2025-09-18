@@ -665,18 +665,18 @@ void CTextureAtlas::init(ID3DDevice* p_device, int width, int height, const char
 
 void CTextureAtlas::uninit()
 {
-	if (this->m_p_shader)
-	{
-		delete this->m_p_shader;
-		this->m_p_shader = nullptr;
-	}
-
 	if (this->m_p_texture)
 	{
 		this->m_p_texture->can_unload = false;
 		DEV->_DeleteTexture(this->m_p_texture);
 		this->m_p_texture->Unload();
 		this->m_p_texture = nullptr;
+	}
+
+	if (this->m_p_shader)
+	{
+		delete this->m_p_shader;
+		this->m_p_shader = nullptr;
 	}
 
 	if (this->m_p_atlas)
@@ -1243,6 +1243,11 @@ void CSVGStorage::uninit()
 	this->m_default_atlas.uninit();
 	xr_delete(m_p_default_shader);
 
+	for (CTextureAtlas& atlas : this->m_storage_atlases)
+	{
+		atlas.uninit();
+	}
+
 
 #ifdef DEBUG
 	m_init_was_called = false;
@@ -1355,7 +1360,53 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& sub
 		}
 		else
 		{
-			R_ASSERT(false && "todo: implement");
+			AtlasConnection& lookup_list = this->m_storage_textures.at(subpath.data());
+			bool found = false;
+
+			for (int i = 0; i < _kSVGStorage_MaxAtlasPlacement; ++i)
+			{
+				if (
+					lookup_list.atlas_ids[i] != CTextureAtlas::element_lookupid_type(-1))
+				{
+					const CTextureAtlas& atlas = this->m_storage_atlases[i];
+
+					const CTextureAtlas::storage_type& elements = atlas.getElements();
+					for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
+					{
+						CTextureAtlas::element_lookupid_type element_id = j + (i * _kSVGStorage_MaxElementsPerAtlas);
+
+						const CTextureAtlas::CTextureAtlasElement& element = elements[lookup_list.elements_per_atlas[element_id]];
+
+						if (element.w() == int(requested_width) && element.h() == int(requested_height))
+						{
+							found = true;
+							break;
+						}
+					}
+
+					if (found)
+					{
+						R_ASSERT(atlas.getShader() && "must be initialized");
+						return *atlas.getShader();
+					}
+				}
+			}
+
+			if (!found)
+			{
+				// didn't find appropriate size so let's allocate
+
+				auto lookup = this->try_allocate(subpath, requested_width, requested_height, &lookup_list);
+				R_ASSERT(lookup.isValid() && "failed to allocate!");
+
+				char idx = lookup.atlas_ids[0];
+
+				CTextureAtlas& atlas = this->m_storage_atlases[idx];
+
+				R_ASSERT(atlas.getShader() && "must be valid!");
+
+				return *atlas.getShader();
+			}
 		}
 	}
 
@@ -1395,7 +1446,7 @@ Frect CSVGStorage::get_uv(const std::string_view& subpath, float requested_width
 				CTextureAtlas& atlas = this->m_storage_atlases[lookup_list.atlas_ids[i]];
 				R_ASSERT(atlas.getShader() && "must be inited and valid!");
 				R_ASSERT(atlas.getResource() && "must be valid!");
-				
+
 				if (atlas.getShader() == nullptr)
 				{
 #ifdef DEBUG
@@ -1411,7 +1462,7 @@ Frect CSVGStorage::get_uv(const std::string_view& subpath, float requested_width
 #endif
 					break;
 				}
-				
+
 				const CTextureAtlas::storage_type& elements = atlas.getElements();
 
 				for (int j = 0; j < _kSVGStorage_MaxElementsPerAtlas; ++j)
@@ -1444,7 +1495,7 @@ Frect CSVGStorage::get_uv(const std::string_view& subpath, float requested_width
 #ifdef DEBUG
 				R_ASSERT(false && "shouldn't happen?");
 				Msg("! [svg]: failed to obtain [tex_name:%s;w:%.2f;h:%.2f]",
-					subpath.data(), 
+					subpath.data(),
 					requested_width,
 					requested_height
 				);

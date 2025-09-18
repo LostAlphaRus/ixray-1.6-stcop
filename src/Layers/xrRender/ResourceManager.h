@@ -141,7 +141,7 @@ private:
 	std::pmr::monotonic_buffer_resource m_ss_wrapper;
 	std::pmr::vector<CTextureAtlas> m_storage_atlases;
 
-
+	// probably better to replace with string_view but could we have a situation with temp allocated string?
 	std::pmr::unordered_map<std::pmr::string, AtlasConnection> m_storage_textures;
 };
 
