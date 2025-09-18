@@ -739,30 +739,33 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 		float fRequestedWidth = m_iGridWidth * INV_GRID_WIDTH(isHQIcons) * scale * UI().get_current_kx();
 		float fRequestedHeight = m_iGridHeight * INV_GRID_HEIGHT(isHQIcons) * scale;
 
+		Fvector2 vRealWH;
+		UI().ClientToScreenScaled(vRealWH, fRequestedWidth, fRequestedHeight);
+
 		if (pSettings->line_exist(sect_name, kUIConfigField_InventoryVectorIcon))
 		{
 			std::string_view icon_subpath = pSettings->r_string(sect_name, kUIConfigField_InventoryVectorIcon);
 
 			if (icon_subpath.empty() == false)
 			{
-				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath, fRequestedWidth, fRequestedHeight);
+				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath, vRealWH.x, vRealWH.y);
 
-				texture_rect = UI().GetVectorUV(icon_subpath, fRequestedWidth, fRequestedHeight);
+				texture_rect = UI().GetVectorUV(icon_subpath, vRealWH.x, vRealWH.y);
 
 				UIPickUpItemIcon->SetShader(svg_shader);
 			}
 			else
 			{
-				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
+				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vRealWH.x, vRealWH.y);
 
-				texture_rect = UI().GetVectorUV(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
+				texture_rect = UI().GetVectorUV(_kDefaultSVGShader, vRealWH.x, vRealWH.y);
 				UIPickUpItemIcon->SetShader(default_shader);
 			}
 		}
 		else
 		{
-			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
-			texture_rect = UI().GetVectorUV(_kDefaultSVGShader, fRequestedWidth, fRequestedHeight);
+			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vRealWH.x, vRealWH.y);
+			texture_rect = UI().GetVectorUV(_kDefaultSVGShader, vRealWH.x, vRealWH.y);
 			UIPickUpItemIcon->SetShader(default_shader);
 		}
 	}
