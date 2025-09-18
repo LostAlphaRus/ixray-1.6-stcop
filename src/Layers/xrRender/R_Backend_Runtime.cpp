@@ -1550,18 +1550,10 @@ void CSVGStorage::init_default_atlas()
 
 		u32 len = pReader->length();
 		std::unique_ptr<lunasvg::Document> doc;
-		if (len <= 4095)
-		{
-			string4096 buf;
-			pReader->r_stringZ(buf, len + 1);
-			doc = std::move(lunasvg::Document::loadFromData(buf));
-		}
-		else
-		{
-			xr_string buf;
-			pReader->r_stringZ(buf);
-			doc = std::move(lunasvg::Document::loadFromData(buf.c_str()));
-		}
+		
+		xr_string data;
+		pReader->r_stringZ(data);
+		doc = std::move(lunasvg::Document::loadFromData(data.c_str()));
 
 		R_ASSERT(doc.get() && "failed to load svg document!");
 
@@ -1826,18 +1818,11 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 		u32 len = pReader->length();
 		std::unique_ptr<lunasvg::Document> doc;
 
-		if (len <= 4095)
-		{
-			string4096 buf;
-			pReader->r_stringZ(buf, len + 1);
-			doc = std::move(lunasvg::Document::loadFromData(buf));
-		}
-		else
-		{
-			xr_string buf;
-			pReader->r_stringZ(buf);
-			doc = std::move(lunasvg::Document::loadFromData(buf.c_str()));
-		}
+		// todo: probably pmr would be better?
+		xr_string data;
+		pReader->r_stringZ(data);
+
+		doc = std::move(lunasvg::Document::loadFromData(data.c_str()));
 
 		R_ASSERT(doc.get() && "failed to load svg document!");
 
@@ -1852,6 +1837,8 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 #elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION <= 0x0900
 #endif
 		}
+ 
+		FS.r_close(pReader);
 	}
 
 	return result;
