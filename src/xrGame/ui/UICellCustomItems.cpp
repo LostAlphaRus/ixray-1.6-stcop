@@ -28,18 +28,75 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 	m_pData											= (void*)itm;
 
 	const char* icons_texture = READ_IF_EXISTS(pSettings, r_string, itm->m_section_id, "icons_texture", nullptr);
-	inherited::SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
-	m_grid_size.set									(itm->GetInvGridRect().rb);
-	Frect rect; 
-	rect.lt.set										(INV_GRID_WIDTHF(isHQIcons) * itm->GetInvGridRect().x1,
-														INV_GRID_HEIGHTF(isHQIcons) * itm->GetInvGridRect().y1 );
+	bool isRaster = EngineExternal().isRenderingUIRaster();
+	m_grid_size.set(itm->GetInvGridRect().rb);
+	if (isRaster)
+	{
+		inherited::SetShader(InventoryUtilities::GetEquipmentIconsShader(icons_texture));
 
-	rect.rb.set										(	rect.lt.x+INV_GRID_WIDTHF(isHQIcons) * m_grid_size.x,
-														rect.lt.y+INV_GRID_HEIGHTF(isHQIcons) * m_grid_size.y);
+		Frect rect;
+		rect.lt.set(INV_GRID_WIDTHF(isHQIcons) * itm->GetInvGridRect().x1,
+			INV_GRID_HEIGHTF(isHQIcons) * itm->GetInvGridRect().y1);
 
-	inherited::SetTextureRect						(rect);
-	inherited::SetStretchTexture					(true);
+		rect.rb.set(rect.lt.x + INV_GRID_WIDTHF(isHQIcons) * m_grid_size.x,
+			rect.lt.y + INV_GRID_HEIGHTF(isHQIcons) * m_grid_size.y);
+
+		inherited::SetTextureRect(rect);
+		inherited::SetStretchTexture(true);
+	}
+	else
+	{
+		Frect rect;
+		rect.lt.set(INV_GRID_WIDTHF(isHQIcons) * itm->GetInvGridRect().x1,
+			INV_GRID_HEIGHTF(isHQIcons) * itm->GetInvGridRect().y1);
+
+		rect.rb.set(rect.lt.x + INV_GRID_WIDTHF(isHQIcons) * m_grid_size.x,
+			rect.lt.y + INV_GRID_HEIGHTF(isHQIcons) * m_grid_size.y);
+		float fRequestedWidth = rect.width();
+		float fRequestedHeight = rect.height();
+
+		Fvector2 vScaled;
+		UI().ClientToScreenScaled(vScaled, fRequestedWidth, fRequestedHeight);
+
+		vScaled.x = fRequestedWidth;
+		vScaled.y = fRequestedHeight;
+
+		if (pSettings->line_exist(itm->m_section_id, kUIConfigField_InventoryVectorIcon))
+		{
+			xr_string_view icon_subpath = pSettings->r_string(itm->m_section_id, kUIConfigField_InventoryVectorIcon);
+
+			if (icon_subpath.empty() == false)
+			{
+				const ui_shader& svg_shader = UI().GetVectorShader(icon_subpath, vScaled.x, vScaled.y);
+				rect = UI().GetVectorUV(icon_subpath, vScaled.x, vScaled.y);
+
+				inherited::SetShader(svg_shader);
+				inherited::SetTextureRect(rect);
+				inherited::SetStretchTexture(true);
+			}
+			else
+			{
+				const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vScaled.x, vScaled.y);
+
+				rect = UI().GetVectorUV(_kDefaultSVGShader, vScaled.x, vScaled.y);
+				inherited::SetShader(default_shader);
+				inherited::SetTextureRect(rect);
+				inherited::SetStretchTexture(true);
+			}
+		}
+		else
+		{
+			const ui_shader& default_shader = UI().GetVectorShader(_kDefaultSVGShader, vScaled.x, vScaled.y);
+
+			rect = UI().GetVectorUV(_kDefaultSVGShader, vScaled.x, vScaled.y);
+			inherited::SetShader(default_shader);
+			inherited::SetTextureRect(rect);
+			inherited::SetStretchTexture(true);
+		}
+	}
+
+
 }
 
 bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)

@@ -1343,6 +1343,9 @@ const FactoryPtr<IUIShader>& CSVGStorage::get_shader(const std::string_view& sub
 		// todo: 
 	//	R_ASSERT(false && "todo");
 
+		if (subpath == _kDefaultSVGShader)
+			return get_default_shader();
+
 		if (this->m_storage_textures.find(subpath.data()) == this->m_storage_textures.end())
 		{
 			auto lookup = this->try_allocate(subpath, requested_width, requested_height, nullptr);
@@ -1428,7 +1431,7 @@ Frect CSVGStorage::get_uv(const std::string_view& subpath, float requested_width
 {
 	Frect result;
 	bool found = false;
-	if (subpath.empty() == false)
+	if (subpath.empty() == false && subpath != _kDefaultSVGShader)
 	{
 		if (this->m_storage_textures.find(subpath.data()) != this->m_storage_textures.end())
 		{
