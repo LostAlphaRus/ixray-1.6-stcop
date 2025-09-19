@@ -1538,6 +1538,8 @@ void CSVGStorage::init_default_atlas()
 {
 	string_path fn;
 	FS.update_path(fn, "$game_textures$", _kSVGStorge_DefaultSVGTextureSubPathName);
+	// 	bool try_load = FS.TryLoad(fn);
+	// 	R_ASSERT(try_load && "failed to obtain file");
 
 	IReader* pReader = FS.r_open(fn);
 
@@ -1550,9 +1552,10 @@ void CSVGStorage::init_default_atlas()
 
 		u32 len = pReader->length();
 		std::unique_ptr<lunasvg::Document> doc;
-		
+
 		xr_string data;
-		pReader->r_stringZ(data);
+		data.resize(len);
+		pReader->r(&data[0], len);
 		doc = std::move(lunasvg::Document::loadFromData(data.c_str()));
 
 		R_ASSERT(doc.get() && "failed to load svg document!");
@@ -1565,9 +1568,9 @@ void CSVGStorage::init_default_atlas()
 				float fStartDim = 32.0f;
 				fStartDim *= i;
 				lunasvg::Bitmap bmp = doc->renderToBitmap(fStartDim, fStartDim);
-#if defined(D3D10_SDK_VERSION) || defined(D3D11_SDK_VERSION)
+#ifdef USE_DX11
 				bmp.convertToRGBA();
-#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION <= 0x0900
+#else
 #endif
 
 
@@ -1806,6 +1809,8 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 
 	string_path fn;
 	FS.update_path(fn, "$game_textures$", buf);
+	// 	bool try_load = FS.TryLoad(fn);
+	// 	R_ASSERT(try_load && "failed to load");
 
 	IReader* pReader = FS.r_open(fn);
 
@@ -1820,8 +1825,8 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 
 		// todo: probably pmr would be better?
 		xr_string data;
-		pReader->r_stringZ(data);
-
+		data.resize(len);
+		pReader->r(&data[0], len);
 		doc = std::move(lunasvg::Document::loadFromData(data.c_str()));
 
 		R_ASSERT(doc.get() && "failed to load svg document!");
@@ -1832,12 +1837,12 @@ bool CSVGStorage::get_bitmap(const std::string_view& subpath, float requested_wi
 		{
 			*bmp = doc->renderToBitmap(requested_width, requested_height);
 
-#if defined(D3D10_SDK_VERSION) || defined(D3D11_SDK_VERSION)
+#ifdef USE_DX11
 			bmp->convertToRGBA();
-#elif defined(DIRECT3D_VERSION) && DIRECT3D_VERSION <= 0x0900
+#else
 #endif
 		}
- 
+
 		FS.r_close(pReader);
 	}
 
