@@ -51,6 +51,7 @@ CUIInventoryCellItem::CUIInventoryCellItem(CInventoryItem* itm)
 		rect.lt.set(INV_GRID_WIDTHF(isHQIcons) * itm->GetInvGridRect().x1,
 			INV_GRID_HEIGHTF(isHQIcons) * itm->GetInvGridRect().y1);
 
+		// todo: it is estimated but not real (true) values that render expects and when it applies to polygon so think about how to extract real values... (but probably in most cases should be fine and wouldn't be noticable, but if noticable so I refer to this todo so you need to use accurate and exact values for requested width and height)
 		rect.rb.set(rect.lt.x + INV_GRID_WIDTHF(isHQIcons) * m_grid_size.x,
 			rect.lt.y + INV_GRID_HEIGHTF(isHQIcons) * m_grid_size.y);
 		float fRequestedWidth = rect.width();
