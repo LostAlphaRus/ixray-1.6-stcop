@@ -66,6 +66,16 @@ CWeapon::CWeapon()
 
 	eHandDependence			= hdNone;
 
+	// Инициализация системы паттернов отдачи
+	m_current_pattern = nullptr;
+	m_hipfire_pattern_factor = 0.0f;
+	m_ads_pattern_factor = 0.0f;
+	m_iShotNum = 0;
+
+	m_spring_damping = 0;
+	m_spring_stiffness = 0;
+	m_impulse_strength = 0;
+
 	m_zoom_params.m_fCurrentZoomFactor			= g_fov;
 	m_zoom_params.m_fZoomRotationFactor			= 0.f;
 	m_zoom_params.m_pVision						= nullptr;
@@ -789,6 +799,9 @@ void CWeapon::Load		(LPCSTR section)
 			ConfigNode = bullet_bone_name;
 		}
 	}
+
+	// Загрузка паттернов отдачи
+	LoadRecoilPatterns(section);
 }
 
 void CWeapon::SAmmoBonesParams::Load(const shared_str& section, u32 size)
@@ -870,6 +883,75 @@ void CWeapon::LoadFireParams		(LPCSTR section)
 	CShootingObject::LoadFireParams(section);
 };
 
+
+// Загрузка паттернов отдачи
+void CWeapon::LoadRecoilPatterns(LPCSTR section)
+{
+	// Загрузка паттерна для стрельбы от бедра
+	if (pSettings->line_exist(section, "hipfire_bullet_pattern")) {
+		LoadBulletPattern(section, "hipfire_bullet_pattern", m_hipfire_pattern);
+		m_hipfire_pattern.name = "hipfire";
+	}
+
+	// Загрузка паттерна для прицеливания
+	if (pSettings->line_exist(section, "ads_bullet_pattern")) {
+		LoadBulletPattern(section, "ads_bullet_pattern", m_ads_pattern);
+		m_ads_pattern.name = "ads";
+	}
+
+	// Настройка поведения после окончания паттерна
+	m_hipfire_pattern.use_classic_after = READ_IF_EXISTS(pSettings, r_bool, section, "hipfire_use_classic_after", true);
+	m_ads_pattern.use_classic_after = READ_IF_EXISTS(pSettings, r_bool, section, "ads_use_classic_after", true);
+
+
+	// ОБЩИЕ МНОЖИТЕЛИ паттернов
+	m_hipfire_pattern_factor = READ_IF_EXISTS(pSettings, r_float, section, "hipfire_pattern_factor", 1.0f);
+	m_ads_pattern_factor = READ_IF_EXISTS(pSettings, r_float, section, "ads_pattern_factor", 1.0f);
+
+	// Настройка пружинной системы отдачи
+	m_spring_stiffness = READ_IF_EXISTS(pSettings, r_float, section, "recoil_spring_stiffness", 120.0f);
+	m_spring_damping = READ_IF_EXISTS(pSettings, r_float, section, "recoil_spring_damping", 15.0f);
+	m_impulse_strength = READ_IF_EXISTS(pSettings, r_float, section, "recoil_impulse_strength", 25.0f);
+
+	Msg("[%s] Recoil patterns loaded: hipfire=%d (factor=%.2f), ads=%d (factor=%.2f)",
+		section,
+		m_hipfire_pattern.bullet_patterns.size(), m_hipfire_pattern_factor,
+		m_ads_pattern.bullet_patterns.size(), m_ads_pattern_factor);
+}
+
+void CWeapon::LoadBulletPattern(LPCSTR section, LPCSTR line, SRecoilPattern& pattern)
+{
+	pattern.bullet_patterns.clear();
+	pattern.current_bullet = 0;
+
+	LPCSTR pattern_str = pSettings->r_string(section, line);
+	string128 temp;
+
+	int number_count = _GetItemCount(pattern_str);
+
+	// Должно быть четное количество чисел
+	if (number_count % 2 != 0) {
+		Msg("!! WARNING: Uneven number of values in recoil pattern %s: %d", line, number_count);
+	}
+
+	int pair_count = number_count / 2;
+
+	for (int i = 0; i < pair_count; ++i) {
+		SRecoilPoint point;
+
+		// Берем два числа за раз
+		_GetItem(pattern_str, i * 2, temp);
+		point.x = (float)atof(temp);
+
+		_GetItem(pattern_str, i * 2 + 1, temp);
+		point.y = (float)atof(temp);
+
+		pattern.bullet_patterns.push_back(point);
+		Msg("Recoil pair %d: x=%.3f, y=%.3f", i, point.x, point.y);
+	}
+
+	Msg("Loaded %d recoil pairs from %d numbers for %s", pair_count, number_count, line);
+}
 
 
 BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
@@ -1657,16 +1739,22 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 				if (IsTriStateReload() && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_bAddCartridgeInOpen && m_sub_state == eSubstateReloadBegin) && flags & CMD_START)
 				{
 					bStopReloadSignal = true;
+
 					return true;
 				}
 				if(IsPending())		
 					return false;
 
-				if (flags&CMD_START) 
+				if (flags & CMD_START) {
 					FireStart();
-				else 
+
+				}
+					
+
+				else {
 					FireEnd();
 
+				}
 				return true;
 			} 
 		case kWPN_NEXT: 
@@ -2616,6 +2704,48 @@ float CWeapon::CurrentZoomFactor()
 	return IsScopeAttached() ? m_zoom_params.m_fScopeZoomFactor : m_zoom_params.m_fIronSightZoomFactor;
 };
 
+CWeapon::SRecoilPattern* CWeapon::GetPatternByName(const shared_str& name)
+{
+	if (name == "hipfire") return &m_hipfire_pattern;
+	if (name == "ads") return &m_ads_pattern;
+	return nullptr;
+}
+
+void CWeapon::StartRecoilPattern()
+{
+	if (IsZoomed() && !m_ads_pattern.bullet_patterns.empty()) {
+		m_current_pattern = &m_ads_pattern;
+	}
+	else if (!m_hipfire_pattern.bullet_patterns.empty()) {
+		m_current_pattern = &m_hipfire_pattern;
+	}
+	else {
+		m_current_pattern = nullptr;
+		return;
+	}
+
+	// Сбрасываем счетчик пуль
+	m_current_pattern->current_bullet = 0;
+
+	Msg("Started %s recoil pattern with %d bullets",
+		IsZoomed() ? "ADS" : "Hipfire",
+		m_current_pattern->bullet_patterns.size());
+}
+
+void CWeapon::ResetRecoilPattern()
+{
+	if (m_current_pattern) {
+		m_current_pattern->current_bullet = 0;
+	}
+	m_iShotNum = 0;
+}
+
+void CWeapon::OnWeaponStopShooting()
+{
+	// Сбрасываем паттерн при прекращении стрельбы
+	ResetRecoilPattern();
+}
+
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor);
 
 float LastZoomFactor = 0.f;
@@ -2643,6 +2773,15 @@ void CWeapon::OnZoomIn()
 	else if (CurrentZoomFactor() != 0)
 	{
 		m_zoom_params.m_fCurrentZoomFactor = CurrentZoomFactor();
+	}
+
+	// При прицеливании переключаемся на ADS паттерн
+	if (m_ads_pattern.bullet_patterns.empty()) {
+		m_current_pattern = nullptr;
+	}
+	else {
+		m_current_pattern = &m_ads_pattern;
+		m_current_pattern->current_bullet = 0;
 	}
 
 	UpdateZoomCrosshairUI();
@@ -2682,7 +2821,72 @@ void CWeapon::OnZoomOut()
 		GetNightVision()->SwitchNightVision(false);
 		xr_delete(m_zoom_params.m_pNight_vision);
 	}
+
+	// При отмене прицеливания переключаемся на hipfire паттерн
+	if (m_hipfire_pattern.bullet_patterns.empty()) {
+		m_current_pattern = nullptr;
+	}
+	else {
+		m_current_pattern = &m_hipfire_pattern;
+		m_current_pattern->current_bullet = 0;
+	}
 }
+
+void CWeapon::ApplyRecoil()
+{
+	// Увеличиваем счетчик выстрелов ПЕРВЫМ делом
+	m_iShotNum++;
+
+	if (!m_current_pattern) {
+		StartRecoilPattern();
+	}
+
+	// Проверяем, есть ли паттерн для текущей пули
+	if (m_current_pattern &&
+		m_current_pattern->current_bullet < m_current_pattern->bullet_patterns.size())
+	{
+		// Паттерн активен - просто логируем
+		SRecoilPoint& point = m_current_pattern->bullet_patterns[m_current_pattern->current_bullet];
+		float pattern_factor = GetCurrentPatternFactor();
+
+		Msg("Pattern bullet %d/%d: raw (x:%.3f, y:%.3f) factor:%.2f",
+			m_current_pattern->current_bullet + 1,
+			m_current_pattern->bullet_patterns.size(),
+			point.x, point.y, pattern_factor);
+	}
+
+	// Переходим к следующей пуле в паттерне
+	if (m_current_pattern) {
+		m_current_pattern->current_bullet++;
+
+		// Если вышли за пределы паттерна и не используем классику - сбрасываем
+		if (m_current_pattern->current_bullet >= m_current_pattern->bullet_patterns.size() &&
+			!m_current_pattern->use_classic_after) {
+			m_current_pattern = nullptr;
+		}
+	}
+
+	// Отладочный вывод
+	Msg("Shot counter: %d, Pattern bullet: %d", m_iShotNum, m_current_pattern ? m_current_pattern->current_bullet : -1);
+}
+
+
+bool CWeapon::GetCurrentRecoilPattern(float& out_x, float& out_y)
+{
+	if (!m_current_pattern ||
+		m_current_pattern->current_bullet >= m_current_pattern->bullet_patterns.size())
+	{
+		return false;
+	}
+
+	SRecoilPoint& point = m_current_pattern->bullet_patterns[m_current_pattern->current_bullet];
+	out_x = point.x;
+	out_y = point.y;
+
+	return true;
+}
+
+
 
 CUIWindow* CWeapon::ZoomTexture()
 {

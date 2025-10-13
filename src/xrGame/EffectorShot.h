@@ -22,6 +22,16 @@ protected:
 	float			m_prev_angle_vert;
 	float			m_prev_angle_horz;
 
+	// Пружинная система
+	float			m_target_angle_vert;
+	float			m_target_angle_horz;
+	float			m_velocity_vert;
+	float			m_velocity_horz;
+	float           spring_stiffness;
+	float           damping;
+	float           impulse_strengt;
+ 
+
 	float			m_delta_vert;
 	float			m_delta_horz;
 
@@ -36,6 +46,8 @@ protected:
 private:
 	CRandom			m_Random;
 	s32				m_LastSeed;
+
+
 
 public:
 				CWeaponShotEffector	();
@@ -54,6 +66,9 @@ public:
 
 		void	Shot				(CWeapon* weapon);
 		void	Shot2				(float angle);
+		void    ShotFromPattern(float pattern_x, float pattern_y);
+
+ 
 
 		void	GetDeltaAngle		(Fvector& angle);
 		void	GetLastDelta		(Fvector& delta_angle);
@@ -61,6 +76,7 @@ public:
 
 protected:
 		void	Relax				();
+		void	UpdateSpringRecoil(); // Новый метод для обновления пружинной физики
 };
 
 class CCameraShotEffector : public CWeaponShotEffector, public CEffectorCam

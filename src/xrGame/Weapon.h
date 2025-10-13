@@ -203,6 +203,63 @@ public:
 
 	} m_ammo_bones_lite;
 
+public:
+	// Структуры для системы паттернов отдачи - ПЕРВЫМИ!
+	struct SRecoilPoint {
+		float x; // горизонтальное смещение (-влево, +вправо)
+		float y; // вертикальное смещение 
+	};
+
+	struct SRecoilPattern {
+		shared_str name;
+		xr_vector<SRecoilPoint> bullet_patterns; // паттерн для каждой пули
+		u32 current_bullet; // текущая пуля в очереди
+		bool use_classic_after; // использовать классику после окончания паттерна
+
+		SRecoilPattern() : current_bullet(0), use_classic_after(true) {}
+	};
+
+	// Данные паттернов
+	SRecoilPattern m_hipfire_pattern;
+	SRecoilPattern m_ads_pattern;
+	SRecoilPattern* m_current_pattern;
+
+
+	// ОБЩИЕ МНОЖИТЕЛИ паттернов
+	float m_hipfire_pattern_factor;
+	float m_ads_pattern_factor;
+
+	float m_spring_damping;
+	float m_spring_stiffness;
+	float m_impulse_strength;
+
+	// Счетчик выстрелов
+	u32 m_iShotNum;
+
+	// Методы управления отдачей - ПОСЛЕ структур
+	void LoadRecoilPatterns(LPCSTR section);
+	void ApplyRecoil();
+	void ResetRecoilPattern();
+	void OnWeaponStopShooting();
+	// НОВЫЙ МЕТОД для доступа к паттерну отдачи
+	bool GetCurrentRecoilPattern(float& out_x, float& out_y);
+
+	float GetCurrentPatternFactor() const
+	{
+		return (IsZoomed() && m_current_pattern == &m_ads_pattern) ? m_ads_pattern_factor : m_hipfire_pattern_factor;
+	}
+
+	// Для доступа к счетчику выстрелов
+	u32 GetShotNum() const { return m_iShotNum; }
+	void SetShotNum(u32 num) { m_iShotNum = num; }
+
+protected:
+	// Вспомогательные методы
+	void LoadBulletPattern(LPCSTR section, LPCSTR line, SRecoilPattern& pattern);
+	void StartRecoilPattern();
+	SRecoilPattern* GetPatternByName(const shared_str& name);
+
+	public:
 	//обновление видимости для косточек аддонов
 	void UpdateAddonsVisibility();
 	void UpdateHUDAddonsVisibility();
@@ -418,6 +475,7 @@ protected:
 	bool m_bIAmWeaponRPG7;
 	shared_str GetCurrentScopeSection() const { return m_scopes[m_cur_scope]; }
 	shared_str GetScopeSection(int idx) const { return m_scopes[idx]; }
+
 
 protected:
 
