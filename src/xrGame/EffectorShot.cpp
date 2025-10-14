@@ -264,27 +264,28 @@ void CWeaponShotEffector::Relax()
 
 void CWeaponShotEffector::Update()
 {
-
-	
 	if (m_using_pattern)
 	{
+		// ТОЛЬКО пружинная физика для паттернной системы
 		UpdateSpringRecoil();
 	}
-
-
-	if (m_actived && m_cam_recoil.ReturnMode /*|| m_single_shot*/)
+	else
 	{
-		Relax();
+		// СТАРАЯ логика для непаттернной системы
+		if (m_actived && (m_cam_recoil.ReturnMode || m_single_shot))
+		{
+			Relax();
+		}
+
+		if (!m_cam_recoil.ReturnMode && m_shot_end && !m_single_shot)
+		{
+			m_actived = false;
+		}
 	}
 
-	if (!m_cam_recoil.ReturnMode && m_shot_end && !m_single_shot)
-	{
-		m_actived = false;
-	}
-
+	// Общие вычисления дельт
 	m_delta_vert = m_angle_vert - m_prev_angle_vert;
 	m_delta_horz = m_angle_horz - m_prev_angle_horz;
-
 	m_prev_angle_vert = m_angle_vert;
 	m_prev_angle_horz = m_angle_horz;
 
