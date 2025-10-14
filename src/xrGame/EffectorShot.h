@@ -30,6 +30,7 @@ protected:
 	float           spring_stiffness;
 	float           damping;
 	float           impulse_strengt;
+
  
 
 	float			m_delta_vert;
@@ -42,6 +43,7 @@ protected:
 	
 	bool			m_actived;
 	bool			m_single_shot;
+	bool			m_using_pattern; // Флаг использования паттерна
 
 private:
 	CRandom			m_Random;
@@ -65,7 +67,7 @@ public:
 		void	SetRndSeed			(s32 Seed);
 
 		void	Shot				(CWeapon* weapon);
-		void	Shot2				(float angle);
+		void	Shot2Legacy         (float angle);
 		void    ShotFromPattern(float pattern_x, float pattern_y);
 
  

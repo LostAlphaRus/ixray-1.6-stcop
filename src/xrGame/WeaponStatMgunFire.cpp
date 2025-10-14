@@ -157,7 +157,7 @@ void CWeaponStatMgun::AddShotEffector()
 
 		R_ASSERT(S);
 		S->Initialize(camera_recoil);
-		S->Shot2(0.01f);
+		S->Shot2Legacy(0.01f);
 	}
 }
 
