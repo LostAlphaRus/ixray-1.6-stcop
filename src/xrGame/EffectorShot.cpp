@@ -164,61 +164,46 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 	if (m_actived)
 	{
-		if (!m_shot_end)
+		// ВСЕГДА используем одну и ту же физику - без разделения на режимы
+		float current_stiffness = spring_stiffness;
+		float current_damping = damping;
+
+		// ЕСЛИ стрельба завершена - сбрасываем цели к нулю
+		if (m_shot_end)
 		{
-			// РЕЖИМ ОТДАЧИ (стрельба активна)
-			// Вертикальная ось - движение к цели отдачи
-			float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
-			acceleration_vert -= m_velocity_vert * damping;
-			m_velocity_vert += acceleration_vert * dt;
-			m_angle_vert += m_velocity_vert * dt;
-
-			// Горизонтальная ось - движение к цели отдачи
-			float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
-			acceleration_horz -= m_velocity_horz * damping;
-			m_velocity_horz += acceleration_horz * dt;
-			m_angle_horz += m_velocity_horz * dt;
-
-			// Ограничиваем углы
-			clamp(m_angle_vert, -m_cam_recoil.MaxAngleVert, m_cam_recoil.MaxAngleVert);
-			clamp(m_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
+			m_target_angle_vert = 0.0f;
+			m_target_angle_horz = 0.0f;
 		}
-		else
+
+		// ОБЩАЯ ФИЗИКА для всех состояний
+		float acceleration_vert = (m_target_angle_vert - m_angle_vert) * current_stiffness;
+		acceleration_vert -= m_velocity_vert * current_damping;
+		m_velocity_vert += acceleration_vert * dt;
+		m_angle_vert += m_velocity_vert * dt;
+
+		float acceleration_horz = (m_target_angle_horz - m_angle_horz) * current_stiffness;
+		acceleration_horz -= m_velocity_horz * current_damping;
+		m_velocity_horz += acceleration_horz * dt;
+		m_angle_horz += m_velocity_horz * dt;
+
+		// Ограничиваем углы
+		clamp(m_angle_vert, -m_cam_recoil.MaxAngleVert, m_cam_recoil.MaxAngleVert);
+		clamp(m_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
+
+		// Условия сброса - когда близко к нулю и скорость мала
+		bool near_zero = _abs(m_angle_vert) < 0.005f && _abs(m_angle_horz) < 0.005f;
+		bool slow_movement = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
+
+		if (near_zero && slow_movement && m_shot_end)
 		{
-			// СТРЕЛЬБА ЗАКОНЧЕНА - начинаем возврат к нулю
-			// Используем более мягкие параметры для возврата
-			float return_stiffness = spring_stiffness * 1.6f;
-			float return_damping = damping * 1.5f;
-
-			// Вертикальная ось - возврат к 0
-			float acceleration_vert = (0.0f - m_angle_vert) * return_stiffness;
-			acceleration_vert -= m_velocity_vert * return_damping;
-			m_velocity_vert += acceleration_vert * dt;
-			m_angle_vert += m_velocity_vert * dt;
-
-			// Горизонтальная ось - возврат к 0
-			float acceleration_horz = (0.0f - m_angle_horz) * return_damping;
-			acceleration_horz -= m_velocity_horz * return_damping;
-			m_velocity_horz += acceleration_horz * dt;
-			m_angle_horz += m_velocity_horz * dt;
-
-			// Проверка завершения возврата
-			bool returned_to_zero = _abs(m_angle_vert) < 0.001f && _abs(m_angle_horz) < 0.001f;
-			bool movement_stopped = _abs(m_velocity_vert) < 0.0001f && _abs(m_velocity_horz) < 0.0001f;
-
-			if (returned_to_zero && movement_stopped)
-			{
-				// Полное обнуление
-				m_angle_vert = 0.0f;
-				m_angle_horz = 0.0f;
-				m_velocity_vert = 0.0f;
-				m_velocity_horz = 0.0f;
-				m_target_angle_vert = 0.0f;
-				m_target_angle_horz = 0.0f;
-				m_actived = false;
-
-				Msg("Spring return completed - system reset");
-			}
+			// Полное обнуление
+			m_angle_vert = 0.0f;
+			m_angle_horz = 0.0f;
+			m_velocity_vert = 0.0f;
+			m_velocity_horz = 0.0f;
+			m_target_angle_vert = 0.0f;
+			m_target_angle_horz = 0.0f;
+			m_actived = false;
 		}
 	}
 }
