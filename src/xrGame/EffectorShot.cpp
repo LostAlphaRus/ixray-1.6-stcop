@@ -66,6 +66,12 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	}
 	m_single_shot = (weapon->GetCurrentFireMode() == 1);
 
+	if (m_using_pattern && weapon->GetAmmoElapsed() - 1 == 0)
+	{
+		m_shot_end = true;
+		return;
+	}
+
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;
 	float pattern_y = 0.0f;
