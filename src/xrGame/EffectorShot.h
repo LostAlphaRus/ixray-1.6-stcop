@@ -84,8 +84,7 @@ public:
 
 protected:
 	void	Relax();
-	void	UpdateSpringRecoil(); // Ќовый метод дл€ обновлени€ пружинной физики
-	void	UpdateSpringReturn(); // Ќовый метод дл€ обновлени€ пружинной физики
+	void	UpdateSpringRecoil(); // ћетод дл€ обновлени€ пружинной физики
 };
 
 class CCameraShotEffector : public CWeaponShotEffector, public CEffectorCam

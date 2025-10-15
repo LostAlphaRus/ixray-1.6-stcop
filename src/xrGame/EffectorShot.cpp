@@ -110,16 +110,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 
 void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 {
-	// Если уже активен возврат, прерываем его
-	if (m_return_to_zero)
-	{
-		// Сохраняем текущую позицию как стартовую для нового выстрела
-		m_target_angle_vert = m_angle_vert;
-		m_target_angle_horz = m_angle_horz;
-	}
 
-	// Сбрасываем флаг возврата
-	m_return_to_zero = false;
 	m_return_progress = 0.0f;
 
 	// Добавляем мгновенную скорость для резкого начала отдачи
@@ -171,13 +162,6 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 	float dt = Device.fTimeDelta;
 
-	if (m_return_to_zero)
-	{
-		// РЕЖИМ ВОЗВРАТА К НУЛЮ
-		UpdateSpringReturn();
-		return;
-	}
-
 	if (m_actived)
 	{
 		if (!m_shot_end)
@@ -203,7 +187,7 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		{
 			// СТРЕЛЬБА ЗАКОНЧЕНА - начинаем возврат к нулю
 			// Используем более мягкие параметры для возврата
-			float return_stiffness = spring_stiffness * 0.3f;
+			float return_stiffness = spring_stiffness * 1.6f;
 			float return_damping = damping * 1.5f;
 
 			// Вертикальная ось - возврат к 0
@@ -220,7 +204,7 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 			// Проверка завершения возврата
 			bool returned_to_zero = _abs(m_angle_vert) < 0.001f && _abs(m_angle_horz) < 0.001f;
-			bool movement_stopped = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
+			bool movement_stopped = _abs(m_velocity_vert) < 0.0001f && _abs(m_velocity_horz) < 0.0001f;
 
 			if (returned_to_zero && movement_stopped)
 			{
@@ -235,63 +219,6 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 				Msg("Spring return completed - system reset");
 			}
-		}
-	}
-}
-
-void CWeaponShotEffector::UpdateSpringReturn()
-{
-	float dt = Device.fTimeDelta;
-
-	// Используем меньшую жесткость для возврата (50% от исходной)
-	float return_stiffness = spring_stiffness * 0.5f;
-	// И немного большее демпфирование для плавной остановки
-	float return_damping = damping * 1.2f;
-
-	// Вертикальная ось - возврат к 0
-	float acceleration_vert = (0.0f - m_angle_vert) * return_stiffness;
-	acceleration_vert -= m_velocity_vert * return_damping;
-	m_velocity_vert += acceleration_vert * dt;
-	m_angle_vert += m_velocity_vert * dt;
-
-	// Горизонтальная ось - возврат к 0
-	float acceleration_horz = (0.0f - m_angle_horz) * return_stiffness;
-	acceleration_horz -= m_velocity_horz * return_damping;
-	m_velocity_horz += acceleration_horz * dt;
-	m_angle_horz += m_velocity_horz * dt;
-
-	// Обновляем дельты для плавного движения
-	m_delta_vert = m_angle_vert - m_prev_angle_vert;
-	m_delta_horz = m_angle_horz - m_prev_angle_horz;
-
-	// Проверка завершения возврата - когда близко к нулю и скорости малы
-	bool returned_to_zero = _abs(m_angle_vert) < 0.001f && _abs(m_angle_horz) < 0.001f;
-	bool movement_stopped = _abs(m_velocity_vert) < 0.01f && _abs(m_velocity_horz) < 0.01f;
-
-	if (returned_to_zero && movement_stopped)
-	{
-		// Полное обнуление
-		m_angle_vert = 0.0f;
-		m_angle_horz = 0.0f;
-		m_velocity_vert = 0.0f;
-		m_velocity_horz = 0.0f;
-		m_target_angle_vert = 0.0f;
-		m_target_angle_horz = 0.0f;
-		m_return_to_zero = false;
-		m_actived = false;
-
-		Msg("Spring return completed");
-	}
-	else if (dt > 0.0f)
-	{
-		// Логируем прогресс возврата (не каждый кадр)
-		static float log_timer = 0.0f;
-		log_timer += dt;
-		if (log_timer > 0.1f) // Каждые 100ms
-		{
-			Msg("Spring return progress: vert=%.4f (vel=%.4f), horz=%.4f (vel=%.4f)",
-				m_angle_vert, m_velocity_vert, m_angle_horz, m_velocity_horz);
-			log_timer = 0.0f;
 		}
 	}
 }
@@ -342,15 +269,6 @@ void CWeaponShotEffector::Update()
 	{
 		// ТОЛЬКО пружинная физика для паттернной системы
 		UpdateSpringRecoil();
-		// Отладочная информация - можно убрать в финальной версии
-		static float debug_timer = 0.0f;
-		debug_timer += Device.fTimeDelta;
-		if (debug_timer > 0.2f) // Логируем каждые 200ms
-		{
-			Msg("Pattern recoil: active=%d, shot_end=%d, return_mode=%d, vert=%.3f, horz=%.3f",
-				m_actived, m_shot_end, m_return_to_zero, m_angle_vert, m_angle_horz);
-			debug_timer = 0.0f;
-		}
 	}
 	else
 	{
