@@ -66,6 +66,12 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	}
 	m_single_shot = (weapon->GetCurrentFireMode() == 1);
 
+	// ВАЖНО: Для одиночного выстрела сразу помечаем как завершенный
+	if (m_using_pattern && m_single_shot)
+	{
+		m_shot_end = true;
+	}
+
 	if (m_using_pattern && weapon->GetAmmoElapsed() - 1 == 0)
 	{
 		m_shot_end = true;
@@ -169,7 +175,7 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		float current_damping = damping;
 
 		// ЕСЛИ стрельба завершена - сбрасываем цели к нулю
-		if (m_shot_end)
+		if (m_shot_end || m_single_shot)
 		{
 			m_target_angle_vert = 0.0f;
 			m_target_angle_horz = 0.0f;
@@ -204,6 +210,7 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 			m_target_angle_vert = 0.0f;
 			m_target_angle_horz = 0.0f;
 			m_actived = false;
+			m_shot_end = false; // Сбрасываем флаг завершения
 		}
 	}
 }
