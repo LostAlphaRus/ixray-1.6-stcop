@@ -12,7 +12,6 @@
 CWeaponShotEffector::CWeaponShotEffector()
 {
 	Reset();
-	//	m_first_shot_pos = 0.0f;
 }
 
 void CWeaponShotEffector::Initialize(const CameraRecoil& cam_recoil)
@@ -35,6 +34,12 @@ void CWeaponShotEffector::Reset()
 	damping = 0.0f;
 	impulse_strengt = 0.0f;
 
+	// Добавляем инициализацию новых полей
+	m_return_to_zero = false;
+	m_return_start_vert = 0.0f;
+	m_return_start_horz = 0.0f;
+	m_return_progress = 0.0f;
+	m_return_speed = 2.0f; // Скорость возврата (можно настраивать)
 
 	m_prev_angle_vert = 0.0f;
 	m_prev_angle_horz = 0.0f;
@@ -99,12 +104,23 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 
 void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 {
+	// Если уже активен возврат, прерываем его
+	if (m_return_to_zero)
+	{
+		// Сохраняем текущую позицию как стартовую для нового выстрела
+		m_target_angle_vert = m_angle_vert;
+		m_target_angle_horz = m_angle_horz;
+	}
+
+	// Сбрасываем флаг возврата
+	m_return_to_zero = false;
+	m_return_progress = 0.0f;
+
 	// Добавляем мгновенную скорость для резкого начала отдачи
- 
 	m_velocity_vert += pattern_y * impulse_strengt;
 	m_velocity_horz += pattern_x * impulse_strengt;
 
-	// Также обновляем целевые углы
+	// Обновляем целевые углы (добавляем к текущим, а не заменяем)
 	m_target_angle_vert += pattern_y;
 	m_target_angle_horz += pattern_x;
 
@@ -112,15 +128,15 @@ void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 	clamp(m_target_angle_vert, -m_cam_recoil.MaxAngleVert, m_cam_recoil.MaxAngleVert);
 	clamp(m_target_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
 
-	Msg("Recoil impulse: vert=%.3f (vel=%.3f), horz=%.3f (vel=%.3f)",
+	Msg("Recoil impulse: vert=%.3f (vel=%.3f), horz=%.3f (vel=%.3f), target_vert=%.3f, target_horz=%.3f",
 		pattern_y, pattern_y * impulse_strengt,
-		pattern_x, pattern_x * impulse_strengt);
+		pattern_x, pattern_x * impulse_strengt,
+		m_target_angle_vert, m_target_angle_horz);
 
 	m_first_shot = true;
 	m_actived = true;
 	m_shot_end = false;
 }
-
 
 void CWeaponShotEffector::Shot2Legacy(float angle)
 {
@@ -143,88 +159,140 @@ void CWeaponShotEffector::Shot2Legacy(float angle)
 	m_shot_end = false;
 }
 
-
 void CWeaponShotEffector::UpdateSpringRecoil()
 {
-	if (!m_actived || !m_using_pattern) return;
+	if (!m_using_pattern) return;
 
 	float dt = Device.fTimeDelta;
 
-	// Вертикальная ось (пружинная физика)
-	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
-	acceleration_vert -= m_velocity_vert * damping;
+	if (m_return_to_zero)
+	{
+		// РЕЖИМ ВОЗВРАТА К НУЛЮ
+		UpdateSpringReturn();
+		return;
+	}
+
+	if (m_actived)
+	{
+		if (!m_shot_end)
+		{
+			// РЕЖИМ ОТДАЧИ (стрельба активна)
+			// Вертикальная ось - движение к цели отдачи
+			float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
+			acceleration_vert -= m_velocity_vert * damping;
+			m_velocity_vert += acceleration_vert * dt;
+			m_angle_vert += m_velocity_vert * dt;
+
+			// Горизонтальная ось - движение к цели отдачи
+			float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
+			acceleration_horz -= m_velocity_horz * damping;
+			m_velocity_horz += acceleration_horz * dt;
+			m_angle_horz += m_velocity_horz * dt;
+
+			// Ограничиваем углы
+			clamp(m_angle_vert, -m_cam_recoil.MaxAngleVert, m_cam_recoil.MaxAngleVert);
+			clamp(m_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
+		}
+		else
+		{
+			// СТРЕЛЬБА ЗАКОНЧЕНА - начинаем возврат к нулю
+			// Используем более мягкие параметры для возврата
+			float return_stiffness = spring_stiffness * 0.3f;
+			float return_damping = damping * 1.5f;
+
+			// Вертикальная ось - возврат к 0
+			float acceleration_vert = (0.0f - m_angle_vert) * return_stiffness;
+			acceleration_vert -= m_velocity_vert * return_damping;
+			m_velocity_vert += acceleration_vert * dt;
+			m_angle_vert += m_velocity_vert * dt;
+
+			// Горизонтальная ось - возврат к 0
+			float acceleration_horz = (0.0f - m_angle_horz) * return_damping;
+			acceleration_horz -= m_velocity_horz * return_damping;
+			m_velocity_horz += acceleration_horz * dt;
+			m_angle_horz += m_velocity_horz * dt;
+
+			// Проверка завершения возврата
+			bool returned_to_zero = _abs(m_angle_vert) < 0.001f && _abs(m_angle_horz) < 0.001f;
+			bool movement_stopped = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
+
+			if (returned_to_zero && movement_stopped)
+			{
+				// Полное обнуление
+				m_angle_vert = 0.0f;
+				m_angle_horz = 0.0f;
+				m_velocity_vert = 0.0f;
+				m_velocity_horz = 0.0f;
+				m_target_angle_vert = 0.0f;
+				m_target_angle_horz = 0.0f;
+				m_actived = false;
+
+				Msg("Spring return completed - system reset");
+			}
+		}
+	}
+}
+
+void CWeaponShotEffector::UpdateSpringReturn()
+{
+	float dt = Device.fTimeDelta;
+
+	// Используем меньшую жесткость для возврата (50% от исходной)
+	float return_stiffness = spring_stiffness * 0.5f;
+	// И немного большее демпфирование для плавной остановки
+	float return_damping = damping * 1.2f;
+
+	// Вертикальная ось - возврат к 0
+	float acceleration_vert = (0.0f - m_angle_vert) * return_stiffness;
+	acceleration_vert -= m_velocity_vert * return_damping;
 	m_velocity_vert += acceleration_vert * dt;
 	m_angle_vert += m_velocity_vert * dt;
 
-	// Горизонтальная ось
-	float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
-	acceleration_horz -= m_velocity_horz * damping;
+	// Горизонтальная ось - возврат к 0
+	float acceleration_horz = (0.0f - m_angle_horz) * return_stiffness;
+	acceleration_horz -= m_velocity_horz * return_damping;
 	m_velocity_horz += acceleration_horz * dt;
 	m_angle_horz += m_velocity_horz * dt;
 
-	// Дополнительное ограничение текущих углов
-	clamp(m_angle_vert, -m_cam_recoil.MaxAngleVert, m_cam_recoil.MaxAngleVert);
-	clamp(m_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
+	// Обновляем дельты для плавного движения
+	m_delta_vert = m_angle_vert - m_prev_angle_vert;
+	m_delta_horz = m_angle_horz - m_prev_angle_horz;
 
-	// Проверка на завершение движения
-	bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.001f;
-	bool is_horz_stable = _abs(m_velocity_horz) < 0.01f && _abs(m_angle_horz - m_target_angle_horz) < 0.001f;
+	// Проверка завершения возврата - когда близко к нулю и скорости малы
+	bool returned_to_zero = _abs(m_angle_vert) < 0.001f && _abs(m_angle_horz) < 0.001f;
+	bool movement_stopped = _abs(m_velocity_vert) < 0.01f && _abs(m_velocity_horz) < 0.01f;
 
-	if (is_vert_stable && is_horz_stable)
+	if (returned_to_zero && movement_stopped)
 	{
-		// Финализируем позиции
-		m_angle_vert = m_target_angle_vert;
-		m_angle_horz = m_target_angle_horz;
+		// Полное обнуление
+		m_angle_vert = 0.0f;
+		m_angle_horz = 0.0f;
 		m_velocity_vert = 0.0f;
 		m_velocity_horz = 0.0f;
+		m_target_angle_vert = 0.0f;
+		m_target_angle_horz = 0.0f;
+		m_return_to_zero = false;
+		m_actived = false;
 
-		// Отладочное сообщение
-		if (m_shot_end)
+		Msg("Spring return completed");
+	}
+	else if (dt > 0.0f)
+	{
+		// Логируем прогресс возврата (не каждый кадр)
+		static float log_timer = 0.0f;
+		log_timer += dt;
+		if (log_timer > 0.1f) // Каждые 100ms
 		{
-			Msg("Pattern recoil settled: vert=%.3f, horz=%.3f", m_angle_vert, m_angle_horz);
+			Msg("Spring return progress: vert=%.4f (vel=%.4f), horz=%.4f (vel=%.4f)",
+				m_angle_vert, m_velocity_vert, m_angle_horz, m_velocity_horz);
+			log_timer = 0.0f;
 		}
 	}
 }
 
 void CWeaponShotEffector::Relax()
 {
-	if (m_using_pattern)
-	{
-		// Релаксация для паттернной системы
-		float time_to_relax = _abs(m_angle_vert) / m_cam_recoil.RelaxSpeed;
-		float relax_speed_horz = (fis_zero(time_to_relax)) ? 0.0f : _abs(m_angle_horz) / time_to_relax;
-
-		float dt = Device.fTimeDelta;
-
-		if (m_angle_horz >= 0.0f)
-		{
-			m_angle_horz -= relax_speed_horz * dt;
-		}
-		else
-		{
-			m_angle_horz += relax_speed_horz * dt;
-		}
-
-		if (m_angle_vert >= 0.0f)
-		{
-			m_angle_vert -= m_cam_recoil.RelaxSpeed * dt;
-			if (m_angle_vert < 0.0f)
-			{
-				m_angle_vert = 0.0f;
-				m_actived = false;
-			}
-		}
-		else
-		{
-			m_angle_vert += m_cam_recoil.RelaxSpeed * dt;
-			if (m_angle_vert > 0.0f)
-			{
-				m_angle_vert = 0.0f;
-				m_actived = false;
-			}
-		}
-	}
-	else
+	if (!m_using_pattern)
 	{
 		// СТАРАЯ ЛОГИКА релаксации для непаттернной системы
 		float time_to_relax = _abs(m_angle_vert) / m_cam_recoil.RelaxSpeed;
@@ -268,6 +336,15 @@ void CWeaponShotEffector::Update()
 	{
 		// ТОЛЬКО пружинная физика для паттернной системы
 		UpdateSpringRecoil();
+		// Отладочная информация - можно убрать в финальной версии
+		static float debug_timer = 0.0f;
+		debug_timer += Device.fTimeDelta;
+		if (debug_timer > 0.2f) // Логируем каждые 200ms
+		{
+			Msg("Pattern recoil: active=%d, shot_end=%d, return_mode=%d, vert=%.3f, horz=%.3f",
+				m_actived, m_shot_end, m_return_to_zero, m_angle_vert, m_angle_horz);
+			debug_timer = 0.0f;
+		}
 	}
 	else
 	{
@@ -288,8 +365,6 @@ void CWeaponShotEffector::Update()
 	m_delta_horz = m_angle_horz - m_prev_angle_horz;
 	m_prev_angle_vert = m_angle_vert;
 	m_prev_angle_horz = m_angle_horz;
-
-	//	Msg( " <<[%d]  v=%.4f  dv=%.4f   a=%d s=%d  fr=%d", m_shot_numer, m_angle_vert, m_delta_vert, m_actived, m_first_shot, Device.dwFrame );
 }
 
 void CWeaponShotEffector::GetDeltaAngle(Fvector& angle)
