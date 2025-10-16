@@ -174,8 +174,12 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		float current_stiffness = spring_stiffness;
 		float current_damping = damping;
 
+
+//		bool is_compensating = (_abs(m_delta_vert) > 0.001f || _abs(m_delta_horz) > 0.001f);
+
+
 		// ЕСЛИ стрельба завершена - сбрасываем цели к нулю
-		if (m_shot_end || m_single_shot)
+		if ((m_shot_end || m_single_shot))
 		{
 			m_target_angle_vert = 0.0f;
 			m_target_angle_horz = 0.0f;
@@ -306,6 +310,8 @@ void CWeaponShotEffector::SetRndSeed(s32 Seed)
 		m_Random.seed(Device.dwFrame);
 	}
 }
+
+
 
 void CWeaponShotEffector::ChangeHP(float* pitch, float* yaw)
 {

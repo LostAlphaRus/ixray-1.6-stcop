@@ -82,6 +82,8 @@ public:
 	void	GetLastDelta(Fvector& delta_angle);
 	void	ChangeHP(float* pitch, float* yaw);
 
+
+
 protected:
 	void	Relax();
 	void	UpdateSpringRecoil(); // Метод для обновления пружинной физики

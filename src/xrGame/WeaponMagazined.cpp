@@ -1094,7 +1094,6 @@ void CWeaponMagazined::state_Fire(float dt)
 		if (ParentIsActor() && is_shooting_end_callback)
 		{
 			is_shooting_end_callback = false;
-			OnWeaponStopShooting();
 			bWorking = false;
 			SwitchState(eIdle);
 		}
@@ -1627,7 +1626,6 @@ void CWeaponMagazined::switch2_Reload()
 	CWeapon::FireEnd	();
 	m_bIsReloaded = false;
 	PlayAnimReload		();
-	OnWeaponStopShooting();
 	PlayReloadSound		();
 	SetPending			(TRUE);
 }
@@ -1652,7 +1650,6 @@ void CWeaponMagazined::switch2_Hiding()
 			PlaySound("sndHide", get_LastFP());
 		}
 	}
-	OnWeaponStopShooting();
 	PlayAnimHide();
 	SetPending(TRUE);
 }
@@ -1660,7 +1657,6 @@ void CWeaponMagazined::switch2_Hiding()
 void CWeaponMagazined::switch2_Hidden()
 {
 	CWeapon::FireEnd();
-	OnWeaponStopShooting();
 	StopCurrentAnimWithoutCallback();
 
 	signal_HideComplete		();
@@ -1684,7 +1680,6 @@ void CWeaponMagazined::switch2_Showing()
 			PlaySound("sndShow", get_LastFP());
 		}
 	}
-	OnWeaponStopShooting();
 	SetPending(TRUE);
 	PlayAnimShow();
 }
