@@ -72,6 +72,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		m_shot_end = true;
 	}
 
+
 	if (m_using_pattern && weapon->GetAmmoElapsed() - 1 == 0)
 	{
 		m_shot_end = true;
@@ -126,10 +127,6 @@ void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 	// Обновляем целевые углы (добавляем к текущим, а не заменяем)
 	m_target_angle_vert += pattern_y;
 	m_target_angle_horz += pattern_x;
-
-	// Ограничиваем целевые значения
-	clamp(m_target_angle_vert, -m_cam_recoil.MaxAngleVert, m_cam_recoil.MaxAngleVert);
-	clamp(m_target_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
 
 	Msg("Recoil impulse: vert=%.3f (vel=%.3f), horz=%.3f (vel=%.3f), target_vert=%.3f, target_horz=%.3f",
 		pattern_y, pattern_y * impulse_strengt,
@@ -196,10 +193,6 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		m_velocity_horz += acceleration_horz * dt;
 		m_angle_horz += m_velocity_horz * dt;
 
-		// Ограничиваем углы
-		clamp(m_angle_vert, -m_cam_recoil.MaxAngleVert, m_cam_recoil.MaxAngleVert);
-		clamp(m_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
-
 		// Условия сброса - когда близко к нулю и скорость мала
 		bool near_zero = _abs(m_angle_vert) < 0.005f && _abs(m_angle_horz) < 0.005f;
 		bool slow_movement = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
@@ -221,8 +214,6 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 void CWeaponShotEffector::Relax()
 {
-	if (!m_using_pattern)
-	{
 		// СТАРАЯ ЛОГИКА релаксации для непаттернной системы
 		float time_to_relax = _abs(m_angle_vert) / m_cam_recoil.RelaxSpeed;
 		float relax_speed_horz = (fis_zero(time_to_relax)) ? 0.0f : _abs(m_angle_horz) / time_to_relax;
@@ -256,7 +247,6 @@ void CWeaponShotEffector::Relax()
 				m_actived = false;
 			}
 		}
-	}
 }
 
 void CWeaponShotEffector::Update()
@@ -269,8 +259,9 @@ void CWeaponShotEffector::Update()
 	else
 	{
 		// СТАРАЯ логика для непаттернной системы
-		if (m_actived && (m_cam_recoil.ReturnMode || m_single_shot))
+		if (m_actived && m_cam_recoil.ReturnMode)
 		{
+			if(m_single_shot || m_shot_end)
 			Relax();
 		}
 

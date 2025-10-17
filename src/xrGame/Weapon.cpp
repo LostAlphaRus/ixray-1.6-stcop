@@ -6,6 +6,7 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "Actor.h"
 #include "ActorEffector.h"
+#include "EffectorShot.h"
 #include "Level.h"
 #include "../xrEngine/xr_level_controller.h"
 #include "game_cl_base.h"
@@ -887,17 +888,13 @@ void CWeapon::LoadFireParams		(LPCSTR section)
 // Загрузка паттернов отдачи
 void CWeapon::LoadRecoilPatterns(LPCSTR section)
 {
-	// Загрузка паттерна для стрельбы от бедра
-	if (pSettings->line_exist(section, "hipfire_bullet_pattern")) {
-		LoadBulletPattern(section, "hipfire_bullet_pattern", m_hipfire_pattern);
-		m_hipfire_pattern.name = "hipfire";
-	}
+	// Загрузка паттерна для стрельбы от бедра ИЗ СЕКЦИИ ОРУЖИЯ
+	LoadBulletPattern(section, "hipfire_pattern", m_hipfire_pattern);
+	m_hipfire_pattern.name = "hipfire";
 
-	// Загрузка паттерна для прицеливания
-	if (pSettings->line_exist(section, "ads_bullet_pattern")) {
-		LoadBulletPattern(section, "ads_bullet_pattern", m_ads_pattern);
-		m_ads_pattern.name = "ads";
-	}
+	// Загрузка паттерна для прицеливания ИЗ СЕКЦИИ ОРУЖИЯ  
+	LoadBulletPattern(section, "ads_pattern", m_ads_pattern);
+	m_ads_pattern.name = "ads";
 
 	// Настройка поведения после окончания паттерна
 	m_hipfire_pattern.use_classic_after = READ_IF_EXISTS(pSettings, r_bool, section, "hipfire_use_classic_after", true);
@@ -919,38 +916,54 @@ void CWeapon::LoadRecoilPatterns(LPCSTR section)
 		m_ads_pattern.bullet_patterns.size(), m_ads_pattern_factor);
 }
 
-void CWeapon::LoadBulletPattern(LPCSTR section, LPCSTR line, SRecoilPattern& pattern)
+void CWeapon::LoadBulletPattern(LPCSTR section, LPCSTR pattern_name, SRecoilPattern& pattern)
 {
 	pattern.bullet_patterns.clear();
 	pattern.current_bullet = 0;
 
-	LPCSTR pattern_str = pSettings->r_string(section, line);
-	string128 temp;
+	string512 subsection_name;
+	xr_sprintf(subsection_name, "%s_%s", section, pattern_name);
 
-	int number_count = _GetItemCount(pattern_str);
-
-	// Должно быть четное количество чисел
-	if (number_count % 2 != 0) {
-		Msg("!! WARNING: Uneven number of values in recoil pattern %s: %d", line, number_count);
+	if (!pSettings->section_exist(subsection_name)) {
+		Msg("!! Recoil pattern subsection not found: %s", subsection_name);
+		return;
 	}
 
-	int pair_count = number_count / 2;
+	string64 LineName;
 
-	for (int i = 0; i < pair_count; ++i) {
-		SRecoilPoint point;
+	for (u32 i = 1; i < 255; i++)
+	{
+		xr_sprintf(LineName, "bullet_%d", i);
 
-		// Берем два числа за раз
-		_GetItem(pattern_str, i * 2, temp);
-		point.x = (float)atof(temp);
+		if (!pSettings->line_exist(subsection_name, LineName))
+			break;
 
-		_GetItem(pattern_str, i * 2 + 1, temp);
-		point.y = (float)atof(temp);
+		LPCSTR point_str = pSettings->r_string(subsection_name, LineName);
 
-		pattern.bullet_patterns.push_back(point);
-		Msg("Recoil pair %d: x=%.3f, y=%.3f", i, point.x, point.y);
+		if (_GetItemCount(point_str) >= 2)
+		{
+			string128 temp_x, temp_y;
+
+			// xr_strcpy автоматически добавляет нулевой терминатор
+			xr_strcpy(temp_x, _GetItem(point_str, 0, temp_x));
+			xr_strcpy(temp_y, _GetItem(point_str, 1, temp_y));
+
+			SRecoilPoint point;
+			point.x = (float)atof(temp_x);
+			point.y = (float)atof(temp_y);
+
+			pattern.bullet_patterns.push_back(point);
+
+			Msg("Recoil bullet %d: x=%.3f, y=%.3f", i, point.x, point.y);
+		}
+		else
+		{
+			Msg("!! WARNING: Invalid format in %s, expected 'x, y'", LineName);
+		}
 	}
 
-	Msg("Loaded %d recoil pairs from %d numbers for %s", pair_count, number_count, line);
+	Msg("Loaded %d recoil bullets from subsection %s",
+		pattern.bullet_patterns.size(), subsection_name);
 }
 
 
@@ -1852,11 +1865,13 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 
 						if (!IsZoomed() && !IsPending())
 						{
+
 							if (GetState() != eIdle)
 							{
 								SwitchState(eIdle);
 							}
 
+							StopShotEffector();
 							OnZoomIn();
 						}
 					}
