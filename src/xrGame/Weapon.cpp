@@ -2889,14 +2889,21 @@ void CWeapon::ApplyRecoil()
 bool CWeapon::GetCurrentRecoilPattern(float& out_x, float& out_y)
 {
 	if (!m_current_pattern ||
-		m_current_pattern->current_bullet >= m_current_pattern->bullet_patterns.size())
+		m_current_pattern->current_bullet == 0 || // Не было выстрелов
+		m_current_pattern->current_bullet > m_current_pattern->bullet_patterns.size())
 	{
 		return false;
 	}
 
-	SRecoilPoint& point = m_current_pattern->bullet_patterns[m_current_pattern->current_bullet];
+	// Берем ПРЕДЫДУЩУЮ пулю (current_bullet уже увеличен в ApplyRecoil)
+	SRecoilPoint& point = m_current_pattern->bullet_patterns[m_current_pattern->current_bullet - 1];
 	out_x = point.x;
 	out_y = point.y;
+
+	Msg("GetCurrentRecoilPattern %d/%d: raw (x:%.3f, y:%.3f)",
+		m_current_pattern->current_bullet, // Текущий номер пули (уже увеличен)
+		m_current_pattern->bullet_patterns.size(),
+		point.x, point.y);
 
 	return true;
 }

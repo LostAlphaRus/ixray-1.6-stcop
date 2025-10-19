@@ -66,25 +66,21 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	}
 	m_single_shot = (weapon->GetCurrentFireMode() == 1);
 
-	// ВАЖНО: Для одиночного выстрела сразу помечаем как завершенный
-	if (m_using_pattern && m_single_shot)
-	{
-		m_shot_end = true;
-	}
-
-
-	if (m_using_pattern && weapon->GetAmmoElapsed() - 1 == 0)
-	{
-		m_shot_end = true;
-		return;
-	}
-
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;
 	float pattern_y = 0.0f;
 
 	if (weapon->GetCurrentRecoilPattern(pattern_x, pattern_y))
 	{
+		// УБИРАЕМ немедленный возврат для одиночного выстрела!
+		// Вместо этого просто отмечаем что это одиночный выстрел
+		// возврат будет обработан в UpdateSpringRecoil когда выстрел завершится
+
+		if (weapon->GetAmmoElapsed() - 1 == 0)
+		{
+			m_return_to_zero = true;
+		}
+
 		// Используем паттернную систему
 		m_using_pattern = true;
 
@@ -114,6 +110,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		Shot2Legacy(angle);
 	}
 }
+
 
 void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 {
@@ -167,29 +164,25 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 	if (m_actived)
 	{
-		// ВСЕГДА используем одну и ту же физику - без разделения на режимы
-		float current_stiffness = spring_stiffness;
-		float current_damping = damping;
-
-
-//		bool is_compensating = (_abs(m_delta_vert) > 0.001f || _abs(m_delta_horz) > 0.001f);
-
+		// ДЛЯ ОДИНОЧНОГО ВЫСТРЕЛА: начинаем мягкий возврат к нулю сразу после выстрела
+		// ДЛЯ АВТОМАТИЧЕСКОГО: возврат только когда стрельба завершена (m_shot_end = true)
+		bool should_return_to_zero = m_shot_end || m_return_to_zero || m_single_shot;
 
 		// ЕСЛИ стрельба завершена - сбрасываем цели к нулю
-		if ((m_shot_end || m_single_shot))
+		if (should_return_to_zero)
 		{
 			m_target_angle_vert = 0.0f;
 			m_target_angle_horz = 0.0f;
 		}
 
 		// ОБЩАЯ ФИЗИКА для всех состояний
-		float acceleration_vert = (m_target_angle_vert - m_angle_vert) * current_stiffness;
-		acceleration_vert -= m_velocity_vert * current_damping;
+		float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
+		acceleration_vert -= m_velocity_vert * damping;
 		m_velocity_vert += acceleration_vert * dt;
 		m_angle_vert += m_velocity_vert * dt;
 
-		float acceleration_horz = (m_target_angle_horz - m_angle_horz) * current_stiffness;
-		acceleration_horz -= m_velocity_horz * current_damping;
+		float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
+		acceleration_horz -= m_velocity_horz * damping;
 		m_velocity_horz += acceleration_horz * dt;
 		m_angle_horz += m_velocity_horz * dt;
 
@@ -197,7 +190,7 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		bool near_zero = _abs(m_angle_vert) < 0.005f && _abs(m_angle_horz) < 0.005f;
 		bool slow_movement = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
 
-		if (near_zero && slow_movement && m_shot_end)
+		if (near_zero && slow_movement && should_return_to_zero)
 		{
 			// Полное обнуление
 			m_angle_vert = 0.0f;
@@ -206,8 +199,10 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 			m_velocity_horz = 0.0f;
 			m_target_angle_vert = 0.0f;
 			m_target_angle_horz = 0.0f;
+			m_return_to_zero = false;
 			m_actived = false;
-			m_shot_end = false; // Сбрасываем флаг завершения
+			m_shot_end = false;
+			m_single_shot = false;
 		}
 	}
 }
