@@ -124,6 +124,16 @@ void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 		pattern_x, pattern_x * impulse_strengt,
 		m_target_angle_vert, m_target_angle_horz);
 
+	bool should_return_to_zero = m_shot_end || m_return_to_zero || m_single_shot;
+
+	if (should_return_to_zero)
+	{
+		m_target_angle_vert = 0.f;
+		m_target_angle_horz = 0.f;
+	}
+
+	Msg("Recoil impulse: m_target_angle_vert=%.3f, m_target_angle_horz=%.3f", m_target_angle_vert, m_target_angle_horz);
+
 	m_first_shot = true;
 	m_actived = true;
 	m_shot_end = false;
@@ -158,18 +168,13 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 	if (m_actived)
 	{
-		// ВОЗВРАТ К НУЛЮ начинается ТОЛЬКО когда выстрел завершен (m_shot_end = true)
-		// Это работает и для одиночного и для автоматического режима
-		bool should_return_to_zero = m_shot_end || m_return_to_zero || m_single_shot;
 
-		// ЕСЛИ стрельба завершена - сбрасываем цели к нулю
-		if (should_return_to_zero)
+		if (m_shot_end)
 		{
-			m_target_angle_vert = 0.0f;
-			m_target_angle_horz = 0.0f;
+			m_target_angle_vert = 0.f;
+			m_target_angle_horz = 0.f;
 		}
-
-		// ОБЩАЯ ФИЗИКА для всех состояний
+		// Обычная физика пружины
 		float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
 		acceleration_vert -= m_velocity_vert * damping;
 		m_velocity_vert += acceleration_vert * dt;
@@ -180,13 +185,12 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		m_velocity_horz += acceleration_horz * dt;
 		m_angle_horz += m_velocity_horz * dt;
 
-		// Условия сброса - когда близко к нулю и скорость мала
+		// Условия завершения...
 		bool near_zero = _abs(m_angle_vert) < 0.005f && _abs(m_angle_horz) < 0.005f;
 		bool slow_movement = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
 
-		if (near_zero && slow_movement && should_return_to_zero)
+		if (near_zero && slow_movement)
 		{
-			// Полное обнуление
 			m_angle_vert = 0.0f;
 			m_angle_horz = 0.0f;
 			m_velocity_vert = 0.0f;
@@ -200,6 +204,7 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		}
 	}
 }
+
 
 void CWeaponShotEffector::Relax()
 {
