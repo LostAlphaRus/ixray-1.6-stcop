@@ -34,16 +34,6 @@ protected:
 	// Добавляем флаг для возврата к нулю
 	bool            m_return_to_zero;
 
-	// Сохраняем начальную позицию для возврата
-	float           m_return_start_vert;
-	float           m_return_start_horz;
-
-	// Прогресс возврата (0-1)
-	float           m_return_progress;
-
-	// Скорость возврата
-	float           m_return_speed;
-
 	float			m_delta_vert;
 	float			m_delta_horz;
 

@@ -36,10 +36,6 @@ void CWeaponShotEffector::Reset()
 
 	// Добавляем инициализацию новых полей
 	m_return_to_zero = false;
-	m_return_start_vert = 0.0f;
-	m_return_start_horz = 0.0f;
-	m_return_progress = 0.0f;
-	m_return_speed = 2.0f; // Скорость возврата (можно настраивать)
 
 	m_prev_angle_vert = 0.0f;
 	m_prev_angle_horz = 0.0f;
@@ -115,8 +111,6 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 {
 
-	m_return_progress = 0.0f;
-
 	// Добавляем мгновенную скорость для резкого начала отдачи
 	m_velocity_vert += pattern_y * impulse_strengt;
 	m_velocity_horz += pattern_x * impulse_strengt;
@@ -164,8 +158,8 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 	if (m_actived)
 	{
-		// ДЛЯ ОДИНОЧНОГО ВЫСТРЕЛА: начинаем мягкий возврат к нулю сразу после выстрела
-		// ДЛЯ АВТОМАТИЧЕСКОГО: возврат только когда стрельба завершена (m_shot_end = true)
+		// ВОЗВРАТ К НУЛЮ начинается ТОЛЬКО когда выстрел завершен (m_shot_end = true)
+		// Это работает и для одиночного и для автоматического режима
 		bool should_return_to_zero = m_shot_end || m_return_to_zero || m_single_shot;
 
 		// ЕСЛИ стрельба завершена - сбрасываем цели к нулю
