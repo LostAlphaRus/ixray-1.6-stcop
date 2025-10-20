@@ -48,6 +48,7 @@ void CWeaponShotEffector::Reset()
 	m_first_shot = false;
 	m_actived = false;
 	m_using_pattern = false;
+	m_is_zero = false;
 	m_shot_end = true;
 }
 
@@ -124,15 +125,7 @@ void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 		pattern_x, pattern_x * impulse_strengt,
 		m_target_angle_vert, m_target_angle_horz);
 
-	bool should_return_to_zero = m_shot_end || m_return_to_zero || m_single_shot;
-
-	if (should_return_to_zero)
-	{
-		m_target_angle_vert = 0.f;
-		m_target_angle_horz = 0.f;
-	}
-
-	Msg("Recoil impulse: m_target_angle_vert=%.3f, m_target_angle_horz=%.3f", m_target_angle_vert, m_target_angle_horz);
+ 
 
 	m_first_shot = true;
 	m_actived = true;
@@ -169,11 +162,6 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 	if (m_actived)
 	{
 
-		if (m_shot_end)
-		{
-			m_target_angle_vert = 0.f;
-			m_target_angle_horz = 0.f;
-		}
 		// Обычная физика пружины
 		float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
 		acceleration_vert -= m_velocity_vert * damping;
@@ -189,18 +177,64 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		bool near_zero = _abs(m_angle_vert) < 0.005f && _abs(m_angle_horz) < 0.005f;
 		bool slow_movement = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
 
-		if (near_zero && slow_movement)
+		// Проверка на завершение движения
+		bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
+		bool is_horz_stable = _abs(m_velocity_horz) < 0.01f && _abs(m_angle_horz - m_target_angle_horz) < 0.01f;
+
+		if (is_vert_stable && is_horz_stable)
 		{
-			m_angle_vert = 0.0f;
-			m_angle_horz = 0.0f;
-			m_velocity_vert = 0.0f;
-			m_velocity_horz = 0.0f;
-			m_target_angle_vert = 0.0f;
-			m_target_angle_horz = 0.0f;
-			m_return_to_zero = false;
+			// Финализируем позиции
+			m_angle_vert = m_target_angle_vert;
+			m_angle_horz = m_target_angle_horz;
+
+			bool should_return_to_zero = m_shot_end || m_return_to_zero || m_single_shot;
+
+			if (should_return_to_zero)
+			{
+				m_actived = false;
+				m_is_zero = true;
+			}
+		}
+	}
+	if (m_is_zero)
+	{
+		m_actived = true;
+		Msg("HEUI");
+
+		float relax_speed = 55.0f * dt;
+
+		// Плавно уменьшаем целевые углы к нулю
+		if (m_target_angle_vert > 0.0f)
+		{
+			m_target_angle_vert -= relax_speed;
+			if (m_target_angle_vert < 0.0f) m_target_angle_vert = 0.0f;
+		}
+		else if (m_target_angle_vert < 0.0f)
+		{
+			m_target_angle_vert += relax_speed;
+			if (m_target_angle_vert > 0.0f) m_target_angle_vert = 0.0f;
+		}
+
+		if (m_target_angle_horz > 0.0f)
+		{
+			m_target_angle_horz -= relax_speed;
+			if (m_target_angle_horz < 0.0f) m_target_angle_horz = 0.0f;
+		}
+		else if (m_target_angle_horz < 0.0f)
+		{
+			m_target_angle_horz += relax_speed;
+			if (m_target_angle_horz > 0.0f) m_target_angle_horz = 0.0f;
+		}
+
+		// Если целевые углы близки к нулю и система стабилизировалась, деактивируем
+		bool targets_near_zero = _abs(m_target_angle_vert) < 0.001f && _abs(m_target_angle_horz) < 0.001f;
+		bool angles_near_zero = _abs(m_angle_vert) < 0.005f && _abs(m_angle_horz) < 0.005f;
+		bool slow_movement = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
+
+		if (targets_near_zero && angles_near_zero && slow_movement)
+		{
+			m_is_zero = false;
 			m_actived = false;
-			m_shot_end = false;
-			m_single_shot = false;
 		}
 	}
 }

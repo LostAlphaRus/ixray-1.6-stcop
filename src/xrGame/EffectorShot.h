@@ -40,6 +40,7 @@ protected:
 	int				m_shot_numer;
 	bool			m_shot_end;
 	bool			m_first_shot;
+	bool            m_is_zero;
 	//	float			m_first_shot_pos;
 
 	bool			m_actived;
