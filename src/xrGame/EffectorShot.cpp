@@ -161,7 +161,6 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 	if (m_actived)
 	{
-
 		// Обычная физика пружины
 		float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
 		acceleration_vert -= m_velocity_vert * damping;
@@ -173,26 +172,44 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 		m_velocity_horz += acceleration_horz * dt;
 		m_angle_horz += m_velocity_horz * dt;
 
-		// Условия завершения...
-		bool near_zero = _abs(m_angle_vert) < 0.005f && _abs(m_angle_horz) < 0.005f;
-		bool slow_movement = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
-
-		// Проверка на завершение движения
-		bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
-		bool is_horz_stable = _abs(m_velocity_horz) < 0.01f && _abs(m_angle_horz - m_target_angle_horz) < 0.01f;
-
-		if (is_vert_stable && is_horz_stable)
+		// РАЗНЫЕ ПРОВЕРКИ ДЛЯ ОДИНОЧНЫХ И АВТОМАТИЧЕСКИХ ВЫСТРЕЛОВ
+		if (m_single_shot)
 		{
-			// Финализируем позиции
-			m_angle_vert = m_target_angle_vert;
-			m_angle_horz = m_target_angle_horz;
+			// Для одиночных выстрелов: ждем достижения пика и начала возврата
+			bool reached_peak_vert = (m_prev_angle_vert > 0 && m_angle_vert <= m_prev_angle_vert) ||
+				(m_prev_angle_vert < 0 && m_angle_vert >= m_prev_angle_vert);
+			bool reached_peak_horz = (m_prev_angle_horz > 0 && m_angle_horz <= m_prev_angle_horz) ||
+				(m_prev_angle_horz < 0 && m_angle_horz >= m_prev_angle_horz);
 
-			bool should_return_to_zero = m_shot_end || m_return_to_zero || m_single_shot;
+			bool slow_movement = _abs(m_velocity_vert) < 0.5f && _abs(m_velocity_horz) < 0.5f;
 
-			if (should_return_to_zero)
+			// Для одиночного выстрела активируем возврат когда достигли пика и движение замедлилось
+			if ((reached_peak_vert && reached_peak_horz && slow_movement))
 			{
 				m_actived = false;
 				m_is_zero = true;
+				Msg("SINGLE SHOT: Peak reached, starting return to zero");
+			}
+		}
+		else
+		{
+			// Для автоматической стрельбы: оригинальная логика
+			bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
+			bool is_horz_stable = _abs(m_velocity_horz) < 0.01f && _abs(m_angle_horz - m_target_angle_horz) < 0.01f;
+
+			if (is_vert_stable && is_horz_stable)
+			{
+				m_angle_vert = m_target_angle_vert;
+				m_angle_horz = m_target_angle_horz;
+
+				bool should_return_to_zero = m_shot_end || m_return_to_zero;
+
+				if (should_return_to_zero)
+				{
+					m_actived = false;
+					m_is_zero = true;
+					Msg("AUTO FIRE: Target reached, starting return to zero");
+				}
 			}
 		}
 	}
