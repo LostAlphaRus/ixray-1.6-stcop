@@ -12,6 +12,7 @@
 CWeaponShotEffector::CWeaponShotEffector()
 {
 	Reset();
+	m_independent_timer.Start(); // Запускаем независимый таймер
 }
 
 void CWeaponShotEffector::Initialize(const CameraRecoil& cam_recoil)
@@ -49,6 +50,10 @@ void CWeaponShotEffector::Reset()
 	m_actived = false;
 	m_using_pattern = false;
 	m_shot_end = true;
+
+	// Сбрасываем накопленное время
+	m_accumulated_time = 0.0f;
+	m_independent_timer.Start(); // Перезапускаем таймер
 }
 
 void CWeaponShotEffector::Shot(CWeapon* weapon)
@@ -68,9 +73,6 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 
 	if (weapon->GetCurrentRecoilPattern(pattern_x, pattern_y))
 	{
-		// УБИРАЕМ немедленный возврат для одиночного выстрела!
-		// Вместо этого просто отмечаем что это одиночный выстрел
-		// возврат будет обработан в UpdateSpringRecoil когда выстрел завершится
 
 		// Используем паттернную систему
 		m_using_pattern = true;
@@ -147,13 +149,11 @@ void CWeaponShotEffector::Shot2Legacy(float angle)
 	m_shot_end = false;
 }
 
-void CWeaponShotEffector::UpdateSpringRecoil()
+void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 {
 	if (!m_using_pattern) return;
 
-	float dt = Device.fTimeDelta;
-
-	// Обычная физика пружины
+	// Обычная физика пружины с ФИКСИРОВАННЫМ шагом
 	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
 	acceleration_vert -= m_velocity_vert * damping;
 	m_velocity_vert += acceleration_vert * dt;
@@ -164,7 +164,7 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 	m_velocity_horz += acceleration_horz * dt;
 	m_angle_horz += m_velocity_horz * dt;
 
-
+	// Проверка стабилизации
 	bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
 	bool is_horz_stable = _abs(m_velocity_horz) < 0.01f && _abs(m_angle_horz - m_target_angle_horz) < 0.01f;
 
@@ -178,16 +178,13 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 			m_return_to_zero = true;
 		}
 	}
-
 }
 
-void CWeaponShotEffector::RelaxPattern()
+void CWeaponShotEffector::RelaxPattern(float dt)
 {
-	float dt = Device.fTimeDelta;
-
 	if (m_return_to_zero)
 	{
-		float relax_speed = 55.0f * dt;
+		float relax_speed = 55.0f * dt; // Стабильная скорость благодаря фиксированному dt
 
 		// Плавно уменьшаем целевые углы к нулю
 		if (m_target_angle_vert > 0.0f)
@@ -263,21 +260,52 @@ void CWeaponShotEffector::Relax()
 		}
 }
 
+void CWeaponShotEffector::UpdateIndependentPhysics()
+{
+	// Получаем дельту от независимого таймера
+	float dt = m_independent_timer.GetElapsed_sec();
+	m_independent_timer.Start(); // Перезапускаем для следующего вызова
+
+	// ЗАЩИТА от аномальных значений
+	if (dt <= 0.0f) dt = 0.001f;
+	if (dt > 0.1f) dt = 0.1f; // Максимум 10 FPS эквивалент
+
+	// Накопление времени для фиксированного шага
+	m_accumulated_time += dt;
+
+	// Защита от "спирали смерти" при очень низком FPS
+	if (m_accumulated_time > 0.1f)
+		m_accumulated_time = 0.1f;
+
+	// Выполняем физику фиксированными шагами
+	while (m_accumulated_time >= FIXED_STEP)
+	{
+		UpdatePhysics(FIXED_STEP);
+		m_accumulated_time -= FIXED_STEP;
+	}
+}
+
+void CWeaponShotEffector::UpdatePhysics(float fixed_dt)
+{
+	// ВСЯ физика использует гарантированно фиксированный шаг
+	UpdateSpringRecoil(fixed_dt);
+	RelaxPattern(fixed_dt);
+}
+
 void CWeaponShotEffector::Update()
 {
 	if (m_using_pattern)
 	{
-		// ТОЛЬКО пружинная физика для паттернной системы
-		UpdateSpringRecoil();
-		RelaxPattern();
+		// НЕЗАВИСИМАЯ ФИЗИКА для паттернной системы
+		UpdateIndependentPhysics();
 	}
 	else
 	{
-		// СТАРАЯ логика для непаттернной системы
+		// Старая логика для непаттернной системы
 		if (m_actived && m_cam_recoil.ReturnMode)
 		{
-			if(m_single_shot || m_shot_end)
-			Relax();
+			if (m_single_shot || m_shot_end)
+				Relax(); // Использует Device.fTimeDelta
 		}
 
 		if (!m_cam_recoil.ReturnMode && m_shot_end && !m_single_shot)
@@ -286,7 +314,7 @@ void CWeaponShotEffector::Update()
 		}
 	}
 
-	// Общие вычисления дельт
+	// Общие вычисления дельт (важно для рендеринга)
 	m_delta_vert = m_angle_vert - m_prev_angle_vert;
 	m_delta_horz = m_angle_horz - m_prev_angle_horz;
 	m_prev_angle_vert = m_angle_vert;

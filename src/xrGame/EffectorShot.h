@@ -43,6 +43,11 @@ protected:
 	bool            m_is_zero;
 	//	float			m_first_shot_pos;
 
+		// Независимый таймер
+	CTimer m_independent_timer;
+	float m_accumulated_time = 0.0f;
+	static constexpr float FIXED_STEP = 0.006f;
+
 	bool			m_actived;
 	bool			m_single_shot;
 	bool			m_using_pattern; // Флаг использования паттерна
@@ -77,8 +82,10 @@ public:
 
 protected:
 	void	Relax();
-	void	RelaxPattern();
-	void	UpdateSpringRecoil(); // Метод для обновления пружинной физики
+    void UpdateIndependentPhysics();
+    void UpdatePhysics(float fixed_dt);
+    void UpdateSpringRecoil(float dt);
+    void RelaxPattern(float dt);
 };
 
 class CCameraShotEffector : public CWeaponShotEffector, public CEffectorCam
