@@ -48,7 +48,6 @@ void CWeaponShotEffector::Reset()
 	m_first_shot = false;
 	m_actived = false;
 	m_using_pattern = false;
-	m_is_zero = false;
 	m_shot_end = true;
 }
 
@@ -72,11 +71,6 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		// УБИРАЕМ немедленный возврат для одиночного выстрела!
 		// Вместо этого просто отмечаем что это одиночный выстрел
 		// возврат будет обработан в UpdateSpringRecoil когда выстрел завершится
-
-		if (weapon->GetAmmoElapsed() - 1 == 0)
-		{
-			m_return_to_zero = true;
-		}
 
 		// Используем паттернную систему
 		m_using_pattern = true;
@@ -159,65 +153,40 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 	float dt = Device.fTimeDelta;
 
-	if (m_actived)
+	// Обычная физика пружины
+	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
+	acceleration_vert -= m_velocity_vert * damping;
+	m_velocity_vert += acceleration_vert * dt;
+	m_angle_vert += m_velocity_vert * dt;
+
+	float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
+	acceleration_horz -= m_velocity_horz * damping;
+	m_velocity_horz += acceleration_horz * dt;
+	m_angle_horz += m_velocity_horz * dt;
+
+
+	bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
+	bool is_horz_stable = _abs(m_velocity_horz) < 0.01f && _abs(m_angle_horz - m_target_angle_horz) < 0.01f;
+
+	if (is_vert_stable && is_horz_stable)
 	{
-		// Обычная физика пружины
-		float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
-		acceleration_vert -= m_velocity_vert * damping;
-		m_velocity_vert += acceleration_vert * dt;
-		m_angle_vert += m_velocity_vert * dt;
+		m_angle_vert = m_target_angle_vert;
+		m_angle_horz = m_target_angle_horz;
 
-		float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
-		acceleration_horz -= m_velocity_horz * damping;
-		m_velocity_horz += acceleration_horz * dt;
-		m_angle_horz += m_velocity_horz * dt;
-
-		// РАЗНЫЕ ПРОВЕРКИ ДЛЯ ОДИНОЧНЫХ И АВТОМАТИЧЕСКИХ ВЫСТРЕЛОВ
-		if (m_single_shot)
+		if (m_shot_end)
 		{
-			// Для одиночных выстрелов: ждем достижения пика и начала возврата
-			bool reached_peak_vert = (m_prev_angle_vert > 0 && m_angle_vert <= m_prev_angle_vert) ||
-				(m_prev_angle_vert < 0 && m_angle_vert >= m_prev_angle_vert);
-			bool reached_peak_horz = (m_prev_angle_horz > 0 && m_angle_horz <= m_prev_angle_horz) ||
-				(m_prev_angle_horz < 0 && m_angle_horz >= m_prev_angle_horz);
-
-			bool slow_movement = _abs(m_velocity_vert) < 0.5f && _abs(m_velocity_horz) < 0.5f;
-
-			// Для одиночного выстрела активируем возврат когда достигли пика и движение замедлилось
-			if ((reached_peak_vert && reached_peak_horz && slow_movement))
-			{
-				m_actived = false;
-				m_is_zero = true;
-				Msg("SINGLE SHOT: Peak reached, starting return to zero");
-			}
-		}
-		else
-		{
-			// Для автоматической стрельбы: оригинальная логика
-			bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
-			bool is_horz_stable = _abs(m_velocity_horz) < 0.01f && _abs(m_angle_horz - m_target_angle_horz) < 0.01f;
-
-			if (is_vert_stable && is_horz_stable)
-			{
-				m_angle_vert = m_target_angle_vert;
-				m_angle_horz = m_target_angle_horz;
-
-				bool should_return_to_zero = m_shot_end || m_return_to_zero;
-
-				if (should_return_to_zero)
-				{
-					m_actived = false;
-					m_is_zero = true;
-					Msg("AUTO FIRE: Target reached, starting return to zero");
-				}
-			}
+			m_return_to_zero = true;
 		}
 	}
-	if (m_is_zero)
-	{
-		m_actived = true;
-		Msg("HEUI");
 
+}
+
+void CWeaponShotEffector::RelaxPattern()
+{
+	float dt = Device.fTimeDelta;
+
+	if (m_return_to_zero)
+	{
 		float relax_speed = 55.0f * dt;
 
 		// Плавно уменьшаем целевые углы к нулю
@@ -250,8 +219,8 @@ void CWeaponShotEffector::UpdateSpringRecoil()
 
 		if (targets_near_zero && angles_near_zero && slow_movement)
 		{
-			m_is_zero = false;
 			m_actived = false;
+			m_return_to_zero = false;
 		}
 	}
 }
@@ -300,6 +269,7 @@ void CWeaponShotEffector::Update()
 	{
 		// ТОЛЬКО пружинная физика для паттернной системы
 		UpdateSpringRecoil();
+		RelaxPattern();
 	}
 	else
 	{

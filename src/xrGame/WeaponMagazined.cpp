@@ -1049,6 +1049,7 @@ void CWeaponMagazined::state_Fire(float dt)
 			if( CheckForMisfire() )
 			{
 				StopShooting();
+				StopShotEffector();  
 				return;
 			}
 
@@ -1082,6 +1083,14 @@ void CWeaponMagazined::state_Fire(float dt)
 			m_bStopedAfterQueueFired = true;
 
 		UpdateSounds			();
+	}
+
+	// Проверка на завершение стрельбы
+	if (iAmmoElapsed == 0 ||
+		(m_iQueueSize > 0 && m_iShotNum >= m_iQueueSize) ||
+		!IsWorking())
+	{
+		StopShotEffector();  // Все выстрелы завершены
 	}
 
 	if(fShotTimeCounter<0)

@@ -77,6 +77,7 @@ public:
 
 protected:
 	void	Relax();
+	void	RelaxPattern();
 	void	UpdateSpringRecoil(); // Метод для обновления пружинной физики
 };
 
