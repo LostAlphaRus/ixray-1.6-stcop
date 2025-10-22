@@ -31,9 +31,9 @@ void CWeaponShotEffector::Reset()
 	m_velocity_vert = 0.0f;
 	m_velocity_horz = 0.0f;
 
-	spring_stiffness = 0.0f;
-	damping = 0.0f;
-	impulse_strengt = 0.0f;
+	m_spring_stiffness = 0.0f;
+	m_damping = 0.0f;
+	m_impulse_strength = 0.0f;
 
 	// Добавляем инициализацию новых полей
 	m_return_to_zero = false;
@@ -45,8 +45,6 @@ void CWeaponShotEffector::Reset()
 	m_delta_horz = 0.0f;
 
 	m_LastSeed = 0;
-	m_single_shot = false;
-	m_first_shot = false;
 	m_actived = false;
 	m_using_pattern = false;
 	m_shot_end = true;
@@ -65,7 +63,6 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		m_shot_numer = 0;
 		Reset();
 	}
-	m_single_shot = (weapon->GetCurrentFireMode() == 1);
 
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;
@@ -73,14 +70,13 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 
 	if (weapon->GetCurrentRecoilPattern(pattern_x, pattern_y))
 	{
-
 		// Используем паттернную систему
 		m_using_pattern = true;
 
 		// Сохраняем параметры пружины
-		spring_stiffness = weapon->m_spring_stiffness;
-		damping = weapon->m_spring_damping;
-		impulse_strengt = weapon->m_impulse_strength;
+		m_spring_stiffness = weapon->m_spring_stiffness;
+		m_damping = weapon->m_spring_damping;
+		m_impulse_strength = weapon->m_impulse_strength;
 
 		// Получаем множители паттерна от оружия
 		float pattern_factor = weapon->GetCurrentPatternFactor();
@@ -104,26 +100,21 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	}
 }
 
-
 void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 {
-
 	// Добавляем мгновенную скорость для резкого начала отдачи
-	m_velocity_vert += pattern_y * impulse_strengt;
-	m_velocity_horz += pattern_x * impulse_strengt;
+	m_velocity_vert += pattern_y * m_impulse_strength;
+	m_velocity_horz += pattern_x * m_impulse_strength;
 
 	// Обновляем целевые углы (добавляем к текущим, а не заменяем)
 	m_target_angle_vert += pattern_y;
 	m_target_angle_horz += pattern_x;
 
 	Msg("Recoil impulse: vert=%.3f (vel=%.3f), horz=%.3f (vel=%.3f), target_vert=%.3f, target_horz=%.3f",
-		pattern_y, pattern_y * impulse_strengt,
-		pattern_x, pattern_x * impulse_strengt,
+		pattern_y, pattern_y * m_impulse_strength,
+		pattern_x, pattern_x * m_impulse_strength,
 		m_target_angle_vert, m_target_angle_horz);
 
- 
-
-	m_first_shot = true;
 	m_actived = true;
 	m_shot_end = false;
 }
@@ -144,7 +135,6 @@ void CWeaponShotEffector::Shot2Legacy(float angle)
 
 	clamp(m_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
 
-	m_first_shot = true;
 	m_actived = true;
 	m_shot_end = false;
 }
@@ -155,23 +145,22 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 
 	if (m_shot_end)
 	{
-
 		float relax_factor = 4.0f * dt; // Скорость релаксации
-		clamp(relax_factor, relax_factor, 1.0f); // Ограничиваем максимум 1.0
+		clamp(relax_factor, 0.0f, 1.0f); // Ограничиваем максимум 1.0
 
 		// Альтернативный вариант: постепенное уменьшение паттернных целей
-		 m_target_angle_vert *= (1.0f - relax_factor);
-		 m_target_angle_horz *= (1.0f - relax_factor);
+		m_target_angle_vert *= (1.0f - relax_factor);
+		m_target_angle_horz *= (1.0f - relax_factor);
 	}
 
 	// Обычная физика пружины с ФИКСИРОВАННЫМ шагом
-	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
-	acceleration_vert -= m_velocity_vert * damping;
+	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * m_spring_stiffness;
+	acceleration_vert -= m_velocity_vert * m_damping;
 	m_velocity_vert += acceleration_vert * dt;
 	m_angle_vert += m_velocity_vert * dt;
 
-	float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
-	acceleration_horz -= m_velocity_horz * damping;
+	float acceleration_horz = (m_target_angle_horz - m_angle_horz) * m_spring_stiffness;
+	acceleration_horz -= m_velocity_horz * m_damping;
 	m_velocity_horz += acceleration_horz * dt;
 	m_angle_horz += m_velocity_horz * dt;
 
@@ -192,95 +181,77 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 	}
 }
 
-void CWeaponShotEffector::Relax()
+void CWeaponShotEffector::Relax(float dt)
 {
-		// СТАРАЯ ЛОГИКА релаксации для непаттернной системы
-		float time_to_relax = _abs(m_angle_vert) / m_cam_recoil.RelaxSpeed;
-		float relax_speed_horz = (fis_zero(time_to_relax)) ? 0.0f : _abs(m_angle_horz) / time_to_relax;
+	// СТАРАЯ ЛОГИКА релаксации для непаттернной системы, но с фиксированным шагом
+	float time_to_relax = _abs(m_angle_vert) / m_cam_recoil.RelaxSpeed;
+	float relax_speed_horz = (fis_zero(time_to_relax)) ? 0.0f : _abs(m_angle_horz) / time_to_relax;
 
-		float dt = Device.fTimeDelta;
-
-		if (m_angle_horz >= 0.0f)
-		{
-			m_angle_horz -= relax_speed_horz * dt;
-		}
-		else
-		{
-			m_angle_horz += relax_speed_horz * dt;
-		}
-
-		if (m_angle_vert >= 0.0f)
-		{
-			m_angle_vert -= m_cam_recoil.RelaxSpeed * dt;
-			if (m_angle_vert < 0.0f)
-			{
-				m_angle_vert = 0.0f;
-				m_actived = false;
-			}
-		}
-		else
-		{
-			m_angle_vert += m_cam_recoil.RelaxSpeed * dt;
-			if (m_angle_vert > 0.0f)
-			{
-				m_angle_vert = 0.0f;
-				m_actived = false;
-			}
-		}
-}
-
-void CWeaponShotEffector::UpdateIndependentPhysics()
-{
-	// Получаем дельту от независимого таймера
-	float dt = m_independent_timer.GetElapsed_sec();
-	m_independent_timer.Start(); // Перезапускаем для следующего вызова
-
-	// ЗАЩИТА от аномальных значений
-	if (dt <= 0.0f) dt = 0.001f;
-	if (dt > 0.1f) dt = 0.1f; // Максимум 10 FPS эквивалент
-
-	// Накопление времени для фиксированного шага
-	m_accumulated_time += dt;
-
-	// Защита от "спирали смерти" при очень низком FPS
-	if (m_accumulated_time > 0.1f)
-		m_accumulated_time = 0.1f;
-
-	// Выполняем физику фиксированными шагами
-	while (m_accumulated_time >= FIXED_STEP)
+	if (m_angle_horz >= 0.0f)
 	{
-		UpdatePhysics(FIXED_STEP);
-		m_accumulated_time -= FIXED_STEP;
+		m_angle_horz -= relax_speed_horz * dt;
 	}
-}
+	else
+	{
+		m_angle_horz += relax_speed_horz * dt;
+	}
 
-void CWeaponShotEffector::UpdatePhysics(float fixed_dt)
-{
-	// ВСЯ физика использует гарантированно фиксированный шаг
-	UpdateSpringRecoil(fixed_dt);
-
+	if (m_angle_vert >= 0.0f)
+	{
+		m_angle_vert -= m_cam_recoil.RelaxSpeed * dt;
+		if (m_angle_vert < 0.0f)
+		{
+			m_angle_vert = 0.0f;
+			m_actived = false;
+		}
+	}
+	else
+	{
+		m_angle_vert += m_cam_recoil.RelaxSpeed * dt;
+		if (m_angle_vert > 0.0f)
+		{
+			m_angle_vert = 0.0f;
+			m_actived = false;
+		}
+	}
 }
 
 void CWeaponShotEffector::Update()
 {
-	if (m_using_pattern)
-	{
-		// НЕЗАВИСИМАЯ ФИЗИКА для паттернной системы
-		UpdateIndependentPhysics();
-	}
-	else
-	{
-		// Старая логика для непаттернной системы
-		if (m_actived && m_cam_recoil.ReturnMode)
-		{
-			if (m_single_shot || m_shot_end)
-				Relax(); // Использует Device.fTimeDelta
-		}
+	// Общая логика получения дельты времени для фиксированного шага
+	float dt = m_independent_timer.GetElapsed_sec();
+	m_independent_timer.Start();
 
-		if (!m_cam_recoil.ReturnMode && m_shot_end && !m_single_shot)
+	if (dt <= 0.0f) dt = 0.001f;
+	if (dt > 0.1f) dt = 0.1f;
+
+	m_accumulated_time += dt;
+	if (m_accumulated_time > 0.1f)
+		m_accumulated_time = 0.1f;
+
+
+	while (m_accumulated_time >= FIXED_STEP)
+	{
+		if (m_using_pattern)
 		{
-			m_actived = false;
+			// Паттернная система
+			UpdateSpringRecoil(FIXED_STEP);
 		}
+		else
+		{
+			// Непаттернная система
+			if (m_actived && m_cam_recoil.ReturnMode)
+			{
+				if (m_shot_end)
+					Relax(FIXED_STEP); 
+			}
+
+			if (!m_cam_recoil.ReturnMode && m_shot_end)
+			{
+				m_actived = false;
+			}
+		}
+		m_accumulated_time -= FIXED_STEP;
 	}
 
 	// Общие вычисления дельт (важно для рендеринга)
@@ -309,30 +280,14 @@ void CWeaponShotEffector::SetRndSeed(s32 Seed)
 	if (m_LastSeed == 0)
 	{
 		m_LastSeed = Seed;
-		//		m_Random.seed		(Seed);
 		m_Random.seed(Device.dwFrame);
 	}
 }
-
-
 
 void CWeaponShotEffector::ChangeHP(float* pitch, float* yaw)
 {
 	*pitch -= m_delta_vert; // y = pitch = p = vert
 	*yaw -= m_delta_horz; // x = yaw   = h = horz
-
-	//	if ( m_first_shot )
-	//	{
-	//		m_first_shot_pos = *pitch;
-	//		m_first_shot = false;
-	//	}
-
-	//	if ( m_cam_recoil.ReturnMode && m_cam_recoil.StopReturn && (*pitch > m_first_shot_pos + 0.1f) )
-	//	{
-	//		m_actived = false;
-	//	}
-	//	Msg( "[%d]  pitch = %.4f   yaw = %.4f    fs=%d    a=%d  fr=%d", m_shot_numer, *pitch, *yaw, m_first_shot, m_actived, Device.dwFrame );
-
 }
 
 //-----------------------------------------------------------------------------

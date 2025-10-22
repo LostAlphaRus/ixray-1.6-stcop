@@ -27,9 +27,9 @@ protected:
 	float			m_target_angle_horz;
 	float			m_velocity_vert;
 	float			m_velocity_horz;
-	float           spring_stiffness;
-	float           damping;
-	float           impulse_strengt;
+	float           m_spring_stiffness;
+	float           m_damping;
+	float           m_impulse_strength;
 
 	// Добавляем флаг для возврата к нулю
 	bool            m_return_to_zero;
@@ -81,9 +81,7 @@ public:
 
 
 protected:
-	void	Relax();
-    void UpdateIndependentPhysics();
-    void UpdatePhysics(float fixed_dt);
+	void Relax(float dt);
     void UpdateSpringRecoil(float dt);
  
 };
