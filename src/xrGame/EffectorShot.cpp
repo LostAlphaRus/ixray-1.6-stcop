@@ -34,9 +34,9 @@ void CWeaponShotEffector::Reset()
 	m_spring_stiffness = 0.0f;
 	m_damping = 0.0f;
 	m_impulse_strength = 0.0f;
-
-	// Добавляем инициализацию новых полей
+	// Флаг вовзрата прицела
 	m_return_to_zero = false;
+
 
 	m_prev_angle_vert = 0.0f;
 	m_prev_angle_horz = 0.0f;
@@ -146,14 +146,14 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 	if (m_shot_end)
 	{
 		float relax_factor = 4.0f * dt; // Скорость релаксации
-		clamp(relax_factor, 0.0f, 1.0f); // Ограничиваем максимум 1.0
+		clamp(relax_factor, 0.0f, 1.0f); 
 
-		// Альтернативный вариант: постепенное уменьшение паттернных целей
+		//Постепенное уменьшение паттернных целей
 		m_target_angle_vert *= (1.0f - relax_factor);
 		m_target_angle_horz *= (1.0f - relax_factor);
 	}
 
-	// Обычная физика пружины с ФИКСИРОВАННЫМ шагом
+	// Физика пружины
 	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * m_spring_stiffness;
 	acceleration_vert -= m_velocity_vert * m_damping;
 	m_velocity_vert += acceleration_vert * dt;
@@ -254,7 +254,7 @@ void CWeaponShotEffector::Update()
 		m_accumulated_time -= FIXED_STEP;
 	}
 
-	// Общие вычисления дельт (важно для рендеринга)
+	// Общие вычисления дельт
 	m_delta_vert = m_angle_vert - m_prev_angle_vert;
 	m_delta_horz = m_angle_horz - m_prev_angle_horz;
 	m_prev_angle_vert = m_angle_vert;

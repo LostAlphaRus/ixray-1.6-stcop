@@ -22,6 +22,11 @@ protected:
 	float			m_prev_angle_vert;
 	float			m_prev_angle_horz;
 
+
+	CTimer          m_independent_timer;
+	float           m_accumulated_time = 0.0f;
+	static constexpr float FIXED_STEP = 0.006f;
+
 	// Пружинная система
 	float			m_target_angle_vert;
 	float			m_target_angle_horz;
@@ -34,23 +39,17 @@ protected:
 	// Добавляем флаг для возврата к нулю
 	bool            m_return_to_zero;
 
+	// Флаг использования паттерна
+	bool			m_using_pattern; 
+
 	float			m_delta_vert;
 	float			m_delta_horz;
 
 	int				m_shot_numer;
 	bool			m_shot_end;
-	bool			m_first_shot;
-	bool            m_is_zero;
-	//	float			m_first_shot_pos;
-
-		// Независимый таймер
-	CTimer m_independent_timer;
-	float m_accumulated_time = 0.0f;
-	static constexpr float FIXED_STEP = 0.006f;
 
 	bool			m_actived;
-	bool			m_single_shot;
-	bool			m_using_pattern; // Флаг использования паттерна
+
 
 private:
 	CRandom			m_Random;
