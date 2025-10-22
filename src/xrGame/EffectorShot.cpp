@@ -153,6 +153,17 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 {
 	if (!m_using_pattern) return;
 
+	if (m_shot_end)
+	{
+
+		float relax_factor = 4.0f * dt; // Скорость релаксации
+		clamp(relax_factor, relax_factor, 1.0f); // Ограничиваем максимум 1.0
+
+		// Альтернативный вариант: постепенное уменьшение паттернных целей
+		 m_target_angle_vert *= (1.0f - relax_factor);
+		 m_target_angle_horz *= (1.0f - relax_factor);
+	}
+
 	// Обычная физика пружины с ФИКСИРОВАННЫМ шагом
 	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
 	acceleration_vert -= m_velocity_vert * damping;
@@ -173,55 +184,13 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 		m_angle_vert = m_target_angle_vert;
 		m_angle_horz = m_target_angle_horz;
 
-		if (m_shot_end)
-		{
-			m_return_to_zero = true;
-		}
-	}
-}
-
-void CWeaponShotEffector::RelaxPattern(float dt)
-{
-	if (m_return_to_zero)
-	{
-		float relax_speed = 55.0f * dt; // Стабильная скорость благодаря фиксированному dt
-
-		// Плавно уменьшаем целевые углы к нулю
-		if (m_target_angle_vert > 0.0f)
-		{
-			m_target_angle_vert -= relax_speed;
-			if (m_target_angle_vert < 0.0f) m_target_angle_vert = 0.0f;
-		}
-		else if (m_target_angle_vert < 0.0f)
-		{
-			m_target_angle_vert += relax_speed;
-			if (m_target_angle_vert > 0.0f) m_target_angle_vert = 0.0f;
-		}
-
-		if (m_target_angle_horz > 0.0f)
-		{
-			m_target_angle_horz -= relax_speed;
-			if (m_target_angle_horz < 0.0f) m_target_angle_horz = 0.0f;
-		}
-		else if (m_target_angle_horz < 0.0f)
-		{
-			m_target_angle_horz += relax_speed;
-			if (m_target_angle_horz > 0.0f) m_target_angle_horz = 0.0f;
-		}
-
-		// Если целевые углы близки к нулю и система стабилизировалась, деактивируем
-		bool targets_near_zero = _abs(m_target_angle_vert) < 0.001f && _abs(m_target_angle_horz) < 0.001f;
-		bool angles_near_zero = _abs(m_angle_vert) < 0.005f && _abs(m_angle_horz) < 0.005f;
-		bool slow_movement = _abs(m_velocity_vert) < 0.001f && _abs(m_velocity_horz) < 0.001f;
-
-		if (targets_near_zero && angles_near_zero && slow_movement)
+		// Если стабилизировались и цели близки к нулю, деактивируем
+		if (m_shot_end && _abs(m_target_angle_vert) < 0.001f && _abs(m_target_angle_horz) < 0.001f)
 		{
 			m_actived = false;
-			m_return_to_zero = false;
 		}
 	}
 }
-
 
 void CWeaponShotEffector::Relax()
 {
@@ -289,7 +258,7 @@ void CWeaponShotEffector::UpdatePhysics(float fixed_dt)
 {
 	// ВСЯ физика использует гарантированно фиксированный шаг
 	UpdateSpringRecoil(fixed_dt);
-	RelaxPattern(fixed_dt);
+
 }
 
 void CWeaponShotEffector::Update()

@@ -85,7 +85,7 @@ protected:
     void UpdateIndependentPhysics();
     void UpdatePhysics(float fixed_dt);
     void UpdateSpringRecoil(float dt);
-    void RelaxPattern(float dt);
+ 
 };
 
 class CCameraShotEffector : public CWeaponShotEffector, public CEffectorCam
