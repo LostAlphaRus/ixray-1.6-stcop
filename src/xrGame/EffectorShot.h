@@ -80,6 +80,7 @@ public:
 
 
 protected:
+	void SpringPhysics(float dt, float spring_stiffness, float damping);
 	void Relax(float dt);
     void UpdateSpringRecoil(float dt);
  

@@ -139,6 +139,21 @@ void CWeaponShotEffector::Shot2Legacy(float angle)
 	m_shot_end = false;
 }
 
+void CWeaponShotEffector::SpringPhysics(float dt, float spring_stiffness, float damping)
+{
+	// Физика пружины для вертикальной оси
+	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * spring_stiffness;
+	acceleration_vert -= m_velocity_vert * damping;
+	m_velocity_vert += acceleration_vert * dt;
+	m_angle_vert += m_velocity_vert * dt;
+
+	// Физика пружины для горизонтальной оси
+	float acceleration_horz = (m_target_angle_horz - m_angle_horz) * spring_stiffness;
+	acceleration_horz -= m_velocity_horz * damping;
+	m_velocity_horz += acceleration_horz * dt;
+	m_angle_horz += m_velocity_horz * dt;
+}
+
 void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 {
 	if (!m_using_pattern) return;
@@ -153,16 +168,7 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 		m_target_angle_horz *= (1.0f - relax_factor);
 	}
 
-	// Физика пружины
-	float acceleration_vert = (m_target_angle_vert - m_angle_vert) * m_spring_stiffness;
-	acceleration_vert -= m_velocity_vert * m_damping;
-	m_velocity_vert += acceleration_vert * dt;
-	m_angle_vert += m_velocity_vert * dt;
-
-	float acceleration_horz = (m_target_angle_horz - m_angle_horz) * m_spring_stiffness;
-	acceleration_horz -= m_velocity_horz * m_damping;
-	m_velocity_horz += acceleration_horz * dt;
-	m_angle_horz += m_velocity_horz * dt;
+	SpringPhysics(dt, m_spring_stiffness, m_damping);
 
 	// Проверка стабилизации
 	bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
