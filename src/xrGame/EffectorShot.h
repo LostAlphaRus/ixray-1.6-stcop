@@ -14,7 +14,7 @@ class CWeapon;
 class CWeaponShotEffector
 {
 protected:
-	CameraRecoil	m_cam_recoil;
+	CameraRecoil	current_recoil;
 
 	float			m_angle_vert;
 	float			m_angle_horz;
@@ -23,7 +23,6 @@ protected:
 	float			m_prev_angle_horz;
 
 
-	CTimer          m_independent_timer;
 	float           m_accumulated_time = 0.0f;
 	static constexpr float FIXED_STEP = 0.006f;
 
@@ -59,7 +58,11 @@ public:
 	CWeaponShotEffector();
 	virtual		~CWeaponShotEffector() {};
 
-	void	Initialize(const CameraRecoil& cam_recoil);
+	void SetCustomRecoil(const CameraRecoil& custom_recoil) {
+		current_recoil = custom_recoil;
+	}
+
+	void	Initialize();
 	void	Reset();
 
 	IC	bool	IsActive() { return m_actived; }
@@ -92,7 +95,7 @@ protected:
 	CActor* m_pActor;
 public:
 	//-					CCameraShotEffector	(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac);
-	CCameraShotEffector(const CameraRecoil& cam_recoil);
+	CCameraShotEffector();
 	virtual			~CCameraShotEffector();
 
 	virtual BOOL	ProcessCam(SCamEffectorInfo& info);

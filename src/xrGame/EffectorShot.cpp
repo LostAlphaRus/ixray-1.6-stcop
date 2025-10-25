@@ -12,12 +12,10 @@
 CWeaponShotEffector::CWeaponShotEffector()
 {
 	Reset();
-	m_independent_timer.Start(); // Запускаем независимый таймер
 }
 
-void CWeaponShotEffector::Initialize(const CameraRecoil& cam_recoil)
+void CWeaponShotEffector::Initialize()
 {
-	m_cam_recoil.Clone(cam_recoil);
 	Reset();
 }
 
@@ -34,9 +32,8 @@ void CWeaponShotEffector::Reset()
 	m_spring_stiffness = 0.0f;
 	m_damping = 0.0f;
 	m_impulse_strength = 0.0f;
-	// Флаг вовзрата прицела
-	m_return_to_zero = false;
 
+	current_recoil.Reset();
 
 	m_prev_angle_vert = 0.0f;
 	m_prev_angle_horz = 0.0f;
@@ -51,7 +48,6 @@ void CWeaponShotEffector::Reset()
 
 	// Сбрасываем накопленное время
 	m_accumulated_time = 0.0f;
-	m_independent_timer.Start(); // Перезапускаем таймер
 }
 
 void CWeaponShotEffector::Shot(CWeapon* weapon)
@@ -63,6 +59,10 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		m_shot_numer = 0;
 		Reset();
 	}
+
+	current_recoil = weapon->IsZoomed() ? weapon->zoom_cam_recoil : weapon->cam_recoil;
+
+	Msg("Shot: Factor=%.3f", current_recoil.Pattern.Factor);
 
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;
@@ -79,7 +79,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		m_impulse_strength = weapon->m_impulse_strength;
 
 		// Получаем множители паттерна от оружия
-		float pattern_factor = weapon->GetCurrentPatternFactor();
+		float pattern_factor = current_recoil.Pattern.Factor;
 
 		// Применяем множитель и вес
 		float final_x = pattern_x * pattern_factor;
@@ -92,8 +92,8 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	{
 		// Используем стандартную систему - СТАРУЮ ЛОГИКУ
 		m_using_pattern = false;
-		float angle = m_cam_recoil.Dispersion * weapon->cur_silencer_koef.cam_dispersion;
-		angle += m_cam_recoil.DispersionInc * weapon->cur_silencer_koef.cam_disper_inc * (float)m_shot_numer;
+		float angle = current_recoil.Dispersion * weapon->cur_silencer_koef.cam_dispersion;
+		angle += current_recoil.DispersionInc * weapon->cur_silencer_koef.cam_disper_inc * (float)m_shot_numer;
 
 		// Восстанавливаем старую логику Shot2
 		Shot2Legacy(angle);
@@ -103,16 +103,16 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 {
 	// Добавляем мгновенную скорость для резкого начала отдачи
-	m_velocity_vert += pattern_y * m_impulse_strength;
-	m_velocity_horz += pattern_x * m_impulse_strength;
+	m_velocity_vert += pattern_y * current_recoil.Pattern.Impulse;
+	m_velocity_horz += pattern_x * current_recoil.Pattern.Impulse;
 
 	// Обновляем целевые углы (добавляем к текущим, а не заменяем)
 	m_target_angle_vert += pattern_y;
 	m_target_angle_horz += pattern_x;
 
 	Msg("Recoil impulse: vert=%.3f (vel=%.3f), horz=%.3f (vel=%.3f), target_vert=%.3f, target_horz=%.3f",
-		pattern_y, pattern_y * m_impulse_strength,
-		pattern_x, pattern_x * m_impulse_strength,
+		pattern_y, pattern_y * current_recoil.Pattern.Impulse,
+		pattern_x, pattern_x * current_recoil.Pattern.Impulse,
 		m_target_angle_vert, m_target_angle_horz);
 
 	m_actived = true;
@@ -122,18 +122,18 @@ void CWeaponShotEffector::ShotFromPattern(float pattern_x, float pattern_y)
 void CWeaponShotEffector::Shot2Legacy(float angle)
 {
 	// СТАРАЯ ЛОГИКА - работа напрямую с m_angle_vert и m_angle_horz
-	m_angle_vert += angle * (m_cam_recoil.DispersionFrac + m_Random.randF(-1.0f, 1.0f) * (1.0f - m_cam_recoil.DispersionFrac));
+	m_angle_vert += angle * (current_recoil.DispersionFrac + m_Random.randF(-1.0f, 1.0f) * (1.0f - current_recoil.DispersionFrac));
 
-	clamp(m_angle_vert, -m_cam_recoil.MaxAngleVert, m_cam_recoil.MaxAngleVert);
-	if (fis_zero(m_angle_vert - m_cam_recoil.MaxAngleVert))
+	clamp(m_angle_vert, -current_recoil.MaxAngleVert, current_recoil.MaxAngleVert);
+	if (fis_zero(m_angle_vert - current_recoil.MaxAngleVert))
 	{
 		m_angle_vert *= m_Random.randF(0.96f, 1.04f);
 	}
 
 	float rdm = m_Random.randF(-1.0f, 1.0f);
-	m_angle_horz += (m_angle_vert / m_cam_recoil.MaxAngleVert) * rdm * m_cam_recoil.StepAngleHorz;
+	m_angle_horz += (m_angle_vert / current_recoil.MaxAngleVert) * rdm * current_recoil.StepAngleHorz;
 
-	clamp(m_angle_horz, -m_cam_recoil.MaxAngleHorz, m_cam_recoil.MaxAngleHorz);
+	clamp(m_angle_horz, -current_recoil.MaxAngleHorz, current_recoil.MaxAngleHorz);
 
 	m_actived = true;
 	m_shot_end = false;
@@ -161,14 +161,14 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 	if (m_shot_end)
 	{
 		float relax_factor = 4.0f * dt; // Скорость релаксации
-		clamp(relax_factor, 0.0f, 1.0f); 
+		clamp(relax_factor, 0.0f, 1.0f);
 
 		//Постепенное уменьшение паттернных целей
 		m_target_angle_vert *= (1.0f - relax_factor);
 		m_target_angle_horz *= (1.0f - relax_factor);
 	}
 
-	SpringPhysics(dt, m_spring_stiffness, m_damping);
+	SpringPhysics(dt, current_recoil.Pattern.Stiffness, current_recoil.Pattern.Damping);
 
 	// Проверка стабилизации
 	bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
@@ -190,7 +190,7 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 void CWeaponShotEffector::Relax(float dt)
 {
 	// СТАРАЯ ЛОГИКА релаксации для непаттернной системы, но с фиксированным шагом
-	float time_to_relax = _abs(m_angle_vert) / m_cam_recoil.RelaxSpeed;
+	float time_to_relax = _abs(m_angle_vert) / current_recoil.RelaxSpeed;
 	float relax_speed_horz = (fis_zero(time_to_relax)) ? 0.0f : _abs(m_angle_horz) / time_to_relax;
 
 	if (m_angle_horz >= 0.0f)
@@ -204,7 +204,7 @@ void CWeaponShotEffector::Relax(float dt)
 
 	if (m_angle_vert >= 0.0f)
 	{
-		m_angle_vert -= m_cam_recoil.RelaxSpeed * dt;
+		m_angle_vert -= current_recoil.RelaxSpeed * dt;
 		if (m_angle_vert < 0.0f)
 		{
 			m_angle_vert = 0.0f;
@@ -213,7 +213,7 @@ void CWeaponShotEffector::Relax(float dt)
 	}
 	else
 	{
-		m_angle_vert += m_cam_recoil.RelaxSpeed * dt;
+		m_angle_vert += current_recoil.RelaxSpeed * dt;
 		if (m_angle_vert > 0.0f)
 		{
 			m_angle_vert = 0.0f;
@@ -225,42 +225,37 @@ void CWeaponShotEffector::Relax(float dt)
 void CWeaponShotEffector::Update()
 {
 	// Общая логика получения дельты времени для фиксированного шага
-	float dt = m_independent_timer.GetElapsed_sec();
-	m_independent_timer.Start();
+	float dt = Device.fTimeDelta;
 
-	if (dt <= 0.0f) dt = 0.001f;
-	if (dt > 0.1f) dt = 0.1f;
+	//	m_accumulated_time += dt;
+	//	if (m_accumulated_time > 0.1f)
+	//		m_accumulated_time = 0.1f;
 
-	m_accumulated_time += dt;
-	if (m_accumulated_time > 0.1f)
-		m_accumulated_time = 0.1f;
-
-
-	while (m_accumulated_time >= FIXED_STEP)
+	//	while (m_accumulated_time >= FIXED_STEP)
+	//	{
+	if (m_using_pattern)
 	{
-		if (m_using_pattern)
-		{
-			// Паттернная система
-			UpdateSpringRecoil(FIXED_STEP);
-		}
-		else
-		{
-			// Непаттернная система
-			if (m_actived && m_cam_recoil.ReturnMode)
-			{
-				if (m_shot_end)
-					Relax(FIXED_STEP); 
-			}
-
-			if (!m_cam_recoil.ReturnMode && m_shot_end)
-			{
-				m_actived = false;
-			}
-		}
-		m_accumulated_time -= FIXED_STEP;
+		// Паттернная система
+		UpdateSpringRecoil(dt);
 	}
+	else
+	{
+		// Непаттернная система
+		if (m_actived && current_recoil.ReturnMode)
+		{
+			if (m_shot_end)
+				Relax(dt);
+		}
 
-	// Общие вычисления дельт
+		if (!current_recoil.ReturnMode && m_shot_end)
+		{
+			m_actived = false;
+		}
+	}
+	//		m_accumulated_time -= FIXED_STEP;
+	//	}
+
+		// Общие вычисления дельт
 	m_delta_vert = m_angle_vert - m_prev_angle_vert;
 	m_delta_horz = m_angle_horz - m_prev_angle_horz;
 	m_prev_angle_vert = m_angle_vert;
@@ -300,11 +295,11 @@ void CWeaponShotEffector::ChangeHP(float* pitch, float* yaw)
 // Camera shot effector
 //-----------------------------------------------------------------------------
 
-CCameraShotEffector::CCameraShotEffector(const CameraRecoil& cam_recoil)
+CCameraShotEffector::CCameraShotEffector()
 	: CEffectorCam(eCEShot, 100000.0f)
 {
-	CWeaponShotEffector::Initialize(cam_recoil);
 	m_pActor = nullptr;
+	m_WeaponID = 0;
 }
 
 CCameraShotEffector::~CCameraShotEffector()

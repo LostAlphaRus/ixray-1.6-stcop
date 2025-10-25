@@ -71,7 +71,6 @@ CWeapon::CWeapon()
 	m_current_pattern = nullptr;
 	m_hipfire_pattern_factor = 0.0f;
 	m_ads_pattern_factor = 0.0f;
-	m_iShotNum = 0;
 
 	m_spring_damping = 0;
 	m_spring_stiffness = 0;
@@ -402,6 +401,8 @@ void CWeapon::Load		(LPCSTR section)
 
 	zoom_cam_recoil.ReturnMode		= cam_recoil.ReturnMode;
 	zoom_cam_recoil.StopReturn		= cam_recoil.StopReturn;
+
+	zoom_cam_recoil.Pattern = cam_recoil.Pattern;
 
 	
 	if ( pSettings->line_exist( section, "zoom_cam_relax_speed" ) )
@@ -909,6 +910,23 @@ void CWeapon::LoadRecoilPatterns(LPCSTR section)
 	m_spring_stiffness = READ_IF_EXISTS(pSettings, r_float, section, "recoil_spring_stiffness", 120.0f);
 	m_spring_damping = READ_IF_EXISTS(pSettings, r_float, section, "recoil_spring_damping", 15.0f);
 	m_impulse_strength = READ_IF_EXISTS(pSettings, r_float, section, "recoil_impulse_strength", 25.0f);
+
+	cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "pattern_factor", 0.035f);
+	cam_recoil.Pattern.Stiffness = READ_IF_EXISTS(pSettings, r_float, section, "pattern_stiffness", 800.0f);
+	cam_recoil.Pattern.Damping = READ_IF_EXISTS(pSettings, r_float, section, "pattern_damping", 40.0f);
+	cam_recoil.Pattern.Impulse = READ_IF_EXISTS(pSettings, r_float, section, "pattern_impulse", 35.0f);
+	cam_recoil.Pattern.ReturnSpeed = READ_IF_EXISTS(pSettings, r_float, section, "pattern_return_speed", 5.0f);
+	cam_recoil.Pattern.ReturnFactor = READ_IF_EXISTS(pSettings, r_float, section, "pattern_return_factor", 1.0f);
+	cam_recoil.Pattern.ReturnEnable = READ_IF_EXISTS(pSettings, r_bool, section, "pattern_return_enable", true);
+
+
+	zoom_cam_recoil.Pattern.Factor = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_factor", 0.015f);
+	zoom_cam_recoil.Pattern.Stiffness = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_stiffness", 800.0f);
+	zoom_cam_recoil.Pattern.Damping = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_damping", 40.0f);
+	zoom_cam_recoil.Pattern.Impulse = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_impulse", 35.0f);
+	zoom_cam_recoil.Pattern.ReturnSpeed = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_return_speed", 5.0f);
+	zoom_cam_recoil.Pattern.ReturnFactor = READ_IF_EXISTS(pSettings, r_float, section, "zoom_pattern_return_factor", 1.0f);
+	zoom_cam_recoil.Pattern.ReturnEnable = READ_IF_EXISTS(pSettings, r_bool, section, "zoom_pattern_return_enable", true);
 
 	Msg("[%s] Recoil patterns loaded: hipfire=%d (factor=%.2f), ads=%d (factor=%.2f)",
 		section,
@@ -2752,7 +2770,6 @@ void CWeapon::ResetRecoilPattern()
 	if (m_current_pattern) {
 		m_current_pattern->current_bullet = 0;
 	}
-	m_iShotNum = 0;
 }
 
 void CWeapon::OnWeaponStopShooting()
@@ -2849,9 +2866,6 @@ void CWeapon::OnZoomOut()
 
 void CWeapon::ApplyRecoil()
 {
-	// Увеличиваем счетчик выстрелов ПЕРВЫМ делом
-	m_iShotNum++;
-
 	if (!m_current_pattern) {
 		StartRecoilPattern();
 	}
@@ -2881,15 +2895,14 @@ void CWeapon::ApplyRecoil()
 		}
 	}
 
-	// Отладочный вывод
-	Msg("Shot counter: %d, Pattern bullet: %d", m_iShotNum, m_current_pattern ? m_current_pattern->current_bullet : -1);
+	Msg("Shot counter: %d, Pattern bullet: %d", ShotsFired(), m_current_pattern ? m_current_pattern->current_bullet : -1);
 }
 
 
 bool CWeapon::GetCurrentRecoilPattern(float& out_x, float& out_y)
 {
 	if (!m_current_pattern ||
-		m_current_pattern->current_bullet == 0 || // Не было выстрелов
+		m_current_pattern->current_bullet == 0 || 
 		m_current_pattern->current_bullet > m_current_pattern->bullet_patterns.size())
 	{
 		return false;
@@ -2901,7 +2914,7 @@ bool CWeapon::GetCurrentRecoilPattern(float& out_x, float& out_y)
 	out_y = point.y;
 
 	Msg("GetCurrentRecoilPattern %d/%d: raw (x:%.3f, y:%.3f)",
-		m_current_pattern->current_bullet, // Текущий номер пули (уже увеличен)
+		m_current_pattern->current_bullet, 
 		m_current_pattern->bullet_patterns.size(),
 		point.x, point.y);
 

@@ -233,9 +233,6 @@ public:
 	float m_spring_stiffness;
 	float m_impulse_strength;
 
-	// Счетчик выстрелов
-	u32 m_iShotNum;
-
 	// Методы управления отдачей - ПОСЛЕ структур
 	void LoadRecoilPatterns(LPCSTR section);
 	void ApplyRecoil();
@@ -249,9 +246,6 @@ public:
 		return (IsZoomed() && m_current_pattern == &m_ads_pattern) ? m_ads_pattern_factor : m_hipfire_pattern_factor;
 	}
 
-	// Для доступа к счетчику выстрелов
-	u32 GetShotNum() const { return m_iShotNum; }
-	void SetShotNum(u32 num) { m_iShotNum = num; }
 
 protected:
 	// Вспомогательные методы
