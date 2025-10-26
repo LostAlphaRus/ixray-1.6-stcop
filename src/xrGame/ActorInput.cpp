@@ -37,6 +37,7 @@
 #include "HudItem.h"
 #include "WeaponKnife.h"
 #include "../xrEngine/XR_IOConsole.h"
+#include "UIMainIngameWnd.h"
 
 extern u32 hud_adj_mode;
 
