@@ -14,8 +14,9 @@ CWeaponShotEffector::CWeaponShotEffector()
 	Reset();
 }
 
-void CWeaponShotEffector::Initialize()
+void CWeaponShotEffector::Initialize(const CameraRecoil& cam_recoil)
 {
+	current_recoil.Clone(cam_recoil);
 	Reset();
 }
 
@@ -28,10 +29,6 @@ void CWeaponShotEffector::Reset()
 	m_target_angle_horz = 0.0f;
 	m_velocity_vert = 0.0f;
 	m_velocity_horz = 0.0f;
-
-	m_spring_stiffness = 0.0f;
-	m_damping = 0.0f;
-	m_impulse_strength = 0.0f;
 
 	current_recoil.Reset();
 
@@ -62,7 +59,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 
 	current_recoil = weapon->IsZoomed() ? weapon->zoom_cam_recoil : weapon->cam_recoil;
 
-	Msg("Shot: Factor=%.3f", current_recoil.Pattern.Factor);
+
 
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;
@@ -73,10 +70,7 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 		// Используем паттернную систему
 		m_using_pattern = true;
 
-		// Сохраняем параметры пружины
-		m_spring_stiffness = weapon->m_spring_stiffness;
-		m_damping = weapon->m_spring_damping;
-		m_impulse_strength = weapon->m_impulse_strength;
+		Msg("Shot: Factor=%.3f,", current_recoil.Pattern.Factor);
 
 		// Получаем множители паттерна от оружия
 		float pattern_factor = current_recoil.Pattern.Factor;
@@ -158,21 +152,24 @@ void CWeaponShotEffector::UpdateSpringRecoil(float dt)
 {
 	if (!m_using_pattern) return;
 
-	if (m_shot_end)
+	if (m_shot_end && current_recoil.Pattern.ReturnEnable)
 	{
-		float relax_factor = 4.0f * dt; // Скорость релаксации
-		clamp(relax_factor, 0.0f, 1.0f);
+		float return_speed = current_recoil.Pattern.ReturnSpeed * dt; 
+		clamp(return_speed, 0.0f, 1.0f);
 
 		//Постепенное уменьшение паттернных целей
-		m_target_angle_vert *= (1.0f - relax_factor);
-		m_target_angle_horz *= (1.0f - relax_factor);
+		m_target_angle_vert *= (1.0f - return_speed);
+		m_target_angle_horz *= (1.0f - return_speed);
 	}
 
+
 	SpringPhysics(dt, current_recoil.Pattern.Stiffness, current_recoil.Pattern.Damping);
+	
+	
 
 	// Проверка стабилизации
-	bool is_vert_stable = _abs(m_velocity_vert) < 0.01f && _abs(m_angle_vert - m_target_angle_vert) < 0.01f;
-	bool is_horz_stable = _abs(m_velocity_horz) < 0.01f && _abs(m_angle_horz - m_target_angle_horz) < 0.01f;
+	bool is_vert_stable = _abs(m_velocity_vert) < 0.001f && _abs(m_angle_vert - m_target_angle_vert) < 0.001f;
+	bool is_horz_stable = _abs(m_velocity_horz) < 0.001f && _abs(m_angle_horz - m_target_angle_horz) < 0.001f;
 
 	if (is_vert_stable && is_horz_stable)
 	{

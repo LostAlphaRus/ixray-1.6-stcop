@@ -158,7 +158,7 @@ void CWeaponStatMgun::AddShotEffector()
 
 		R_ASSERT(S);
 
-		// Устанавливаем кастомную отдачу и делаем выстрел
+	
 		S->SetCustomRecoil(camera_recoil);
 		S->Shot2Legacy(0.01f);
 	}

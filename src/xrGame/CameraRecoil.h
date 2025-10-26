@@ -16,8 +16,8 @@ struct CameraRecoil
 		float Stiffness;
 		float Damping;
 		float Impulse;
+		bool  Loop;
 		float ReturnSpeed;
-		float ReturnFactor;
 		bool  ReturnEnable;
 
 		PatternParams() :
@@ -25,8 +25,8 @@ struct CameraRecoil
 			Stiffness(0.0f),
 			Damping(0.0f),
 			Impulse(0.0f),
+			Loop(true),
 			ReturnSpeed(0.0f),
-			ReturnFactor(0.0f),
 			ReturnEnable(true)
 		{
 		}
@@ -38,8 +38,8 @@ struct CameraRecoil
 			Stiffness = 0.0f;
 			Damping = 0.0f;
 			Impulse = 0.0f;
+			Loop = true;
 			ReturnSpeed = 0.0f;
-			ReturnFactor = 0.0f;
 			ReturnEnable = true;
 		}
 	};

@@ -31,12 +31,6 @@ protected:
 	float			m_target_angle_horz;
 	float			m_velocity_vert;
 	float			m_velocity_horz;
-	float           m_spring_stiffness;
-	float           m_damping;
-	float           m_impulse_strength;
-
-	// Добавляем флаг для возврата к нулю
-	bool            m_return_to_zero;
 
 	// Флаг использования паттерна
 	bool			m_using_pattern; 
@@ -62,7 +56,7 @@ public:
 		current_recoil = custom_recoil;
 	}
 
-	void	Initialize();
+	void	Initialize(const CameraRecoil& cam_recoil);
 	void	Reset();
 
 	IC	bool	IsActive() { return m_actived; }

@@ -247,7 +247,7 @@ void CWeapon::FireEnd()
 {
 	CShootingObject::FireEnd();
 	StopShotEffector();
-	OnWeaponStopShooting();
+	StopPattern();
 }
 
 

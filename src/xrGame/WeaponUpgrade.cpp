@@ -122,6 +122,9 @@ bool CWeapon::install_upgrade_disp( LPCSTR section, bool test )
 	result |= process_if_exists_deg2rad( section, "zoom_cam_max_angle_horz",   zoom_cam_recoil.MaxAngleHorz,  test );
 	result |= process_if_exists_deg2rad( section, "zoom_cam_step_angle_horz",  zoom_cam_recoil.StepAngleHorz, test );
 
+	result |= process_if_exists(section, "pattern_factor", &CInifile::r_float, cam_recoil.Pattern.Factor, test);
+	result |= process_if_exists(section, "zoom_pattern_factor", &CInifile::r_float, zoom_cam_recoil.Pattern.Factor, test);
+
 	VERIFY( !fis_zero(zoom_cam_recoil.RelaxSpeed   ) );
 	VERIFY( !fis_zero(zoom_cam_recoil.RelaxSpeed_AI) );
 	VERIFY( !fis_zero(zoom_cam_recoil.MaxAngleVert ) );

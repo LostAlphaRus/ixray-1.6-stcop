@@ -210,42 +210,26 @@ public:
 		float y; // вертикальное смещение 
 	};
 
-	struct SRecoilPattern {
+	struct SRecoilPattern
+	{
 		shared_str name;
-		xr_vector<SRecoilPoint> bullet_patterns; // паттерн для каждой пули
-		u32 current_bullet; // текущая пуля в очереди
-		bool use_classic_after; // использовать классику после окончания паттерна
+		xr_vector<SRecoilPoint> bullet_patterns;
+		u32 current_bullet;
 
-		SRecoilPattern() : current_bullet(0), use_classic_after(true) {}
+		SRecoilPattern() : current_bullet(0) {}
 	};
 
 	// Данные паттернов
 	SRecoilPattern m_hipfire_pattern;
-	SRecoilPattern m_ads_pattern;
 	SRecoilPattern* m_current_pattern;
 
-
-	// ОБЩИЕ МНОЖИТЕЛИ паттернов
-	float m_hipfire_pattern_factor;
-	float m_ads_pattern_factor;
-
-	float m_spring_damping;
-	float m_spring_stiffness;
-	float m_impulse_strength;
-
-	// Методы управления отдачей - ПОСЛЕ структур
+	// Методы управления отдачей 
 	void LoadRecoilPatterns(LPCSTR section);
 	void ApplyRecoil();
 	void ResetRecoilPattern();
-	void OnWeaponStopShooting();
-	// НОВЫЙ МЕТОД для доступа к паттерну отдачи
+	void StopPattern();
+	// для доступа к паттерну отдачи
 	bool GetCurrentRecoilPattern(float& out_x, float& out_y);
-
-	float GetCurrentPatternFactor() const
-	{
-		return (IsZoomed() && m_current_pattern == &m_ads_pattern) ? m_ads_pattern_factor : m_hipfire_pattern_factor;
-	}
-
 
 protected:
 	// Вспомогательные методы
