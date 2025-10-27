@@ -225,8 +225,7 @@ public:
 
 	// Методы управления отдачей 
 	void LoadRecoilPatterns(LPCSTR section);
-	void ApplyRecoil();
-	void ResetRecoilPattern();
+	void ApplyPattern();
 	void StopPattern();
 	// для доступа к паттерну отдачи
 	bool GetCurrentRecoilPattern(float& out_x, float& out_y);

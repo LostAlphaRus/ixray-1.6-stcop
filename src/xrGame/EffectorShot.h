@@ -24,7 +24,7 @@ protected:
 
 
 	float           m_accumulated_time = 0.0f;
-	static constexpr float FIXED_STEP = 0.006f;
+
 
 	// Пружинная система
 	float			m_target_angle_vert;

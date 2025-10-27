@@ -9,6 +9,9 @@
 //-----------------------------------------------------------------------------
 // Weapon shot effector
 //-----------------------------------------------------------------------------
+
+static constexpr float FIXED_STEP = 0.006f;
+
 CWeaponShotEffector::CWeaponShotEffector()
 {
 	Reset();
@@ -58,8 +61,6 @@ void CWeaponShotEffector::Shot(CWeapon* weapon)
 	}
 
 	current_recoil = weapon->IsZoomed() ? weapon->zoom_cam_recoil : weapon->cam_recoil;
-
-
 
 	// Получаем паттерн отдачи от оружия
 	float pattern_x = 0.0f;
@@ -224,33 +225,33 @@ void CWeaponShotEffector::Update()
 	// Общая логика получения дельты времени для фиксированного шага
 	float dt = Device.fTimeDelta;
 
-	//	m_accumulated_time += dt;
-	//	if (m_accumulated_time > 0.1f)
-	//		m_accumulated_time = 0.1f;
+	m_accumulated_time += dt;
+	if (m_accumulated_time > 0.1f)
+		m_accumulated_time = 0.1f;
 
-	//	while (m_accumulated_time >= FIXED_STEP)
-	//	{
-	if (m_using_pattern)
+	while (m_accumulated_time >= FIXED_STEP)
 	{
-		// Паттернная система
-		UpdateSpringRecoil(dt);
-	}
-	else
-	{
-		// Непаттернная система
-		if (m_actived && current_recoil.ReturnMode)
+		if (m_using_pattern)
 		{
-			if (m_shot_end)
-				Relax(dt);
+			// Паттернная система
+			UpdateSpringRecoil(FIXED_STEP);
 		}
+		else
+		{
+			// Непаттернная система
+			if (m_actived && current_recoil.ReturnMode)
+			{
+				if (m_shot_end)
+					Relax(FIXED_STEP);
+			}
 
-		if (!current_recoil.ReturnMode && m_shot_end)
-		{
-			m_actived = false;
+			if (!current_recoil.ReturnMode && m_shot_end)
+			{
+				m_actived = false;
+			}
 		}
+		m_accumulated_time -= FIXED_STEP;
 	}
-	//		m_accumulated_time -= FIXED_STEP;
-	//	}
 
 		// Общие вычисления дельт
 	m_delta_vert = m_angle_vert - m_prev_angle_vert;

@@ -9,7 +9,7 @@
 //отдача при стрельбе
 struct CameraRecoil
 {
-	// Структура для пружинной системы паттернов отдачи
+	// Структура паттернов отдачи
 	struct PatternParams
 	{
 		float Factor;
@@ -31,7 +31,6 @@ struct CameraRecoil
 		{
 		}
 
-		// Добавляем Reset для PatternParams
 		IC void Reset()
 		{
 			Factor = 0.0f;
@@ -55,7 +54,6 @@ struct CameraRecoil
 	bool		ReturnMode;
 	bool		StopReturn;
 
-	// Параметры пружинной системы для паттернов отдачи
 	PatternParams	Pattern;
 
 	CameraRecoil() :
@@ -89,7 +87,6 @@ struct CameraRecoil
 		ReturnMode = clone.ReturnMode;
 		StopReturn = clone.StopReturn;
 
-		// Копируем параметры пружинной системы
 		Pattern = clone.Pattern;
 
 		VERIFY(!fis_zero(RelaxSpeed));
@@ -98,7 +95,7 @@ struct CameraRecoil
 		VERIFY(!fis_zero(MaxAngleHorz));
 	}
 
-	// Добавляем функцию Reset для CameraRecoil
+	
 	IC void Reset()
 	{
 		RelaxSpeed = EPS_L;

@@ -1049,7 +1049,6 @@ void CWeaponMagazined::state_Fire(float dt)
 			if( CheckForMisfire() )
 			{
 				StopShooting();
-				StopShotEffector();  
 				return;
 			}
 
@@ -1211,6 +1210,14 @@ void CWeaponMagazined::state_FireChamber(float dt)
 		UpdateSounds();
 	}
 
+	// Проверка на завершение стрельбы
+	if (iAmmoElapsed == 0 ||
+		(m_iQueueSize > 0 && m_iShotNum >= m_iQueueSize) ||
+		!IsWorking())
+	{
+		StopShotEffector();  // Все выстрелы завершены
+	}
+
 	if (fShotTimeCounter < 0)
 	{
 		if (iAmmoChamberElapsed == 0)
@@ -1322,7 +1329,7 @@ void CWeaponMagazined::SelectShotSound()
 void CWeaponMagazined::OnShot()
 {
 	SelectShotSound();
-	ApplyRecoil();
+	ApplyPattern();
 	// Camera	
 	AddShotEffector();
 

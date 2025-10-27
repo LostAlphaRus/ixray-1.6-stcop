@@ -1865,7 +1865,7 @@ bool CWeapon::Action(u16 cmd, u32 flags)
 								SwitchState(eIdle);
 							}
 
-							StopShotEffector();
+							StopShooting();
 							OnZoomIn();
 						}
 					}
@@ -2731,30 +2731,18 @@ void CWeapon::StartRecoilPattern()
 
 	// Сбрасываем счетчик пуль
 	m_current_pattern->current_bullet = 0;
-
-	// Логируем настройки зацикливания
-	bool loop_setting = IsZoomed() ? zoom_cam_recoil.Pattern.Loop : cam_recoil.Pattern.Loop;
-
-	Msg("Started %s recoil pattern with %d bullets (loop=%d)",
-		IsZoomed() ? "ADS" : "Hipfire",
-		m_current_pattern->bullet_patterns.size(),
-		loop_setting);
 }
 
-void CWeapon::ResetRecoilPattern()
-{
-	if (m_current_pattern)
-	{
-		m_current_pattern->current_bullet = 0;
-		Msg("Recoil pattern %s reset", m_current_pattern->name.c_str());
-	}
-}
 
 
 void CWeapon::StopPattern()
 {
 	// Сбрасываем паттерн при прекращении стрельбы
-	ResetRecoilPattern();
+	if (m_current_pattern)
+	{
+		m_current_pattern->current_bullet = 0;
+		//Msg("Recoil pattern %s reset", m_current_pattern->name.c_str());
+	}
 }
 
 void GetZoomData(const float scope_factor, float& delta, float& min_zoom_factor);
@@ -2826,7 +2814,7 @@ void CWeapon::OnZoomOut()
 
 }
 
-void CWeapon::ApplyRecoil()
+void CWeapon::ApplyPattern()
 {
 	if (!m_current_pattern) {
 		StartRecoilPattern();
@@ -2878,16 +2866,12 @@ bool CWeapon::GetCurrentRecoilPattern(float& out_x, float& out_y)
 
 	u32 idx = m_current_pattern->current_bullet;
 
-	// ВАЖНОЕ ИСПРАВЛЕНИЕ: current_bullet уже увеличен для СЛЕДУЮЩЕГО выстрела
-	// поэтому для ТЕКУЩЕГО выстрела нужно брать ПРЕДЫДУЩИЙ индекс
 	if (idx > 0)
 	{
 		idx = idx - 1;
 	}
 	else
 	{
-		// Если current_bullet = 0, значит мы либо в начале паттерна, либо после зацикливания
-		// После зацикливания берем ПОСЛЕДНЮЮ пулю паттерна
 		idx = m_current_pattern->bullet_patterns.size() - 1;
 	}
 
