@@ -1,13 +1,13 @@
 #include "common.hlsli"
 
 uniform float4 mblur_params;
-#define MBLUR_SAMPLES 6
+#define MBLUR_SAMPLES 6.0f
 
 inline void SampleImage(inout float4 Final, in float2 SampleUV, in float CenterDepth)
 {
 	float SampleWeight = s_position.SampleLevel(smp_rtlinear, SampleUV, 0).x;
 	SampleWeight = saturate(1.0f - 8.0f * abs(SampleWeight - CenterDepth) * rcp(max(SampleWeight, CenterDepth)));
- 	SampleWeight = GetBorderAtten(SampleUV);
+ 	SampleWeight *= GetBorderAtten(SampleUV);
 	
 	Final.xyz += SampleWeight * s_image.SampleLevel(smp_rtlinear, SampleUV, 0).xyz;
 	Final.w += SampleWeight;
